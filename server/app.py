@@ -23,6 +23,7 @@ from server.dependencies import AppState
 from server.models import ErrorResponse
 from server.routes.dashboard import create_dashboard_router
 from server.routes.generate import create_generate_router
+from server.routes.quality import create_quality_router
 from server.routes.generate_v2 import create_generate_v2_router
 from server.routes.health import create_health_router
 from server.routes.search import create_search_router
@@ -136,6 +137,9 @@ def create_app() -> FastAPI:
 
     # Routes — dashboard
     app.include_router(create_dashboard_router(_state, _metrics))
+
+    # Routes — quality
+    app.include_router(create_quality_router())
 
     return app
 
