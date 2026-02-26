@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 11 | 남은 28
+> 전체 39 PR | 완료 13 | 남은 26
 
 ---
 
@@ -55,13 +55,19 @@
   - 11_build_indexes_from_db.py: DB 소스 인덱스 구축 CLI
   - 38 tests
 
-- [ ] **PR-012** Generation API + Quote-Anchored Prompt v1
-  - 생성 API 엔드포인트
-  - 프롬프트 관리
+- [x] **PR-012** Generation Service + QueryRouter
+  - GenerationService: context formatting → LLM 호출 → 출력 검증 + 재시도
+  - QueryRouter: 5가지 intent 분류 (LLM 기반), 동적 top_k 조정
+  - GenerationConfig: YAML 기반 설정 (model, max_tokens, prompts_dir)
+  - format_context(), detect_temporal_conflicts()
+  - 62 tests (28 router + 34 generation)
 
-- [ ] **PR-013** FastAPI Server + Middleware
-  - 서버 코어, CORS, 로깅 미들웨어
-  - 에러 핸들링
+- [x] **PR-013** FastAPI Server + Middleware
+  - FastAPI 앱: CORS (환경변수 기반), 로깅 미들웨어, 글로벌 에러 핸들러
+  - AppState: DI (SearchService + GenerationService)
+  - Pydantic v2 요청/응답 모델 (Literal output_type 검증)
+  - GET /api/health (503 when not ready), POST /api/search, POST /api/generate
+  - 22 tests
 
 - [ ] **PR-014** TOC API — 개정판별 목차 트리 제공
   - TOC 트리 조회 API
