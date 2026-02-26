@@ -234,10 +234,10 @@
 
 ---
 
-## Gap Checklist (SHOULD 미충족 — 향후 보완)
+## Gap Checklist (SHOULD — 완료)
 
-- [ ] **S01** Phase별 비용 추정
-- [ ] **S02** 성능 목표 수치 (P50/P95/P99)
-- [ ] **S03** CI/CD 파이프라인 명세
-- [ ] **S04** 모니터링/알림 전략 (SLO/SLI)
-- [ ] **S07** 테스트 전략 문서
+- [x] **S01** Phase별 비용 추정 → `docs/S01-cost-estimation.md`
+- [x] **S02** 성능 목표 수치 (P50/P95/P99) → `docs/S02-performance-targets.md`
+- [x] **S03** CI/CD 파이프라인 명세 → `docs/S03-cicd-pipeline.md`
+- [x] **S04** 모니터링/알림 전략 (SLO/SLI) → `docs/S04-monitoring-alerting.md`
+- [x] **S07** 테스트 전략 문서 → `docs/S07-testing-strategy.md`
