@@ -70,13 +70,22 @@ _FALLBACK = RouteResult(
 )
 
 
-def route_query(query: str, router_prompt: str, client: Any) -> RouteResult:
+def route_query(
+    query: str,
+    router_prompt: str,
+    client: Any,
+    *,
+    model: str = "claude-sonnet-4-20250514",
+    max_tokens: int = 500,
+) -> RouteResult:
     """LLM을 사용하여 질의 의도를 분류한다.
 
     Args:
         query: 사용자 질의.
         router_prompt: 라우터 시스템 프롬프트.
         client: Anthropic 클라이언트 (messages.create 지원).
+        model: 사용할 모델 (config에서 전달).
+        max_tokens: 최대 토큰 수 (config에서 전달).
 
     Returns:
         RouteResult (불변).
@@ -86,8 +95,8 @@ def route_query(query: str, router_prompt: str, client: Any) -> RouteResult:
 
     try:
         message = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=500,
+            model=model,
+            max_tokens=max_tokens,
             system=router_prompt,
             messages=[{"role": "user", "content": query}],
         )
@@ -122,9 +131,15 @@ def _parse_route_response(text: str) -> RouteResult:
         valid = tuple(t for t in raw_type_filter if t in VALID_QUOTE_TYPES)
         type_filter = valid if valid else None
 
+    # confidence 변환: 숫자가 아닌 값 (예: "high") 방어
+    try:
+        confidence = float(data.get("confidence", 0.5))
+    except (ValueError, TypeError):
+        confidence = 0.5
+
     return RouteResult(
         intent=data.get("intent", "open_ended"),
-        confidence=float(data.get("confidence", 0.5)),
+        confidence=confidence,
         edition_hint=data.get("edition_hint"),
         output_type=data.get("output_type"),
         type_filter=type_filter,

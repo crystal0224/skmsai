@@ -155,6 +155,14 @@ def test_parse_invalid_json_fallback():
     assert result.confidence == 0.5
 
 
+def test_parse_non_numeric_confidence():
+    """숫자가 아닌 confidence는 0.5로 폴백한다."""
+    text = '{"intent": "general_definition", "confidence": "high"}'
+    result = _parse_route_response(text)
+    assert result.intent == "general_definition"
+    assert result.confidence == 0.5
+
+
 def test_parse_v1_compat_query_type():
     """v1 호환: query_type → intent 매핑."""
     text = '{"query_type": "general_definition", "confidence": 0.9}'
@@ -182,6 +190,21 @@ def test_route_query_success():
     result = route_query("SUPEX란 무엇인가?", "system prompt", client)
     assert result.intent == "general_definition"
     assert result.confidence == 0.95
+
+
+def test_route_query_uses_custom_model():
+    """config에서 전달된 모델/토큰을 사용한다."""
+    client = _make_mock_client('{"intent": "open_ended", "confidence": 0.8}')
+    route_query(
+        "test",
+        "prompt",
+        client,
+        model="custom-router-model",
+        max_tokens=300,
+    )
+    call_kwargs = client.messages.create.call_args
+    assert call_kwargs.kwargs["model"] == "custom-router-model"
+    assert call_kwargs.kwargs["max_tokens"] == 300
 
 
 def test_route_query_empty_query():

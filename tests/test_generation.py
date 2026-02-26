@@ -237,6 +237,36 @@ def test_format_context_empty_hits():
     assert "[CHUNK" not in ctx
 
 
+def test_format_context_missing_keys():
+    """필수 키가 없는 hit도 안전하게 처리된다."""
+    hits = [{"text": "some text"}]  # quote_id 없음
+    conflict = TemporalConflict(
+        has_conflict=False, conflicting_editions=(), definition_count=0
+    )
+    ctx = format_context(hits, "open_ended", conflict)
+    assert "quote_id: unknown" in ctx
+    assert "some text" in ctx
+
+
+def test_format_context_non_string_chapter_path():
+    """chapter_path 항목이 문자열이 아니어도 안전하게 처리된다."""
+    hits = [
+        {
+            "quote_id": "test|001",
+            "text": "text",
+            "edition": "2020-14차",
+            "type": "definition",
+            "chapter_path": ["VWBE", 123, None],
+            "quality_flags": [],
+        }
+    ]
+    conflict = TemporalConflict(
+        has_conflict=False, conflicting_editions=(), definition_count=0
+    )
+    ctx = format_context(hits, "open_ended", conflict)
+    assert "VWBE > 123 > None" in ctx
+
+
 # ---------------------------------------------------------------------------
 # extract_quote_ids 테스트
 # ---------------------------------------------------------------------------
@@ -371,6 +401,15 @@ def test_service_generate_content_validation_fail_all():
     assert result.validation_passed is False
     assert result.retried is True
     assert len(result.validation_errors) > 0
+
+
+def test_service_call_llm_api_error():
+    """LLM API 호출 실패 시 RuntimeError를 발생시킨다."""
+    client = MagicMock()
+    client.messages.create.side_effect = Exception("API connection error")
+    service = GenerationService(client)
+    with pytest.raises(RuntimeError, match="LLM API 호출 실패"):
+        service.generate("질의", "컨텍스트", "open_ended")
 
 
 # ---------------------------------------------------------------------------
