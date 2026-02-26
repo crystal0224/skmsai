@@ -1,0 +1,19 @@
+# =============================================================================
+# generation.yaml
+# SKMS Time-Aware NotebookLM - LLM 생성 설정
+# =============================================================================
+
+generation:
+  # LLM 모델 (답변 생성)
+  model: "claude-sonnet-4-20250514"
+  max_tokens: 3000
+
+  # 라우터 모델 (의도 분류)
+  router_model: "claude-sonnet-4-20250514"
+  router_max_tokens: 500
+
+  # 검증 실패 시 재시도 횟수
+  max_retries: 1
+
+  # 프롬프트 디렉토리
+  prompts_dir: "prompts"
