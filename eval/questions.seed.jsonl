@@ -1,0 +1,22 @@
+{"id": "q-001", "query": "14차 개정판에서 VWBE 문화의 핵심 내용은 무엇인가?", "query_type": "single_version", "expected_edition": "14차", "expected_keywords": ["VWBE", "자발적", "의욕적", "두뇌활용"], "difficulty": "easy"}
+{"id": "q-002", "query": "초판에서 인사관리의 정의와 범위는?", "query_type": "single_version", "expected_edition": "초판", "expected_keywords": ["인사관리", "인적 자원", "채용", "교육"], "difficulty": "medium"}
+{"id": "q-003", "query": "10차 개정판에서 SUPEX 추구의 구체적 프로세스는 어떻게 설명되는가?", "query_type": "single_version", "expected_edition": "10차", "expected_keywords": ["SUPEX", "추구", "프로세스", "Super Excellent"], "difficulty": "hard"}
+{"id": "q-004", "query": "현행 SKMS에서 사회적 가치 창출은 어떻게 다루어지는가?", "query_type": "single_version", "expected_edition": "14차", "expected_keywords": ["사회적 가치", "이해관계자", "행복"], "difficulty": "medium"}
+{"id": "q-005", "query": "11차 개정판의 코디네이션관리 내용을 설명해주세요.", "query_type": "single_version", "expected_edition": "11차", "expected_keywords": ["코디네이션", "조정", "부문 간"], "difficulty": "medium"}
+{"id": "q-006", "query": "의욕관리 개념이 초판에서 14차까지 어떻게 변화했는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["의욕관리", "VWBE", "변화", "초판", "14차"], "difficulty": "hard"}
+{"id": "q-007", "query": "인간중심의 경영 개념이 1979년 초판과 2020년 14차에서 어떻게 다른가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["인간중심", "경영", "초판", "14차", "비교"], "difficulty": "hard"}
+{"id": "q-008", "query": "사회적 가치 개념은 SKMS에 언제 처음 등장했나요?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["사회적 가치", "처음", "도입", "13차"], "difficulty": "medium"}
+{"id": "q-009", "query": "경영관리 요소 분류체계가 개정판에 따라 어떻게 재구성되었는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["정적 요소", "동적 요소", "분류", "재편"], "difficulty": "hard"}
+{"id": "q-010", "query": "SK-Manship의 의미는 10차와 14차에서 어떻게 달라졌는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["SK-Manship", "10차", "14차", "행복"], "difficulty": "medium"}
+{"id": "q-011", "query": "SUPEX란 무엇인가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["SUPEX", "Super Excellent", "수준", "최고"], "difficulty": "easy"}
+{"id": "q-012", "query": "합리적 경영이란 어떤 뜻인가요?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["합리적 경영", "경험과학", "사회규범", "예술적 실천"], "difficulty": "medium"}
+{"id": "q-013", "query": "코디네이션관리의 정의는?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["코디네이션", "조정", "부문", "통합"], "difficulty": "medium"}
+{"id": "q-014", "query": "O.J.T는 SKMS에서 어떤 의미로 사용되나요?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["O.J.T", "On the Job Training", "현장 교육"], "difficulty": "easy"}
+{"id": "q-015", "query": "관리역량관리란 무엇을 뜻하는가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["관리역량", "역량", "관리자"], "difficulty": "medium"}
+{"id": "q-016", "query": "SKMS에서 가장 일관되게 강조하는 핵심 가치는 무엇인가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["인간중심", "경영", "가치", "철학"], "difficulty": "medium"}
+{"id": "q-017", "query": "SKMS의 인간중심 경영 철학이 현대 ESG 경영에 주는 시사점은?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["ESG", "인간중심", "시사점", "사회적 가치"], "difficulty": "hard"}
+{"id": "q-018", "query": "SKMS를 실무 경영에 적용할 때 가장 중요한 원칙은?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["실무", "적용", "원칙", "경영"], "difficulty": "medium"}
+{"id": "q-019", "query": "SKMS에서 말하는 이상적인 관리자상은 어떤 모습인가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["관리자", "리더십", "역량", "인재"], "difficulty": "medium"}
+{"id": "q-020", "query": "SKMS 40년 역사에서 가장 큰 패러다임 전환은 무엇이었는가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["패러다임", "변화", "전환", "VWBE", "사회적 가치"], "difficulty": "hard"}
+{"id": "q-r01", "query": "SKMS에서 경영의 궁극적 목적은?", "query_type": "definition", "expected_edition": "14차", "expected_keywords": ["구성원 행복", "궁극적 목적", "경영"], "difficulty": "medium", "regression_checks": [{"type": "latest_edition_first", "description": "첫 근거 quote가 2020년 14차", "expected_first_year": 2020}]}
+{"id": "q-r02", "query": "패기 정의는?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["패기", "VWBE", "정의"], "difficulty": "medium", "regression_checks": [{"type": "no_mixed_definitions", "description": "definition 타입 quote가 단일 연도에서만 인용됨"}]}

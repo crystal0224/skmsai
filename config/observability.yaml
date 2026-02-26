@@ -1,0 +1,27 @@
+# =============================================================================
+# observability.yaml
+# SKMS RAG Pipeline - 관측(Observability) 설정
+# =============================================================================
+
+observability:
+  # 트레이서 백엔드: auto | langfuse | langsmith | local
+  # auto: LANGFUSE_PUBLIC_KEY → LANGCHAIN_TRACING_V2 → local 순 감지
+  tracer: auto
+
+  # 콘솔 출력 설정
+  console:
+    print_trace_id: true        # trace_id를 stderr에 출력
+    print_step_summary: false   # 각 단계 요약 출력 (디버깅용)
+
+  # 개인정보/보안 정책
+  privacy:
+    # 원문 텍스트 저장 여부 (기본: 금지)
+    store_raw_text: false
+
+    # 텍스트 미리보기 (기본 OFF)
+    text_preview:
+      enabled: false
+      max_chars: 400
+
+    # 기본 저장 필드 (이 필드만 트레이스에 기록)
+    # quote_id, doc_id, year, edition, type, score, span, sha256, quality_flags

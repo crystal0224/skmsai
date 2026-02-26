@@ -1,0 +1,111 @@
+# SKMS Time-Aware RAG Pipeline — TODO
+
+> 마지막 업데이트: 2026-02-26
+> 전체 39 PR | 완료 8 | 남은 31
+
+---
+
+## Phase 0: Data Foundation (완료)
+
+- [x] **PR-001** Project Scaffold — repo init, pyproject.toml
+- [x] **PR-002** OpenAPI Spec + API Schema Design
+- [x] **PR-003** Data Diagnosis + Edition Splitter
+- [x] **PR-004** Section Parser (6-Level H0-H5) — TOCNode Tree JSON
+- [x] **PR-005** Semantic Chunker + Quality Flagger
+- [x] **PR-006** Embedding Benchmark — 모델 비교 평가
+- [x] **PR-007** Prompt v0 — Quote-Anchored Base Template + Smoke Test + Security Hardening
+- [x] **PR-008** Eval Framework + Regression Tests (113 tests, 6/6 smoke)
+
+### PR-1~8 산출물 요약
+| 산출물 | 파일/경로 | 비고 |
+|--------|-----------|------|
+| 원문 분리 | `scripts/00_extract_structure.py`, `01_split_docs.py` | 12개 개정판 |
+| QuoteObject 추출 | `scripts/02_extract_quotes.py` | 714개 quotes |
+| 인덱스 빌드 | `scripts/03_build_indexes.py` | Chroma + BM25 |
+| 검색+생성 | `scripts/04_retrieve_and_answer.py` | Hybrid search → LLM |
+| 평가 프레임워크 | `scripts/05_eval_run.py` | 22 seed questions |
+| 헬스체크 | `scripts/06_healthcheck.py` | 인프라 검증 |
+| 정책 레이어 | `scripts/lib/policy.py` | 5종 intent routing |
+| 출력 검증 | `scripts/lib/output_validator.py` | Pydantic v2 스키마 |
+| 검색 통합 | `scripts/lib/retrieval.py` | retrieve_quotes() |
+| 테스트 | `tests/` (7 files, 113 functions) | 전체 PASS |
+
+---
+
+## Phase 1: Foundation + MVP Core (PR-9 ~ PR-16)
+
+- [ ] **PR-009** QuoteObject Schema + DB Migration
+  - DB 스키마 정의 (PostgreSQL/SQLite)
+  - 현재 JSONL → DB 마이그레이션
+  - CRUD 인터페이스
+
+- [ ] **PR-010** Ingestion Pipeline — 멱등 데이터 적재
+  - content_hash 기반 중복 방지
+  - 배치 적재 + 검증
+
+- [ ] **PR-011** Vector Store (Chroma) + Search API
+  - 개정판 필터 검색 API
+  - REST 엔드포인트
+
+- [ ] **PR-012** Generation API + Quote-Anchored Prompt v1
+  - 생성 API 엔드포인트
+  - 프롬프트 관리
+
+- [ ] **PR-013** FastAPI Server + Middleware
+  - 서버 코어, CORS, 로깅 미들웨어
+  - 에러 핸들링
+
+- [ ] **PR-014** TOC API — 개정판별 목차 트리 제공
+  - TOC 트리 조회 API
+  - 에디션 필터링
+
+- [ ] **PR-015** Streamlit MVP UI
+  - 검색/생성/목차 통합 인터페이스
+  - 기본 UX
+
+- [ ] **PR-016** MVP Eval + Quality Report
+  - MVP 종합 품질 평가
+  - Go/No-Go 게이트 판정
+
+---
+
+## Phase 2: V1 Production (PR-17 ~ PR-30)
+
+- [ ] **PR-017** Synonym Map — 동의어 매핑 (≥80쌍)
+- [ ] **PR-018** Concept-Timeline Map — 개념별 시계열 추적 (30+개)
+- [ ] **PR-019** BM25 Index 고도화 — 정의 블록 가중 + 동의어 확장
+- [ ] **PR-020** Hybrid Retrieval — Vector + BM25 RRF 융합
+- [ ] **PR-021** Reranker — Cohere + Cross-Encoder 재순위
+- [ ] **PR-022** Query Router — 4-Type 질의 분류 (≥90%)
+- [ ] **PR-023** Temporal Conflict Guardrail — 시간축 충돌 방어
+- [ ] **PR-024** Evidence Coverage + Hallucination Filter
+- [ ] **PR-025** Cross-version Comparison — 개정판 간 비교 프롬프트
+- [ ] **PR-026** Output Renderer 3-type — summary/card/comparison_table
+- [ ] **PR-027** API v2 — Hybrid Search + Generate v2
+- [ ] **PR-028** TOC Visualization — 인터랙티브 목차 트리 뷰어
+- [ ] **PR-029** LLM-as-Judge — 4축 자동 평가기
+- [ ] **PR-030** Golden QA 50 + V1 Quality Report
+
+---
+
+## Phase 3: V2 Production (PR-31 ~ PR-39)
+
+- [ ] **PR-031** Pinecone 마이그레이션 (Chroma → Pinecone)
+- [ ] **PR-032** Quiz + Slide 렌더러 추가
+- [ ] **PR-033** 프롬프트 최종 튜닝 + 전체 Output 통합 테스트
+- [ ] **PR-034** Next.js V2 프로덕션 UI
+- [ ] **PR-035** 운영 대시보드 (모니터링 + 사용 통계)
+- [ ] **PR-036** 데이터 자동 업데이트 배치 + 인덱스 갱신
+- [ ] **PR-037** 성능 최적화 + 부하 테스트
+- [ ] **PR-038** 보안 검토 + 프로덕션 배포
+- [ ] **PR-039** Golden QA 100 + 최종 품질 대시보드
+
+---
+
+## Gap Checklist (SHOULD 미충족 — 향후 보완)
+
+- [ ] **S01** Phase별 비용 추정
+- [ ] **S02** 성능 목표 수치 (P50/P95/P99)
+- [ ] **S03** CI/CD 파이프라인 명세
+- [ ] **S04** 모니터링/알림 전략 (SLO/SLI)
+- [ ] **S07** 테스트 전략 문서

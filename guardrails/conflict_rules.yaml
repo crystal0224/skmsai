@@ -1,0 +1,139 @@
+# =============================================================================
+# SKMS Time-Aware NotebookLM — 시간축 충돌 감지 규칙
+# =============================================================================
+# 동일 개념이 서로 다른 개정판에서 상이하게 정의된 경우를 감지하고,
+# 사용자에게 명시적으로 안내하기 위한 가드레일 규칙.
+# =============================================================================
+
+temporal_conflict:
+  description: "동일 개념이 서로 다른 개정판에서 상이하게 정의된 경우를 감지"
+
+  # ---------------------------------------------------------------------------
+  # 감지 규칙 (Detection Rules)
+  # ---------------------------------------------------------------------------
+  detection_rules:
+    - rule_id: TC-001
+      name: "정의 변경 감지"
+      description: "같은 용어의 정의가 개정판 간 실질적으로 다른 경우"
+      action: "warn_user"
+      severity: "high"
+      trigger_condition: |
+        동일 concept_id에 매핑된 청크가 2개 이상의 edition에 존재하며,
+        정의(definition) 필드의 코사인 유사도가 threshold 미만인 경우.
+      similarity_threshold: 0.82
+      message_template: >
+        '{concept}'의 정의가 {edition_a}와 {edition_b}에서 다릅니다.
+        어느 개정판 기준으로 답변할까요?
+
+    - rule_id: TC-002
+      name: "개념 소멸 감지"
+      description: "이전 개정판에 존재하던 개념이 이후 개정판에서 삭제된 경우"
+      action: "warn_user"
+      severity: "medium"
+      trigger_condition: |
+        사용자 질의의 concept_id가 최신 개정판 인덱스에 존재하지 않으며,
+        이전 개정판 인덱스에는 1회 이상 존재하는 경우.
+      message_template: >
+        '{concept}'은(는) {last_edition}까지만 등장합니다.
+        현행({latest_edition}) 기준으로는 해당 개념이 없습니다.
+
+    - rule_id: TC-003
+      name: "개념 신설 감지"
+      description: "이후 개정판에서 처음 등장한 개념에 대해 이전 개정판 기준 질의"
+      action: "warn_user"
+      severity: "medium"
+      trigger_condition: |
+        사용자가 특정 edition 범위를 지정했으나, 해당 concept_id가
+        그 edition 이후에 처음 도입된 경우.
+      message_template: >
+        '{concept}'은(는) {first_edition}에서 처음 도입되었습니다.
+        {query_edition}에는 존재하지 않습니다.
+
+    - rule_id: TC-004
+      name: "용어 변경 감지"
+      description: "동일 개념의 명칭이 개정판에 따라 변경된 경우 (예: 조정 -> 코디네이션)"
+      action: "include_note"
+      severity: "low"
+      trigger_condition: |
+        concept_id는 동일하지만 surface_form(표면 용어)이
+        edition별로 다른 경우.
+      message_template: >
+        이 개념은 개정판에 따라 다르게 불립니다: {variants}
+
+  # ---------------------------------------------------------------------------
+  # 응답 정책 (Response Policy)
+  # ---------------------------------------------------------------------------
+  response_policy:
+    # warn: 충돌을 안내하고 사용자에게 선택을 요청
+    # block: 충돌 해소 전까지 응답 생성을 중단
+    # silent: 내부 로그만 남기고 응답에는 표시하지 않음
+    fail_mode: "warn"
+
+    # 인용 시 해당 개정판 정보를 항상 포함
+    include_edition_context: true
+
+    # 하나의 응답에서 표시하는 최대 충돌 수
+    max_conflicts_shown: 3
+
+    # 충돌 감지 시 사용자에게 제시할 선택지 형식
+    user_prompt_format: |
+      다음 개정판들에서 서로 다른 내용이 발견되었습니다:
+      {{#conflicts}}
+      - **{{edition}}**: {{summary}}
+      {{/conflicts}}
+      어느 개정판 기준으로 답변할까요? (또는 '전체 비교'를 선택하세요)
+
+  # ---------------------------------------------------------------------------
+  # 알려진 주요 충돌 사례 (Known Conflicts)
+  # ---------------------------------------------------------------------------
+  # 시스템이 사전에 인지하고 있는 대표적 시간축 충돌.
+  # 런타임 감지 외에, 아래 목록과 매칭되면 즉시 경고를 발생시킨다.
+  known_conflicts:
+    - concept: "경영관리 요소 분류"
+      concept_id: "mgmt_element_taxonomy"
+      editions: ["1979-초판", "1998-10차", "2020-14차"]
+      note: "정적/동적 요소 분류체계가 개정마다 재구성됨"
+      details:
+        - edition: "1979-초판"
+          summary: "기획, 인사, 조직, 재무, 판매, 생산 등 기능별 분류"
+        - edition: "1998-10차"
+          summary: "정적 요소 + 동적 요소(의욕관리, 관리역량관리 등) 이원 체계 확립"
+        - edition: "2020-14차"
+          summary: "VWBE 문화 기반으로 동적 요소 전면 재편"
+
+    - concept: "의욕관리"
+      concept_id: "motivation_mgmt"
+      editions: ["1979-초판", "2020-14차"]
+      note: "초판에서는 단독 항목, 14차에서는 VWBE 문화의 일부로 재편"
+      details:
+        - edition: "1979-초판"
+          summary: "독립된 경영관리 항목으로 별도 장(章) 구성"
+        - edition: "2020-14차"
+          summary: "VWBE(자발적·의욕적 두뇌활용) 문화의 하위 개념으로 통합"
+
+    - concept: "SUPEX"
+      concept_id: "supex"
+      editions: ["1998-10차", "2004-11차", "2020-14차"]
+      note: "10차 도입 후 지속 확장, 14차에서 SUPEX 추구 방법론으로 체계화"
+      details:
+        - edition: "1998-10차"
+          summary: "Super Excellent 수준 개념 최초 도입"
+        - edition: "2004-11차"
+          summary: "SUPEX 추구 프로세스 상세화"
+        - edition: "2020-14차"
+          summary: "SUPEX 추구 방법론으로 체계화, 패기·실력 기반 실천 강조"
+
+    - concept: "인사관리"
+      concept_id: "hr_mgmt"
+      editions: ["1979-초판", "1981-1차", "1998-10차", "2020-14차"]
+      note: "초판의 기본 인사관리에서 역량중심 인재경영으로 진화"
+
+    - concept: "SK-Manship"
+      concept_id: "sk_manship"
+      editions: ["1998-10차", "2020-14차"]
+      note: "10차에서 도입, 14차에서 행복 추구와 사회적 가치 창출로 재정의"
+
+    - concept: "사회적 가치"
+      concept_id: "social_value"
+      editions: ["2016-13차", "2020-14차"]
+      note: "13차에서 본격 등장, 14차에서 경영의 핵심 축으로 격상"

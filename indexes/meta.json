@@ -1,0 +1,16 @@
+{
+  "total_quotes": 715,
+  "filtered_quotes": 714,
+  "vector_indexed": 714,
+  "bm25_indexed": 714,
+  "embedding_model": "text-embedding-3-large",
+  "embedding_dimension": 1536,
+  "type_distribution": {
+    "narrative": 296,
+    "definition": 90,
+    "example": 37,
+    "checklist": 194,
+    "principle": 91,
+    "procedure": 7
+  }
+}

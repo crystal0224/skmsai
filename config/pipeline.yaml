@@ -1,0 +1,199 @@
+# =============================================================================
+# pipeline.yaml
+# SKMS Time-Aware NotebookLM - 처리 파이프라인 설정
+# 원본 텍스트 파싱부터 RAG 질의응답, 품질 평가까지의 전체 워크플로우
+# =============================================================================
+
+pipeline:
+  # ---------------------------------------------------------------------------
+  # 입력 설정
+  # ---------------------------------------------------------------------------
+  input:
+    raw_file: "data/raw/SKMSraw.txt"
+    encoding: "utf-8"
+
+  # ---------------------------------------------------------------------------
+  # 파이프라인 단계 (순차 실행)
+  # ---------------------------------------------------------------------------
+  stages:
+    - name: extract_structure
+      script: "scripts/00_extract_structure.py"
+      output: "data/processed/structure.json"
+      description: "개정판 경계 감지 + 6단계 헤더 파싱"
+
+    - name: split_docs
+      script: "scripts/01_split_docs.py"
+      output: "data/processed/docs.jsonl"
+      description: "개정판별 문서 분할 + 메타데이터 부착"
+
+    - name: extract_quotes
+      script: "scripts/02_extract_quotes.py"
+      output: "data/processed/quotes.jsonl"
+      description: "QuoteObject 추출 (청킹 + 품질 플래그)"
+
+    - name: build_indexes
+      script: "scripts/03_build_indexes.py"
+      output_dir: "indexes/"
+      description: "벡터 인덱스 + 키워드 인덱스 구축"
+
+    - name: retrieve_and_answer
+      script: "scripts/04_retrieve_and_answer.py"
+      description: "RAG 질의응답 파이프라인"
+
+    - name: eval_run
+      script: "scripts/05_eval_run.py"
+      input: "eval/questions.seed.jsonl"
+      output: "eval/results.jsonl"
+      description: "자동 품질 평가"
+
+  # ---------------------------------------------------------------------------
+  # 청킹 설정
+  # 의미 단위 기반 청킹으로 헤더 경계를 존중
+  # ---------------------------------------------------------------------------
+  chunking:
+    strategy: "semantic"
+    max_tokens: 512
+    overlap_tokens: 50
+    min_tokens: 100
+    respect_headers: true  # 헤더 경계에서 청크를 분리
+
+  # ---------------------------------------------------------------------------
+  # QuoteObject 추출 설정
+  # ---------------------------------------------------------------------------
+  quote_extraction:
+    # quote_id 형식: {doc_id}|{chapter_path}|{type}|{seq}
+    # 예: 1979-초판|기업관>1. 인간중심의 경영|definition|001
+    id_separator: "|"
+    path_separator: ">"
+
+    # sha256 무결성 해시: quote text의 UTF-8 바이트를 SHA-256 해싱
+    integrity_hash: "sha256"
+
+    # LLM 보조 판정 (규칙 미매칭 시에만 사용)
+    llm_fallback:
+      enabled: false  # true로 변경하면 규칙 미매칭 청크에 LLM 판정 수행
+      model: "claude-haiku-4-5-20251001"
+      max_batch: 50
+      prompt_template: "prompts/quote_classify.md"
+
+    # ─── 6종 Quote Type 추출 규칙 ─────────────────────────────
+    #
+    # 판정 방식: priority 순으로 검사, min_score 이상이면 채택.
+    #   - pattern 매칭 = +2점, keyword 매칭 = +1점
+    #   - min_score를 넘는 첫 번째 타입이 최종 타입
+    #   - 어떤 타입도 min_score를 못 넘으면 narrative (fallback)
+    #
+    # 튜닝 원칙: SKMS는 경영 철학 문서이므로 "해야 한다", "필요하다"
+    #   같은 일반 어미가 매우 빈번함. principle/procedure 판정은
+    #   도메인 특화 키워드와 패턴 조합(min_score ≥ 3)으로 제한.
+    types:
+      definition:
+        description: "개념 정의문 — '~이란', '~를 말한다', '~의미한다'"
+        priority: 1
+        min_score: 2  # 정의 패턴 1개면 충분 (매우 특이적)
+        max_chars: 800
+        split_if_above: 1200
+        patterns:
+          # 기존 패턴 (v1)
+          - '^"[가-힣].*"[은는이가을를]?\s+(이|란|라\s*함은|뜻한다|의미한다|말한다)'
+          - '^[가-힣A-Z]+[은는이가](란|라\s*함은|라는\s*것은|을\s*말한다|의\s*정의)'
+          - '(이란|이라\s*함은|을\s*말한다|을\s*의미한다|을\s*뜻한다)\s*[.。]?\s*$'
+          - '의미하며.*뜻한다'
+          # 신규 패턴 (v2 — 12~14차 누락 보완)
+          # "말하다"는 한국어에서 과도하게 빈번하므로 문장 말미(기존 패턴3)에서만 포착
+          - '[을를]\s*(의미하|뜻하)[는다며고니]'        # "~을 의미한다/뜻한다" 문장 중간
+          - '이란[,]\s*[가-힣]'                         # "X이란, 내용..." (쉼표 필수)
+          - '[은는이가]\s*"[^"]{2,}"[을를]?\s*(의미|뜻)'  # X는 "Y"를 의미한다
+        keywords: []
+
+      example:
+        description: "예시/사례 — '예를 들면', '예컨대', 구체적 사례 서술"
+        priority: 2
+        min_score: 2  # 예시 마커 1개면 충분
+        max_chars: 1000
+        split_if_above: 1500
+        patterns:
+          - '(예를\s*들면|예를\s*들어|예컨대|일례로|실례로)'
+          - '(구체적\s*예|대표적\s*예)'
+        keywords:
+          - "예를 들"
+          - "예컨대"
+
+      checklist:
+        description: "열거형 항목 — 가/나/다, (1)(2)(3) 등이 세그먼트 내 3회+ 반복"
+        priority: 3
+        min_score: 6  # 패턴 3회 매칭(3×2=6)이어야 checklist
+        max_chars: 2000
+        split_if_above: 3000
+        patterns:
+          - '^(가|나|다|라|마|바|사|아)\.\s+'
+          - '^\(\d{1,2}\)\s+'
+          - '^\d{1,2}\)\s+[가-힣]'
+          - '^[①②③④⑤⑥⑦⑧⑨⑩]'
+        min_consecutive_items: 3
+        keywords: []
+
+      procedure:
+        description: "절차/프로세스 — 순서 마커가 복수 등장하는 단계적 서술"
+        priority: 4
+        min_score: 4  # 순서 마커 2개(2×2=4) 이상 필요
+        max_chars: 1500
+        split_if_above: 2000
+        patterns:
+          # 순서 명시 마커 (이것만으로 2점)
+          - '(첫째|둘째|셋째|넷째|다섯째)'
+          - '(1단계|2단계|3단계|제1단계|제2단계)'
+          # "먼저...다음으로" 쌍이 동시에 등장해야 procedure
+          # → 개별 매칭이므로 둘 다 있으면 4점
+          - '먼저[,.]?\s'
+          - '(다음으로|그\s*다음에|이어서|그런\s*다음)\s'
+          - '(마지막으로|최종적으로)\s'
+        keywords:
+          - "절차"
+          - "프로세스"
+          - "스텝"
+
+      principle:
+        description: "경영 원칙/가치 선언 — 도메인 키워드 + 당위적 서술"
+        priority: 5
+        min_score: 2  # v2: 3→2 완화 (초판 등 초기 개정판의 원칙 서술 포착)
+        max_chars: 1000
+        split_if_above: 1500
+        patterns:
+          # 당위적/선언적 어미 (일반적이므로 키워드 동반 필요)
+          - '(원칙|기본|근본|핵심|본질)[이을를은는]\s*(이다|된다|있다)'
+          - '(바람직하다|마땅하다|당연하다)\s*[.。]?\s*$'
+          - '(지향해야|추구해야|견지해야|확보해야)\s*(한다|할\s*것이다)'
+          - '경영[의은는이가]\s*(기본|핵심|근간|근본|바탕)'
+        keywords:
+          - "원칙"
+          - "철학"
+          - "이념"
+          - "가치"
+          - "SUPEX"
+          - "기본이념"
+          - "경영이념"
+
+      narrative:
+        description: "서사/설명 — 위 5종에 해당하지 않는 일반 서술 (기본 타입)"
+        priority: 99
+        min_score: 0  # 항상 매칭 (fallback)
+        max_chars: 1000
+        split_if_above: 1500
+        patterns: []
+        keywords: []
+
+  # ---------------------------------------------------------------------------
+  # 임베딩 설정
+  # ---------------------------------------------------------------------------
+  embedding:
+    model: "text-embedding-3-large"
+    dimension: 1536
+    batch_size: 100
+
+  # ---------------------------------------------------------------------------
+  # 품질 검사 설정
+  # ---------------------------------------------------------------------------
+  quality_check:
+    enabled: true
+    flag_threshold: 0.3  # 플래그된 콘텐츠 비율이 이 값을 초과하면 경고 발생

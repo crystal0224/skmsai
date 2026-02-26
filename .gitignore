@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Large binary indexes (regenerable via scripts/03_build_indexes.py)
+indexes/chroma/
+indexes/bm25_index.pkl
+
+# Claude Code local settings
+.claude/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Temporary / build artifacts
+*.html
+!docs/**/*.html
+
+# Eval reports (regenerable)
+eval/reports/

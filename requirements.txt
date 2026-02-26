@@ -1,0 +1,26 @@
+# =============================================================================
+# SKMS Time-Aware RAG Pipeline - Python Dependencies
+# =============================================================================
+
+# Core
+pyyaml>=6.0
+pathlib2>=2.3; python_version < "3.4"
+
+# NLP / Embeddings
+openai>=1.0
+anthropic>=0.30
+
+# Vector Store
+chromadb>=0.4
+
+# Keyword Search
+rank-bm25>=0.2
+
+# Evaluation (optional)
+tqdm>=4.65
+
+# Data Processing
+orjson>=3.9
+
+# Observability (Langfuse 우선, LangSmith 대안)
+langfuse>=2.0

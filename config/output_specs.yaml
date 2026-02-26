@@ -1,0 +1,107 @@
+# =============================================================================
+# output_specs.yaml
+# SKMS Time-Aware NotebookLM - 출력 형식 명세
+# 5가지 출력 유형: summary, card, comparison_table, quiz, slide
+# =============================================================================
+
+output_types:
+  # ---------------------------------------------------------------------------
+  # 1. 요약 (Summary)
+  # 핵심 내용을 간결하게 요약
+  # ---------------------------------------------------------------------------
+  summary:
+    description: "핵심 내용 요약"
+    max_length: 500
+    structure:
+      - field: "title"
+        type: "string"
+        max_length: 80
+      - field: "body"
+        type: "string"
+        max_length: 500
+      - field: "key_points"
+        type: "array"
+        max_items: 5
+      - field: "citations"
+        type: "array"
+        min_items: 1
+
+  # ---------------------------------------------------------------------------
+  # 2. 지식 카드 (Card)
+  # 학습용 플래시카드 형태의 출력
+  # ---------------------------------------------------------------------------
+  card:
+    description: "지식 카드 (학습용)"
+    structure:
+      - field: "front"
+        type: "string"
+        description: "카드 앞면 (질문/주제)"
+      - field: "back"
+        type: "string"
+        description: "카드 뒷면 (답변/설명)"
+      - field: "edition_tag"
+        type: "string"
+      - field: "citations"
+        type: "array"
+
+  # ---------------------------------------------------------------------------
+  # 3. 비교표 (Comparison Table)
+  # 개정판 간 개념 변화를 표 형태로 비교
+  # ---------------------------------------------------------------------------
+  comparison_table:
+    description: "개정판 간 비교표"
+    structure:
+      - field: "concept"
+        type: "string"
+      - field: "columns"
+        type: "array"
+        description: "개정판별 컬럼"
+      - field: "rows"
+        type: "array"
+        description: "비교 항목별 행"
+      - field: "evolution_summary"
+        type: "string"
+
+  # ---------------------------------------------------------------------------
+  # 4. 퀴즈 (Quiz)
+  # 교육용 4지선다 퀴즈
+  # ---------------------------------------------------------------------------
+  quiz:
+    description: "4지선다 퀴즈 (교육용)"
+    structure:
+      - field: "question"
+        type: "string"
+      - field: "choices"
+        type: "array"
+        items: 4
+      - field: "correct_index"
+        type: "integer"
+        min: 0
+        max: 3
+      - field: "explanation"
+        type: "string"
+      - field: "citations"
+        type: "array"
+
+  # ---------------------------------------------------------------------------
+  # 5. 슬라이드 (Slide)
+  # 발표용 슬라이드 구조
+  # ---------------------------------------------------------------------------
+  slide:
+    description: "발표 슬라이드 구조"
+    max_slides: 10
+    structure:
+      - field: "slide_number"
+        type: "integer"
+      - field: "title"
+        type: "string"
+        max_length: 60
+      - field: "body"
+        type: "array"
+        description: "bullet points"
+        max_items: 5
+      - field: "sources"
+        type: "array"
+
+# 기본 출력 유형
+default_type: "summary"
