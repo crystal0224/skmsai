@@ -1,0 +1,654 @@
+# =============================================================================
+# concept_timeline.yaml
+# SKMS 개념별 시계열 추적 — 개념이 어떤 개정판에서 도입/변경/폐지되었는지 매핑
+#
+# PR-018: 시간축 인식 RAG에서 개념의 시대별 맥락을 제공하기 위한 참조 데이터
+#
+# 구조:
+#   - concept_id: 개념 고유 식별자
+#   - name_ko: 한국어 명칭
+#   - name_en: 영어 명칭
+#   - category: 분류 (core_philosophy, management_principle, static_element, etc.)
+#   - first_edition: 최초 등장 개정판
+#   - last_edition: 마지막 등장 개정판 (null=현재까지)
+#   - editions: 개정판별 상태 (introduced, maintained, modified, renamed, removed)
+# =============================================================================
+
+editions_metadata:
+  - edition_id: "1979-초판"
+    year: 1979
+    label: "초판"
+  - edition_id: "1981-1차"
+    year: 1981
+    label: "1차 개정판"
+  - edition_id: "1988-5차"
+    year: 1988
+    label: "5차 개정판"
+  - edition_id: "1989-6차"
+    year: 1989
+    label: "6차 개정판"
+  - edition_id: "1990-7차"
+    year: 1990
+    label: "7차 개정판"
+  - edition_id: "1995-8차"
+    year: 1995
+    label: "8차 개정판"
+  - edition_id: "1997-9차"
+    year: 1997
+    label: "9차 개정판"
+  - edition_id: "1998-10차"
+    year: 1998
+    label: "10차 개정판"
+  - edition_id: "2004-11차"
+    year: 2004
+    label: "11차 개정판"
+  - edition_id: "2008-12차"
+    year: 2008
+    label: "12차 개정판"
+  - edition_id: "2016-13차"
+    year: 2016
+    label: "13차 개정판"
+  - edition_id: "2020-14차"
+    year: 2020
+    label: "14차 개정판"
+
+concepts:
+
+  # =========================================================================
+  # 1. 핵심 철학 (Core Philosophy)
+  # =========================================================================
+
+  - concept_id: "경영기본이념"
+    name_ko: "경영 기본 이념"
+    name_en: "Basic Management Philosophy"
+    category: "core_philosophy"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "SKMS의 근간이 되는 경영 철학의 3대 축"
+    editions:
+      "1979-초판": { status: "introduced", note: "인간중심/합리적/현실인식 3축 정립" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained", note: "경영실행원리로 확장" }
+
+  - concept_id: "기업관"
+    name_ko: "기업관"
+    name_en: "Corporate Philosophy"
+    category: "core_philosophy"
+    first_edition: "1979-초판"
+    last_edition: "2004-11차"
+    description: "기업의 존재 이유와 경영의 근본적 관점"
+    editions:
+      "1979-초판": { status: "introduced", note: "기업 경영 기본 관점 정립" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained", note: "추구가치로 발전적 계승" }
+
+  - concept_id: "인간중심경영"
+    name_ko: "인간중심의 경영"
+    name_en: "Human-Centered Management"
+    category: "core_philosophy"
+    first_edition: "1979-초판"
+    last_edition: null
+    description: "경영의 주체로서 사람을 중시하는 경영 원칙"
+    editions:
+      "1979-초판": { status: "introduced", note: "인간중심의 경영 최초 정립" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained", note: "인간 중심의 경영" }
+      "1989-6차": { status: "renamed", note: "'인간위주의 경영'으로 명칭 변경" }
+      "1990-7차": { status: "renamed", note: "'인간 중심의 경영'으로 복원" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "renamed", note: "'인간위주의 경영'" }
+      "1998-10차": { status: "renamed", note: "'인간을 주체로 하는 경영'" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+      "2020-14차": { status: "maintained", note: "패기/VWBE로 계승 발전" }
+
+  - concept_id: "합리적경영"
+    name_ko: "합리적 경영"
+    name_en: "Rational Management"
+    category: "core_philosophy"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "실증과학적 사고, 사회규범, 멋있는 실행의 3요소"
+    editions:
+      "1979-초판": { status: "introduced", note: "동양+서양 합리성 통합" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained", note: "'합리적인 경영'" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "현실인식경영"
+    name_ko: "현실을 인식한 경영"
+    name_en: "Reality-Conscious Management"
+    category: "core_philosophy"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "한국적 경영 현실에 맞는 적용 강조"
+    editions:
+      "1979-초판": { status: "introduced", note: "서양 기법의 현실 적용성 문제 제기" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  # =========================================================================
+  # 2. 경영 원칙/실행 (Management Principles & Execution)
+  # =========================================================================
+
+  - concept_id: "경영원칙"
+    name_ko: "경영 원칙"
+    name_en: "Management Principles"
+    category: "management_principle"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "3대 경영 이념을 구체화한 실천 원칙"
+    editions:
+      "1981-1차": { status: "introduced" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "경영실행원리"
+    name_ko: "경영 실행 원리"
+    name_en: "Management Execution Principles"
+    category: "management_principle"
+    first_edition: "2004-11차"
+    last_edition: "2008-12차"
+    description: "시스템 경영 원리 + VWBE 기반 SUPEX 추구 실행 체계"
+    editions:
+      "2004-11차": { status: "introduced", note: "시스템 경영 + SUPEX 추구 통합" }
+      "2008-12차": { status: "modified", note: "To-be Model과 연계 강화" }
+
+  - concept_id: "추구가치"
+    name_ko: "추구 가치"
+    name_en: "Pursued Values"
+    category: "management_principle"
+    first_edition: "2004-11차"
+    last_edition: "2008-12차"
+    description: "고객만족, 구성원, 주주가치, 사회공헌 등 추구할 가치 체계"
+    editions:
+      "2004-11차": { status: "introduced", note: "기업관에서 발전적 분리" }
+      "2008-12차": { status: "modified", note: "행복경영 관점 추가" }
+
+  # =========================================================================
+  # 3. SUPEX 관련 (SUPEX Family)
+  # =========================================================================
+
+  - concept_id: "SUPEX"
+    name_ko: "SUPEX (Super Excellent)"
+    name_en: "SUPEX - Super Excellent Level"
+    category: "supex"
+    first_edition: "1995-8차"
+    last_edition: null
+    description: "인간 능력으로 도달 가능한 최고 수준"
+    editions:
+      "1995-8차": { status: "introduced", note: "SUPEX 추구법, 일처리 5단계 확정" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "modified", note: "SUPEX Company 개념으로 확장" }
+      "2008-12차": { status: "maintained" }
+      "2016-13차": { status: "maintained" }
+      "2020-14차": { status: "maintained" }
+
+  - concept_id: "SUPEX_Company"
+    name_ko: "SUPEX Company"
+    name_en: "SUPEX Company"
+    category: "supex"
+    first_edition: "2004-11차"
+    last_edition: null
+    description: "최고 경쟁력 + 장기 생존 조건을 갖춘 이상적 기업상"
+    editions:
+      "2004-11차": { status: "introduced", note: "SUPEX Company 개념 도입" }
+      "2008-12차": { status: "maintained" }
+      "2016-13차": { status: "modified", note: "Better Company 단계적 접근 명시" }
+      "2020-14차": { status: "modified", note: "경제적/사회적 가치 + 구성원 행복 3축" }
+
+  - concept_id: "SUPEX추구환경조성"
+    name_ko: "SUPEX 추구환경 조성"
+    name_en: "Creating SUPEX Pursuit Environment"
+    category: "supex"
+    first_edition: "2004-11차"
+    last_edition: null
+    description: "구성원이 자발적으로 SUPEX를 추구할 수 있는 환경 만들기"
+    editions:
+      "2004-11차": { status: "introduced" }
+      "2008-12차": { status: "maintained" }
+      "2016-13차": { status: "maintained" }
+      "2020-14차": { status: "maintained", note: "VWBE 문화 조성으로 구체화" }
+
+  - concept_id: "SUPEX목표_실행전략"
+    name_ko: "SUPEX 목표/실행전략"
+    name_en: "SUPEX Goals & Execution Strategy"
+    category: "supex"
+    first_edition: "2004-11차"
+    last_edition: null
+    description: "SUPEX 목표 설정과 To-be Model 기반 실행 전략"
+    editions:
+      "2004-11차": { status: "introduced" }
+      "2008-12차": { status: "maintained" }
+      "2016-13차": { status: "modified", note: "Better Company 목표 단계적 달성" }
+      "2020-14차": { status: "modified", note: "CbA 수준, KPI, 평가보상 체계화" }
+
+  - concept_id: "To-be_Model"
+    name_ko: "To-be Model"
+    name_en: "To-be Model"
+    category: "supex"
+    first_edition: "2008-12차"
+    last_edition: null
+    description: "SUPEX Company를 향한 목표 경영 모델"
+    editions:
+      "2008-12차": { status: "introduced", note: "정적 요소와 연계 강화" }
+      "2016-13차": { status: "maintained" }
+      "2020-14차": { status: "modified", note: "VWBE 문화 조성 포함" }
+
+  # =========================================================================
+  # 4. 패기/VWBE (Spirit & VWBE)
+  # =========================================================================
+
+  - concept_id: "패기"
+    name_ko: "패기"
+    name_en: "Boldness/Spirit"
+    category: "dynamic_element"
+    first_edition: "1981-1차"
+    last_edition: null
+    description: "일에 대한 의욕과 적극적 실행 태도"
+    editions:
+      "1981-1차": { status: "introduced", note: "의욕관리의 핵심으로 도입" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+      "2020-14차": { status: "modified", note: "패기와 혁신으로 확대, VWBE와 연계" }
+
+  - concept_id: "VWBE"
+    name_ko: "VWBE (자발적·의욕적 두뇌활용)"
+    name_en: "Voluntary & Willing Brain Engagement"
+    category: "dynamic_element"
+    first_edition: "2004-11차"
+    last_edition: null
+    description: "자발적·의욕적 두뇌활용을 통한 SUPEX 추구"
+    editions:
+      "2004-11차": { status: "introduced", note: "경영실행원리의 핵심 개념으로 도입" }
+      "2008-12차": { status: "maintained" }
+      "2016-13차": { status: "maintained" }
+      "2020-14차": { status: "modified", note: "VWBE 문화를 SK 고유 문화로 정착 강조" }
+
+  - concept_id: "SK-Manship"
+    name_ko: "SK-Manship"
+    name_en: "SK-Manship"
+    category: "dynamic_element"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "경영자로서 갖추어야 할 자격 요건과 자세"
+    editions:
+      "1981-1차": { status: "introduced", note: "기업인의 자세로 도입" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "renamed", note: "선경인의 자세(SK-MANSHIP)" }
+      "1990-7차": { status: "maintained" }
+      "1997-9차": { status: "renamed", note: "SK-Manship으로 명칭 변경" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "modified", note: "SUPEX 리더의 자질과 역할로 확장" }
+      "2008-12차": { status: "maintained" }
+
+  # =========================================================================
+  # 5. 경영 관리 요소 — 동적 (Dynamic Elements)
+  # =========================================================================
+
+  - concept_id: "의욕관리"
+    name_ko: "의욕 관리"
+    name_en: "Motivation Management"
+    category: "dynamic_element"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "구성원의 의욕을 관리하여 성과를 높이는 동적 요소"
+    editions:
+      "1979-초판": { status: "introduced", note: "동기 관리로 도입" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "modified", note: "정의 확정" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "modified", note: "구성원/회사 차원 실천으로 재구성" }
+
+  - concept_id: "관리역량관리"
+    name_ko: "관리 역량 관리"
+    name_en: "Management Capability"
+    category: "dynamic_element"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "일 처리 능력을 키우기 위한 역량 관리"
+    editions:
+      "1979-초판": { status: "introduced" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "modified", note: "일처리 능력 강화 방향으로 보완" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "modified", note: "구성원/회사 차원으로 재구성" }
+
+  - concept_id: "코디네이션관리"
+    name_ko: "코디네이션 관리"
+    name_en: "Coordination Management"
+    category: "dynamic_element"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "조직 내외 조정 관리"
+    editions:
+      "1979-초판": { status: "introduced", note: "조정 관리로 도입" }
+      "1981-1차": { status: "maintained", note: "코오디네이션 관리" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "modified", note: "조정 관리 수정" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "modified", note: "Coordination으로 통합" }
+
+  - concept_id: "커뮤니케이션관리"
+    name_ko: "커뮤니케이션 관리"
+    name_en: "Communication Management"
+    category: "dynamic_element"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "조직 내 의사소통 관리"
+    editions:
+      "1979-초판": { status: "introduced" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "modified", note: "커뮤니케이션 관리 확정" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "modified", note: "Communication으로 통합" }
+
+  # =========================================================================
+  # 6. 경영 관리 요소 — 정적 (Static Elements)
+  # =========================================================================
+
+  - concept_id: "인사관리"
+    name_ko: "인사 관리"
+    name_en: "Human Resource Management"
+    category: "static_element"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "채용, 교육, 승진, 평가, 보상 등 인력 관리"
+    editions:
+      "1979-초판": { status: "introduced" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained" }
+      "1989-6차": { status: "maintained" }
+      "1990-7차": { status: "modified", note: "인사 관리 확정 (1차 보완)" }
+      "1995-8차": { status: "modified", note: "인력 관리로 명칭" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "modified", note: "정적 요소 재정비" }
+
+  - concept_id: "기획관리"
+    name_ko: "기획 관리"
+    name_en: "Planning Management"
+    category: "static_element"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "경영 기획과 계획 수립·실행"
+    editions:
+      "1981-1차": { status: "introduced" }
+      "1988-5차": { status: "maintained" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "modified" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "modified", note: "전략 수립과 연계" }
+
+  - concept_id: "조직관리"
+    name_ko: "조직 관리"
+    name_en: "Organization Management"
+    category: "static_element"
+    first_edition: "1979-초판"
+    last_edition: "2008-12차"
+    description: "조직 구조 설계와 운영"
+    editions:
+      "1979-초판": { status: "introduced" }
+      "1981-1차": { status: "maintained" }
+      "1988-5차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "재무관리"
+    name_ko: "재무 관리"
+    name_en: "Financial Management"
+    category: "static_element"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "회계, 재무, 자금 관리"
+    editions:
+      "1981-1차": { status: "introduced" }
+      "1988-5차": { status: "maintained" }
+      "1995-8차": { status: "modified", note: "회계·재무 관리로 명칭" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "판매관리"
+    name_ko: "판매 관리"
+    name_en: "Sales & Marketing Management"
+    category: "static_element"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "판매 및 마케팅 관리"
+    editions:
+      "1981-1차": { status: "introduced" }
+      "1990-7차": { status: "modified", note: "마케팅 관리 확정" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "생산관리"
+    name_ko: "생산 관리"
+    name_en: "Production Management"
+    category: "static_element"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "생산 활동 계획, 실행, 통제"
+    editions:
+      "1981-1차": { status: "introduced" }
+      "1988-5차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "연구개발관리"
+    name_ko: "연구개발 관리"
+    name_en: "R&D Management"
+    category: "static_element"
+    first_edition: "1989-6차"
+    last_edition: "2008-12차"
+    description: "연구개발 활동 관리"
+    editions:
+      "1989-6차": { status: "introduced", note: "정적 요소에 연구개발 관리 추가" }
+      "1990-7차": { status: "maintained" }
+      "1995-8차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "구매관리"
+    name_ko: "구매 관리"
+    name_en: "Procurement Management"
+    category: "static_element"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "구매 활동 관리"
+    editions:
+      "1981-1차": { status: "introduced" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "사무관리"
+    name_ko: "사무 관리"
+    name_en: "Office Management"
+    category: "static_element"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "사무 업무 효율화"
+    editions:
+      "1981-1차": { status: "introduced" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "PR관리"
+    name_ko: "PR 관리"
+    name_en: "Public Relations Management"
+    category: "static_element"
+    first_edition: "1981-1차"
+    last_edition: "2008-12차"
+    description: "대외 홍보 관리"
+    editions:
+      "1981-1차": { status: "introduced" }
+      "1995-8차": { status: "modified" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "안전관리"
+    name_ko: "안전 관리"
+    name_en: "Safety Management"
+    category: "static_element"
+    first_edition: "1989-6차"
+    last_edition: "2008-12차"
+    description: "산업 안전 관리"
+    editions:
+      "1989-6차": { status: "introduced", note: "정적 요소에 안전 관리 추가" }
+      "1990-7차": { status: "maintained" }
+      "1997-9차": { status: "maintained" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  - concept_id: "정보관리"
+    name_ko: "정보 관리"
+    name_en: "Information Management"
+    category: "static_element"
+    first_edition: "1997-9차"
+    last_edition: "2008-12차"
+    description: "정보 시스템 및 정보 관리"
+    editions:
+      "1997-9차": { status: "introduced", note: "정보관리 내용 정립하여 반영" }
+      "1998-10차": { status: "maintained" }
+      "2004-11차": { status: "maintained" }
+      "2008-12차": { status: "maintained" }
+
+  # =========================================================================
+  # 7. 2008~2020 신규 개념 (Modern Concepts)
+  # =========================================================================
+
+  - concept_id: "사회적가치"
+    name_ko: "사회적 가치"
+    name_en: "Social Value"
+    category: "modern_value"
+    first_edition: "2008-12차"
+    last_edition: null
+    description: "기업의 사회적 책임과 가치 창출"
+    editions:
+      "2008-12차": { status: "introduced", note: "사회 공헌으로 도입" }
+      "2020-14차": { status: "modified", note: "SUPEX Company 3축 중 하나로 격상" }
+
+  - concept_id: "구성원행복"
+    name_ko: "구성원 행복"
+    name_en: "Employee Happiness"
+    category: "modern_value"
+    first_edition: "2008-12차"
+    last_edition: null
+    description: "구성원의 행복 추구를 경영의 핵심 가치로"
+    editions:
+      "2008-12차": { status: "introduced", note: "행복경영 실천방안 추가" }
+      "2020-14차": { status: "modified", note: "SUPEX Company 3축 중 하나, VWBE 문화와 연계" }
+
+  - concept_id: "경제적가치"
+    name_ko: "경제적 가치"
+    name_en: "Economic Value"
+    category: "modern_value"
+    first_edition: "2008-12차"
+    last_edition: null
+    description: "지속적인 경제적 가치 창출"
+    editions:
+      "2008-12차": { status: "introduced" }
+      "2020-14차": { status: "modified", note: "SUPEX Company 3축 중 하나" }
+
+  - concept_id: "패기와혁신"
+    name_ko: "패기와 혁신"
+    name_en: "Boldness & Innovation"
+    category: "modern_value"
+    first_edition: "2020-14차"
+    last_edition: null
+    description: "패기와 혁신을 통한 지속 성장"
+    editions:
+      "2020-14차": { status: "introduced", note: "혁신 문화 조성, 지속적 개선" }
+
+  - concept_id: "이해관계자행복"
+    name_ko: "이해관계자 행복"
+    name_en: "Stakeholder Happiness"
+    category: "modern_value"
+    first_edition: "2020-14차"
+    last_edition: null
+    description: "고객, 구성원, 주주, 사회 등 이해관계자의 행복"
+    editions:
+      "2020-14차": { status: "introduced", note: "장기적 성장 기반 신뢰 경영" }
+
+# =============================================================================
+# 메타데이터
+# =============================================================================
+metadata:
+  version: "1.0.0"
+  total_concepts: 35
+  categories:
+    - core_philosophy
+    - management_principle
+    - supex
+    - dynamic_element
+    - static_element
+    - modern_value
+  description: "SKMS 개념별 시계열 추적 — 12개 개정판(1979-2020) 걸쳐 35개 핵심 개념의 도입/변경/폐지 이력"

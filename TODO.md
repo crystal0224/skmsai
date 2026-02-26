@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 17 | 남은 22
+> 전체 39 PR | 완료 18 | 남은 21
 
 ---
 
@@ -95,7 +95,12 @@
   - from_yaml/from_dict, get_cluster, get_synonyms, expand_terms, expand_query
   - _normalize: 소문자+공백/하이픈/마침표 제거로 변형 자동 매칭
   - 41 tests (단위 + 통합)
-- [ ] **PR-018** Concept-Timeline Map — 개념별 시계열 추적 (30+개)
+- [x] **PR-018** Concept-Timeline Map — 개념별 시계열 추적 (30+개)
+  - config/concept_timeline.yaml: 35 개념, 6 카테고리, 12 개정판(1979-2020)
+  - ConceptTimeline/ConceptInfo/EditionStatus frozen dataclass (불변)
+  - from_yaml, get_concept, get_by_category/edition, search_concepts, get_evolution_summary
+  - 개정판별 상태: introduced/maintained/modified/renamed/removed
+  - 39 tests (단위 + 실제 YAML 통합)
 - [ ] **PR-019** BM25 Index 고도화 — 정의 블록 가중 + 동의어 확장
 - [ ] **PR-020** Hybrid Retrieval — Vector + BM25 RRF 융합
 - [ ] **PR-021** Reranker — Cohere + Cross-Encoder 재순위
