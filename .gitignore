@@ -30,6 +30,10 @@ indexes/bm25_index.pkl
 # Claude Code local settings
 .claude/
 
+# SQLite database (regenerable via scripts/migrate_quotes_to_db.py)
+data/skms.db
+*.db
+
 # Environment / secrets
 .env
 .env.*
