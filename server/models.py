@@ -251,6 +251,79 @@ class HealthResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Dashboard API
+# ---------------------------------------------------------------------------
+
+
+class LatencyStatsResponse(BaseModel):
+    """지연 시간 통계 응답."""
+
+    p50: float
+    p95: float
+    p99: float
+    mean: float
+    min: float
+    max: float
+    count: int
+
+
+class EndpointStatsResponse(BaseModel):
+    """엔드포인트별 통계 응답."""
+
+    endpoint: str
+    method: str
+    total_requests: int
+    success_count: int
+    error_count: int
+    error_rate: float
+    latency: LatencyStatsResponse
+
+
+class DashboardMetricsResponse(BaseModel):
+    """대시보드 메트릭 응답."""
+
+    total_requests: int
+    success_count: int
+    error_count: int
+    error_rate: float
+    latency: LatencyStatsResponse
+    uptime_seconds: float
+    window_seconds: float
+    endpoints: list[EndpointStatsResponse]
+
+
+class EndpointCount(BaseModel):
+    """엔드포인트 요청 수."""
+
+    endpoint: str
+    count: int
+
+
+class StatusCodeCount(BaseModel):
+    """HTTP 상태 코드 분포."""
+
+    status_code: int
+    count: int
+
+
+class HourlyCount(BaseModel):
+    """시간대별 요청 수."""
+
+    hour: int
+    count: int
+
+
+class UsageStatsResponse(BaseModel):
+    """사용 통계 응답."""
+
+    total_requests: int
+    requests_per_minute: float
+    top_endpoints: list[EndpointCount]
+    status_code_distribution: list[StatusCodeCount]
+    hourly_counts: list[HourlyCount]
+
+
+# ---------------------------------------------------------------------------
 # Error
 # ---------------------------------------------------------------------------
 
