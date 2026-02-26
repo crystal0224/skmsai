@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 18 | 남은 21
+> 전체 39 PR | 완료 19 | 남은 20
 
 ---
 
@@ -101,7 +101,12 @@
   - from_yaml, get_concept, get_by_category/edition, search_concepts, get_evolution_summary
   - 개정판별 상태: introduced/maintained/modified/renamed/removed
   - 39 tests (단위 + 실제 YAML 통합)
-- [ ] **PR-019** BM25 Index 고도화 — 정의 블록 가중 + 동의어 확장
+- [x] **PR-019** BM25 Index 고도화 — 정의 블록 가중 + 동의어 확장
+  - BM25Index.search(): synonym_map 파라미터 추가, expand_query로 동의어 확장
+  - SearchService: synonym_map 주입, bm25_search/hybrid_search에서 자동 확장
+  - 기존 type_boost (definition: 2.0) + 동의어 확장 결합
+  - 하위 호환: synonym_map=None이면 기존 동작 유지
+  - 8 new tests (총 477 PASS)
 - [ ] **PR-020** Hybrid Retrieval — Vector + BM25 RRF 융합
 - [ ] **PR-021** Reranker — Cohere + Cross-Encoder 재순위
 - [ ] **PR-022** Query Router — 4-Type 질의 분류 (≥90%)

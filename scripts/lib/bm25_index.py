@@ -93,11 +93,24 @@ class BM25Index:
         top_k: int = 10,
         edition_filter: str | None = None,
         type_filter: list[str] | None = None,
+        synonym_map: Any | None = None,
     ) -> list[SearchHit]:
-        """BM25 키워드 검색을 수행한다."""
+        """BM25 키워드 검색을 수행한다.
+
+        Args:
+            synonym_map: SynonymMap 인스턴스. 주어지면 쿼리를 동의어로 확장한다.
+        """
         if not self._quote_ids:
             return []
-        tokens = query.split()
+
+        # 동의어 확장
+        expanded_query = query
+        if synonym_map is not None:
+            expanded_query = synonym_map.expand_query(query)
+            if expanded_query != query:
+                logger.debug("BM25 동의어 확장: '%s' → '%s'", query, expanded_query)
+
+        tokens = expanded_query.split()
         scores = self._bm25.get_scores(tokens)
 
         scored = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)
