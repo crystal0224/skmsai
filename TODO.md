@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 28 | 남은 11
+> 전체 39 PR | 완료 29 | 남은 10
 
 ---
 
@@ -180,7 +180,18 @@
   - get_tree_stats(): 전체 노드/최대 깊이/레벨별 카운트/리프 수
   - compare_editions(): H1/H2 기준 공통/차이 분석 + 통계 비교표
   - 26 new tests (총 744 PASS)
-- [ ] **PR-029** LLM-as-Judge — 4축 자동 평가기
+- [x] **PR-029** LLM-as-Judge — 4축 자동 평가기
+  - LLMClient Protocol: DI용 LLM API 추상화 (테스트 시 mock 교체)
+  - JudgeConfig frozen dataclass: 모델, 토큰, 임계값, 시스템 프롬프트 설정
+  - JudgeScore frozen dataclass: 4축 점수 + reasoning + to_dict/mean_score
+  - AxisResult frozen dataclass: 축별 통과 결과 (점수/임계값/passed)
+  - JudgeResult frozen dataclass: 전체 평가 결과 + to_eval_dict (QualityGate 호환)
+  - LLMJudge 서비스: evaluate() 단건 + evaluate_batch() 배치 평가
+  - format_judge_context(): SearchHit/dict 호환 컨텍스트 포맷팅
+  - parse_judge_response(): JSON/코드블록 파싱 + 점수 클램핑
+  - check_thresholds(): DEFAULT_THRESHOLDS 기반 축별 통과 판정
+  - JUDGE_SYSTEM_PROMPT: 05_eval_run.py 프롬프트 정형화
+  - 53 new tests (총 797 PASS)
 - [ ] **PR-030** Golden QA 50 + V1 Quality Report
 
 ---
