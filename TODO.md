@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 8 | 남은 31
+> 전체 39 PR | 완료 9 | 남은 30
 
 ---
 
