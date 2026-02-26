@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 16 | 남은 23
+> 전체 39 PR | 완료 17 | 남은 22
 
 ---
 
@@ -89,7 +89,12 @@
 
 ## Phase 2: V1 Production (PR-17 ~ PR-30)
 
-- [ ] **PR-017** Synonym Map — 동의어 매핑 (≥80쌍)
+- [x] **PR-017** Synonym Map — 동의어 매핑 (≥80쌍)
+  - config/synonyms.yaml: 56 클러스터, 185 용어, 230 양방향 쌍
+  - SynonymMap/SynonymCluster frozen dataclass (불변)
+  - from_yaml/from_dict, get_cluster, get_synonyms, expand_terms, expand_query
+  - _normalize: 소문자+공백/하이픈/마침표 제거로 변형 자동 매칭
+  - 41 tests (단위 + 통합)
 - [ ] **PR-018** Concept-Timeline Map — 개념별 시계열 추적 (30+개)
 - [ ] **PR-019** BM25 Index 고도화 — 정의 블록 가중 + 동의어 확장
 - [ ] **PR-020** Hybrid Retrieval — Vector + BM25 RRF 융합

@@ -1,0 +1,407 @@
+# =============================================================================
+# synonyms.yaml
+# SKMS 동의어 매핑 — 검색 확장용
+#
+# PR-017: BM25/Hybrid 검색 시 동의어 확장에 사용
+#
+# 구조: 각 그룹(cluster)은 의미적으로 동일한 용어들의 집합.
+# 검색어에 포함된 용어가 그룹에 속하면, 해당 그룹의 모든 용어로 확장.
+# bidirectional: 그룹 내 모든 용어 쌍이 양방향 동의어.
+#
+# 주의: 공백/하이픈/마침표만 다른 변형은 정규화로 처리되므로 별도 등록 불필요.
+# 예: "인사관리" ↔ "인사 관리", "OJT" ↔ "O.J.T" → 자동 매칭
+# =============================================================================
+
+synonym_clusters:
+
+  # -------------------------------------------------------------------------
+  # 1. SKMS 핵심 개념 (Core Philosophy)
+  # -------------------------------------------------------------------------
+
+  - name: "SUPEX"
+    terms:
+      - "SUPEX"
+      - "Super Excellent"
+      - "수펙스"
+      - "최고수준"
+
+  - name: "VWBE"
+    terms:
+      - "VWBE"
+      - "자발적의욕적두뇌활용"
+      - "Voluntary and Willing Brain Engagement"
+
+  - name: "SK-Manship"
+    terms:
+      - "SK-Manship"
+      - "기업인의자세"
+      - "경영자의자세"
+
+  - name: "인간중심경영"
+    terms:
+      - "인간중심의경영"
+      - "인간중심"
+      - "Human-centered management"
+
+  - name: "합리적경영"
+    terms:
+      - "합리적경영"
+      - "Rational management"
+
+  - name: "현실인식경영"
+    terms:
+      - "현실을인식한경영"
+      - "현실인식경영"
+      - "Reality-conscious management"
+
+  - name: "패기"
+    terms:
+      - "패기"
+      - "의욕"
+      - "일에대한의욕"
+
+  # -------------------------------------------------------------------------
+  # 2. 경영 요소 — 정적 (Static Management Elements)
+  # -------------------------------------------------------------------------
+
+  - name: "인사관리"
+    terms:
+      - "인사관리"
+      - "Human Resource Management"
+      - "HRM"
+
+  - name: "기획관리"
+    terms:
+      - "기획관리"
+      - "경영기획"
+
+  - name: "조직관리"
+    terms:
+      - "조직관리"
+      - "Organization Management"
+
+  - name: "재무관리"
+    terms:
+      - "재무관리"
+      - "Financial Management"
+
+  - name: "판매관리"
+    terms:
+      - "판매관리"
+      - "마케팅관리"
+      - "Sales Management"
+
+  - name: "생산관리"
+    terms:
+      - "생산관리"
+      - "Production Management"
+
+  - name: "연구개발관리"
+    terms:
+      - "연구개발관리"
+      - "R&D관리"
+
+  - name: "구매관리"
+    terms:
+      - "구매관리"
+      - "Procurement Management"
+
+  - name: "사무관리"
+    terms:
+      - "사무관리"
+      - "Office Management"
+
+  - name: "PR관리"
+    terms:
+      - "PR관리"
+      - "홍보관리"
+      - "Public Relations"
+
+  # -------------------------------------------------------------------------
+  # 3. 경영 요소 — 동적 (Dynamic Management Elements)
+  # -------------------------------------------------------------------------
+
+  - name: "의욕관리"
+    terms:
+      - "의욕관리"
+      - "동기부여"
+      - "Motivation Management"
+
+  - name: "관리역량"
+    terms:
+      - "관리역량관리"
+      - "관리역량"
+      - "Management Capability"
+
+  - name: "코디네이션"
+    terms:
+      - "코디네이션"
+      - "코디네이션관리"
+      - "Coordination"
+      - "조정관리"
+
+  - name: "커뮤니케이션"
+    terms:
+      - "커뮤니케이션"
+      - "커뮤니케이션관리"
+      - "Communication"
+      - "의사소통"
+      - "의사소통관리"
+
+  # -------------------------------------------------------------------------
+  # 4. 조직/인사 용어 (Organization & HR)
+  # -------------------------------------------------------------------------
+
+  - name: "통제범위"
+    terms:
+      - "Span of Control"
+      - "통제범위"
+      - "통제의범위"
+      - "관리범위"
+
+  - name: "OJT"
+    terms:
+      - "OJT"
+      - "직장내교육"
+      - "On-the-Job Training"
+
+  - name: "역량"
+    terms:
+      - "역량"
+      - "능력"
+      - "Competency"
+      - "Capability"
+
+  - name: "직무"
+    terms:
+      - "직무"
+      - "업무"
+      - "Job"
+      - "직책"
+
+  - name: "성과"
+    terms:
+      - "성과"
+      - "성과관리"
+      - "Performance"
+      - "실적"
+
+  - name: "평가"
+    terms:
+      - "평가"
+      - "인사평가"
+      - "Evaluation"
+      - "Assessment"
+
+  - name: "보상"
+    terms:
+      - "보상"
+      - "보상관리"
+      - "Compensation"
+      - "인센티브"
+
+  - name: "승진"
+    terms:
+      - "승진"
+      - "승격"
+      - "Promotion"
+
+  - name: "교육훈련"
+    terms:
+      - "교육훈련"
+      - "Training"
+      - "교육"
+      - "연수"
+
+  # -------------------------------------------------------------------------
+  # 5. 경영 철학/원칙 (Philosophy & Principles)
+  # -------------------------------------------------------------------------
+
+  - name: "경영이념"
+    terms:
+      - "경영이념"
+      - "Management Philosophy"
+      - "기업이념"
+
+  - name: "사회적가치"
+    terms:
+      - "사회적가치"
+      - "Social Value"
+      - "SV"
+
+  - name: "이해관계자"
+    terms:
+      - "이해관계자"
+      - "Stakeholder"
+      - "스테이크홀더"
+
+  - name: "기업문화"
+    terms:
+      - "기업문화"
+      - "Corporate Culture"
+      - "조직문화"
+
+  - name: "경영체계"
+    terms:
+      - "경영체계"
+      - "Management System"
+      - "SKMS"
+
+  - name: "이익"
+    terms:
+      - "이익"
+      - "수익"
+      - "Profit"
+      - "이윤"
+
+  - name: "행복"
+    terms:
+      - "행복"
+      - "구성원행복"
+      - "Happiness"
+      - "행복추구"
+
+  - name: "구성원"
+    terms:
+      - "구성원"
+      - "임직원"
+      - "사원"
+      - "직원"
+      - "Employee"
+
+  # -------------------------------------------------------------------------
+  # 6. 전략/실행 (Strategy & Execution)
+  # -------------------------------------------------------------------------
+
+  - name: "전략"
+    terms:
+      - "전략"
+      - "경영전략"
+      - "Strategy"
+      - "전략경영"
+
+  - name: "목표관리"
+    terms:
+      - "목표관리"
+      - "MBO"
+      - "Management by Objectives"
+
+  - name: "실행력"
+    terms:
+      - "실행력"
+      - "실행"
+      - "Execution"
+      - "추진력"
+
+  - name: "의사결정"
+    terms:
+      - "의사결정"
+      - "Decision Making"
+      - "결정"
+
+  - name: "리더십"
+    terms:
+      - "리더십"
+      - "Leadership"
+      - "지도력"
+
+  - name: "위임"
+    terms:
+      - "위임"
+      - "권한위임"
+      - "Delegation"
+
+  - name: "보고"
+    terms:
+      - "보고"
+      - "보고체계"
+      - "Reporting"
+      - "보고관리"
+
+  # -------------------------------------------------------------------------
+  # 7. 품질/개선 (Quality & Improvement)
+  # -------------------------------------------------------------------------
+
+  - name: "품질"
+    terms:
+      - "품질"
+      - "품질관리"
+      - "Quality"
+      - "QC"
+      - "Quality Control"
+
+  - name: "개선"
+    terms:
+      - "개선"
+      - "개선활동"
+      - "Improvement"
+      - "혁신"
+
+  - name: "표준"
+    terms:
+      - "표준"
+      - "표준화"
+      - "Standard"
+      - "Standardization"
+
+  # -------------------------------------------------------------------------
+  # 8. 기타 SKMS 고유 용어 (Misc SKMS-specific)
+  # -------------------------------------------------------------------------
+
+  - name: "SUPEX추구협의회"
+    terms:
+      - "SUPEX추구협의회"
+      - "수펙스추구협의회"
+      - "SUPEX Council"
+
+  - name: "관계회사"
+    terms:
+      - "관계회사"
+      - "계열사"
+      - "자회사"
+      - "Subsidiary"
+
+  - name: "경영관리"
+    terms:
+      - "경영관리"
+      - "Business Management"
+      - "경영활동"
+
+  - name: "자원배분"
+    terms:
+      - "자원배분"
+      - "Resource Allocation"
+      - "자원배분관리"
+
+  - name: "정보관리"
+    terms:
+      - "정보관리"
+      - "Information Management"
+      - "정보시스템"
+
+  - name: "회의체"
+    terms:
+      - "회의체"
+      - "회의"
+      - "회의체계"
+      - "Meeting"
+
+  - name: "제도"
+    terms:
+      - "제도"
+      - "제도화"
+      - "System"
+      - "제도관리"
+
+  - name: "경영원칙"
+    terms:
+      - "경영원칙"
+      - "Management Principle"
+      - "원칙"
+
+# =============================================================================
+# 메타데이터
+# =============================================================================
+metadata:
+  version: "1.0.0"
+  description: "SKMS 동의어 매핑 — BM25/Hybrid 검색 확장용"
