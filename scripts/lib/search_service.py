@@ -122,8 +122,8 @@ class SearchService:
 
         embedding = self._embedding_fn(query)
 
-        # Build Chroma where filter
-        where = _build_where(edition_filter, type_filter)
+        # Build provider-specific where filter
+        where = self._vector_store.build_where(edition_filter, type_filter)
 
         raw_hits = self._vector_store.query(
             embedding=embedding,

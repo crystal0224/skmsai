@@ -16,9 +16,9 @@ from scripts.lib.bm25_index import BM25Index
 from scripts.lib.cross_version_comparison import CrossVersionComparisonService
 from scripts.lib.evidence_filter import EvidenceFilter, EvidenceFilterConfig
 from scripts.lib.generation import GenerationConfig, GenerationService
+from scripts.lib.pinecone_store import create_vector_store
 from scripts.lib.search_service import SearchService
 from scripts.lib.toc_service import TOCService
-from scripts.lib.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +50,9 @@ class AppState:
         retrieval_config = _load_yaml(config_dir / "retrieval.yaml")
         retrieval = retrieval_config.get("retrieval", {})
 
-        # VectorStore
-        vector_store = VectorStore.from_path(
-            index_dir,
-            collection_name=retrieval.get("vector", {}).get(
-                "collection_name", "skms_quotes"
-            ),
-        )
+        # VectorStore (Chroma or Pinecone — provider 기반 팩토리)
+        vector_config = retrieval.get("vector", {})
+        vector_store = create_vector_store(vector_config, index_dir)
 
         # BM25Index
         bm25_path = Path(

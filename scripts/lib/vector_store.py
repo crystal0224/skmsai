@@ -109,6 +109,36 @@ class VectorStore:
         )
         return len(ids)
 
+    @staticmethod
+    def build_where(
+        edition_filter: str | None,
+        type_filter: list[str] | None,
+    ) -> dict | None:
+        """Chroma where 조건을 조합한다.
+
+        Args:
+            edition_filter: 개정판 필터 (None이면 미적용)
+            type_filter: quote 타입 필터 (None이면 미적용)
+
+        Returns:
+            Chroma where dict 또는 None
+        """
+        conditions: list[dict] = []
+
+        if edition_filter:
+            conditions.append({"edition_id": {"$eq": edition_filter}})
+        if type_filter:
+            if len(type_filter) == 1:
+                conditions.append({"type": {"$eq": type_filter[0]}})
+            else:
+                conditions.append({"type": {"$in": type_filter}})
+
+        if not conditions:
+            return None
+        if len(conditions) == 1:
+            return conditions[0]
+        return {"$and": conditions}
+
     def query(
         self,
         embedding: list[float],
