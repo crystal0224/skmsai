@@ -9,11 +9,12 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Callable
 
 from scripts.lib.bm25_index import BM25Index
 from scripts.lib.search_types import SearchHit
-from scripts.lib.vector_store import VectorStore
+from scripts.lib.vector_store import RawVectorHit, VectorStore
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class SearchService:
         top_k: int = 10,
         edition_filter: str | None = None,
         type_filter: list[str] | None = None,
-        score_threshold: float = 0.0,
+        score_threshold: float = 0.5,
     ) -> list[SearchHit]:
         """벡터 유사도 검색."""
         if self._embedding_fn is None or not self._vector_store.is_available:
@@ -158,10 +159,8 @@ def _build_where(
     return {"$and": conditions}
 
 
-def _raw_hit_to_search_hit(hit: "RawVectorHit", score: float) -> SearchHit:
+def _raw_hit_to_search_hit(hit: RawVectorHit, score: float) -> SearchHit:
     """RawVectorHit → SearchHit."""
-    import re
-
     meta = hit.metadata
     edition_id = meta.get("edition_id", "")
 

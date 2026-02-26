@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import logging
 import pickle
+import re
 from pathlib import Path
 from typing import Any
 
@@ -37,7 +38,10 @@ class BM25Index:
 
     @classmethod
     def from_path(cls, path: Path) -> BM25Index | None:
-        """기존 pkl 파일에서 로드한다."""
+        """기존 pkl 파일에서 로드한다.
+
+        주의: pickle.load는 신뢰할 수 있는 로컬 파일에만 사용해야 한다.
+        """
         if not path.exists():
             logger.warning("BM25 인덱스 없음: %s", path)
             return None
@@ -68,8 +72,9 @@ class BM25Index:
         for q in quotes:
             tokens = q.text.split()
             boost = type_boost.get(q.quote_type, 1.0)
-            if boost > 1.0:
-                tokens = tokens * int(boost)
+            repetitions = round(boost)
+            if repetitions > 1:
+                tokens = tokens * repetitions
             tokenized_corpus.append(tokens)
             quote_ids.append(q.quote_id)
             quote_map[q.quote_id] = q
@@ -90,6 +95,8 @@ class BM25Index:
         type_filter: list[str] | None = None,
     ) -> list[SearchHit]:
         """BM25 키워드 검색을 수행한다."""
+        if not self._quote_ids:
+            return []
         tokens = query.split()
         scores = self._bm25.get_scores(tokens)
 
@@ -180,8 +187,6 @@ class BM25Index:
                     flags_raw = json.loads(flags_raw)
                 except json.JSONDecodeError:
                     flags_raw = []
-
-            import re
 
             year_match = re.match(r"(\d{4})", edition_id)
             year = int(year_match.group(1)) if year_match else 0

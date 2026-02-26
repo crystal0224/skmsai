@@ -8,6 +8,7 @@ import json
 import logging
 from dataclasses import dataclass
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any, Callable
 
 from scripts.lib.quote import QuoteObject
@@ -22,7 +23,11 @@ class RawVectorHit:
     id: str
     document: str
     distance: float
-    metadata: dict
+    metadata: Any  # MappingProxyType (immutable dict)
+
+    def __post_init__(self) -> None:
+        if isinstance(self.metadata, dict):
+            object.__setattr__(self, "metadata", MappingProxyType(self.metadata))
 
 
 class VectorStore:

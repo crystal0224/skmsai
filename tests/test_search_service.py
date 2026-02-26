@@ -217,11 +217,11 @@ def test_bm25_from_path_not_found(tmp_path):
 def test_bm25_search_hit_fields(bm25_index):
     """BM25 SearchHit의 필드가 올바르게 설정된다."""
     hits = bm25_index.search("정의", top_k=1)
-    if hits:
-        hit = hits[0]
-        assert isinstance(hit.section_path, tuple)
-        assert isinstance(hit.quality_flags, tuple)
-        assert hit.content_hash != ""
+    assert hits, "정의 검색 결과가 없습니다"
+    hit = hits[0]
+    assert isinstance(hit.section_path, tuple)
+    assert isinstance(hit.quality_flags, tuple)
+    assert hit.content_hash != ""
 
 
 # ---------------------------------------------------------------------------
@@ -231,7 +231,7 @@ def test_bm25_search_hit_fields(bm25_index):
 
 def test_vector_search_returns_hits(service):
     """벡터 검색 결과는 SearchHit 리스트."""
-    hits = service.vector_search("인간중심 경영", top_k=3)
+    hits = service.vector_search("인간중심 경영", top_k=3, score_threshold=0.0)
     assert len(hits) > 0
     assert all(isinstance(h, SearchHit) for h in hits)
     assert all(h.source == "vector" for h in hits)
@@ -239,13 +239,19 @@ def test_vector_search_returns_hits(service):
 
 def test_vector_search_edition_filter(service):
     """벡터 검색 edition 필터."""
-    hits = service.vector_search("텍스트", top_k=10, edition_filter="1979-초판")
+    hits = service.vector_search(
+        "텍스트", top_k=10, edition_filter="1979-초판", score_threshold=0.0
+    )
+    assert len(hits) > 0
     assert all(h.edition_id == "1979-초판" for h in hits)
 
 
 def test_vector_search_type_filter(service):
     """벡터 검색 type 필터."""
-    hits = service.vector_search("정의", top_k=10, type_filter=["definition"])
+    hits = service.vector_search(
+        "정의", top_k=10, type_filter=["definition"], score_threshold=0.0
+    )
+    assert len(hits) > 0
     assert all(h.quote_type == "definition" for h in hits)
 
 
