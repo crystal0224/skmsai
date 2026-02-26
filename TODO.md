@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 23 | 남은 16
+> 전체 39 PR | 완료 24 | 남은 15
 
 ---
 
@@ -140,7 +140,14 @@
   - GuardrailConfig: enabled, max_warnings, fail_mode
   - 경고 중복 제거 (rule_id + concept 기준)
   - 31 new tests (총 602 PASS)
-- [ ] **PR-024** Evidence Coverage + Hallucination Filter
+- [x] **PR-024** Evidence Coverage + Hallucination Filter
+  - EvidenceFilter: quote_id 인용 검증 + 커버리지 점수 + 환각 지표 감지
+  - EvidenceCheckResult/EvidenceFilterConfig frozen dataclass (불변)
+  - _compute_coverage(): 4자 이상 구문 기반 근거 매칭률 추정
+  - _check_edition_references(): 개정판 참조 검증 (hit_editions 대조)
+  - _detect_hallucination_indicators(): 일반론/조항번호/날짜/백분율 패턴 감지
+  - EvidenceFilterConfig: min_coverage, max_invalid_quotes, check_editions, check_hallucination
+  - 32 new tests (총 634 PASS)
 - [ ] **PR-025** Cross-version Comparison — 개정판 간 비교 프롬프트
 - [ ] **PR-026** Output Renderer 3-type — summary/card/comparison_table
 - [ ] **PR-027** API v2 — Hybrid Search + Generate v2
