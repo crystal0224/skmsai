@@ -154,6 +154,28 @@ class QuoteRepository:
         ).fetchall()
         return [self._from_row(r) for r in rows]
 
+    def find_all(self, *, limit: int = 10000) -> list[QuoteObject]:
+        """전체 조회 (start_line 순)."""
+        rows = self._conn.execute(
+            "SELECT * FROM quotes ORDER BY year, start_line LIMIT ?",
+            (limit,),
+        ).fetchall()
+        return [self._from_row(r) for r in rows]
+
+    def find_excluding_flags(
+        self, exclude_flags: list[str], *, limit: int = 10000
+    ) -> list[QuoteObject]:
+        """quality_flags에 exclude_flags 항목이 없는 인용만 조회.
+
+        SQLite JSON 함수 호환성을 위해 Python 필터를 사용한다.
+        712건 규모에서는 성능 문제 없음.
+        """
+        all_quotes = self.find_all(limit=limit)
+        if not exclude_flags:
+            return all_quotes
+        exclude_set = set(exclude_flags)
+        return [q for q in all_quotes if not exclude_set.intersection(q.quality_flags)]
+
     # ------------------------------------------------------------------
     # Count / Aggregate
     # ------------------------------------------------------------------
