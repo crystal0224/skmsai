@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 24 | 남은 15
+> 전체 39 PR | 완료 25 | 남은 14
 
 ---
 
@@ -148,7 +148,14 @@
   - _detect_hallucination_indicators(): 일반론/조항번호/날짜/백분율 패턴 감지
   - EvidenceFilterConfig: min_coverage, max_invalid_quotes, check_editions, check_hallucination
   - 32 new tests (총 634 PASS)
-- [ ] **PR-025** Cross-version Comparison — 개정판 간 비교 프롬프트
+- [x] **PR-025** Cross-version Comparison — 개정판 간 비교 프롬프트
+  - CrossVersionComparisonService: 개정판별 그룹화 + 비교 컨텍스트 생성
+  - EditionGroup/ComparisonContext/ComparisonConfig frozen dataclass (불변)
+  - _group_by_edition(): definition/narrative 분리, 텍스트 잘림
+  - _lookup_evolution(): ConceptTimeline 진화 요약 통합
+  - format_comparison_prompt(): LLM 프롬프트용 구조화된 비교 포맷
+  - EDITION_ORDER: 15개 개정판 시간순 정렬 매핑
+  - 38 new tests (총 672 PASS)
 - [ ] **PR-026** Output Renderer 3-type — summary/card/comparison_table
 - [ ] **PR-027** API v2 — Hybrid Search + Generate v2
 - [ ] **PR-028** TOC Visualization — 인터랙티브 목차 트리 뷰어
