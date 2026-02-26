@@ -1,0 +1,50 @@
+{"id": "g-051", "query": "1차 개정판에서 재무관리의 기본 원칙은 무엇인가?", "query_type": "single_version", "expected_edition": "1차", "expected_keywords": ["재무관리", "자금", "원칙", "운용"], "difficulty": "medium"}
+{"id": "g-052", "query": "12차 개정판에서 기획관리의 체계는 어떻게 구성되는가?", "query_type": "single_version", "expected_edition": "12차", "expected_keywords": ["기획관리", "전략", "계획", "체계"], "difficulty": "medium"}
+{"id": "g-053", "query": "초판에서 판매관리의 목적은 무엇이었는가?", "query_type": "single_version", "expected_edition": "초판", "expected_keywords": ["판매관리", "고객", "시장", "목적"], "difficulty": "medium"}
+{"id": "g-054", "query": "10차 개정판에서 교육훈련 체계의 구성 요소는?", "query_type": "single_version", "expected_edition": "10차", "expected_keywords": ["교육", "훈련", "O.J.T", "역량"], "difficulty": "medium"}
+{"id": "g-055", "query": "14차 개정판에서 이해관계자 행복의 범위는?", "query_type": "single_version", "expected_edition": "14차", "expected_keywords": ["이해관계자", "행복", "구성원", "주주", "고객"], "difficulty": "easy"}
+{"id": "g-056", "query": "11차 개정판에서 의욕관리의 핵심 방법론은?", "query_type": "single_version", "expected_edition": "11차", "expected_keywords": ["의욕관리", "동기부여", "인센티브", "참여"], "difficulty": "medium"}
+{"id": "g-057", "query": "13차 개정판에서 경영의 3대 원칙은 무엇인가?", "query_type": "single_version", "expected_edition": "13차", "expected_keywords": ["인간중심", "합리적", "현실", "경영"], "difficulty": "easy"}
+{"id": "g-058", "query": "1차 개정판에서 생산관리의 범위는 어디까지인가?", "query_type": "single_version", "expected_edition": "1차", "expected_keywords": ["생산관리", "품질", "생산성", "원가"], "difficulty": "hard"}
+{"id": "g-059", "query": "12차 개정판에서 SK-Manship의 구체적 내용은?", "query_type": "single_version", "expected_edition": "12차", "expected_keywords": ["SK-Manship", "정신", "자세", "SK인"], "difficulty": "medium"}
+{"id": "g-060", "query": "14차 개정판에서 SUPEX 추구 리더의 역할은?", "query_type": "single_version", "expected_edition": "14차", "expected_keywords": ["SUPEX", "리더", "추구", "역할"], "difficulty": "hard"}
+{"id": "g-061", "query": "초판에서 PR관리의 정의는 무엇이었는가?", "query_type": "single_version", "expected_edition": "초판", "expected_keywords": ["PR관리", "홍보", "대외", "이미지"], "difficulty": "hard"}
+{"id": "g-062", "query": "10차 개정판에서 조직관리의 핵심 원칙은?", "query_type": "single_version", "expected_edition": "10차", "expected_keywords": ["조직관리", "조직", "구조", "효율"], "difficulty": "medium"}
+{"id": "g-063", "query": "생산관리 개념이 초판에서 14차까지 어떻게 발전했는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["생산관리", "품질", "변화", "발전"], "difficulty": "hard"}
+{"id": "g-064", "query": "교육훈련 방법론이 각 개정판에서 어떻게 변화했는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["교육", "훈련", "변화", "O.J.T", "역량"], "difficulty": "hard"}
+{"id": "g-065", "query": "PR관리의 범위가 초판과 13차에서 어떻게 달라졌는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["PR관리", "초판", "13차", "변화", "범위"], "difficulty": "medium"}
+{"id": "g-066", "query": "조직관리 체계가 1차와 14차에서 어떻게 다른가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["조직관리", "1차", "14차", "비교", "체계"], "difficulty": "hard"}
+{"id": "g-067", "query": "구매관리 원칙이 10차에서 14차까지 어떻게 변화했는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["구매관리", "10차", "14차", "변화", "원칙"], "difficulty": "medium"}
+{"id": "g-068", "query": "경영 목적에 대한 정의가 초판과 현행에서 어떤 차이가 있는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["경영 목적", "초판", "14차", "이윤", "행복"], "difficulty": "hard"}
+{"id": "g-069", "query": "사무관리의 위상이 개정판별로 어떻게 변화했는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["사무관리", "변화", "개정판", "업무"], "difficulty": "medium"}
+{"id": "g-070", "query": "커뮤니케이션관리 강조점이 11차와 14차에서 어떻게 다른가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["커뮤니케이션", "11차", "14차", "소통", "비교"], "difficulty": "medium"}
+{"id": "g-071", "query": "연구개발관리의 중요성이 개정판에 따라 어떻게 높아졌는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["연구개발", "R&D", "변화", "혁신"], "difficulty": "medium"}
+{"id": "g-072", "query": "기업관의 변천 과정을 초판부터 14차까지 추적하면?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["기업관", "초판", "14차", "변천", "사회적"], "difficulty": "hard"}
+{"id": "g-073", "query": "관리역량관리와 의욕관리의 관계는 어떤 것인가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["관리역량", "의욕관리", "관계", "동적 요소"], "difficulty": "medium"}
+{"id": "g-074", "query": "이윤추구에서 행복추구로의 패러다임 전환은 어느 개정판에서 시작되었는가?", "query_type": "cross_version", "expected_edition": null, "expected_keywords": ["이윤", "행복", "전환", "13차", "패러다임"], "difficulty": "hard", "regression_checks": [{"type": "latest_edition_first", "description": "행복추구 관련 최신 근거 먼저", "expected_first_year": 2016}]}
+{"id": "g-075", "query": "SUPEX 추구란 구체적으로 무엇을 의미하는가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["SUPEX", "추구", "Super Excellent", "수준", "방법론"], "difficulty": "easy"}
+{"id": "g-076", "query": "정적 관리요소란 무엇인가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["정적 요소", "기획", "인사", "조직", "재무"], "difficulty": "easy"}
+{"id": "g-077", "query": "동적 관리요소란 무엇인가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["동적 요소", "의욕관리", "관리역량", "코디네이션", "커뮤니케이션"], "difficulty": "easy"}
+{"id": "g-078", "query": "경영의 3대 원칙(인간중심, 합리적, 현실인식)은 각각 무엇인가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["인간중심", "합리적 경영", "현실", "3대 원칙"], "difficulty": "medium"}
+{"id": "g-079", "query": "이해관계자란 SKMS에서 누구를 지칭하는가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["이해관계자", "구성원", "주주", "고객", "사회"], "difficulty": "easy"}
+{"id": "g-080", "query": "경영관리란 SKMS에서 어떻게 정의되는가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["경영관리", "경영", "관리", "체계"], "difficulty": "medium"}
+{"id": "g-081", "query": "패기란 SKMS에서 어떤 의미인가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["패기", "도전", "실행력", "의지"], "difficulty": "medium", "regression_checks": [{"type": "no_mixed_definitions", "description": "패기 정의가 단일 개정판에서만 인용됨"}]}
+{"id": "g-082", "query": "자발적·의욕적 두뇌활용(VWBE)의 구성 요소는?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["VWBE", "자발적", "의욕적", "두뇌활용", "Voluntary"], "difficulty": "medium"}
+{"id": "g-083", "query": "기업 이익이란 SKMS에서 무엇으로 설명되는가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["기업 이익", "이윤", "가치 창출", "사회적"], "difficulty": "medium"}
+{"id": "g-084", "query": "관리자의 역할은 SKMS에서 어떻게 규정되는가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["관리자", "역할", "리더십", "SUPEX"], "difficulty": "medium"}
+{"id": "g-085", "query": "경영 철학과 경영 기법의 차이는 SKMS에서 어떻게 설명되는가?", "query_type": "definition", "expected_edition": null, "expected_keywords": ["경영 철학", "경영 기법", "차이", "원칙"], "difficulty": "hard"}
+{"id": "g-086", "query": "현행 SKMS에서 인사관리의 정의는?", "query_type": "definition", "expected_edition": "14차", "expected_keywords": ["인사관리", "인적 자원", "채용", "육성"], "difficulty": "medium", "regression_checks": [{"type": "latest_edition_first", "description": "현행 인사관리 정의는 14차에서", "expected_first_year": 2020}]}
+{"id": "g-087", "query": "SKMS에서 제시하는 의사결정의 원칙은 무엇인가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["의사결정", "원칙", "합리적", "근거"], "difficulty": "medium"}
+{"id": "g-088", "query": "SKMS의 경영 철학이 한국 기업 문화에 미친 영향은 무엇인가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["기업 문화", "한국", "영향", "경영 철학"], "difficulty": "hard"}
+{"id": "g-089", "query": "SKMS의 인간중심 경영과 서구의 인적자원관리(HRM)는 어떻게 다른가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["인간중심", "HRM", "비교", "차이"], "difficulty": "hard"}
+{"id": "g-090", "query": "SKMS에서 강조하는 조직의 이상적 모습은 어떤 것인가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["조직", "이상적", "구조", "효율", "협력"], "difficulty": "medium"}
+{"id": "g-091", "query": "SKMS의 합리적 경영 원칙을 현대 데이터 기반 경영에 적용하면?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["합리적 경영", "데이터", "경험과학", "적용"], "difficulty": "hard"}
+{"id": "g-092", "query": "SKMS에서 구성원의 성장과 기업 성장의 관계는 어떻게 설명되는가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["구성원", "성장", "기업", "관계", "상호"], "difficulty": "medium"}
+{"id": "g-093", "query": "SKMS에서 기업의 지속가능경영에 대한 시사점은 무엇인가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["지속가능", "경영", "사회적 가치", "시사점"], "difficulty": "hard"}
+{"id": "g-094", "query": "SKMS의 코디네이션관리가 현대 애자일 조직에 주는 시사점은?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["코디네이션", "애자일", "조직", "시사점"], "difficulty": "hard"}
+{"id": "g-095", "query": "SKMS에서 품질관리의 철학적 기반은 무엇인가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["품질", "관리", "철학", "SUPEX"], "difficulty": "medium"}
+{"id": "g-096", "query": "SKMS의 경영관리 체계를 신입사원에게 한 문장으로 설명한다면?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["경영관리", "체계", "설명", "핵심"], "difficulty": "easy"}
+{"id": "g-097", "query": "SKMS에서 혁신의 중요성은 어떻게 강조되는가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["혁신", "변화", "도전", "경영"], "difficulty": "medium"}
+{"id": "g-098", "query": "SKMS의 동적 관리요소 5가지를 종합적으로 평가하면?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["동적 요소", "의욕", "역량", "코디네이션", "커뮤니케이션", "SK-Manship"], "difficulty": "hard"}
+{"id": "g-099", "query": "SKMS가 제시하는 경영의 궁극적 목적이 현실적으로 달성 가능한가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["궁극적 목적", "행복", "달성", "현실"], "difficulty": "hard", "regression_checks": [{"type": "latest_edition_first", "description": "궁극적 목적은 최신 개정판 기준", "expected_first_year": 2020}]}
+{"id": "g-100", "query": "SKMS 40년의 역사를 통해 볼 때, 경영 체계는 왜 계속 개정되어야 하는가?", "query_type": "open_ended", "expected_edition": null, "expected_keywords": ["개정", "변화", "시대", "환경", "적응"], "difficulty": "medium"}

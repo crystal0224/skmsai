@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 38 | 남은 1
+> 전체 39 PR | 완료 39 | 남은 0
 
 ---
 
@@ -223,7 +223,14 @@
   - Dockerfile: python:3.10-slim, non-root appuser, HEALTHCHECK, uvicorn 2 workers
   - docker-compose.yml: api(8000) + frontend(3000), 헬스체크 의존성
   - 50 new tests (총 1127 PASS)
-- [ ] **PR-039** Golden QA 100 + 최종 품질 대시보드
+- [x] **PR-039** Golden QA 100 + 최종 품질 대시보드
+  - Golden QA V2: 50개 추가 (g-051~g-100), 총 100개 (4유형, 3난이도, 7개정판 커버)
+  - quality_dashboard.py: V2QualityReport, EditionCoverage, QualitySummary (frozen)
+  - 커버리지 분석: 7개 개정판 100% 커버, compute_coverage_score
+  - 축별 품질 요약: 약한 유형 자동 탐지, 권장사항 생성
+  - 종합 등급: A/B/C/D/F (통과율 50% + 커버리지 25% + 회귀 25%)
+  - Quality API: /api/quality/report, /coverage, /summary 3개 엔드포인트
+  - 58 new tests (총 1185 PASS)
 
 ---
 
