@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 26 | 남은 13
+> 전체 39 PR | 완료 27 | 남은 12
 
 ---
 
@@ -164,7 +164,14 @@
   - render_comparison_table(): 개정판 비교표 + 진화 요약 + 출처 중복 제거
   - render(): output_type 기반 자동 디스패치 (JSON 추출 + 파싱 + 렌더링)
   - 26 new tests (총 698 PASS)
-- [ ] **PR-027** API v2 — Hybrid Search + Generate v2
+- [x] **PR-027** API v2 — Hybrid Search + Generate v2
+  - POST /api/v2/search: 근거 검증 + 개정판 비교 통합 검색
+  - POST /api/v2/generate: 근거 검증 + 렌더링 통합 답변 생성
+  - V2 Pydantic 모델: SearchV2Request/Response, GenerateV2Request/Response
+  - EvidenceCheckResponse, ComparisonResponse, EditionGroupResponse
+  - AppState v2: EvidenceFilter + CrossVersionComparisonService 초기화
+  - 하위 호환: v1 엔드포인트 유지, v2는 /api/v2/ 경로
+  - 20 new tests (총 718 PASS)
 - [ ] **PR-028** TOC Visualization — 인터랙티브 목차 트리 뷰어
 - [ ] **PR-029** LLM-as-Judge — 4축 자동 평가기
 - [ ] **PR-030** Golden QA 50 + V1 Quality Report
