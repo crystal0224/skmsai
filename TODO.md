@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 13 | 남은 26
+> 전체 39 PR | 완료 14 | 남은 25
 
 ---
 
@@ -69,9 +69,10 @@
   - GET /api/health (503 when not ready), POST /api/search, POST /api/generate
   - 22 tests
 
-- [ ] **PR-014** TOC API — 개정판별 목차 트리 제공
-  - TOC 트리 조회 API
-  - 에디션 필터링
+- [x] **PR-014** TOC API — 개정판별 목차 트리 제공
+  - TOCService: structure.json → 12개 개정판 목차 트리 (불변 데이터 모델)
+  - GET /api/editions, GET /api/toc/{edition_id}, GET /api/toc?q=검색
+  - 35 tests (20 service + 15 API)
 
 - [ ] **PR-015** Streamlit MVP UI
   - 검색/생성/목차 통합 인터페이스
