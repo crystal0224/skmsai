@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 21 | 남은 18
+> 전체 39 PR | 완료 22 | 남은 17
 
 ---
 
@@ -121,7 +121,15 @@
   - SearchService.hybrid_search() optional reranker step 통합
   - 하위 호환: reranker=None → 기존 동작 유지
   - 31 new tests (총 521 PASS)
-- [ ] **PR-022** Query Router — 4-Type 질의 분류 (≥90%)
+- [x] **PR-022** Query Router — 4-Type 질의 분류 (≥90%)
+  - QueryClassifier: 규칙 기반 4-Type 분류 (single_version, cross_version, definition, open_ended)
+  - ClassificationResult frozen dataclass (query_type, confidence, edition_hint, reasoning)
+  - 분류 우선순위: cross_version → single_version → definition → open_ended
+  - edition_hint 자동 추출 (N차, 초판, 연도 패턴)
+  - evaluate_accuracy(): seed questions 기반 정확도 측정
+  - INTENT_TO_QUERY_TYPE: 기존 5-intent → 4-type 매핑 (하위 호환)
+  - Seed questions (22건) 전체 정확도 ≥90% 달성
+  - 50 new tests (총 571 PASS)
 - [ ] **PR-023** Temporal Conflict Guardrail — 시간축 충돌 방어
 - [ ] **PR-024** Evidence Coverage + Hallucination Filter
 - [ ] **PR-025** Cross-version Comparison — 개정판 간 비교 프롬프트
