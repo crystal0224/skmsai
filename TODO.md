@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 14 | 남은 25
+> 전체 39 PR | 완료 16 | 남은 23
 
 ---
 
@@ -74,13 +74,16 @@
   - GET /api/editions, GET /api/toc/{edition_id}, GET /api/toc?q=검색
   - 35 tests (20 service + 15 API)
 
-- [ ] **PR-015** Streamlit MVP UI
-  - 검색/생성/목차 통합 인터페이스
-  - 기본 UX
+- [x] **PR-015** Streamlit MVP UI
+  - 3-탭 UI: 검색 (hybrid/vector/bm25), 답변 생성, 개정판 목차 브라우저
+  - API 클라이언트 (에러 핸들링, timeout), 환경변수 기반 엔드포인트 설정
+  - 14 tests
 
-- [ ] **PR-016** MVP Eval + Quality Report
-  - MVP 종합 품질 평가
-  - Go/No-Go 게이트 판정
+- [x] **PR-016** MVP Quality Gate — Go/No-Go 판정
+  - QualityGate: results.jsonl → 4축 통계 → 통과율 기반 판정
+  - EvalResult/AxisStats/QualityReport frozen dataclasses
+  - Markdown/JSON 보고서 생성
+  - 26 tests
 
 ---
 
