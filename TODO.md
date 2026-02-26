@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 25 | 남은 14
+> 전체 39 PR | 완료 26 | 남은 13
 
 ---
 
@@ -156,7 +156,14 @@
   - format_comparison_prompt(): LLM 프롬프트용 구조화된 비교 포맷
   - EDITION_ORDER: 15개 개정판 시간순 정렬 매핑
   - 38 new tests (총 672 PASS)
-- [ ] **PR-026** Output Renderer 3-type — summary/card/comparison_table
+- [x] **PR-026** Output Renderer 3-type — summary/card/comparison_table
+  - OutputRenderer: summary/card/comparison_table Markdown 렌더러
+  - RenderResult frozen dataclass (불변)
+  - render_summary(): 제목+본문+핵심포인트+출처
+  - render_card()/render_card_list(): Q&A 카드 + 카드 목록
+  - render_comparison_table(): 개정판 비교표 + 진화 요약 + 출처 중복 제거
+  - render(): output_type 기반 자동 디스패치 (JSON 추출 + 파싱 + 렌더링)
+  - 26 new tests (총 698 PASS)
 - [ ] **PR-027** API v2 — Hybrid Search + Generate v2
 - [ ] **PR-028** TOC Visualization — 인터랙티브 목차 트리 뷰어
 - [ ] **PR-029** LLM-as-Judge — 4축 자동 평가기
