@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 29 | 남은 10
+> 전체 39 PR | 완료 30 | 남은 9
 
 ---
 
@@ -192,7 +192,18 @@
   - check_thresholds(): DEFAULT_THRESHOLDS 기반 축별 통과 판정
   - JUDGE_SYSTEM_PROMPT: 05_eval_run.py 프롬프트 정형화
   - 53 new tests (총 797 PASS)
-- [ ] **PR-030** Golden QA 50 + V1 Quality Report
+- [x] **PR-030** Golden QA 50 + V1 Quality Report
+  - eval/questions.golden_v1.jsonl: 50 Golden QA (4 유형, 3 난이도, 5 회귀검사)
+  - GoldenQuestion frozen dataclass: id, query, query_type, difficulty, regression_checks
+  - QueryTypeBreakdown/DifficultyBreakdown frozen dataclass (유형별/난이도별 분석)
+  - V1QualityReport frozen dataclass (전체 보고서 + 유형별 + 난이도별 + 회귀 통계)
+  - load_golden_questions(): JSONL 로드 + 파싱
+  - compute_query_type_breakdowns(): 유형별 분석 (축별 통계 포함)
+  - compute_difficulty_breakdowns(): 난이도별 분석
+  - generate_v1_report(): QualityGate 통합 V1 보고서 생성
+  - format_v1_report_markdown(): Markdown 보고서 (개요/축별/유형별/난이도별/실패목록)
+  - format_v1_report_json(): JSON 직렬화
+  - 39 new tests (총 836 PASS)
 
 ---
 
