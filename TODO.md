@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 22 | 남은 17
+> 전체 39 PR | 완료 23 | 남은 16
 
 ---
 
@@ -130,7 +130,16 @@
   - INTENT_TO_QUERY_TYPE: 기존 5-intent → 4-type 매핑 (하위 호환)
   - Seed questions (22건) 전체 정확도 ≥90% 달성
   - 50 new tests (총 571 PASS)
-- [ ] **PR-023** Temporal Conflict Guardrail — 시간축 충돌 방어
+- [x] **PR-023** Temporal Conflict Guardrail — 시간축 충돌 방어
+  - TemporalGuardrail: 4-rule 충돌 감지 서비스 (TC-001~TC-004)
+  - TC-001: 정의 변경 감지 (다중 개정판 definition quote)
+  - TC-002: 개념 소멸 감지 (concept_timeline 기반, is_active=False)
+  - TC-003: 개념 신설 감지 (edition_hint < first_edition)
+  - TC-004: 용어 변경 감지 (renamed 상태 개정판)
+  - KnownConflict: guardrails/conflict_rules.yaml 사전 충돌 매칭
+  - GuardrailConfig: enabled, max_warnings, fail_mode
+  - 경고 중복 제거 (rule_id + concept 기준)
+  - 31 new tests (총 602 PASS)
 - [ ] **PR-024** Evidence Coverage + Hallucination Filter
 - [ ] **PR-025** Cross-version Comparison — 개정판 간 비교 프롬프트
 - [ ] **PR-026** Output Renderer 3-type — summary/card/comparison_table
