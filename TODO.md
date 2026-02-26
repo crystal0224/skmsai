@@ -34,10 +34,12 @@
 
 ## Phase 1: Foundation + MVP Core (PR-9 ~ PR-16)
 
-- [ ] **PR-009** QuoteObject Schema + DB Migration
-  - DB 스키마 정의 (PostgreSQL/SQLite)
-  - 현재 JSONL → DB 마이그레이션
-  - CRUD 인터페이스
+- [x] **PR-009** QuoteObject Schema + DB Migration
+  - QuoteObject frozen dataclass (13 fields, content_hash 멱등성)
+  - SQLite DDL + 5 indexes + CHECK constraints
+  - QuoteRepository CRUD + bulk_upsert
+  - JSONL → DB 마이그레이션 스크립트
+  - 48 tests (22 unit + 26 integration)
 
 - [ ] **PR-010** Ingestion Pipeline — 멱등 데이터 적재
   - content_hash 기반 중복 방지
