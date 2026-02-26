@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 37 | 남은 2
+> 전체 39 PR | 완료 38 | 남은 1
 
 ---
 
@@ -216,7 +216,13 @@
 - [x] **PR-035** 운영 대시보드 (모니터링 + 사용 통계)
 - [x] **PR-036** 데이터 자동 업데이트 배치 + 인덱스 갱신
 - [x] **PR-037** 성능 최적화 + 부하 테스트
-- [ ] **PR-038** 보안 검토 + 프로덕션 배포
+- [x] **PR-038** 보안 검토 + 프로덕션 배포
+  - RateLimiter: Token Bucket 알고리즘, 클라이언트별 독립 버킷, thread-safe
+  - EnvValidationResult: 필수/선택 환경변수 검증, CORS 와일드카드 경고
+  - 입력 살균: sanitize_query (HTML/제어문자 제거), sanitize_edition_filter (regex), sanitize_type_filter (whitelist)
+  - Dockerfile: python:3.10-slim, non-root appuser, HEALTHCHECK, uvicorn 2 workers
+  - docker-compose.yml: api(8000) + frontend(3000), 헬스체크 의존성
+  - 50 new tests (총 1127 PASS)
 - [ ] **PR-039** Golden QA 100 + 최종 품질 대시보드
 
 ---
