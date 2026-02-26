@@ -14,6 +14,7 @@ import yaml
 from scripts.lib.bm25_index import BM25Index
 from scripts.lib.generation import GenerationConfig, GenerationService
 from scripts.lib.search_service import SearchService
+from scripts.lib.toc_service import TOCService
 from scripts.lib.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ class AppState:
     def __init__(self) -> None:
         self.search_service: SearchService | None = None
         self.generation_service: GenerationService | None = None
+        self.toc_service: TOCService | None = None
         self.version: str = "0.1.0"
         self._initialized: bool = False
 
@@ -36,6 +38,7 @@ class AppState:
         self,
         index_dir: Path = Path("indexes"),
         config_dir: Path = Path("config"),
+        data_dir: Path = Path("data/processed"),
     ) -> None:
         """서비스를 초기화한다."""
         # 검색 서비스 초기화
@@ -83,6 +86,16 @@ class AppState:
             logger.info("GenerationService 초기화 완료")
         else:
             logger.warning("ANTHROPIC_API_KEY 미설정 → GenerationService 비활성")
+
+        # TOC 서비스 초기화
+        structure_path = data_dir / "structure.json"
+        if structure_path.exists():
+            self.toc_service = TOCService.from_path(structure_path)
+            logger.info(
+                "TOCService 초기화 완료: %d editions", self.toc_service.edition_count
+            )
+        else:
+            logger.warning("structure.json 없음 → TOCService 비활성")
 
         self._initialized = True
 
