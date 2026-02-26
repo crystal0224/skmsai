@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -19,7 +19,7 @@ pytest.importorskip("httpx")
 from fastapi.testclient import TestClient  # noqa: E402
 
 from scripts.lib.search_types import SearchHit  # noqa: E402
-from server.app import _state, create_app  # noqa: E402
+from server.app import create_app  # noqa: E402
 from server.dependencies import AppState  # noqa: E402
 from server.models import (  # noqa: E402
     ErrorResponse,
@@ -81,22 +81,6 @@ def mock_state():
     return state
 
 
-@pytest.fixture()
-def client(mock_state):
-    """mock state를 사용하는 TestClient."""
-    app = create_app()
-    # Replace global state
-    import server.app as app_module
-
-    original_state = app_module._state
-    app_module._state = mock_state
-    # Re-create app with mock state
-    app = FastAPI_with_mock_state(mock_state)
-    with TestClient(app) as c:
-        yield c
-    app_module._state = original_state
-
-
 def FastAPI_with_mock_state(state: AppState):
     """Mock state를 사용하는 FastAPI 앱."""
     from fastapi import FastAPI
@@ -150,6 +134,12 @@ def test_generate_request_defaults():
     assert req.top_k == 5
 
 
+def test_generate_request_invalid_output_type():
+    """유효하지 않은 output_type → ValidationError."""
+    with pytest.raises(Exception):
+        GenerateRequest(query="test", output_type="invalid_type")
+
+
 def test_health_response():
     """HealthResponse 생성."""
     resp = HealthResponse(
@@ -198,12 +188,12 @@ def test_health_endpoint(mock_state):
 
 
 def test_health_not_initialized():
-    """초기화 전 /api/health."""
+    """초기화 전 /api/health → 503."""
     state = AppState()
     app = FastAPI_with_mock_state(state)
     with TestClient(app) as client:
         resp = client.get("/api/health")
-    assert resp.status_code == 200
+    assert resp.status_code == 503
     data = resp.json()
     assert data["status"] == "initializing"
 

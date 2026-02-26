@@ -9,6 +9,7 @@ Usage:
 from __future__ import annotations
 
 import logging
+import os
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -49,7 +50,8 @@ async def lifespan(app: FastAPI):
         _state.initialize()
         logger.info("서비스 초기화 완료")
     except Exception as e:
-        logger.error("서비스 초기화 실패: %s", e)
+        logger.warning("서비스 초기화 실패 (degraded mode): %s", e)
+        # 초기화 실패 시 degraded mode로 시작 — health 엔드포인트는 503 반환
     yield
     logger.info("SKMS API 서버 종료")
 
@@ -68,13 +70,16 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # CORS
+    # CORS — 환경변수로 허용 오리진 설정 (기본: localhost)
+    allowed_origins = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3000").split(
+        ","
+    )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_origins=allowed_origins,
+        allow_credentials=False,
+        allow_methods=["GET", "POST"],
+        allow_headers=["Content-Type", "Authorization"],
     )
 
     # Request logging middleware

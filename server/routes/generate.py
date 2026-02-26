@@ -24,7 +24,7 @@ def create_generate_router(state: AppState) -> APIRouter:
         if not state.generation_service:
             raise HTTPException(
                 status_code=503,
-                detail="생성 서비스가 초기화되지 않았습니다 (ANTHROPIC_API_KEY 필요)",
+                detail="생성 서비스를 현재 사용할 수 없습니다",
             )
         if not state.search_service:
             raise HTTPException(status_code=503, detail="검색 서비스가 초기화되지 않았습니다")
@@ -66,10 +66,13 @@ def create_generate_router(state: AppState) -> APIRouter:
         # 시간축 충돌 감지
         conflict = detect_temporal_conflicts(hit_dicts)
 
+        # 의도 결정
+        intent = "content_generation" if request.output_type else "open_ended"
+
         # 컨텍스트 포맷팅
         context = format_context(
             hit_dicts,
-            intent="open_ended",
+            intent=intent,
             conflict=conflict,
             output_type=request.output_type,
         )
@@ -78,7 +81,7 @@ def create_generate_router(state: AppState) -> APIRouter:
         result = gen.generate(
             query=request.query,
             context=context,
-            intent="content_generation" if request.output_type else "open_ended",
+            intent=intent,
             output_type=request.output_type,
         )
 
@@ -86,7 +89,7 @@ def create_generate_router(state: AppState) -> APIRouter:
 
         return GenerateResponse(
             query=request.query,
-            intent="content_generation" if request.output_type else "open_ended",
+            intent=intent,
             answer=result.answer,
             prompt_name=result.prompt_name,
             validation_passed=result.validation_passed,

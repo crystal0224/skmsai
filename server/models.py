@@ -4,7 +4,11 @@ PR-013: FastAPI 서버 스키마 정의.
 """
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
+
+OutputType = Literal["summary", "card", "quiz", "comparison_table", "slide"]
 
 
 # ---------------------------------------------------------------------------
@@ -59,9 +63,9 @@ class GenerateRequest(BaseModel):
     """답변 생성 요청."""
 
     query: str = Field(..., min_length=1, max_length=1000, description="질의")
-    output_type: str | None = Field(
+    output_type: OutputType | None = Field(
         default=None,
-        description="출력 유형 (summary, card, quiz, comparison_table, slide)",
+        description="출력 유형",
     )
     edition_filter: str | None = Field(default=None, description="개정판 필터")
     top_k: int = Field(default=5, ge=1, le=50, description="검색 결과 수")
