@@ -23,6 +23,7 @@ def create_health_router(state: AppState) -> APIRouter:
         components = {
             "search_service": state.search_service is not None,
             "generation_service": state.generation_service is not None,
+            "toc_service": state.toc_service is not None,
             "initialized": state.is_ready,
         }
 

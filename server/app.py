@@ -23,6 +23,7 @@ from server.models import ErrorResponse
 from server.routes.generate import create_generate_router
 from server.routes.health import create_health_router
 from server.routes.search import create_search_router
+from server.routes.toc import create_toc_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -113,6 +114,7 @@ def create_app() -> FastAPI:
     app.include_router(create_health_router(_state))
     app.include_router(create_search_router(_state))
     app.include_router(create_generate_router(_state))
+    app.include_router(create_toc_router(_state))
 
     return app
 

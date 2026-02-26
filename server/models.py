@@ -84,6 +84,67 @@ class GenerateResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# TOC API
+# ---------------------------------------------------------------------------
+
+
+class TOCNodeResponse(BaseModel):
+    """목차 노드 응답."""
+
+    level: str
+    title: str
+    line: int
+    children: list[TOCNodeResponse]
+
+
+class TOCResponse(BaseModel):
+    """개정판별 목차 트리 응답."""
+
+    edition_id: str
+    year: int
+    label: str
+    sections: list[TOCNodeResponse]
+    node_count: int
+
+
+class EditionInfoResponse(BaseModel):
+    """개정판 메타데이터 응답."""
+
+    edition_id: str
+    year: int
+    label: str
+    start_line: int
+    end_line: int
+    section_count: int
+
+
+class EditionsListResponse(BaseModel):
+    """전체 개정판 목록 응답."""
+
+    editions: list[EditionInfoResponse]
+    total: int
+
+
+class TOCSectionSearchResult(BaseModel):
+    """섹션 검색 결과 단건."""
+
+    edition_id: str
+    path: list[str]
+    level: str
+    title: str
+    line: int
+
+
+class TOCSectionSearchResponse(BaseModel):
+    """섹션 검색 응답."""
+
+    query: str
+    edition_id: str | None
+    results: list[TOCSectionSearchResult]
+    total: int
+
+
+# ---------------------------------------------------------------------------
 # Health API
 # ---------------------------------------------------------------------------
 
