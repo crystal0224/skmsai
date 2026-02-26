@@ -14,6 +14,7 @@ from typing import Callable
 
 from scripts.lib.bm25_index import BM25Index
 from scripts.lib.search_types import SearchHit
+from scripts.lib.synonym_map import SynonymMap
 from scripts.lib.vector_store import RawVectorHit, VectorStore
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,7 @@ class SearchService:
     """Vector + BM25 하이브리드 검색 서비스.
 
     embedding_fn: query → embedding 변환 함수.
+    synonym_map: 동의어 확장 맵 (BM25/Hybrid 검색에서 사용).
     테스트 시 make_fake_embedding_fn() 사용.
     """
 
@@ -32,10 +34,12 @@ class SearchService:
         bm25_index: BM25Index | None = None,
         *,
         embedding_fn: Callable[[str], list[float]] | None = None,
+        synonym_map: SynonymMap | None = None,
     ) -> None:
         self._vector_store = vector_store
         self._bm25_index = bm25_index
         self._embedding_fn = embedding_fn
+        self._synonym_map = synonym_map
 
     def vector_search(
         self,
@@ -79,7 +83,7 @@ class SearchService:
         edition_filter: str | None = None,
         type_filter: list[str] | None = None,
     ) -> list[SearchHit]:
-        """BM25 키워드 검색."""
+        """BM25 키워드 검색 (동의어 확장 포함)."""
         if self._bm25_index is None:
             return []
 
@@ -88,6 +92,7 @@ class SearchService:
             top_k=top_k,
             edition_filter=edition_filter,
             type_filter=type_filter,
+            synonym_map=self._synonym_map,
         )
 
     def hybrid_search(

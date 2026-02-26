@@ -23,6 +23,7 @@ from scripts.lib.vector_store import (  # noqa: E402
 )
 from scripts.lib.bm25_index import BM25Index  # noqa: E402
 from scripts.lib.search_service import SearchService  # noqa: E402
+from scripts.lib.synonym_map import SynonymMap  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -346,3 +347,99 @@ def test_search_by_edition_vector(service):
     )
     assert all(h.edition_id == "2020-14차" for h in hits)
     assert all(h.source == "vector" for h in hits)
+
+
+# ---------------------------------------------------------------------------
+# PR-019: BM25 동의어 확장 테스트
+# ---------------------------------------------------------------------------
+
+_SYNONYM_DATA = {
+    "synonym_clusters": [
+        {
+            "name": "VWBE",
+            "terms": ["VWBE", "자발적의욕적두뇌활용", "Brain Engagement"],
+        },
+        {
+            "name": "인간중심",
+            "terms": ["인간중심", "Human-centered"],
+        },
+    ],
+}
+
+
+@pytest.fixture()
+def synonym_map():
+    """테스트용 SynonymMap."""
+    return SynonymMap.from_dict(_SYNONYM_DATA)
+
+
+@pytest.fixture()
+def service_with_synonyms(vector_store, bm25_index, embed_fn, synonym_map):
+    """SynonymMap이 포함된 SearchService."""
+    return SearchService(
+        vector_store=vector_store,
+        bm25_index=bm25_index,
+        embedding_fn=embed_fn,
+        synonym_map=synonym_map,
+    )
+
+
+def test_bm25_synonym_expansion(bm25_index, synonym_map):
+    """BM25 직접 검색에서 동의어 확장."""
+    # "VWBE"로 검색하면 "자발적의욕적두뇌활용" 등이 확장되어 더 넓게 검색
+    hits_no_syn = bm25_index.search("VWBE", top_k=5)
+    hits_with_syn = bm25_index.search("VWBE", top_k=5, synonym_map=synonym_map)
+
+    # 동의어 확장 시 결과가 같거나 더 많아야 한다
+    assert len(hits_with_syn) >= len(hits_no_syn)
+
+
+def test_bm25_synonym_expansion_no_match(bm25_index, synonym_map):
+    """동의어가 없는 쿼리는 원본과 동일."""
+    hits_no_syn = bm25_index.search("체크리스트", top_k=5)
+    hits_with_syn = bm25_index.search("체크리스트", top_k=5, synonym_map=synonym_map)
+
+    # 동의어 매칭이 없으면 동일한 결과
+    assert len(hits_no_syn) == len(hits_with_syn)
+
+
+def test_bm25_synonym_none_fallback(bm25_index):
+    """synonym_map=None은 확장 없이 정상 동작."""
+    hits = bm25_index.search("인간중심", top_k=5, synonym_map=None)
+    assert len(hits) > 0
+
+
+def test_service_bm25_with_synonyms(service_with_synonyms):
+    """서비스를 통한 BM25 검색에서 동의어 확장 적용."""
+    hits = service_with_synonyms.bm25_search("VWBE", top_k=5)
+    assert isinstance(hits, list)
+
+
+def test_service_hybrid_with_synonyms(service_with_synonyms):
+    """하이브리드 검색에서도 BM25 동의어 확장 적용."""
+    hits = service_with_synonyms.hybrid_search("인간중심", top_k=5)
+    assert isinstance(hits, list)
+
+
+def test_service_no_synonym_map(vector_store, bm25_index, embed_fn):
+    """synonym_map 없이도 정상 동작 (backward compatible)."""
+    svc = SearchService(
+        vector_store=vector_store,
+        bm25_index=bm25_index,
+        embedding_fn=embed_fn,
+    )
+    hits = svc.bm25_search("인간중심", top_k=3)
+    assert len(hits) > 0
+
+
+def test_definition_boost_applied(test_quotes):
+    """정의 블록 가중치가 적용된다 (type_boost)."""
+    type_boost = {"definition": 2.0, "principle": 1.5}
+    idx = BM25Index.from_quotes(test_quotes, type_boost=type_boost)
+
+    # "정의 텍스트"는 definition type → 2배 반복 토큰
+    hits = idx.search("정의", top_k=5)
+    assert len(hits) > 0
+    # definition 타입이 상위에 위치해야 함
+    top_hit = hits[0]
+    assert top_hit.quote_type == "definition"
