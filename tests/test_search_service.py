@@ -22,7 +22,11 @@ from scripts.lib.vector_store import (  # noqa: E402
     quote_to_chroma_metadata,
 )
 from scripts.lib.bm25_index import BM25Index  # noqa: E402
-from scripts.lib.search_service import SearchService  # noqa: E402
+from scripts.lib.search_service import (  # noqa: E402
+    HybridConfig,
+    SearchService,
+    _normalize_bm25_scores,
+)
 from scripts.lib.synonym_map import SynonymMap  # noqa: E402
 
 
@@ -443,3 +447,154 @@ def test_definition_boost_applied(test_quotes):
     # definition 타입이 상위에 위치해야 함
     top_hit = hits[0]
     assert top_hit.quote_type == "definition"
+
+
+# ---------------------------------------------------------------------------
+# PR-020: HybridConfig 테스트
+# ---------------------------------------------------------------------------
+
+
+def test_hybrid_config_defaults():
+    """HybridConfig 기본값."""
+    cfg = HybridConfig()
+    assert cfg.alpha == 0.6
+    assert cfg.rrf_k == 60
+    assert cfg.final_top_k == 5
+    assert cfg.normalize_scores is True
+
+
+def test_hybrid_config_is_frozen():
+    """HybridConfig는 불변이다."""
+    cfg = HybridConfig()
+    with pytest.raises(AttributeError):
+        cfg.alpha = 0.5  # type: ignore[misc]
+
+
+def test_hybrid_config_from_dict():
+    """dict에서 HybridConfig 생성."""
+    data = {"alpha": 0.7, "rrf_k": 40, "final_top_k": 10}
+    cfg = HybridConfig.from_dict(data)
+    assert cfg.alpha == 0.7
+    assert cfg.rrf_k == 40
+    assert cfg.final_top_k == 10
+
+
+def test_hybrid_config_from_dict_partial():
+    """일부만 지정하면 나머지는 기본값."""
+    cfg = HybridConfig.from_dict({"alpha": 0.8})
+    assert cfg.alpha == 0.8
+    assert cfg.rrf_k == 60  # default
+
+
+def test_hybrid_config_from_yaml(tmp_path):
+    """YAML에서 HybridConfig 로드."""
+    import yaml
+
+    data = {
+        "retrieval": {
+            "hybrid": {"alpha": 0.5, "rrf_k": 30, "final_top_k": 3},
+        }
+    }
+    path = tmp_path / "retrieval.yaml"
+    with open(path, "w") as f:
+        yaml.dump(data, f)
+
+    cfg = HybridConfig.from_yaml(path)
+    assert cfg.alpha == 0.5
+    assert cfg.rrf_k == 30
+    assert cfg.final_top_k == 3
+
+
+def test_hybrid_config_from_yaml_nonexistent():
+    """존재하지 않는 YAML → 기본값."""
+    cfg = HybridConfig.from_yaml(Path("/nonexistent/retrieval.yaml"))
+    assert cfg.alpha == 0.6
+
+
+# ---------------------------------------------------------------------------
+# PR-020: BM25 점수 정규화 테스트
+# ---------------------------------------------------------------------------
+
+
+def _make_search_hit(quote_id: str, score: float) -> SearchHit:
+    """테스트용 SearchHit (최소 필드)."""
+    return SearchHit(
+        quote_id=quote_id,
+        text="test",
+        score=score,
+        edition_id="2020-14차",
+        year=2020,
+        revision_num=14,
+        quote_type="narrative",
+        section_path=(),
+        source="bm25",
+        content_hash="abc",
+        quality_flags=(),
+    )
+
+
+def test_normalize_bm25_scores_range():
+    """정규화 후 점수가 0~1 범위."""
+    hits = [
+        _make_search_hit("q1", 10.0),
+        _make_search_hit("q2", 5.0),
+        _make_search_hit("q3", 1.0),
+    ]
+    normalized = _normalize_bm25_scores(hits)
+    assert normalized[0].score == 1.0  # max → 1.0
+    assert normalized[2].score == 0.0  # min → 0.0
+    assert 0.0 < normalized[1].score < 1.0
+
+
+def test_normalize_bm25_scores_same_score():
+    """모든 점수가 동일하면 0.5."""
+    hits = [
+        _make_search_hit("q1", 5.0),
+        _make_search_hit("q2", 5.0),
+    ]
+    normalized = _normalize_bm25_scores(hits)
+    assert all(h.score == 0.5 for h in normalized)
+
+
+def test_normalize_bm25_scores_empty():
+    """빈 리스트."""
+    assert _normalize_bm25_scores([]) == []
+
+
+def test_normalize_preserves_fields():
+    """정규화가 다른 필드를 변경하지 않는다."""
+    hits = [_make_search_hit("q-001", 10.0)]
+    normalized = _normalize_bm25_scores(hits)
+    assert normalized[0].quote_id == "q-001"
+    assert normalized[0].source == "bm25"
+
+
+# ---------------------------------------------------------------------------
+# PR-020: SearchService hybrid_config 통합 테스트
+# ---------------------------------------------------------------------------
+
+
+def test_service_uses_hybrid_config(vector_store, bm25_index, embed_fn):
+    """서비스가 HybridConfig를 사용한다."""
+    cfg = HybridConfig(alpha=0.8, rrf_k=30, final_top_k=3)
+    svc = SearchService(
+        vector_store=vector_store,
+        bm25_index=bm25_index,
+        embedding_fn=embed_fn,
+        hybrid_config=cfg,
+    )
+    assert svc.hybrid_config.alpha == 0.8
+    hits = svc.hybrid_search("인간중심")
+    assert len(hits) <= 3  # final_top_k=3
+
+
+def test_service_hybrid_override_params(service):
+    """hybrid_search 호출 시 파라미터 오버라이드."""
+    hits = service.hybrid_search("인간중심", top_k=2, alpha=0.9, rrf_k=10)
+    assert len(hits) <= 2
+
+
+def test_service_default_hybrid_config(service):
+    """기본 HybridConfig가 적용된다."""
+    assert service.hybrid_config.alpha == 0.6
+    assert service.hybrid_config.normalize_scores is True

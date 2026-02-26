@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 19 | 남은 20
+> 전체 39 PR | 완료 20 | 남은 19
 
 ---
 
@@ -107,7 +107,12 @@
   - 기존 type_boost (definition: 2.0) + 동의어 확장 결합
   - 하위 호환: synonym_map=None이면 기존 동작 유지
   - 8 new tests (총 477 PASS)
-- [ ] **PR-020** Hybrid Retrieval — Vector + BM25 RRF 융합
+- [x] **PR-020** Hybrid Retrieval — Vector + BM25 RRF 융합
+  - HybridConfig frozen dataclass: alpha, rrf_k, final_top_k 등 YAML 기반 설정
+  - BM25 점수 정규화: min-max scaling (0~1), 동일 점수 시 0.5
+  - hybrid_search: config 기본값 + 호출 시 오버라이드 지원
+  - 하위 호환: hybrid_config=None → 기본값 사용
+  - 13 new tests (총 490 PASS)
 - [ ] **PR-021** Reranker — Cohere + Cross-Encoder 재순위
 - [ ] **PR-022** Query Router — 4-Type 질의 분류 (≥90%)
 - [ ] **PR-023** Temporal Conflict Guardrail — 시간축 충돌 방어

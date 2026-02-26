@@ -1,16 +1,17 @@
 """SearchService — Vector + BM25 하이브리드 검색 서비스.
 
 PR-011: 개정판 필터 검색 API.
-
-기존 retrieval.py는 변경하지 않는다. SearchService는 새로운 추상화 레이어로,
-VectorStore + BM25Index를 조합하여 SearchHit를 반환한다.
+PR-019: BM25 동의어 확장 통합.
+PR-020: Hybrid Retrieval 고도화 — HybridConfig, 점수 정규화, 진단 로깅.
 """
 from __future__ import annotations
 
 import json
 import logging
 import re
-from typing import Callable
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Callable
 
 from scripts.lib.bm25_index import BM25Index
 from scripts.lib.search_types import SearchHit
@@ -20,12 +21,66 @@ from scripts.lib.vector_store import RawVectorHit, VectorStore
 logger = logging.getLogger(__name__)
 
 
+# ---------------------------------------------------------------------------
+# HybridConfig
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class HybridConfig:
+    """하이브리드 검색 설정 (불변).
+
+    retrieval.yaml의 hybrid 섹션에서 로드한다.
+    """
+
+    alpha: float = 0.6
+    rrf_k: int = 60
+    final_top_k: int = 5
+    vector_top_k_multiplier: int = 2
+    bm25_top_k_multiplier: int = 2
+    score_threshold: float = 0.5
+    normalize_scores: bool = True
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> HybridConfig:
+        """dict에서 HybridConfig를 생성한다."""
+        return cls(
+            alpha=float(data.get("alpha", 0.6)),
+            rrf_k=int(data.get("rrf_k", 60)),
+            final_top_k=int(data.get("final_top_k", 5)),
+            vector_top_k_multiplier=int(data.get("vector_top_k_multiplier", 2)),
+            bm25_top_k_multiplier=int(data.get("bm25_top_k_multiplier", 2)),
+            score_threshold=float(data.get("score_threshold", 0.5)),
+            normalize_scores=bool(data.get("normalize_scores", True)),
+        )
+
+    @classmethod
+    def from_yaml(cls, path: Path) -> HybridConfig:
+        """retrieval.yaml에서 hybrid 섹션을 로드한다."""
+        import yaml
+
+        if not path.exists():
+            logger.warning("검색 설정 파일 없음: %s, 기본값 사용", path)
+            return cls()
+
+        with open(path, encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+
+        hybrid_data = data.get("retrieval", {}).get("hybrid", {})
+        return cls.from_dict(hybrid_data)
+
+
+# ---------------------------------------------------------------------------
+# SearchService
+# ---------------------------------------------------------------------------
+
+
 class SearchService:
     """Vector + BM25 하이브리드 검색 서비스.
 
     embedding_fn: query → embedding 변환 함수.
     synonym_map: 동의어 확장 맵 (BM25/Hybrid 검색에서 사용).
-    테스트 시 make_fake_embedding_fn() 사용.
+    hybrid_config: 하이브리드 검색 설정.
     """
 
     def __init__(
@@ -35,11 +90,18 @@ class SearchService:
         *,
         embedding_fn: Callable[[str], list[float]] | None = None,
         synonym_map: SynonymMap | None = None,
+        hybrid_config: HybridConfig | None = None,
     ) -> None:
         self._vector_store = vector_store
         self._bm25_index = bm25_index
         self._embedding_fn = embedding_fn
         self._synonym_map = synonym_map
+        self._hybrid_config = hybrid_config or HybridConfig()
+
+    @property
+    def hybrid_config(self) -> HybridConfig:
+        """현재 하이브리드 검색 설정."""
+        return self._hybrid_config
 
     def vector_search(
         self,
@@ -99,27 +161,53 @@ class SearchService:
         self,
         query: str,
         *,
-        top_k: int = 5,
+        top_k: int | None = None,
         edition_filter: str | None = None,
         type_filter: list[str] | None = None,
-        alpha: float = 0.6,
-        rrf_k: int = 60,
+        alpha: float | None = None,
+        rrf_k: int | None = None,
     ) -> list[SearchHit]:
-        """RRF 기반 하이브리드 검색 (Vector + BM25)."""
+        """RRF 기반 하이브리드 검색 (Vector + BM25).
+
+        파라미터 미지정 시 hybrid_config 기본값을 사용한다.
+        """
+        cfg = self._hybrid_config
+        final_top_k = top_k if top_k is not None else cfg.final_top_k
+        effective_alpha = alpha if alpha is not None else cfg.alpha
+        effective_rrf_k = rrf_k if rrf_k is not None else cfg.rrf_k
+
+        vec_top_k = final_top_k * cfg.vector_top_k_multiplier
+        bm25_top_k = final_top_k * cfg.bm25_top_k_multiplier
+
         vec_hits = self.vector_search(
             query,
-            top_k=top_k * 2,
+            top_k=vec_top_k,
             edition_filter=edition_filter,
             type_filter=type_filter,
+            score_threshold=cfg.score_threshold,
         )
         bm25_hits = self.bm25_search(
             query,
-            top_k=top_k * 2,
+            top_k=bm25_top_k,
             edition_filter=edition_filter,
             type_filter=type_filter,
         )
 
-        return _rrf_fusion(vec_hits, bm25_hits, alpha, rrf_k, top_k)
+        logger.debug(
+            "Hybrid 검색: query='%s', vec=%d, bm25=%d, alpha=%.2f",
+            query,
+            len(vec_hits),
+            len(bm25_hits),
+            effective_alpha,
+        )
+
+        # BM25 점수 정규화 (0~1 범위)
+        if cfg.normalize_scores and bm25_hits:
+            bm25_hits = _normalize_bm25_scores(bm25_hits)
+
+        return _rrf_fusion(
+            vec_hits, bm25_hits, effective_alpha, effective_rrf_k, final_top_k
+        )
 
     def search_by_edition(
         self,
@@ -206,6 +294,53 @@ def _raw_hit_to_search_hit(hit: RawVectorHit, score: float) -> SearchHit:
         content_hash=meta.get("sha256", ""),
         quality_flags=tuple(flags_list),
     )
+
+
+def _normalize_bm25_scores(hits: list[SearchHit]) -> list[SearchHit]:
+    """BM25 점수를 0~1 범위로 정규화한다 (min-max scaling)."""
+    if not hits:
+        return hits
+
+    scores = [h.score for h in hits]
+    min_score = min(scores)
+    max_score = max(scores)
+
+    if max_score == min_score:
+        # 모든 점수가 동일하면 0.5로 설정
+        return [
+            SearchHit(
+                quote_id=h.quote_id,
+                text=h.text,
+                score=0.5,
+                edition_id=h.edition_id,
+                year=h.year,
+                revision_num=h.revision_num,
+                quote_type=h.quote_type,
+                section_path=h.section_path,
+                source=h.source,
+                content_hash=h.content_hash,
+                quality_flags=h.quality_flags,
+            )
+            for h in hits
+        ]
+
+    score_range = max_score - min_score
+    return [
+        SearchHit(
+            quote_id=h.quote_id,
+            text=h.text,
+            score=(h.score - min_score) / score_range,
+            edition_id=h.edition_id,
+            year=h.year,
+            revision_num=h.revision_num,
+            quote_type=h.quote_type,
+            section_path=h.section_path,
+            source=h.source,
+            content_hash=h.content_hash,
+            quality_flags=h.quality_flags,
+        )
+        for h in hits
+    ]
 
 
 def _rrf_fusion(
