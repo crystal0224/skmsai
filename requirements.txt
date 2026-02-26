@@ -16,6 +16,10 @@ chromadb>=0.4
 # Keyword Search
 rank-bm25>=0.2
 
+# Reranker (optional — PR-021)
+cohere>=5.0
+sentence-transformers>=2.2
+
 # Evaluation (optional)
 tqdm>=4.65
 

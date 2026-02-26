@@ -3,6 +3,7 @@
 PR-011: 개정판 필터 검색 API.
 PR-019: BM25 동의어 확장 통합.
 PR-020: Hybrid Retrieval 고도화 — HybridConfig, 점수 정규화, 진단 로깅.
+PR-021: Reranker 통합 — optional reranker step in hybrid_search.
 """
 from __future__ import annotations
 
@@ -81,6 +82,7 @@ class SearchService:
     embedding_fn: query → embedding 변환 함수.
     synonym_map: 동의어 확장 맵 (BM25/Hybrid 검색에서 사용).
     hybrid_config: 하이브리드 검색 설정.
+    reranker: optional Reranker (Cohere/Cross-Encoder).
     """
 
     def __init__(
@@ -91,12 +93,14 @@ class SearchService:
         embedding_fn: Callable[[str], list[float]] | None = None,
         synonym_map: SynonymMap | None = None,
         hybrid_config: HybridConfig | None = None,
+        reranker: Any | None = None,
     ) -> None:
         self._vector_store = vector_store
         self._bm25_index = bm25_index
         self._embedding_fn = embedding_fn
         self._synonym_map = synonym_map
         self._hybrid_config = hybrid_config or HybridConfig()
+        self._reranker = reranker
 
     @property
     def hybrid_config(self) -> HybridConfig:
@@ -205,9 +209,16 @@ class SearchService:
         if cfg.normalize_scores and bm25_hits:
             bm25_hits = _normalize_bm25_scores(bm25_hits)
 
-        return _rrf_fusion(
+        fused = _rrf_fusion(
             vec_hits, bm25_hits, effective_alpha, effective_rrf_k, final_top_k
         )
+
+        # Reranker (optional)
+        if self._reranker is not None and fused:
+            logger.debug("Reranker 적용: %d건 → top_n=%d", len(fused), final_top_k)
+            fused = self._reranker.rerank(query, fused, top_n=final_top_k)
+
+        return fused
 
     def search_by_edition(
         self,
