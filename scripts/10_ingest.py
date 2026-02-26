@@ -82,7 +82,14 @@ def main() -> None:
             )
 
     if not result.success:
-        logger.warning("Pipeline completed with %d errors", result.errors)
+        if not result.verification_passed:
+            logger.warning(
+                "Verification failed: DB has %d records, expected >= %s",
+                result.db_total,
+                args.expected_min,
+            )
+        if result.errors > 0:
+            logger.warning("Pipeline completed with %d errors", result.errors)
         sys.exit(1)
 
 

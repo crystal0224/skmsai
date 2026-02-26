@@ -477,6 +477,32 @@ def test_run_file_not_found(tmp_path):
         )
 
 
+def test_run_expected_min_fail(tmp_path):
+    """expected_min 미달 시 verification_passed=False, success=False."""
+    records = [_make_legacy_record(i) for i in range(2)]
+    jsonl_path = tmp_path / "quotes.jsonl"
+    _write_jsonl(jsonl_path, records)
+    result = IngestPipeline.run(
+        jsonl_path=jsonl_path,
+        db_path=tmp_path / "test.db",
+        expected_min=100,
+    )
+    assert result.verification_passed is False
+    assert result.success is False
+    assert result.db_total == 2
+
+
+def test_load_jsonl_wrong_type_field(pipeline, tmp_path):
+    """필드 타입 오류(TypeError) 레코드는 에러로 수집된다."""
+    rec = _make_legacy_record(0)
+    rec["start_line"] = "not_an_int"
+    path = tmp_path / "quotes.jsonl"
+    _write_jsonl(path, [rec])
+    quotes, errors = pipeline.load_jsonl(path)
+    assert len(quotes) == 0
+    assert len(errors) == 1
+
+
 # ---------------------------------------------------------------------------
 # QuoteRepository 추가 메서드 테스트
 # ---------------------------------------------------------------------------

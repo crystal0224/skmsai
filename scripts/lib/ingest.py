@@ -60,11 +60,12 @@ class IngestResult:
     db_total: int
     by_edition: tuple[tuple[str, int], ...]
     duration_ms: float
+    verification_passed: bool = True
 
     @property
     def success(self) -> bool:
-        """에러가 없으면 성공."""
-        return self.errors == 0
+        """에러가 없고 검증도 통과하면 성공."""
+        return self.errors == 0 and self.verification_passed
 
 
 # ---------------------------------------------------------------------------
@@ -121,7 +122,7 @@ class IngestPipeline:
         for line_num, record in raw_records:
             try:
                 quotes.append(QuoteObject.from_legacy(record))
-            except (ValueError, KeyError) as e:
+            except (ValueError, KeyError, TypeError) as e:
                 errors.append(
                     IngestError(
                         line_num=line_num,
@@ -227,6 +228,7 @@ class IngestPipeline:
                 db_total=verification.db_total,
                 by_edition=verification.by_edition,
                 duration_ms=duration_ms,
+                verification_passed=verification.passed,
             )
         finally:
             conn.close()
