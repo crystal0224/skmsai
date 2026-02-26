@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 9 | 남은 30
+> 전체 39 PR | 완료 11 | 남은 28
 
 ---
 
@@ -41,13 +41,19 @@
   - JSONL → DB 마이그레이션 스크립트
   - 48 tests (22 unit + 26 integration)
 
-- [ ] **PR-010** Ingestion Pipeline — 멱등 데이터 적재
-  - content_hash 기반 중복 방지
-  - 배치 적재 + 검증
+- [x] **PR-010** Ingestion Pipeline — 멱등 데이터 적재
+  - IngestPipeline: load_jsonl → ingest → verify 3단계
+  - content_hash 기반 중복 방지, 배치 적재
+  - IngestResult + IngestVerification frozen dataclass
+  - 32 tests
 
-- [ ] **PR-011** Vector Store (Chroma) + Search API
-  - 개정판 필터 검색 API
-  - REST 엔드포인트
+- [x] **PR-011** Vector Store (Chroma) + BM25 Index + SearchService
+  - VectorStore: Chroma 래퍼 (from_path/ephemeral, upsert, query)
+  - BM25Index: from_path/from_quotes, 개정판/타입 필터 검색
+  - SearchService: vector/bm25/hybrid(RRF) 검색, search_by_edition
+  - SearchHit frozen dataclass (표준화된 검색 결과)
+  - 11_build_indexes_from_db.py: DB 소스 인덱스 구축 CLI
+  - 38 tests
 
 - [ ] **PR-012** Generation API + Quote-Anchored Prompt v1
   - 생성 API 엔드포인트
