@@ -15,6 +15,14 @@ retrieval:
     collection_name: "skms_quotes"
     top_k: 10
     score_threshold: 0.5
+    # Pinecone 설정 (provider: "pinecone" 시 사용)
+    pinecone:
+      index_name: "skms-quotes"
+      namespace: ""
+      metric: "cosine"
+      dimension: 3072  # text-embedding-3-large
+      cloud: "aws"
+      region: "us-east-1"
 
   # ---------------------------------------------------------------------------
   # 키워드 검색 설정
