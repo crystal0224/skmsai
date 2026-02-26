@@ -42,12 +42,17 @@ retrieval:
     final_top_k: 5
 
   # ---------------------------------------------------------------------------
-  # 리랭커 설정 (V1에서 활성화 예정)
+  # 리랭커 설정 (PR-021)
+  # backend: "cohere" (API 기반) | "cross-encoder" (로컬 모델)
+  # cohere: COHERE_API_KEY 환경변수 필요
+  # cross-encoder: sentence-transformers 패키지 필요
   # ---------------------------------------------------------------------------
   reranker:
     enabled: false
-    model: "cohere-rerank-v3"
+    backend: "cohere"             # "cohere" | "cross-encoder"
+    model: "rerank-v3.5"          # cohere: rerank-v3.5 | cross-encoder: cross-encoder/ms-marco-MiniLM-L-6-v2
     top_n: 5
+    score_threshold: 0.0          # 이 점수 이하 결과 제외 (0.0 = 제외 없음)
 
   # ---------------------------------------------------------------------------
   # 검색 필터

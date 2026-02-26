@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 20 | 남은 19
+> 전체 39 PR | 완료 21 | 남은 18
 
 ---
 
@@ -113,7 +113,14 @@
   - hybrid_search: config 기본값 + 호출 시 오버라이드 지원
   - 하위 호환: hybrid_config=None → 기본값 사용
   - 13 new tests (총 490 PASS)
-- [ ] **PR-021** Reranker — Cohere + Cross-Encoder 재순위
+- [x] **PR-021** Reranker — Cohere + Cross-Encoder 재순위
+  - RerankerConfig frozen dataclass: enabled, backend, model, top_n, score_threshold
+  - CohereReranker: Cohere Rerank API 기반, API 오류 시 graceful fallback
+  - CrossEncoderReranker: sentence-transformers 기반, sigmoid 정규화 (0~1)
+  - Reranker Protocol + create_reranker 팩토리 (환경변수/패키지 자동 감지)
+  - SearchService.hybrid_search() optional reranker step 통합
+  - 하위 호환: reranker=None → 기존 동작 유지
+  - 31 new tests (총 521 PASS)
 - [ ] **PR-022** Query Router — 4-Type 질의 분류 (≥90%)
 - [ ] **PR-023** Temporal Conflict Guardrail — 시간축 충돌 방어
 - [ ] **PR-024** Evidence Coverage + Hallucination Filter
