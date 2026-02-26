@@ -84,6 +84,99 @@ class GenerateResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Search V2 API
+# ---------------------------------------------------------------------------
+
+
+class EvidenceCheckResponse(BaseModel):
+    """근거 검증 결과."""
+
+    coverage_score: float
+    cited_quote_ids: list[str]
+    valid_quote_ids: list[str]
+    invalid_quote_ids: list[str]
+    hallucination_flags: list[str]
+    passed: bool
+
+
+class EditionGroupResponse(BaseModel):
+    """개정판별 검색 결과 그룹."""
+
+    edition_id: str
+    year: int
+    hit_count: int
+    definition_texts: list[str]
+    narrative_texts: list[str]
+
+
+class ComparisonResponse(BaseModel):
+    """개정판 간 비교 컨텍스트."""
+
+    edition_count: int
+    concept_name: str
+    edition_groups: list[EditionGroupResponse]
+    formatted_prompt: str
+
+
+class SearchV2Request(BaseModel):
+    """V2 검색 요청."""
+
+    query: str = Field(..., min_length=1, max_length=500, description="검색 질의")
+    mode: str = Field(
+        default="hybrid",
+        pattern="^(hybrid|vector|bm25)$",
+        description="검색 모드",
+    )
+    top_k: int = Field(default=5, ge=1, le=50, description="검색 결과 수")
+    edition_filter: str | None = Field(default=None, description="개정판 필터")
+    type_filter: list[str] | None = Field(default=None, description="타입 필터")
+    include_evidence_check: bool = Field(default=True, description="근거 검증 포함 여부")
+    include_comparison: bool = Field(default=False, description="개정판 비교 포함 여부")
+
+
+class SearchV2Response(BaseModel):
+    """V2 검색 응답."""
+
+    query: str
+    mode: str
+    hits: list[SearchHitResponse]
+    total: int
+    evidence_check: EvidenceCheckResponse | None = None
+    comparison: ComparisonResponse | None = None
+
+
+# ---------------------------------------------------------------------------
+# Generate V2 API
+# ---------------------------------------------------------------------------
+
+
+class GenerateV2Request(BaseModel):
+    """V2 답변 생성 요청."""
+
+    query: str = Field(..., min_length=1, max_length=1000, description="질의")
+    output_type: OutputType | None = Field(default=None, description="출력 유형")
+    edition_filter: str | None = Field(default=None, description="개정판 필터")
+    top_k: int = Field(default=5, ge=1, le=50, description="검색 결과 수")
+    include_evidence_check: bool = Field(default=True, description="근거 검증 포함")
+    include_rendered: bool = Field(default=True, description="렌더링된 출력 포함")
+
+
+class GenerateV2Response(BaseModel):
+    """V2 답변 생성 응답."""
+
+    query: str
+    intent: str
+    answer: str
+    prompt_name: str
+    validation_passed: bool | None
+    citations: list[str]
+    search_hits_count: int
+    evidence_check: EvidenceCheckResponse | None = None
+    rendered: str | None = None
+    render_success: bool | None = None
+
+
+# ---------------------------------------------------------------------------
 # TOC API
 # ---------------------------------------------------------------------------
 

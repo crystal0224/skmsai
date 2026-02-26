@@ -1,6 +1,7 @@
 """서버 의존성 주입.
 
 PR-013: FastAPI 서버 DI (SearchService, GenerationService 등).
+PR-027: EvidenceFilter, CrossVersionComparisonService 추가.
 """
 from __future__ import annotations
 
@@ -12,6 +13,8 @@ from typing import Any
 import yaml
 
 from scripts.lib.bm25_index import BM25Index
+from scripts.lib.cross_version_comparison import CrossVersionComparisonService
+from scripts.lib.evidence_filter import EvidenceFilter, EvidenceFilterConfig
 from scripts.lib.generation import GenerationConfig, GenerationService
 from scripts.lib.search_service import SearchService
 from scripts.lib.toc_service import TOCService
@@ -27,7 +30,9 @@ class AppState:
         self.search_service: SearchService | None = None
         self.generation_service: GenerationService | None = None
         self.toc_service: TOCService | None = None
-        self.version: str = "0.1.0"
+        self.evidence_filter: EvidenceFilter | None = None
+        self.comparison_service: CrossVersionComparisonService | None = None
+        self.version: str = "0.2.0"
         self._initialized: bool = False
 
     @property
@@ -96,6 +101,30 @@ class AppState:
             )
         else:
             logger.warning("structure.json 없음 → TOCService 비활성")
+
+        # EvidenceFilter 초기화
+        self.evidence_filter = EvidenceFilter()
+        logger.info("EvidenceFilter 초기화 완료")
+
+        # CrossVersionComparisonService 초기화
+        concept_timeline = None
+        timeline_path = Path("config/concept_timeline.yaml")
+        if timeline_path.exists():
+            try:
+                from scripts.lib.concept_timeline import ConceptTimeline
+
+                concept_timeline = ConceptTimeline.from_yaml(timeline_path)
+                logger.info(
+                    "ConceptTimeline 로드 완료: %d concepts",
+                    concept_timeline.concept_count,
+                )
+            except Exception as e:
+                logger.warning("ConceptTimeline 로드 실패: %s", e)
+
+        self.comparison_service = CrossVersionComparisonService(
+            concept_timeline=concept_timeline,
+        )
+        logger.info("CrossVersionComparisonService 초기화 완료")
 
         self._initialized = True
 

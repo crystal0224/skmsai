@@ -21,8 +21,10 @@ from fastapi.responses import JSONResponse
 from server.dependencies import AppState
 from server.models import ErrorResponse
 from server.routes.generate import create_generate_router
+from server.routes.generate_v2 import create_generate_v2_router
 from server.routes.health import create_health_router
 from server.routes.search import create_search_router
+from server.routes.search_v2 import create_search_v2_router
 from server.routes.toc import create_toc_router
 
 logging.basicConfig(
@@ -110,11 +112,15 @@ def create_app() -> FastAPI:
             ).model_dump(),
         )
 
-    # Routes
+    # Routes — v1
     app.include_router(create_health_router(_state))
     app.include_router(create_search_router(_state))
     app.include_router(create_generate_router(_state))
     app.include_router(create_toc_router(_state))
+
+    # Routes — v2
+    app.include_router(create_search_v2_router(_state))
+    app.include_router(create_generate_v2_router(_state))
 
     return app
 
