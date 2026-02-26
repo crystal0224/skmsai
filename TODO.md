@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 27 | 남은 12
+> 전체 39 PR | 완료 28 | 남은 11
 
 ---
 
@@ -172,7 +172,14 @@
   - AppState v2: EvidenceFilter + CrossVersionComparisonService 초기화
   - 하위 호환: v1 엔드포인트 유지, v2는 /api/v2/ 경로
   - 20 new tests (총 718 PASS)
-- [ ] **PR-028** TOC Visualization — 인터랙티브 목차 트리 뷰어
+- [x] **PR-028** TOC Visualization — 인터랙티브 목차 트리 뷰어
+  - TOCVisualization: Markdown 트리 렌더링 + 경로 탐색 + 통계 + 비교
+  - TreeStats/BreadcrumbItem/EditionComparison frozen dataclass (불변)
+  - render_tree(): +/- 마커, max_depth 제한, 레벨/줄번호 표시
+  - render_breadcrumb(): 줄번호 → 경로(breadcrumb) 탐색
+  - get_tree_stats(): 전체 노드/최대 깊이/레벨별 카운트/리프 수
+  - compare_editions(): H1/H2 기준 공통/차이 분석 + 통계 비교표
+  - 26 new tests (총 744 PASS)
 - [ ] **PR-029** LLM-as-Judge — 4축 자동 평가기
 - [ ] **PR-030** Golden QA 50 + V1 Quality Report
 
