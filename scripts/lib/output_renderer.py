@@ -1,12 +1,17 @@
-"""OutputRenderer — 3종 출력 렌더러.
+"""OutputRenderer — 5종 출력 렌더러.
 
 PR-026: LLM 생성 결과를 summary/card/comparison_table 형식으로 렌더링한다.
+PR-032: Quiz + Slide 렌더러 추가.
 
 기능:
 - render_summary(): SummaryOutput → Markdown 요약
 - render_card(): CardOutput → Markdown 카드
 - render_card_list(): CardListOutput → Markdown 카드 목록
 - render_comparison_table(): ComparisonTableOutput → Markdown 비교표
+- render_quiz(): QuizOutput → Markdown 퀴즈
+- render_quiz_list(): QuizListOutput → Markdown 퀴즈 목록
+- render_slide(): SlideOutput → Markdown 슬라이드
+- render_slide_list(): SlideListOutput → Markdown 슬라이드 목록
 - render(): output_type 기반 자동 디스패치
 """
 from __future__ import annotations
@@ -20,6 +25,10 @@ from scripts.lib.output_validator import (
     CardListOutput,
     CardOutput,
     ComparisonTableOutput,
+    QuizListOutput,
+    QuizOutput,
+    SlideListOutput,
+    SlideOutput,
     SummaryOutput,
     _extract_json,
 )
@@ -196,6 +205,111 @@ def render_comparison_table(data: ComparisonTableOutput) -> str:
     return "\n".join(lines)
 
 
+def render_quiz(data: QuizOutput) -> str:
+    """QuizOutput → Markdown 퀴즈.
+
+    Args:
+        data: 검증된 QuizOutput
+
+    Returns:
+        Markdown 문자열
+    """
+    lines: list[str] = []
+
+    lines.append("---")
+    lines.append(f"**Q:** {data.question}")
+    lines.append("")
+    lines.append("**선택지:**")
+    for i, choice in enumerate(data.choices, 1):
+        lines.append(f"{i}. {choice}")
+    lines.append("")
+
+    correct_text = data.choices[data.correct_index]
+    lines.append(f"**정답:** {data.correct_index + 1}번 ({correct_text})")
+    lines.append("")
+    lines.append(f"**해설:** {data.explanation}")
+
+    if data.citations:
+        lines.append("")
+        citations_str = ", ".join(f"`{c}`" for c in data.citations)
+        lines.append(f"*출처: {citations_str}*")
+
+    lines.append("---")
+
+    return "\n".join(lines)
+
+
+def render_quiz_list(data: QuizListOutput) -> str:
+    """QuizListOutput → Markdown 퀴즈 목록.
+
+    Args:
+        data: 검증된 QuizListOutput
+
+    Returns:
+        Markdown 문자열
+    """
+    lines: list[str] = []
+
+    lines.append(f"## 퀴즈 ({len(data.quizzes)}문제)")
+    lines.append("")
+
+    for i, quiz in enumerate(data.quizzes, 1):
+        lines.append(f"### 퀴즈 {i}")
+        lines.append(render_quiz(quiz))
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def render_slide(data: SlideOutput) -> str:
+    """SlideOutput → Markdown 슬라이드.
+
+    Args:
+        data: 검증된 SlideOutput
+
+    Returns:
+        Markdown 문자열
+    """
+    lines: list[str] = []
+
+    lines.append("---")
+    lines.append(f"**Slide {data.slide_number}: {data.title}**")
+    lines.append("")
+    for point in data.body:
+        lines.append(f"- {point}")
+
+    if data.sources:
+        lines.append("")
+        sources_str = ", ".join(f"`{s}`" for s in data.sources)
+        lines.append(f"**출처:** {sources_str}")
+
+    lines.append("---")
+
+    return "\n".join(lines)
+
+
+def render_slide_list(data: SlideListOutput) -> str:
+    """SlideListOutput → Markdown 슬라이드 목록.
+
+    Args:
+        data: 검증된 SlideListOutput
+
+    Returns:
+        Markdown 문자열
+    """
+    lines: list[str] = []
+
+    lines.append(f"## 슬라이드 ({len(data.slides)}장)")
+    lines.append("")
+
+    for slide in data.slides:
+        lines.append(f"### Slide {slide.slide_number}")
+        lines.append(render_slide(slide))
+        lines.append("")
+
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------------------
 # 통합 렌더 디스패치
 # ---------------------------------------------------------------------------
@@ -205,6 +319,8 @@ _RENDERER_MAP: dict[str, str] = {
     "summary": "summary",
     "card": "card",
     "comparison_table": "comparison_table",
+    "quiz": "quiz",
+    "slide": "slide",
 }
 
 
@@ -215,7 +331,7 @@ def render(raw_answer: str, output_type: str) -> RenderResult:
 
     Args:
         raw_answer: LLM이 생성한 원문 응답 (JSON 포함)
-        output_type: 출력 유형 ("summary", "card", "comparison_table")
+        output_type: 출력 유형 ("summary", "card", "comparison_table", "quiz", "slide")
 
     Returns:
         RenderResult (불변)
@@ -251,6 +367,10 @@ def render(raw_answer: str, output_type: str) -> RenderResult:
         elif output_type == "comparison_table":
             parsed = ComparisonTableOutput.model_validate(data)
             rendered = render_comparison_table(parsed)
+        elif output_type == "quiz":
+            rendered = _render_quiz_dispatch(data)
+        elif output_type == "slide":
+            rendered = _render_slide_dispatch(data)
         else:
             return RenderResult(
                 output_type=output_type,
@@ -294,3 +414,31 @@ def _render_card_dispatch(data: Any) -> str:
     # 단일 카드
     card = CardOutput.model_validate(data)
     return render_card(card)
+
+
+def _render_quiz_dispatch(data: Any) -> str:
+    """퀴즈 데이터를 단일/목록에 따라 렌더링한다."""
+    if isinstance(data, list):
+        quiz_list = QuizListOutput.model_validate({"quizzes": data})
+        return render_quiz_list(quiz_list)
+
+    if isinstance(data, dict) and "quizzes" in data:
+        quiz_list = QuizListOutput.model_validate(data)
+        return render_quiz_list(quiz_list)
+
+    quiz = QuizOutput.model_validate(data)
+    return render_quiz(quiz)
+
+
+def _render_slide_dispatch(data: Any) -> str:
+    """슬라이드 데이터를 단일/목록에 따라 렌더링한다."""
+    if isinstance(data, list):
+        slide_list = SlideListOutput.model_validate({"slides": data})
+        return render_slide_list(slide_list)
+
+    if isinstance(data, dict) and "slides" in data:
+        slide_list = SlideListOutput.model_validate(data)
+        return render_slide_list(slide_list)
+
+    slide = SlideOutput.model_validate(data)
+    return render_slide(slide)

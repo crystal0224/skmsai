@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-26
-> 전체 39 PR | 완료 31 | 남은 8
+> 전체 39 PR | 완료 32 | 남은 7
 
 ---
 
@@ -210,7 +210,7 @@
 ## Phase 3: V2 Production (PR-31 ~ PR-39)
 
 - [x] **PR-031** Pinecone 마이그레이션 (Chroma → Pinecone)
-- [ ] **PR-032** Quiz + Slide 렌더러 추가
+- [x] **PR-032** Quiz + Slide 렌더러 추가
 - [ ] **PR-033** 프롬프트 최종 튜닝 + 전체 Output 통합 테스트
 - [ ] **PR-034** Next.js V2 프로덕션 UI
 - [ ] **PR-035** 운영 대시보드 (모니터링 + 사용 통계)
