@@ -150,19 +150,23 @@ def format_context(
     for i, hit in enumerate(hits, start=1):
         edition = hit.get("edition", "unknown")
         chapter_path = hit.get("chapter_path", [])
-        section = " > ".join(chapter_path) if chapter_path else "unknown"
+        section = (
+            " > ".join(str(item) for item in chapter_path)
+            if chapter_path
+            else "unknown"
+        )
         quality_flags = hit.get("quality_flags", [])
         quote_type = hit.get("type", "narrative")
 
         part = (
             f"[CHUNK {i}]\n"
-            f"quote_id: {hit['quote_id']}\n"
+            f"quote_id: {hit.get('quote_id', 'unknown')}\n"
             f"edition: {edition}\n"
             f"section: {section}\n"
             f"type: {quote_type}\n"
             f"quality_flags: {quality_flags}\n"
             f"---\n"
-            f"{hit['text']}\n"
+            f"{hit.get('text', '')}\n"
         )
         parts.append(part)
 
@@ -171,7 +175,7 @@ def format_context(
 
 def extract_quote_ids(hits: list[dict]) -> tuple[str, ...]:
     """검색 결과에서 quote_id 목록을 추출한다."""
-    return tuple(h["quote_id"] for h in hits if h.get("quote_id"))
+    return tuple(h.get("quote_id", "") for h in hits if h.get("quote_id"))
 
 
 # ---------------------------------------------------------------------------
@@ -297,16 +301,24 @@ class GenerationService:
         )
 
     def _call_llm(self, query: str, context: str, system_prompt: str) -> str:
-        """LLM API를 호출한다."""
+        """LLM API를 호출한다.
+
+        Raises:
+            RuntimeError: API 호출 실패 시.
+        """
         user_message = f"## 질의\n\n{query}\n\n## 컨텍스트\n\n{context}"
 
-        message = self._client.messages.create(
-            model=self._config.model,
-            max_tokens=self._config.max_tokens,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_message}],
-        )
-        return message.content[0].text
+        try:
+            message = self._client.messages.create(
+                model=self._config.model,
+                max_tokens=self._config.max_tokens,
+                system=system_prompt,
+                messages=[{"role": "user", "content": user_message}],
+            )
+            return message.content[0].text
+        except Exception as e:
+            logger.error("LLM API 호출 실패: %s", e)
+            raise RuntimeError(f"LLM API 호출 실패: {e}") from e
 
 
 # ---------------------------------------------------------------------------
