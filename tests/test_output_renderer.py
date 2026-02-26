@@ -1,6 +1,7 @@
 """OutputRenderer 테스트.
 
 PR-026: 3종 출력 렌더러 (summary/card/comparison_table) 단위/통합 테스트.
+PR-032: Quiz + Slide 렌더러 테스트 추가.
 """
 from __future__ import annotations
 
@@ -19,6 +20,10 @@ from scripts.lib.output_renderer import (  # noqa: E402
     render_card,
     render_card_list,
     render_comparison_table,
+    render_quiz,
+    render_quiz_list,
+    render_slide,
+    render_slide_list,
     render_summary,
 )
 from scripts.lib.output_validator import (  # noqa: E402
@@ -26,6 +31,10 @@ from scripts.lib.output_validator import (  # noqa: E402
     CardOutput,
     ComparisonRow,
     ComparisonTableOutput,
+    QuizListOutput,
+    QuizOutput,
+    SlideListOutput,
+    SlideOutput,
     SummaryOutput,
 )
 
@@ -446,3 +455,334 @@ class TestRenderDispatch:
         result = render(raw, "summary")
         assert result.success is False
         assert result.error  # 오류 메시지 존재
+
+    def test_quiz_single(self):
+        """단일 퀴즈 렌더링."""
+        raw = json.dumps(
+            {
+                "question": "VWBE의 정의는?",
+                "choices": ["자발적 의욕적 두뇌활용", "수직적 경영", "비효율 제거", "성과급"],
+                "correct_index": 0,
+                "explanation": "14차 개정판에서 도입된 문화이다.",
+                "citations": ["2020-14차|_root|principle|005"],
+            },
+            ensure_ascii=False,
+        )
+        result = render(raw, "quiz")
+        assert result.success is True
+        assert "**Q:** VWBE의 정의는?" in result.rendered
+        assert "정답:" in result.rendered
+
+    def test_quiz_list(self):
+        """퀴즈 목록 렌더링."""
+        raw = json.dumps(
+            {
+                "quizzes": [
+                    {
+                        "question": "Q1",
+                        "choices": ["A", "B", "C", "D"],
+                        "correct_index": 0,
+                        "explanation": "해설1",
+                        "citations": ["a|b|c|d"],
+                    },
+                    {
+                        "question": "Q2",
+                        "choices": ["A", "B", "C", "D"],
+                        "correct_index": 1,
+                        "explanation": "해설2",
+                        "citations": ["e|f|g|h"],
+                    },
+                ]
+            },
+            ensure_ascii=False,
+        )
+        result = render(raw, "quiz")
+        assert result.success is True
+        assert "퀴즈 (2문제)" in result.rendered
+        assert "퀴즈 1" in result.rendered
+        assert "퀴즈 2" in result.rendered
+
+    def test_quiz_array(self):
+        """퀴즈 배열 렌더링."""
+        raw = json.dumps(
+            [
+                {
+                    "question": "Q1",
+                    "choices": ["A", "B", "C", "D"],
+                    "correct_index": 2,
+                    "explanation": "해설",
+                    "citations": ["a|b|c|d"],
+                },
+            ],
+            ensure_ascii=False,
+        )
+        result = render(raw, "quiz")
+        assert result.success is True
+        assert "퀴즈 (1문제)" in result.rendered
+
+    def test_slide_single(self):
+        """단일 슬라이드 렌더링."""
+        raw = json.dumps(
+            {
+                "slide_number": 1,
+                "title": "VWBE 문화",
+                "body": ["자발적 두뇌활용", "14차 개정판 신설"],
+                "sources": ["2020-14차|_root|principle|005"],
+            },
+            ensure_ascii=False,
+        )
+        result = render(raw, "slide")
+        assert result.success is True
+        assert "**Slide 1: VWBE 문화**" in result.rendered
+        assert "- 자발적 두뇌활용" in result.rendered
+
+    def test_slide_list(self):
+        """슬라이드 목록 렌더링."""
+        raw = json.dumps(
+            {
+                "slides": [
+                    {
+                        "slide_number": 1,
+                        "title": "제목1",
+                        "body": ["포인트1"],
+                        "sources": ["a|b|c|d"],
+                    },
+                    {
+                        "slide_number": 2,
+                        "title": "제목2",
+                        "body": ["포인트2"],
+                        "sources": ["e|f|g|h"],
+                    },
+                ]
+            },
+            ensure_ascii=False,
+        )
+        result = render(raw, "slide")
+        assert result.success is True
+        assert "슬라이드 (2장)" in result.rendered
+        assert "Slide 1" in result.rendered
+        assert "Slide 2" in result.rendered
+
+    def test_slide_array(self):
+        """슬라이드 배열 렌더링."""
+        raw = json.dumps(
+            [
+                {
+                    "slide_number": 1,
+                    "title": "제목",
+                    "body": ["포인트"],
+                    "sources": ["a|b|c|d"],
+                },
+            ],
+            ensure_ascii=False,
+        )
+        result = render(raw, "slide")
+        assert result.success is True
+        assert "슬라이드 (1장)" in result.rendered
+
+
+# ---------------------------------------------------------------------------
+# render_quiz 단위 테스트
+# ---------------------------------------------------------------------------
+
+
+class TestRenderQuiz:
+    """render_quiz 함수 테스트."""
+
+    def test_basic(self):
+        """기본 퀴즈 렌더링."""
+        data = QuizOutput(
+            question="SUPEX란 무엇인가?",
+            choices=[
+                "Super Excellent",
+                "Superior Experience",
+                "Super Expert",
+                "Supreme Excellence",
+            ],
+            correct_index=0,
+            explanation="SUPEX는 Super Excellent의 약자이다.",
+            citations=["1998-10차|_root|def|001"],
+        )
+        result = render_quiz(data)
+
+        assert "**Q:** SUPEX란 무엇인가?" in result
+        assert "**선택지:**" in result
+        assert "1. Super Excellent" in result
+        assert "2. Superior Experience" in result
+        assert "3. Super Expert" in result
+        assert "4. Supreme Excellence" in result
+        assert "**정답:** 1번 (Super Excellent)" in result
+        assert "**해설:** SUPEX는 Super Excellent의 약자이다." in result
+        assert "`1998-10차|_root|def|001`" in result
+        assert result.startswith("---")
+        assert result.endswith("---")
+
+    def test_correct_index_3(self):
+        """correct_index가 3 (4번째 선택지)."""
+        data = QuizOutput(
+            question="질문",
+            choices=["A", "B", "C", "D"],
+            correct_index=3,
+            explanation="D가 정답이다.",
+            citations=["a|b|c|d"],
+        )
+        result = render_quiz(data)
+        assert "**정답:** 4번 (D)" in result
+
+    def test_multiple_citations(self):
+        """여러 출처."""
+        data = QuizOutput(
+            question="질문",
+            choices=["A", "B", "C", "D"],
+            correct_index=0,
+            explanation="해설",
+            citations=["a|b|c|d", "e|f|g|h"],
+        )
+        result = render_quiz(data)
+        assert "`a|b|c|d`" in result
+        assert "`e|f|g|h`" in result
+
+
+class TestRenderQuizList:
+    """render_quiz_list 함수 테스트."""
+
+    def test_basic(self):
+        """기본 퀴즈 목록."""
+        quizzes = QuizListOutput(
+            quizzes=[
+                QuizOutput(
+                    question="Q1",
+                    choices=["A", "B", "C", "D"],
+                    correct_index=0,
+                    explanation="해설1",
+                    citations=["a|b|c|d"],
+                ),
+                QuizOutput(
+                    question="Q2",
+                    choices=["W", "X", "Y", "Z"],
+                    correct_index=2,
+                    explanation="해설2",
+                    citations=["e|f|g|h"],
+                ),
+            ]
+        )
+        result = render_quiz_list(quizzes)
+
+        assert "## 퀴즈 (2문제)" in result
+        assert "### 퀴즈 1" in result
+        assert "### 퀴즈 2" in result
+        assert "**Q:** Q1" in result
+        assert "**Q:** Q2" in result
+
+    def test_single_quiz(self):
+        """1문제 퀴즈 목록."""
+        quizzes = QuizListOutput(
+            quizzes=[
+                QuizOutput(
+                    question="Q",
+                    choices=["A", "B", "C", "D"],
+                    correct_index=0,
+                    explanation="해설",
+                    citations=["a|b|c|d"],
+                ),
+            ]
+        )
+        result = render_quiz_list(quizzes)
+        assert "## 퀴즈 (1문제)" in result
+
+
+# ---------------------------------------------------------------------------
+# render_slide 단위 테스트
+# ---------------------------------------------------------------------------
+
+
+class TestRenderSlide:
+    """render_slide 함수 테스트."""
+
+    def test_basic(self):
+        """기본 슬라이드 렌더링."""
+        data = SlideOutput(
+            slide_number=1,
+            title="VWBE 문화의 핵심",
+            body=["자발적·의욕적 두뇌활용", "14차 개정판 신설 개념", "구성원 자율성 강조"],
+            sources=["2020-14차|_root|principle|005"],
+        )
+        result = render_slide(data)
+
+        assert "**Slide 1: VWBE 문화의 핵심**" in result
+        assert "- 자발적·의욕적 두뇌활용" in result
+        assert "- 14차 개정판 신설 개념" in result
+        assert "- 구성원 자율성 강조" in result
+        assert "**출처:**" in result
+        assert "`2020-14차|_root|principle|005`" in result
+        assert result.startswith("---")
+        assert result.endswith("---")
+
+    def test_single_bullet(self):
+        """단일 불릿 포인트."""
+        data = SlideOutput(
+            slide_number=3,
+            title="제목",
+            body=["포인트 하나"],
+            sources=["a|b|c|d"],
+        )
+        result = render_slide(data)
+        assert "**Slide 3: 제목**" in result
+        assert "- 포인트 하나" in result
+
+    def test_multiple_sources(self):
+        """여러 출처."""
+        data = SlideOutput(
+            slide_number=1,
+            title="제목",
+            body=["포인트"],
+            sources=["a|b|c|d", "e|f|g|h"],
+        )
+        result = render_slide(data)
+        assert "`a|b|c|d`" in result
+        assert "`e|f|g|h`" in result
+
+
+class TestRenderSlideList:
+    """render_slide_list 함수 테스트."""
+
+    def test_basic(self):
+        """기본 슬라이드 목록."""
+        slides = SlideListOutput(
+            slides=[
+                SlideOutput(
+                    slide_number=1,
+                    title="제목1",
+                    body=["포인트1"],
+                    sources=["a|b|c|d"],
+                ),
+                SlideOutput(
+                    slide_number=2,
+                    title="제목2",
+                    body=["포인트2"],
+                    sources=["e|f|g|h"],
+                ),
+            ]
+        )
+        result = render_slide_list(slides)
+
+        assert "## 슬라이드 (2장)" in result
+        assert "### Slide 1" in result
+        assert "### Slide 2" in result
+        assert "**Slide 1: 제목1**" in result
+        assert "**Slide 2: 제목2**" in result
+
+    def test_single_slide(self):
+        """1장 슬라이드 목록."""
+        slides = SlideListOutput(
+            slides=[
+                SlideOutput(
+                    slide_number=1,
+                    title="제목",
+                    body=["포인트"],
+                    sources=["a|b|c|d"],
+                ),
+            ]
+        )
+        result = render_slide_list(slides)
+        assert "## 슬라이드 (1장)" in result
