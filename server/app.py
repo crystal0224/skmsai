@@ -18,8 +18,10 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from scripts.lib.metrics_collector import MetricsCollector
 from server.dependencies import AppState
 from server.models import ErrorResponse
+from server.routes.dashboard import create_dashboard_router
 from server.routes.generate import create_generate_router
 from server.routes.generate_v2 import create_generate_v2_router
 from server.routes.health import create_health_router
@@ -38,6 +40,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _state = AppState()
+_metrics = MetricsCollector()
 
 
 # ---------------------------------------------------------------------------
@@ -85,7 +88,7 @@ def create_app() -> FastAPI:
         allow_headers=["Content-Type", "Authorization"],
     )
 
-    # Request logging middleware
+    # Request logging + metrics middleware
     @app.middleware("http")
     async def log_requests(request: Request, call_next):
         start = time.time()
@@ -98,6 +101,15 @@ def create_app() -> FastAPI:
             response.status_code,
             duration_ms,
         )
+        # 메트릭 기록 (대시보드 자체 요청은 제외)
+        path = request.url.path
+        if not path.startswith("/api/dashboard"):
+            _metrics.record(
+                endpoint=path,
+                method=request.method,
+                status_code=response.status_code,
+                duration_ms=duration_ms,
+            )
         return response
 
     # Global error handler
@@ -121,6 +133,9 @@ def create_app() -> FastAPI:
     # Routes — v2
     app.include_router(create_search_v2_router(_state))
     app.include_router(create_generate_v2_router(_state))
+
+    # Routes — dashboard
+    app.include_router(create_dashboard_router(_state, _metrics))
 
     return app
 
