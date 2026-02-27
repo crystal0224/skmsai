@@ -39,6 +39,10 @@ data/skms.db
 .env.*
 !.env.example
 
+# Coverage
+.coverage
+htmlcov/
+
 # Temporary / build artifacts
 *.html
 !docs/**/*.html
