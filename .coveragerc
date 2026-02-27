@@ -1,0 +1,12 @@
+[run]
+source =
+    scripts/lib
+    server
+
+omit =
+    tests/*
+    */__init__.py
+
+[report]
+fail_under = 80
+show_missing = True
