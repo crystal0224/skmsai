@@ -48,3 +48,55 @@ This repository contains the raw text of **SKMS (SK Management System)** — SK 
 - Some sections are marked as drafts: "(임원 세미나에서 논의된 것을 요약한 것으로, 추후 보완함)"
 - Line separators (`---`) appear between major sections
 - The document is **not** a flat list — later editions redefine and expand earlier concepts, so the same topic (e.g., 인사관리) appears multiple times with different depth across editions
+
+## Project Overview
+
+This repository also contains a **Time-Aware RAG pipeline** built on top of SKMSraw.txt.
+
+### Development Status
+- **Phase 0~3**: Complete (39 PRs, 1216 tests, 93% coverage)
+- **Phase 4**: Content Studio (design complete, implementation pending)
+- **GitHub**: crystal0224/skmsai (private)
+
+### Key Source Directories
+```
+src/
+├── models/          # QuoteObject, frozen dataclasses
+├── db/              # SQLite repository, migrations
+├── search/          # VectorStore, BM25, SearchService, hybrid search
+├── generation/      # GenerationService, QueryRouter, OutputRenderer
+├── api/             # FastAPI server, routes (/query, /search, /toc, /health)
+├── ui/              # Streamlit MVP
+├── ingestion/       # Pipeline: parse → chunk → embed → store
+├── toc/             # Table of contents API
+├── cross_version/   # Cross-edition comparison service
+└── eval/            # Evaluation framework, quality gate
+scripts/             # Numbered scripts (01~13) for build, eval, migration
+tests/               # 43 test files, pytest + pytest-asyncio
+prompts/             # Edition-aware prompt templates
+data/                # SKMSraw.txt, edition metadata YAML
+docs/plans/          # Design documents
+```
+
+### Architecture Summary
+- **Domain models**: frozen dataclasses (immutable, tuples for collections)
+- **Database**: SQLite (WAL mode, foreign keys, migrations)
+- **Search**: Hybrid (ChromaDB vector + BM25 keyword) → rerank → temporal filter
+- **Generation**: QueryRouter → prompt template → LLM → OutputRenderer (5 types)
+- **API**: FastAPI with closure-based DI (AppState pattern)
+- **Testing**: pytest, 80%+ coverage target, `FastAPI_with_mock_state()` helper
+
+### Running the Project
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run tests
+python -m pytest tests/ -v
+
+# Start API server
+python -m uvicorn src.api.main:app --reload
+
+# Start Streamlit UI
+streamlit run src/ui/app.py
+```
