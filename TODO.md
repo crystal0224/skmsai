@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
 > 마지막 업데이트: 2026-02-28
-> Phase 0~3 완료 (39 PR) | Phase 4 PR-040~052 + Cross-Cutting 완료 (1793 tests, frontend build OK)
+> Phase 0~3 완료 (39 PR) | Phase 4 + Cross-Cutting + Tech Debt 완료 (1850 tests, 95.80% coverage)
 
 ---
 
@@ -794,13 +794,12 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
   - 현재: 핵심 서비스가 `scripts/lib/`에, API가 `server/`에 분리
   - 개선안: `src/` 통합 또는 `scripts/lib/` → Python 패키지화
   - 우선순위: LOW (Phase 4 완료 후)
-- [ ] **TD-002** 타입 힌트 강화
-  - 일부 dict 반환 함수에 TypedDict 또는 frozen dataclass 적용
-  - 특히 config 로딩 함수들 (현재 dict 반환)
-- [ ] **TD-003** async/await 전면 도입 검토
-  - 현재: SearchService, GenerationService 동기 호출
-  - Content Studio: MCP 어댑터는 async (불일치)
-  - 검토: asyncio.to_thread()로 래핑 vs 전면 async 전환
+- [x] **TD-002** 타입 힌트 강화
+  - ContentStudioConfig, TocEntry, FooterData 등 TypedDict 추가
+  - config 로딩 함수 반환 타입 dict → TypedDict
+- [x] **TD-003** async/await 불일치 해소
+  - generator.py: asyncio.to_thread() 래핑 (SearchService, GenerationService)
+  - _run_quality_checks async화
 
 ### 테스트
 - [x] **TD-004** 테스트 fixture 중복 해소
@@ -809,9 +808,9 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 - [ ] **TD-005** E2E 테스트 실행 환경 격리
   - 현재: 테스트에서 실제 DB/파일 생성 가능 (tmp 디렉토리 사용하나 불완전)
   - 개선: pytest-tmp-files 또는 Docker 기반 격리
-- [ ] **TD-006** 커버리지 93% → 95% 목표
-  - 현재: 1216 tests, 93.33%
-  - 미커버 영역: 일부 에러 핸들링 분기, edge case
+- [x] **TD-006** 커버리지 93% → 95.80% 달성
+  - 1850 tests, 5개 커버리지 테스트 파일 추가
+  - app.py 97%, retrieval.py 96%, search_service.py 100%, vector_store.py 100%, quote.py 100%
 
 ### 인프라
 - [x] **TD-007** CI/CD 파이프라인 Phase 4 확장
@@ -820,9 +819,9 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 - [x] **TD-008** Docker 이미지 Phase 4 업데이트
   - Dockerfile: output/ 디렉토리 + VOLUME 추가
   - docker-compose.yml: GEMINI/ELEVENLABS API 키 + named volume
-- [ ] **TD-009** 모니터링 확장
-  - Content Studio 메트릭: 생성 요청 수, 유형별 분포, 평균 생성 시간, 실패율
-  - MCP 어댑터 헬스체크: /api/health에 MCP 서버 상태 포함
+- [x] **TD-009** 모니터링 확장
+  - /api/health에 content_studio 상태 추가 (has_planner/generator/assembler/cache)
+  - ContentStudioHealthResponse Pydantic 모델 + TypeScript 타입
 
 ---
 
