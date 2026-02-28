@@ -1,0 +1,1 @@
+"""Content Studio 어댑터 테스트 패키지."""

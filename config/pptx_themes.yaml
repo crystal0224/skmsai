@@ -1,0 +1,25 @@
+themes:
+  corporate:
+    name: "Corporate (SK)"
+    primary: "#E4002B"
+    secondary: "#003DA5"
+    accent: "#FF6B35"
+    background: "#FFFFFF"
+    text: "#1A1A1A"
+    font: "맑은 고딕"
+  education:
+    name: "Education"
+    primary: "#2196F3"
+    secondary: "#4CAF50"
+    accent: "#FF9800"
+    background: "#FAFAFA"
+    text: "#333333"
+    font: "나눔고딕"
+  seminar:
+    name: "Seminar (Formal)"
+    primary: "#1B365D"
+    secondary: "#7A8B99"
+    accent: "#C5A572"
+    background: "#FFFFFF"
+    text: "#2C2C2C"
+    font: "맑은 고딕"

@@ -13,6 +13,10 @@ import type {
   TOCResponse,
   HealthResponse,
   ErrorResponse,
+  ContentTypesResponse,
+  ContentGenerateRequest,
+  ContentGenerateResponse,
+  ContentPlanResponse,
 } from "@/types/api";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
@@ -27,10 +31,7 @@ class ApiError extends Error {
   }
 }
 
-async function request<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${path}`;
   const res = await fetch(url, {
     ...options,
@@ -84,6 +85,32 @@ export async function getEditions(): Promise<EditionsListResponse> {
 
 export async function getTOC(editionId: string): Promise<TOCResponse> {
   return request<TOCResponse>(`/toc/${encodeURIComponent(editionId)}`);
+}
+
+// ---------------------------------------------------------------------------
+// Content Studio API
+// ---------------------------------------------------------------------------
+
+export async function getContentTypes(): Promise<ContentTypesResponse> {
+  return request<ContentTypesResponse>("/content/types");
+}
+
+export async function generateContent(
+  req: ContentGenerateRequest,
+): Promise<ContentGenerateResponse> {
+  return request<ContentGenerateResponse>("/content/generate", {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
+}
+
+export async function previewPlan(
+  req: ContentGenerateRequest,
+): Promise<ContentPlanResponse> {
+  return request<ContentPlanResponse>("/content/plan", {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
 }
 
 export { ApiError };

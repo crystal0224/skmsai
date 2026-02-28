@@ -1,0 +1,87 @@
+content_studio:
+  output_dir: "output"
+
+  # MCP 서버 설정
+  mcp_servers:
+    nano_banana:
+      enabled: true
+      model: "gemini-2.0-flash-exp"
+      default_resolution: "1K"
+      default_style: "professional"
+      timeout_sec: 30
+
+    antv_chart:
+      enabled: true
+      chart_types:
+        - timeline
+        - mindmap
+        - comparison
+        - wordcloud
+        - radar
+        - sankey
+        - flowchart
+      theme: "classic"
+
+    elevenlabs:
+      enabled: false
+      voice: "korean-female-01"
+      model: "eleven_multilingual_v2"
+      timeout_sec: 60
+
+    notion:
+      enabled: false
+      database_id: ""
+
+    google_workspace:
+      enabled: false
+
+  # 강의자료 설정
+  lecture:
+    min_slides: 5
+    max_slides: 30
+    minutes_per_slide: 2
+    default_layout: "title_content_image"
+    aspect_ratio: "16:9"
+
+  # 카드뉴스 설정
+  card_news:
+    min_cards: 3
+    max_cards: 10
+    image_size: [1080, 1080]
+
+  # 워크숍 설정
+  workshop:
+    default_duration_min: 60
+    phases:
+      - intro
+      - main
+      - activity
+      - wrap_up
+    phase_ratios:
+      intro: 0.10
+      main: 0.40
+      activity: 0.30
+      wrap_up: 0.20
+
+  # 오디오 설정
+  audio:
+    max_duration_min: 10
+    default_style: "narration"
+    voices:
+      narrator: "korean-female-01"
+      host: "korean-male-01"
+      expert: "korean-male-02"
+
+  # 시각화 설정
+  visualization:
+    default_theme: "classic"
+    output_format: "svg"
+
+  # 퀴즈 설정
+  quiz:
+    min_questions: 5
+    max_questions: 20
+    difficulty_distribution:
+      easy: 0.3
+      medium: 0.5
+      hard: 0.2

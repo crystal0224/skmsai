@@ -1,0 +1,27 @@
+name: Content Studio Tests
+
+on:
+  push:
+    paths:
+      - 'scripts/lib/content_studio/**'
+      - 'tests/test_content_studio/**'
+      - 'server/routes/content.py'
+  pull_request:
+    paths:
+      - 'scripts/lib/content_studio/**'
+      - 'tests/test_content_studio/**'
+      - 'server/routes/content.py'
+
+jobs:
+  content-studio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Content Studio tests
+        run: python -m pytest tests/test_content_studio/ -v --tb=short

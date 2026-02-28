@@ -49,3 +49,6 @@ htmlcov/
 
 # Eval reports (regenerable)
 eval/reports/
+
+# Content Studio output (generated files)
+output/

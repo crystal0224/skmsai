@@ -29,6 +29,22 @@ class RequestRecord:
     timestamp: float
 
 
+@dataclass(frozen=True)
+class ContentGenerationRecord:
+    """콘텐츠 생성 기록 (불변).
+
+    Content Studio에서 생성된 콘텐츠의 메트릭을 추적한다.
+    """
+
+    content_type: str  # lecture, card_news, workshop, visualization, audio, quiz
+    topic: str
+    success: bool
+    duration_ms: float
+    file_count: int
+    asset_count: int
+    timestamp: float
+
+
 # ---------------------------------------------------------------------------
 # Immutable stats snapshots
 # ---------------------------------------------------------------------------
@@ -85,6 +101,20 @@ class UsageStats:
     hourly_counts: tuple[tuple[int, int], ...]  # (hour, count)
 
 
+@dataclass(frozen=True)
+class ContentStudioStats:
+    """Content Studio 통계 스냅샷 (불변)."""
+
+    total_generations: int
+    success_count: int
+    failure_count: int
+    success_rate: float
+    type_distribution: tuple[tuple[str, int], ...]  # (content_type, count)
+    avg_duration_ms: float
+    total_files_generated: int
+    total_assets_generated: int
+
+
 # ---------------------------------------------------------------------------
 # Metrics Collector
 # ---------------------------------------------------------------------------
@@ -99,9 +129,11 @@ class MetricsCollector:
     def __init__(self, max_records: int = 10_000) -> None:
         self._lock = threading.Lock()
         self._records: list[RequestRecord] = []
+        self._content_records: list[ContentGenerationRecord] = []
         self._max_records = max_records
         self._start_time = time.time()
         self._total_requests = 0
+        self._total_content_generations = 0
 
     @property
     def total_requests(self) -> int:
@@ -131,6 +163,33 @@ class MetricsCollector:
             if len(self._records) > self._max_records:
                 overflow = len(self._records) - self._max_records
                 self._records = self._records[overflow:]
+
+    def record_content_generation(
+        self,
+        content_type: str,
+        topic: str,
+        success: bool,
+        duration_ms: float,
+        file_count: int = 0,
+        asset_count: int = 0,
+    ) -> None:
+        """콘텐츠 생성 메트릭을 기록한다."""
+        rec = ContentGenerationRecord(
+            content_type=content_type,
+            topic=topic,
+            success=success,
+            duration_ms=duration_ms,
+            file_count=file_count,
+            asset_count=asset_count,
+            timestamp=time.time(),
+        )
+        with self._lock:
+            self._total_content_generations += 1
+            self._content_records.append(rec)
+            # 순환 버퍼: 최대 크기 초과 시 오래된 기록 제거
+            if len(self._content_records) > self._max_records:
+                overflow = len(self._content_records) - self._max_records
+                self._content_records = self._content_records[overflow:]
 
     def get_metrics(self, window_seconds: float = 3600.0) -> DashboardMetrics:
         """시간 윈도우 내 메트릭 스냅샷을 반환한다.
@@ -252,11 +311,66 @@ class MetricsCollector:
             hourly_counts=hourly_counts,
         )
 
+    def get_content_studio_stats(
+        self, window_seconds: float = 86400.0
+    ) -> ContentStudioStats:
+        """Content Studio 통계를 반환한다.
+
+        Args:
+            window_seconds: 조회할 시간 윈도우 (기본 24시간).
+        """
+        now = time.time()
+        cutoff = now - window_seconds
+
+        with self._lock:
+            windowed = [r for r in self._content_records if r.timestamp >= cutoff]
+
+        if not windowed:
+            return ContentStudioStats(
+                total_generations=0,
+                success_count=0,
+                failure_count=0,
+                success_rate=0.0,
+                type_distribution=(),
+                avg_duration_ms=0.0,
+                total_files_generated=0,
+                total_assets_generated=0,
+            )
+
+        success_count = sum(1 for r in windowed if r.success)
+        failure_count = len(windowed) - success_count
+        success_rate = success_count / len(windowed)
+
+        # content_type별 분포
+        type_counts: dict[str, int] = defaultdict(int)
+        for r in windowed:
+            type_counts[r.content_type] += 1
+        type_distribution = sorted(
+            type_counts.items(), key=lambda x: x[1], reverse=True
+        )
+
+        avg_duration = sum(r.duration_ms for r in windowed) / len(windowed)
+        total_files = sum(r.file_count for r in windowed)
+        total_assets = sum(r.asset_count for r in windowed)
+
+        return ContentStudioStats(
+            total_generations=len(windowed),
+            success_count=success_count,
+            failure_count=failure_count,
+            success_rate=round(success_rate, 4),
+            type_distribution=tuple(type_distribution),
+            avg_duration_ms=round(avg_duration, 2),
+            total_files_generated=total_files,
+            total_assets_generated=total_assets,
+        )
+
     def reset(self) -> None:
         """메트릭을 초기화한다 (테스트용)."""
         with self._lock:
             self._records.clear()
+            self._content_records.clear()
             self._total_requests = 0
+            self._total_content_generations = 0
             self._start_time = time.time()
 
 

@@ -21,6 +21,7 @@ from fastapi.responses import JSONResponse
 from scripts.lib.metrics_collector import MetricsCollector
 from server.dependencies import AppState
 from server.models import ErrorResponse
+from server.routes.content import create_content_router
 from server.routes.dashboard import create_dashboard_router
 from server.routes.generate import create_generate_router
 from server.routes.quality import create_quality_router
@@ -59,6 +60,20 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("서비스 초기화 실패 (degraded mode): %s", e)
         # 초기화 실패 시 degraded mode로 시작 — health 엔드포인트는 503 반환
+
+    # Content Studio 초기화 (선택적 — LLM 클라이언트 없으면 비활성)
+    try:
+        from scripts.lib.content_studio import ContentStudio
+
+        _state.content_studio = ContentStudio.create(
+            search_service=_state.search_service,
+            generation_service=_state.generation_service,
+            evidence_filter=_state.evidence_filter,
+        )
+        logger.info("Content Studio 초기화 완료")
+    except Exception as e:
+        logger.warning("Content Studio 초기화 실패: %s", e)
+
     yield
     logger.info("SKMS API 서버 종료")
 
@@ -140,6 +155,9 @@ def create_app() -> FastAPI:
 
     # Routes — quality
     app.include_router(create_quality_router())
+
+    # Routes — Content Studio
+    app.include_router(create_content_router(_state))
 
     return app
 

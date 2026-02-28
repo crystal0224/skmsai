@@ -130,6 +130,67 @@ export interface EditionsListResponse {
 }
 
 // ---------------------------------------------------------------------------
+// Content Studio API
+// ---------------------------------------------------------------------------
+
+export type ContentType =
+  | "lecture"
+  | "card_news"
+  | "workshop"
+  | "visualization"
+  | "audio"
+  | "quiz";
+
+export interface ContentTypeInfo {
+  type: ContentType;
+  label: string;
+  description: string;
+  output_formats: string[];
+}
+
+export interface ContentTypesResponse {
+  types: ContentTypeInfo[];
+  total: number;
+}
+
+export interface ContentOptionsRequest {
+  duration_min?: number | null;
+  num_items?: number | null;
+  edition_filter?: string | null;
+  style?: string;
+  language?: string;
+  include_quiz?: boolean;
+  include_speaker_notes?: boolean;
+}
+
+export interface ContentGenerateRequest {
+  content_type: ContentType;
+  topic: string;
+  options?: ContentOptionsRequest;
+}
+
+export interface GeneratedFile {
+  file_type: string;
+  file_path: string;
+  file_name: string;
+  size_bytes: number;
+}
+
+export interface ContentGenerateResponse {
+  content_type: string;
+  topic: string;
+  files: GeneratedFile[];
+  citations: string[];
+  metadata: Record<string, unknown>;
+}
+
+export interface ContentPlanResponse {
+  content_type: string;
+  topic: string;
+  plan: Record<string, unknown>;
+}
+
+// ---------------------------------------------------------------------------
 // Health API
 // ---------------------------------------------------------------------------
 

@@ -1,7 +1,7 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
-> 마지막 업데이트: 2026-02-27
-> Phase 0~3 완료 (39 PR) | Phase 4 Content Studio 진행 중
+> 마지막 업데이트: 2026-02-28
+> Phase 0~3 완료 (39 PR) | Phase 4 PR-040~052 + Cross-Cutting 완료 (1793 tests, frontend build OK)
 
 ---
 
@@ -253,19 +253,35 @@
 
 ### Step 1: 기반 구조 (PR-40 ~ PR-42)
 
-- [ ] **PR-040** Content Studio 데이터 모델 + 설정
+- [x] **PR-040** Content Studio 데이터 모델 + 설정
   - `scripts/lib/content_studio/models.py`: 전체 데이터 모델 (frozen dataclass)
     - ContentRequest, ContentOptions, ContentResult, GeneratedFile, GeneratedAsset
     - LecturePlan, SlidePlan (index, title, layout, key_points, rag_query, asset_type, asset_prompt, speaker_notes)
     - CardNewsPlan, CardPlan (headline, body, source_quote, image_prompt, text_overlay)
     - WorkshopPlan, WorkshopPhase (phase_type, facilitator_guide, materials_needed)
     - AudioPlan, ScriptSection (speaker, text)
+    - VisualizationPlan (viz_type, data_structure, chart_options)
+    - QuizPlan, QuizQuestion (question_text, choices, correct_answer, explanation, difficulty)
   - `scripts/lib/content_studio/__init__.py`: ContentStudio 오케스트레이터 클래스
   - `config/content_studio.yaml`: 전체 설정 (MCP 서버, 콘텐츠 유형별 옵션)
   - 테스트: 모델 직렬화/역직렬화, 불변성, YAML 로드, 기본값 검증
   - 예상: ~30 tests
+  - **세부 과제:**
+    - [ ] 공통 모델 정의 (ContentRequest, ContentOptions, ContentResult, GeneratedFile, GeneratedAsset)
+    - [ ] 강의자료 모델 (LecturePlan, SlidePlan) + layout enum 검증
+    - [ ] 카드뉴스 모델 (CardNewsPlan, CardPlan) + image_size 기본값 (1080x1080)
+    - [ ] 워크숍 모델 (WorkshopPlan, WorkshopPhase) + phase_type enum 검증
+    - [ ] 오디오 모델 (AudioPlan, ScriptSection) + style enum (narration/dialogue/podcast)
+    - [ ] 시각화 모델 (VisualizationPlan) + viz_type enum (timeline/mindmap/comparison/radar/sankey)
+    - [ ] 퀴즈 모델 (QuizPlan, QuizQuestion) + difficulty enum (easy/medium/hard)
+    - [ ] ContentPlan 유니온 타입: LecturePlan | CardNewsPlan | WorkshopPlan | AudioPlan | VisualizationPlan | QuizPlan
+    - [ ] 모든 모델에 to_dict() / from_dict() 직렬화 메서드
+    - [ ] content_studio.yaml 작성 (MCP 서버 설정, 유형별 기본값, output_dir)
+    - [ ] YAML 로더: `load_content_studio_config(path) → dict` + 스키마 검증
+    - [ ] `__init__.py` ContentStudio 클래스 스켈레톤 (create 메서드 시그니처만)
+    - [ ] 테스트: frozen 불변성, 필수 필드 누락 시 TypeError, 기본값 적용, YAML 로드
 
-- [ ] **PR-041** MCP 어댑터 기반 + 나노바나나2 어댑터
+- [x] **PR-041** MCP 어댑터 기반 + 나노바나나2 어댑터
   - `scripts/lib/content_studio/adapters/base.py`: MCPAdapter Protocol 정의
     - MCPAdapter: is_available(), health_check()
     - ImageGenerator: generate_image(prompt, width, height, style) → GeneratedAsset
@@ -287,8 +303,22 @@
     - GEMINI_API_KEY 환경변수 설정
   - 테스트: mock API로 이미지 생성/편집, fallback, 파일 저장 검증
   - 예상: ~25 tests
+  - **세부 과제:**
+    - [ ] MCPAdapter Protocol 정의 (is_available, health_check — async)
+    - [ ] ImageGenerator Protocol 정의 (generate_image, edit_image)
+    - [ ] ChartGenerator Protocol 정의 (generate_chart)
+    - [ ] AudioGenerator Protocol 정의 (text_to_speech)
+    - [ ] DocumentPublisher Protocol 정의 (publish)
+    - [ ] NanoBananaAdapter 클래스 구현 (google-generativeai SDK 래핑)
+    - [ ] 해상도 매핑 딕셔너리: {"512": (512,512), "1K": (1024,1024), "2K": (2048,2048), "4K": (4096,4096)}
+    - [ ] 비율 매핑: {"16:9": (1920,1080), "1:1": (1080,1080), "9:16": (1080,1920)}
+    - [ ] output/assets/ 디렉토리 자동 생성 (존재하지 않으면)
+    - [ ] 파일명 생성 유틸: `nano-banana-{timestamp}-{uuid4[:8]}.png`
+    - [ ] Graceful fallback: API 타임아웃(30s) / 인증 실패 / 네트워크 오류 → None + 로그
+    - [ ] requirements.txt에 `google-generativeai>=0.8` 추가
+    - [ ] 테스트: mock Gemini API → 정상 이미지 생성, 편집, 해상도별, fallback 3종
 
-- [ ] **PR-042** AntV Chart 어댑터 + ElevenLabs 어댑터
+- [x] **PR-042** AntV Chart 어댑터 + ElevenLabs 어댑터
   - `scripts/lib/content_studio/adapters/antv_chart.py`: AntV 차트 어댑터
     - AntVChartAdapter(ChartGenerator) 구현
     - 차트 유형: timeline, mindmap, comparison, wordcloud, radar, sankey, flowchart
@@ -305,10 +335,23 @@
   - Graceful fallback: 각각 텍스트 표/스크립트로 대체
   - 테스트: mock API로 차트/오디오 생성, fallback 검증
   - 예상: ~30 tests
+  - **세부 과제:**
+    - [ ] AntVChartAdapter 클래스 스켈레톤 (ChartGenerator Protocol 준수)
+    - [ ] chart_type 검증: 허용 목록 (timeline, mindmap, comparison, wordcloud, radar, sankey, flowchart)
+    - [ ] 차트 데이터 구조 변환: SKMS 데이터 → AntV 입력 포맷 (유형별 JSON 스키마)
+    - [ ] SVG/PNG 파일 저장: output/assets/chart-{type}-{timestamp}.{ext}
+    - [ ] SKMS 특화 헬퍼: edition_timeline_data(), concept_mindmap_data(), element_radar_data()
+    - [ ] AntV fallback: 차트 생성 실패 시 Markdown 표 텍스트 반환
+    - [ ] ElevenLabsAdapter 클래스 구현 (AudioGenerator Protocol 준수)
+    - [ ] 음성 설정 매핑: {"narrator": "korean-female-01", "host": "korean-male-01", "expert": "korean-male-02"}
+    - [ ] 멀티섹션 합성: 여러 ScriptSection → pydub로 MP3 연결 (또는 ElevenLabs API 합성)
+    - [ ] ElevenLabs fallback: TTS 실패 시 스크립트 텍스트 PDF 반환
+    - [ ] 테스트: mock AntV → chart_type별 생성, 테마 적용, fallback
+    - [ ] 테스트: mock ElevenLabs → TTS 생성, 멀티스피커, 합성, fallback
 
 ### Step 2: 핵심 파이프라인 (PR-43 ~ PR-46)
 
-- [ ] **PR-043** ContentPlanner — 주제→아웃라인 생성
+- [x] **PR-043** ContentPlanner — 주제→아웃라인 생성
   - `scripts/lib/content_studio/planner.py`: ContentPlanner 서비스
     - plan_lecture(topic, duration_min, options) → LecturePlan
       - query_type 분석 (single_version/cross_version/definition/open_ended)
@@ -332,10 +375,26 @@
     - `prompts/content_workshop.md`: 워크숍 시나리오 프롬프트
     - `prompts/content_audio.md`: 오디오 스크립트 프롬프트
     - `prompts/content_visualization.md`: 시각화 데이터 구조 프롬프트
+    - `prompts/content_quiz.md`: 퀴즈 생성 프롬프트
   - 테스트: 유형별 아웃라인 생성 (mock LLM), 슬라이드 수 산출, 옵션 적용
   - 예상: ~35 tests
+  - **세부 과제:**
+    - [ ] ContentPlanner 클래스 (LLM 클라이언트 DI, config 주입)
+    - [ ] plan_lecture(): QueryClassifier로 query_type 판별 → 슬라이드 수 = duration_min ÷ minutes_per_slide
+    - [ ] plan_lecture(): LLM 호출 → JSON 파싱 → LecturePlan 변환 (파싱 실패 시 재시도 1회)
+    - [ ] plan_lecture(): 학습 목표 자동 생성 (3~5개, topic + key_points 기반)
+    - [ ] plan_card_news(): LLM 호출 → CardNewsPlan 변환, num_cards 범위 검증 (3~10)
+    - [ ] plan_workshop(): 4단계 시간 배분 로직 (intro 10%, main 40%, activity 30%, wrap_up 20%)
+    - [ ] plan_audio(): style별 구조 분기 (narration=단독, dialogue=2인, podcast=3인)
+    - [ ] plan_visualization(): viz_type 검증 + 데이터 구조 생성
+    - [ ] plan_quiz(): difficulty_distribution 적용 (easy 30%, medium 50%, hard 20%)
+    - [ ] 프롬프트 템플릿 6개 작성 (content_lecture.md ~ content_quiz.md)
+    - [ ] 프롬프트에 기존 RAG 컨텍스트 포맷 재사용 (format_context 호환)
+    - [ ] 옵션 기본값 적용 로직: content_studio.yaml → ContentOptions 오버라이드
+    - [ ] edition_filter 옵션: 특정 개정판 제한 시 rag_query에 필터 적용
+    - [ ] 테스트: 6개 유형별 mock LLM 아웃라인 생성 + 슬라이드 수 계산 + 옵션 적용 + 파싱 실패 재시도
 
-- [ ] **PR-044** ContentGenerator — 아웃라인→본문 생성
+- [x] **PR-044** ContentGenerator — 아웃라인→본문 생성
   - `scripts/lib/content_studio/generator.py`: ContentGenerator 서비스
     - generate_lecture_content(plan: LecturePlan, search_svc, gen_svc) → LectureContent
       - 슬라이드별 RAG 검색 (rag_query + edition_filter)
@@ -353,8 +412,24 @@
     - 시간축 충돌: TemporalGuardrail 경고 포함
   - 테스트: mock SearchService/GenerationService로 콘텐츠 생성, 근거 검증
   - 예상: ~30 tests
+  - **세부 과제:**
+    - [ ] ContentGenerator 클래스 (SearchService, GenerationService, EvidenceFilter, TemporalGuardrail DI)
+    - [ ] LectureContent frozen dataclass 정의 (slides: tuple[SlideContent], citations, warnings)
+    - [ ] SlideContent frozen dataclass (title, body_text, key_points, quote_ids, speaker_notes)
+    - [ ] generate_lecture_content(): 슬라이드별 순차 RAG 검색 → 본문 생성 → 검증
+    - [ ] 슬라이드별 발표자 노트: 본문 3~5줄 + "출처: quote_id_xxx (10차, p.123)" 형식
+    - [ ] CardNewsContent frozen dataclass 정의 (cards: tuple[CardContent], citations)
+    - [ ] generate_card_news_content(): 카드별 RAG → body 텍스트 + quote_id 매핑
+    - [ ] WorkshopContent frozen dataclass (phases: tuple[PhaseContent], quiz_questions)
+    - [ ] generate_workshop_content(): 단계별 RAG → 시나리오 텍스트 + 선택적 퀴즈 생성
+    - [ ] AudioContent frozen dataclass (sections: tuple[SectionContent], total_word_count)
+    - [ ] generate_audio_content(): 섹션별 RAG → 대본 텍스트 (WPM 기반 시간 추정)
+    - [ ] 공통: EvidenceFilter.check() → 커버리지 < min_coverage 시 warning 추가
+    - [ ] 공통: TemporalGuardrail.check() → TC-001~004 경고를 metadata에 포함
+    - [ ] 배치 최적화: 동일 edition_filter 슬라이드들은 RAG 검색 1회로 합치기
+    - [ ] 테스트: mock 서비스로 4개 유형 콘텐츠 생성, 근거 검증 경고, 시간축 충돌 경고
 
-- [ ] **PR-045** AssetGenerator — 이미지/차트/오디오 생성
+- [x] **PR-045** AssetGenerator — 이미지/차트/오디오 생성
   - `scripts/lib/content_studio/asset_generator.py`: AssetGenerator 서비스
     - generate_assets(plan, content) → list[GeneratedAsset]
       - plan의 asset_type/asset_prompt를 읽고 적절한 어댑터 호출
@@ -374,8 +449,21 @@
     - Graceful fallback: 각 어댑터 실패 시 에셋 없이 진행
   - 테스트: mock 어댑터로 에셋 생성, 캐싱, fallback 검증
   - 예상: ~25 tests
+  - **세부 과제:**
+    - [ ] AssetGenerator 클래스 (ImageGenerator, ChartGenerator, AudioGenerator DI — 모두 Optional)
+    - [ ] generate_assets(): plan에서 asset_type/asset_prompt 추출 → 어댑터 디스패치
+    - [ ] 디스패치 매핑: {"image": ImageGenerator, "chart": ChartGenerator, "audio": AudioGenerator}
+    - [ ] 어댑터 가용성 확인: adapter.is_available() → False면 스킵 + warning 로그
+    - [ ] 에셋 캐싱: SHA256(prompt + width + height + style) → output/assets/ 에서 기존 파일 조회
+    - [ ] 캐시 히트 시 기존 GeneratedAsset 반환 (API 호출 절약)
+    - [ ] 강의자료: 표지(16:9) + 슬라이드별 삽화(16:9) + 차트 에셋 분리 생성
+    - [ ] 카드뉴스: 카드별 1:1 이미지, text_overlay가 있으면 프롬프트에 포함
+    - [ ] 워크숍: 활동 시트 이미지 + 결과 집계 차트
+    - [ ] 병렬 생성: 독립적인 에셋들은 asyncio.gather()로 동시 생성 (API rate limit 주의)
+    - [ ] Graceful fallback: 개별 에셋 실패해도 전체 파이프라인은 계속 (실패 목록 반환)
+    - [ ] 테스트: mock 어댑터 → 정상 생성, 캐시 히트, 부분 실패 fallback, 전체 어댑터 미가용
 
-- [ ] **PR-046** FileAssembler — PPTX/PDF/HTML 조립
+- [x] **PR-046** FileAssembler — PPTX/PDF/HTML 조립
   - `scripts/lib/content_studio/assembler.py`: FileAssembler 서비스
     - assemble_lecture(content, assets) → GeneratedFile (PPTX)
       - python-pptx로 PPTX 생성
@@ -407,10 +495,31 @@
   - 의존성: python-pptx>=0.6.21
   - 테스트: PPTX 구조 검증 (슬라이드 수, 레이아웃, 노트), PDF 생성, 파일 경로
   - 예상: ~35 tests
+  - **세부 과제:**
+    - [ ] FileAssembler 클래스 (output_dir 설정, 기업 테마 config)
+    - [ ] PPTX 기업 테마 정의: 색상 팔레트 (SK 블루 #0052A2, 서브컬러), 폰트 (맑은고딕/Pretendard)
+    - [ ] 슬라이드 레이아웃 5종 구현:
+      - [ ] title_only: 배경 이미지 + 중앙 제목/부제 + 날짜
+      - [ ] title_content: 상단 제목 + 본문 텍스트 (bullet points)
+      - [ ] title_content_image: 좌측 텍스트(60%) + 우측 이미지(40%) 분할
+      - [ ] comparison: 좌/우 2컬럼 비교 (개정판 비교에 최적화)
+      - [ ] section_header: 챕터 구분 슬라이드 (큰 제목 + 챕터 번호)
+    - [ ] 이미지 삽입 로직: asset → slide 매핑 (index 기반), 크기 자동 조정 (max 가로 50%)
+    - [ ] 발표자 노트: slide.notes_slide.notes_text_frame 에 텍스트 삽입
+    - [ ] 마지막 슬라이드: 사용된 전체 quote_id + 개정판 출처 목록 자동 생성
+    - [ ] 파일 경로 생성: output/lectures/{sanitized_topic}-{YYYY-MM-DD}.pptx
+    - [ ] assemble_card_news(): 에셋 이미지 있으면 복사, 없으면 HTML→PNG fallback
+    - [ ] assemble_workshop(): Markdown 텍스트 → PDF 변환 (markdown2pdf 또는 reportlab)
+    - [ ] assemble_audio(): MP3 섹션들 합성 (pydub) 또는 스크립트 PDF fallback
+    - [ ] assemble_visualization(): SVG/PNG 에셋 파일 복사 + 메타데이터
+    - [ ] assemble_quiz(): 퀴즈 문항 → PDF (문제지 + 정답지 분리)
+    - [ ] output 디렉토리 자동 생성 (lectures/, cardnews/, workshops/, audio/, visualizations/, quizzes/)
+    - [ ] requirements.txt에 `python-pptx>=0.6.21` 추가
+    - [ ] 테스트: PPTX 구조 검증 (슬라이드 수/레이아웃/노트), 이미지 삽입, 출처 슬라이드, 파일 경로 규칙
 
 ### Step 3: API + 통합 (PR-47 ~ PR-49)
 
-- [ ] **PR-047** Content Studio 오케스트레이터 + API
+- [x] **PR-047** Content Studio 오케스트레이터 + API
   - `scripts/lib/content_studio/__init__.py`: ContentStudio 메인 클래스
     - create(request: ContentRequest) → ContentResult
       - 1. plan = planner.plan_{type}(topic, options)
@@ -423,11 +532,29 @@
     - POST /api/content/generate: 콘텐츠 생성 (동기)
     - GET /api/content/types: 사용 가능한 콘텐츠 유형 + 옵션 스키마
     - POST /api/content/plan: 아웃라인만 생성 (미리보기용)
+    - GET /api/content/status/{request_id}: 비동기 생성 시 진행 상태 조회
   - `server/app.py` 수정: ContentStudio 서비스 + 라우터 등록
   - 테스트: API 엔드포인트 테스트, 오케스트레이터 통합 테스트
   - 예상: ~25 tests
+  - **세부 과제:**
+    - [ ] ContentStudio.create(): 5단계 파이프라인 오케스트레이션 (plan → generate → assets → assemble → result)
+    - [ ] content_type → plan_method 디스패치 매핑 (6개 유형)
+    - [ ] content_type → generate_method 디스패치 매핑 (6개 유형)
+    - [ ] content_type → assemble_method 디스패치 매핑 (6개 유형)
+    - [ ] from_config() 팩토리: YAML → ContentStudio (SearchService, GenerationService 주입)
+    - [ ] 단계별 진행 상태 추적: PipelineProgress frozen dataclass (stage, percent, message)
+    - [ ] 생성 메타데이터: 소요시간, RAG 검색 횟수, 에셋 생성 수, LLM 호출 수
+    - [ ] Pydantic 모델: ContentGenerateRequest, ContentGenerateResponse, ContentPlanResponse
+    - [ ] POST /api/content/generate: ContentStudio.create() 호출 → 파일 경로 + 메타데이터 반환
+    - [ ] GET /api/content/types: 6개 유형 + 각 유형의 옵션 JSON Schema 반환
+    - [ ] POST /api/content/plan: planner만 호출 → 아웃라인 JSON 반환 (미리보기/편집용)
+    - [ ] GET /api/content/status/{request_id}: 비동기 생성 진행 상태 (향후 비동기 전환 대비)
+    - [ ] server/app.py 수정: AppState에 ContentStudio 추가 + lifespan에서 초기화
+    - [ ] server/routes/content.py: closure-based DI 패턴 (기존 라우터와 일관성)
+    - [ ] 에러 처리: LLM 실패, MCP 실패, 파일 I/O 실패 각각 적절한 HTTP 상태 코드
+    - [ ] 테스트: 오케스트레이터 통합 (mock 전체), API 엔드포인트 4개, 에러 케이스
 
-- [ ] **PR-048** Publisher — Notion + Google Workspace 배포
+- [x] **PR-048** Publisher — Notion + Google Workspace 배포
   - `scripts/lib/content_studio/publisher.py`: Publisher 서비스
     - publish(result: ContentResult, destinations: list[str]) → list[PublishResult]
     - PublishResult(destination, url, success, error)
@@ -441,22 +568,47 @@
   - Graceful fallback: 실패 시 로컬 파일만 유지
   - 테스트: mock MCP로 배포 흐름, fallback 검증
   - 예상: ~20 tests
+  - **세부 과제:**
+    - [ ] Publisher 클래스 (어댑터 레지스트리: dict[str, DocumentPublisher])
+    - [ ] PublishResult frozen dataclass (destination, url, success, error, timestamp)
+    - [ ] publish(): destinations 순회 → 각 어댑터 호출 → 결과 수집
+    - [ ] "local" destination: 항상 성공 (output/ 디렉토리에 파일 이미 존재)
+    - [ ] NotionAdapter: Notion API로 교육자료 DB에 페이지 생성 + PPTX/PDF 파일 첨부
+    - [ ] NotionAdapter: 페이지 속성 매핑 (제목, 콘텐츠 유형, 생성일, 주제, 출처 수)
+    - [ ] GoogleWorkspaceAdapter: Google Drive 폴더에 파일 업로드
+    - [ ] GoogleWorkspaceAdapter: PPTX → Google Slides 자동 변환 옵션
+    - [ ] 배포 결과 로깅: 성공/실패 + URL + 소요시간
+    - [ ] Graceful fallback: 개별 destination 실패해도 나머지 계속 진행
+    - [ ] 테스트: mock Notion API → 페이지 생성 성공/실패, mock Google Drive → 업로드 성공/실패
 
-- [ ] **PR-049** End-to-End 통합 테스트 + 문서화
+- [x] **PR-049** End-to-End 통합 테스트 + 문서화
   - 전체 파이프라인 E2E 테스트 (mock LLM + mock MCP):
     - 강의자료 30분 → PPTX (슬라이드 15장, 이미지 3장, 차트 1개)
     - 카드뉴스 5장 → PNG 5개 (1080x1080)
     - 워크숍 60분 → PDF (진행자 가이드 + 활동지)
     - 오디오 5분 → MP3 (2인 대화)
     - 개념 시각화 → SVG (마인드맵)
+    - 학습 퀴즈 10문항 → PDF (문제지 + 정답지)
   - 성능 벤치마크: 콘텐츠 유형별 생성 시간 측정
   - MCP 서버 설치/설정 가이드 문서
   - README.md 업데이트 (Content Studio 섹션)
   - 예상: ~20 tests
+  - **세부 과제:**
+    - [ ] E2E 테스트 fixture: MockLLMClient + MockSearchService + MockAdapters 통합 setup
+    - [ ] E2E 강의자료: topic → PPTX 파일 존재 + 슬라이드 수 검증 + 발표자 노트 존재
+    - [ ] E2E 카드뉴스: topic → PNG 5개 존재 + 파일 크기 > 0
+    - [ ] E2E 워크숍: topic → PDF 존재 + 4단계 구조 포함
+    - [ ] E2E 오디오: topic → MP3 또는 스크립트 PDF 존재
+    - [ ] E2E 시각화: topic → SVG/PNG 존재
+    - [ ] E2E 퀴즈: topic → PDF 존재 + 문항 수 검증
+    - [ ] 성능 벤치마크: 유형별 생성 시간 (target: 강의 <60s, 카드뉴스 <30s, 기타 <45s with mock)
+    - [ ] MCP 서버 설치 가이드: `docs/content-studio-mcp-setup.md`
+    - [ ] README.md 업데이트: Content Studio 개요, API 사용법, CLI 예시
+    - [ ] .gitignore에 `output/` 디렉토리 추가 (생성 파일 제외)
 
 ### Step 4: 고도화 (PR-50 ~ PR-52)
 
-- [ ] **PR-050** 강의자료 고도화 — 템플릿 + 브랜딩
+- [x] **PR-050** 강의자료 고도화 — 템플릿 + 브랜딩
   - PPTX 마스터 템플릿 시스템:
     - 기본 기업 템플릿 (SK 블루/레드 계열)
     - 교육용 템플릿 (밝은 톤, 큰 폰트)
@@ -466,8 +618,16 @@
   - 목차 슬라이드 자동 생성
   - 테스트: 템플릿 적용 검증, 레이아웃 자동 선택
   - 예상: ~20 tests
+  - **세부 과제:**
+    - [ ] PPTX 마스터 템플릿 3종 .pptx 파일 생성 (config/templates/)
+    - [ ] 템플릿 선택 로직: style 옵션 → 템플릿 매핑 (corporate/education/seminar)
+    - [ ] 레이아웃 자동 선택: key_points 수 ≤3 → title_content, >3 → title_content_image, 비교 주제 → comparison
+    - [ ] 목차 슬라이드: LecturePlan.slides에서 section_header 추출 → 목차 자동 생성 (2번째 슬라이드)
+    - [ ] 슬라이드 번호 + 푸터 (회사명 / 날짜 / 페이지) 자동 삽입
+    - [ ] 색상 팔레트 YAML: config/pptx_themes.yaml (3종 테마별 primary/secondary/accent/bg)
+    - [ ] 테스트: 템플릿 3종 적용, 레이아웃 자동 선택 5개 케이스, 목차 슬라이드 생성
 
-- [ ] **PR-051** 카드뉴스 + 시각화 고도화
+- [x] **PR-051** 카드뉴스 + 시각화 고도화
   - 카드뉴스 시리즈 테마:
     - "오늘의 SKMS" (일간 카드 1장)
     - "SKMS 깊이 읽기" (주간 시리즈 5장)
@@ -479,8 +639,17 @@
   - 나노바나나2 스타일 가이드: 기업 시각 톤앤매너 통일
   - 테스트: 시리즈 생성, 시각화 데이터 구조 검증
   - 예상: ~20 tests
+  - **세부 과제:**
+    - [ ] 카드뉴스 시리즈 모델: SeriesConfig frozen dataclass (series_name, card_count, schedule)
+    - [ ] 3종 시리즈 프리셋: daily_skms (1장), deep_read (5장), edition_compare (2장)
+    - [ ] 시리즈별 이미지 프롬프트 템플릿: 통일된 비주얼 톤 (색상, 레이아웃, 폰트 스타일)
+    - [ ] 개정판 타임라인 데이터: concept_timeline.yaml → AntV timeline 입력 JSON 변환
+    - [ ] 경영요소 관계 그래프: 정적 10개 + 동적 5개 요소 → 네트워크 그래프 데이터
+    - [ ] 개념 진화 산키: renamed/removed 상태 추적 → sankey 다이어그램 데이터
+    - [ ] 나노바나나2 스타일 가이드: config/nano_banana_style.yaml (색상 톤, 구도, 금지 요소)
+    - [ ] 테스트: 시리즈 3종 생성, 타임라인/그래프/산키 데이터 구조 검증
 
-- [ ] **PR-052** React Content Studio UI (향후 과제)
+- [x] **PR-052** React Content Studio UI
   - `frontend/src/pages/ContentStudio.tsx`: 메인 페이지
     - 콘텐츠 유형 선택 (6종 카드 UI)
     - 주제 입력 + 옵션 설정
@@ -496,6 +665,17 @@
   - API 연동: /api/content/plan → 미리보기 → /api/content/generate
   - 상태 관리: React Query (서버 상태) + Zustand (UI 상태)
   - 반응형 디자인: 데스크톱 우선 (HR담당자 환경)
+  - **세부 과제:**
+    - [ ] ContentStudio.tsx 페이지 레이아웃 (3단계 위저드: 유형 선택 → 옵션 설정 → 생성)
+    - [ ] ContentTypeSelector: 6종 카드 (아이콘 + 제목 + 설명 + 예상 시간)
+    - [ ] OptionForm: content_type별 동적 폼 (duration, num_items, edition_filter, style 등)
+    - [ ] OutlineEditor: /api/content/plan 호출 → JSON 렌더링 → 드래그&드롭 순서 변경
+    - [ ] GenerationProgress: WebSocket 또는 polling으로 5단계 진행 상태 바
+    - [ ] ResultViewer: 파일 미리보기 (PPTX 썸네일, PNG 캐러셀, PDF 뷰어) + 다운로드 버튼
+    - [ ] React Query: useContentTypes(), useContentPlan(topic, type), useContentGenerate()
+    - [ ] Zustand store: selectedType, options, plan, generationStatus
+    - [ ] 에러 핸들링: 생성 실패 시 에러 메시지 + 재시도 버튼
+    - [ ] 반응형: 1280px+ 2컬럼 (옵션 좌측 / 미리보기 우측), 768px~ 단일 컬럼
 
 ### MCP 서버 설치 체크리스트
 
@@ -553,9 +733,122 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 | PR-044 Generator | ~30 | 1366 |
 | PR-045 AssetGenerator | ~25 | 1391 |
 | PR-046 FileAssembler | ~35 | 1426 |
-| PR-047 오케스트레이터+API | ~25 | 1451 |
-| PR-048 Publisher | ~20 | 1471 |
-| PR-049 E2E 통합 | ~20 | 1491 |
-| PR-050 강의자료 고도화 | ~20 | 1511 |
-| PR-051 카드뉴스+시각화 | ~20 | 1531 |
-| PR-052 React UI | (향후) | - |
+| PR-047 오케스트레이터+API | 38 | 1573 |
+| PR-047+ Cross-Cutting | 9 | 1583 |
+| PR-048 Publisher | 26 | 1609 |
+| PR-049 E2E 통합 | 17 | 1626 |
+| PR-050 강의자료 고도화 | 18 | 1644 |
+| PR-051 카드뉴스+시각화 | 21+26 | 1691 |
+| PR-051+ (agent extra) | 11 | 1702 |
+| PR-052 React UI | 0 (frontend) | 1702 |
+
+---
+
+## Cross-Cutting Concerns (Phase 4 공통)
+
+> Phase 4 전체에 걸쳐 적용해야 할 횡단 관심사
+
+### 비동기 처리 전략
+- [x] 콘텐츠 생성은 LLM + MCP 호출로 수십 초 소요 → 비동기 처리 구현
+  - [x] Phase 4 Step 1~2: 동기 처리 (단순한 구현 우선)
+  - [x] Phase 4 Step 3: BackgroundTasks 기반 비동기 전환 (`POST /api/content/generate/async`)
+  - [x] request_id 발급 → `GET /api/content/status/{request_id}` 폴링
+  - [ ] 향후: WebSocket 기반 실시간 진행 상태 push (PR-052 React UI와 연동)
+
+### 에러 처리 + 로깅
+- [x] Content Studio 전용 예외 클래스 계층:
+  - [x] `ContentStudioError` (기본)
+  - [x] `PlanningError` (LLM 아웃라인 생성 실패)
+  - [x] `GenerationError` (RAG 검색/콘텐츠 생성 실패)
+  - [x] `AssetError` (MCP 어댑터 호출 실패)
+  - [x] `AssemblyError` (파일 조립 실패)
+  - [x] `PublishError` (배포 실패)
+- [x] 단계별 로깅: 각 파이프라인 단계 시작/완료/실패 + 소요시간
+- [x] MetricsCollector 확장: content_studio 관련 메트릭 수집 (생성 횟수, 유형별 분포, 실패율)
+
+### 캐싱 전략
+- [x] LLM 아웃라인 캐싱: 동일 topic + options → 캐시된 plan 반환 (TTL 24h)
+- [ ] RAG 검색 캐싱: 기존 QueryCache 재사용 (동일 rag_query → 캐시)
+- [ ] 에셋 캐싱: content_hash 기반 (PR-045에서 구현)
+- [ ] 최종 파일 캐싱은 하지 않음 (항상 새로 생성 — 사용자가 편집할 수 있으므로)
+
+### 보안
+- [x] ContentRequest 입력 검증: topic 길이 제한 (max 200자), 특수문자 살균
+- [x] 파일 경로 검증: path traversal 방지 (../ 차단)
+- [ ] MCP API 키 관리: 환경변수 전용 (코드에 하드코딩 금지)
+- [ ] 생성된 파일 접근 제어: output/ 디렉토리 권한 설정
+
+### output 디렉토리 관리
+- [x] .gitignore에 `output/` 추가
+- [x] output 디렉토리 자동 정리: 30일 이상 된 파일 삭제 스크립트 (`scripts/cleanup_output.py`)
+- [x] 디스크 용량 모니터링: output/ 총 크기 > 1GB 시 경고
+
+---
+
+## Technical Debt / Backlog
+
+> Phase 0~3에서 누적된 기술 부채 + Phase 4 진행 중 발견될 수 있는 항목
+
+### 코드 품질
+- [ ] **TD-001** scripts/lib/ → src/ 디렉토리 통합 검토
+  - 현재: 핵심 서비스가 `scripts/lib/`에, API가 `server/`에 분리
+  - 개선안: `src/` 통합 또는 `scripts/lib/` → Python 패키지화
+  - 우선순위: LOW (Phase 4 완료 후)
+- [ ] **TD-002** 타입 힌트 강화
+  - 일부 dict 반환 함수에 TypedDict 또는 frozen dataclass 적용
+  - 특히 config 로딩 함수들 (현재 dict 반환)
+- [ ] **TD-003** async/await 전면 도입 검토
+  - 현재: SearchService, GenerationService 동기 호출
+  - Content Studio: MCP 어댑터는 async (불일치)
+  - 검토: asyncio.to_thread()로 래핑 vs 전면 async 전환
+
+### 테스트
+- [x] **TD-004** 테스트 fixture 중복 해소
+  - `tests/conftest.py` + `tests/test_content_studio/conftest.py` 통합 완료
+  - 3개 테스트 파일에서 ~262줄 중복 코드 제거
+- [ ] **TD-005** E2E 테스트 실행 환경 격리
+  - 현재: 테스트에서 실제 DB/파일 생성 가능 (tmp 디렉토리 사용하나 불완전)
+  - 개선: pytest-tmp-files 또는 Docker 기반 격리
+- [ ] **TD-006** 커버리지 93% → 95% 목표
+  - 현재: 1216 tests, 93.33%
+  - 미커버 영역: 일부 에러 핸들링 분기, edge case
+
+### 인프라
+- [x] **TD-007** CI/CD 파이프라인 Phase 4 확장
+  - `.github/workflows/ci.yml`: Python tests + coverage + frontend build
+  - `.github/workflows/content-studio-tests.yml`: Content Studio 경로 필터 워크플로우
+- [ ] **TD-008** Docker 이미지 Phase 4 업데이트
+  - python-pptx, google-generativeai 의존성 추가
+  - output/ 볼륨 마운트 설정
+- [ ] **TD-009** 모니터링 확장
+  - Content Studio 메트릭: 생성 요청 수, 유형별 분포, 평균 생성 시간, 실패율
+  - MCP 어댑터 헬스체크: /api/health에 MCP 서버 상태 포함
+
+---
+
+## Phase 5: 향후 로드맵 (Phase 4 완료 후)
+
+> Phase 4 Content Studio 완료 후 검토할 확장 기능
+
+### 5.1 사용자 경험 개선
+- [ ] **아웃라인 편집**: 생성된 plan을 사용자가 수정 → 수정된 plan으로 콘텐츠 재생성
+- [ ] **부분 재생성**: 특정 슬라이드/카드만 재생성 (전체 재생성 비용 절감)
+- [ ] **이력 관리**: 생성된 콘텐츠 버전 관리 (이전 버전 비교/복원)
+- [ ] **즐겨찾기 주제**: 자주 사용하는 주제/옵션 프리셋 저장
+
+### 5.2 콘텐츠 확장
+- [ ] **동영상 생성**: 슬라이드 + 오디오 → MP4 영상 (ffmpeg 기반)
+- [ ] **인터랙티브 콘텐츠**: H5P 또는 SCORM 패키지 생성 (LMS 연동)
+- [ ] **다국어 지원**: 한국어 → 영어/중국어 자동 번역 (해외 법인용)
+- [ ] **맞춤형 퀴즈**: 적응형 문항 (이전 답변 기반 난이도 조정)
+
+### 5.3 플랫폼 연동
+- [ ] **LMS 직접 배포**: mySUNI / SK University LMS API 연동
+- [ ] **Slack/Teams 알림**: 콘텐츠 생성 완료 시 채널 알림
+- [ ] **스케줄링**: 정기 콘텐츠 생성 (매주 카드뉴스 자동 발행)
+- [ ] **분석 대시보드**: 생성된 콘텐츠 사용 통계 (조회수, 다운로드, 피드백)
+
+### 5.4 RAG 파이프라인 고도화
+- [ ] **SKMS 15차 대응**: 차기 개정판 발행 시 자동 반영 파이프라인
+- [ ] **외부 자료 연동**: SKMS 이외 SK그룹 자료 (ESG 보고서, 연간보고서) RAG 통합
+- [ ] **사용자 피드백 루프**: 생성 품질에 대한 사용자 평가 → 프롬프트/파이프라인 자동 개선

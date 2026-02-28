@@ -32,6 +32,7 @@ class AppState:
         self.toc_service: TOCService | None = None
         self.evidence_filter: EvidenceFilter | None = None
         self.comparison_service: CrossVersionComparisonService | None = None
+        self.content_studio: Any = None  # ContentStudio (Phase 4)
         self.version: str = "0.2.0"
         self._initialized: bool = False
 

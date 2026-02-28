@@ -1,0 +1,29 @@
+# NanoBanana2 Style Guide for SKMS Content Studio
+style_guide:
+  color_tone:
+    primary: "SK corporate red and blue tones"
+    secondary: "clean white backgrounds"
+    accent: "warm orange highlights for emphasis"
+
+  composition:
+    - "centered focal point"
+    - "generous whitespace"
+    - "clear typography hierarchy"
+    - "minimal iconography"
+
+  prohibited:
+    - "photographic human faces"
+    - "complex 3D renders"
+    - "dark/moody atmosphere"
+    - "cluttered backgrounds"
+
+  series_templates:
+    daily_skms:
+      prompt_prefix: "Minimalist infographic style, square format, clean Korean corporate design"
+      prompt_suffix: "white background, SK brand colors, professional"
+    deep_read:
+      prompt_prefix: "Professional editorial illustration, vertical scroll layout"
+      prompt_suffix: "warm neutral tones, detailed infographic elements"
+    edition_compare:
+      prompt_prefix: "Split comparison layout, before-after design"
+      prompt_suffix: "timeline visual, two-column format, historical evolution feel"
