@@ -825,6 +825,31 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 
 ---
 
+## Phase 4.5: 미완료 항목 (Content Studio 품질 보완)
+
+> Phase 4 구현 완료 후 실제 운용을 위해 필요한 보완 작업
+
+### P0 — 블로킹 (실사용 차단)
+- [ ] **MCP 실제 API 키 검증**: 6개 어댑터(NanoBanana, AntV, ElevenLabs, markdown2pdf, Notion, GWS) 실제 API 연동 테스트
+  - NanoBanana: env var 통일 (`GOOGLE_API_KEY` → `GEMINI_API_KEY`), MCP vs Gemini SDK 방식 결정
+  - AntV: `_get_client()` 스텁 → 실제 MCP SDK 호출로 교체
+  - ElevenLabs: `pip install elevenlabs` + 라이브 TTS 호출 검증
+  - 예상 공수: 2~4시간
+- [ ] **비동기 진행률 표시**: 프론트엔드에서 async endpoint 활용 + 5단계 파이프라인 진행률 UI
+  - `ContentStudioPanel.tsx`의 `handleGenerate()`가 현재 동기 블로킹
+  - `/api/content/generate/async` + `/api/content/status/{request_id}` 폴링 연결
+  - 예상 공수: 3~5시간
+
+### P1 — 높은 우선순위
+- [ ] **RAG 검색 캐싱**: 기존 QueryCache를 ContentGenerator에 주입, 슬라이드별 중복 검색 제거
+- [ ] **오디오 품질 개선**: ElevenLabs 어댑터의 `b"".join()` → pydub `AudioSegment` 연결로 교체
+- [ ] **파일 다운로드 엔드포인트**: `GET /api/content/download/{request_id}/{filename}` + 프론트엔드 다운로드 버튼
+- [ ] **아웃라인 편집 UI**: PlanPreview를 편집 가능하게 변경 (드래그&드롭, 삭제, 수정)
+- [ ] **Notion/GWS 실제 구현**: mock 어댑터 → 실제 API 호출 (notion-client SDK, google-api-python-client)
+- [ ] **에셋 캐싱 검증**: 실제 MCP 연동 후 동일 프롬프트 2회 실행 시 캐시 히트 확인
+
+---
+
 ## Phase 5: 향후 로드맵 (Phase 4 완료 후)
 
 > Phase 4 Content Studio 완료 후 검토할 확장 기능

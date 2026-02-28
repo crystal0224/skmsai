@@ -55,7 +55,8 @@ This repository also contains a **Time-Aware RAG pipeline** built on top of SKMS
 
 ### Development Status
 - **Phase 0~3**: Complete (39 PRs, 1216 tests, 93% coverage)
-- **Phase 4**: Content Studio (design complete, implementation pending)
+- **Phase 4**: Content Studio — COMPLETE (52 PRs, 1850 tests, 95.80% coverage)
+- **Phase 5**: Roadmap planned (UX improvements, video gen, LMS integration)
 - **GitHub**: crystal0224/skmsai (private)
 
 ### Key Source Directories
@@ -71,11 +72,23 @@ src/
 ├── toc/             # Table of contents API
 ├── cross_version/   # Cross-edition comparison service
 └── eval/            # Evaluation framework, quality gate
-scripts/             # Numbered scripts (01~13) for build, eval, migration
-tests/               # 43 test files, pytest + pytest-asyncio
-prompts/             # Edition-aware prompt templates
+scripts/
+├── lib/
+│   └── content_studio/  # 5-stage Content Studio pipeline (Phase 4)
+│       ├── adapters/    # MCP adapters (NanoBanana, AntV, ElevenLabs, Notion, GWS)
+│       ├── models.py    # ContentRequest/Plan/Result frozen dataclasses
+│       ├── planner.py   # ContentPlanner (6 content types)
+│       ├── generator.py # ContentGenerator (RAG → LLM → sections)
+│       ├── assembler.py # FileAssembler (PPTX, HTML, PDF, SVG, MP3)
+│       └── publisher.py # Publisher (local, Notion, Google Workspace)
+├── 01~13_*.py           # Numbered scripts for build, eval, migration
+└── cleanup_output.py    # Output directory maintenance
+server/              # FastAPI production server (app.py, routes/, models.py)
+tests/               # ~70 test files, pytest + pytest-asyncio
+prompts/             # Edition-aware + content generation prompt templates
+config/              # content_studio.yaml, pptx_themes.yaml, nano_banana_style.yaml
 data/                # SKMSraw.txt, edition metadata YAML
-docs/plans/          # Design documents
+docs/                # Design documents, MCP setup guide, content studio guide
 ```
 
 ### Architecture Summary
@@ -83,8 +96,9 @@ docs/plans/          # Design documents
 - **Database**: SQLite (WAL mode, foreign keys, migrations)
 - **Search**: Hybrid (ChromaDB vector + BM25 keyword) → rerank → temporal filter
 - **Generation**: QueryRouter → prompt template → LLM → OutputRenderer (5 types)
-- **API**: FastAPI with closure-based DI (AppState pattern)
-- **Testing**: pytest, 80%+ coverage target, `FastAPI_with_mock_state()` helper
+- **Content Studio**: 5-stage pipeline (Plan → Generate → Assets → Assemble → Publish), 6 content types, Protocol-based MCP adapters, PlanCache (SHA256, 24h TTL)
+- **API**: FastAPI with closure-based DI (AppState pattern), async content generation endpoint
+- **Testing**: pytest, 95%+ coverage, `FastAPI_with_mock_state()` helper, ~70 test files
 
 ### Running the Project
 ```bash
