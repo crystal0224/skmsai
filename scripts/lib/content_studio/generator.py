@@ -10,6 +10,7 @@ PR-044: ContentGenerator — outline to content generation using RAG.
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
@@ -205,8 +206,10 @@ class ContentGenerator:
 
         for slide_plan in plan.slides:
             query = slide_plan.rag_query or slide_plan.title
-            hits = self._search.hybrid_search(
-                query, edition_filter=slide_plan.edition_filter
+            hits = await asyncio.to_thread(
+                self._search.hybrid_search,
+                query,
+                edition_filter=slide_plan.edition_filter,
             )
 
             if not hits:
@@ -219,7 +222,8 @@ class ContentGenerator:
             context = _format_hits_as_context(hits)
             prompt = _build_slide_prompt(slide_plan, context)
 
-            result = self._generation.generate(
+            result = await asyncio.to_thread(
+                self._generation.generate,
                 query=prompt,
                 context=context,
                 intent="content_generation",
@@ -239,7 +243,7 @@ class ContentGenerator:
             slides.append(slide_content)
 
         # Quality checks
-        warnings.extend(self._run_quality_checks(all_hits, all_quote_ids))
+        warnings.extend(await self._run_quality_checks(all_hits, all_quote_ids))
 
         unique_citations = tuple(dict.fromkeys(all_quote_ids))
         return LectureContent(
@@ -261,7 +265,7 @@ class ContentGenerator:
 
         for card_plan in plan.cards:
             query = card_plan.headline
-            hits = self._search.hybrid_search(query)
+            hits = await asyncio.to_thread(self._search.hybrid_search, query)
 
             if not hits:
                 warnings.append(
@@ -273,7 +277,8 @@ class ContentGenerator:
             context = _format_hits_as_context(hits)
             prompt = _build_card_prompt(card_plan, context)
 
-            result = self._generation.generate(
+            result = await asyncio.to_thread(
+                self._generation.generate,
                 query=prompt,
                 context=context,
                 intent="content_generation",
@@ -290,7 +295,7 @@ class ContentGenerator:
             )
             cards.append(card_content)
 
-        warnings.extend(self._run_quality_checks(all_hits, all_quote_ids))
+        warnings.extend(await self._run_quality_checks(all_hits, all_quote_ids))
 
         unique_citations = tuple(dict.fromkeys(all_quote_ids))
         return CardNewsContent(
@@ -312,7 +317,7 @@ class ContentGenerator:
 
         for phase_plan in plan.phases:
             query = phase_plan.rag_query or phase_plan.title
-            hits = self._search.hybrid_search(query)
+            hits = await asyncio.to_thread(self._search.hybrid_search, query)
 
             if not hits:
                 warnings.append(
@@ -323,7 +328,8 @@ class ContentGenerator:
             context = _format_hits_as_context(hits)
             prompt = _build_workshop_prompt(phase_plan, context)
 
-            result = self._generation.generate(
+            result = await asyncio.to_thread(
+                self._generation.generate,
                 query=prompt,
                 context=context,
                 intent="content_generation",
@@ -340,7 +346,7 @@ class ContentGenerator:
             )
             phases.append(phase_content)
 
-        warnings.extend(self._run_quality_checks(all_hits, all_quote_ids))
+        warnings.extend(await self._run_quality_checks(all_hits, all_quote_ids))
 
         unique_citations = tuple(dict.fromkeys(all_quote_ids))
         return WorkshopContent(
@@ -363,7 +369,7 @@ class ContentGenerator:
 
         for section_plan in plan.sections:
             query = section_plan.rag_query or section_plan.text
-            hits = self._search.hybrid_search(query)
+            hits = await asyncio.to_thread(self._search.hybrid_search, query)
 
             if not hits:
                 warnings.append(
@@ -375,7 +381,8 @@ class ContentGenerator:
             context = _format_hits_as_context(hits)
             prompt = _build_audio_prompt(section_plan, plan.style, context)
 
-            result = self._generation.generate(
+            result = await asyncio.to_thread(
+                self._generation.generate,
                 query=prompt,
                 context=context,
                 intent="content_generation",
@@ -401,7 +408,7 @@ class ContentGenerator:
                 "20% 이상 초과합니다"
             )
 
-        warnings.extend(self._run_quality_checks(all_hits, all_quote_ids))
+        warnings.extend(await self._run_quality_checks(all_hits, all_quote_ids))
 
         unique_citations = tuple(dict.fromkeys(all_quote_ids))
         return AudioContent(
@@ -415,7 +422,7 @@ class ContentGenerator:
     # Quality checks (evidence filter + temporal guardrail)
     # -------------------------------------------------------------------
 
-    def _run_quality_checks(
+    async def _run_quality_checks(
         self,
         hits: list[SearchHit],
         quote_ids: list[str],
@@ -425,7 +432,9 @@ class ContentGenerator:
 
         if self._evidence_filter is not None and hits:
             combined_text = " ".join(qid for qid in quote_ids)
-            evidence_result = self._evidence_filter.check(combined_text, hits)
+            evidence_result = await asyncio.to_thread(
+                self._evidence_filter.check, combined_text, hits
+            )
             if hasattr(evidence_result, "hallucination_flags"):
                 for flag in evidence_result.hallucination_flags:
                     warnings.append(f"[근거검증] {flag}")
@@ -433,7 +442,9 @@ class ContentGenerator:
                 warnings.append("[근거검증] 근거 커버리지 검증 미통과")
 
         if self._temporal_guardrail is not None and hits:
-            guardrail_result = self._temporal_guardrail.check(hits)
+            guardrail_result = await asyncio.to_thread(
+                self._temporal_guardrail.check, hits
+            )
             if hasattr(guardrail_result, "warnings"):
                 for tw in guardrail_result.warnings:
                     warnings.append(

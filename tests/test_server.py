@@ -22,6 +22,7 @@ from scripts.lib.search_types import SearchHit  # noqa: E402
 from server.app import create_app  # noqa: E402
 from server.dependencies import AppState  # noqa: E402
 from server.models import (  # noqa: E402
+    ContentStudioHealthResponse,
     ErrorResponse,
     GenerateRequest,
     GenerateResponse,
@@ -336,6 +337,194 @@ def test_generate_no_results(mock_state):
     assert resp.status_code == 200
     data = resp.json()
     assert data["search_hits_count"] == 0
+
+
+# ---------------------------------------------------------------------------
+# Health API — Content Studio 확장 테스트 (TD-009)
+# ---------------------------------------------------------------------------
+
+
+class _MockContentStudio:
+    """Content Studio 헬스체크 테스트용 mock.
+
+    has_planner, has_generator 등의 property를 제공한다.
+    """
+
+    def __init__(
+        self,
+        *,
+        has_planner: bool = True,
+        has_generator: bool = True,
+        has_asset_generator: bool = True,
+        has_assembler: bool = True,
+        has_plan_cache: bool = True,
+    ) -> None:
+        self._has_planner = has_planner
+        self._has_generator = has_generator
+        self._has_asset_generator = has_asset_generator
+        self._has_assembler = has_assembler
+        self._has_plan_cache = has_plan_cache
+
+    @property
+    def has_planner(self) -> bool:
+        return self._has_planner
+
+    @property
+    def has_generator(self) -> bool:
+        return self._has_generator
+
+    @property
+    def has_asset_generator(self) -> bool:
+        return self._has_asset_generator
+
+    @property
+    def has_assembler(self) -> bool:
+        return self._has_assembler
+
+    @property
+    def has_plan_cache(self) -> bool:
+        return self._has_plan_cache
+
+
+def test_health_with_content_studio(mock_state):
+    """TD-009: Content Studio 초기화된 상태에서 health 응답에 content_studio 포함."""
+    mock_state.content_studio = _MockContentStudio()
+    app = FastAPI_with_mock_state(mock_state)
+    with TestClient(app) as client:
+        resp = client.get("/api/health")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "ok"
+    # 기존 필드 유지 (backward compatible)
+    assert "components" in data
+    assert data["components"]["initialized"] is True
+    # Content Studio 필드 확인
+    cs = data["content_studio"]
+    assert cs is not None
+    assert cs["available"] is True
+    assert cs["has_planner"] is True
+    assert cs["has_generator"] is True
+    assert cs["has_asset_generator"] is True
+    assert cs["has_assembler"] is True
+    assert cs["has_plan_cache"] is True
+
+
+def test_health_without_content_studio(mock_state):
+    """TD-009: Content Studio 미초기화 → content_studio 필드 None."""
+    mock_state.content_studio = None
+    app = FastAPI_with_mock_state(mock_state)
+    with TestClient(app) as client:
+        resp = client.get("/api/health")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "ok"
+    # content_studio가 None이면 JSON에서 null로 직렬화
+    assert data["content_studio"] is None
+
+
+def test_health_content_studio_partial(mock_state):
+    """TD-009: Content Studio 일부 서비스만 활성화."""
+    mock_state.content_studio = _MockContentStudio(
+        has_planner=True,
+        has_generator=False,
+        has_asset_generator=True,
+        has_assembler=False,
+        has_plan_cache=False,
+    )
+    app = FastAPI_with_mock_state(mock_state)
+    with TestClient(app) as client:
+        resp = client.get("/api/health")
+    assert resp.status_code == 200
+    data = resp.json()
+    cs = data["content_studio"]
+    assert cs["available"] is True
+    assert cs["has_planner"] is True
+    assert cs["has_generator"] is False
+    assert cs["has_asset_generator"] is True
+    assert cs["has_assembler"] is False
+    assert cs["has_plan_cache"] is False
+
+
+def test_health_content_studio_backward_compatible():
+    """TD-009: Content Studio가 없는 상태에서도 기존 health 응답 형식 유지."""
+    state = AppState()
+    state._initialized = True
+    state.search_service = MagicMock()
+    state.generation_service = MagicMock()
+    state.toc_service = MagicMock()
+    # content_studio는 기본 None
+    app = FastAPI_with_mock_state(state)
+    with TestClient(app) as client:
+        resp = client.get("/api/health")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "ok"
+    assert data["version"] is not None
+    assert data["components"]["search_service"] is True
+    assert data["components"]["generation_service"] is True
+    assert data["components"]["toc_service"] is True
+    assert data["content_studio"] is None
+
+
+def test_health_content_studio_health_response_model():
+    """TD-009: ContentStudioHealthResponse Pydantic 모델 직접 테스트."""
+    model = ContentStudioHealthResponse(
+        available=True,
+        has_planner=False,
+        has_generator=True,
+        has_asset_generator=False,
+        has_assembler=True,
+        has_plan_cache=False,
+    )
+    assert model.available is True
+    assert model.has_planner is False
+    assert model.has_generator is True
+    assert model.has_asset_generator is False
+    assert model.has_assembler is True
+    assert model.has_plan_cache is False
+
+    # JSON 직렬화 확인
+    dumped = model.model_dump()
+    assert dumped == {
+        "available": True,
+        "has_planner": False,
+        "has_generator": True,
+        "has_asset_generator": False,
+        "has_assembler": True,
+        "has_plan_cache": False,
+    }
+
+
+def test_health_response_model_with_content_studio():
+    """TD-009: HealthResponse에 content_studio 포함 시 직렬화 확인."""
+    resp = HealthResponse(
+        status="ok",
+        version="0.2.0",
+        components={"initialized": True},
+        content_studio=ContentStudioHealthResponse(
+            available=True,
+            has_planner=True,
+            has_generator=True,
+            has_asset_generator=True,
+            has_assembler=True,
+            has_plan_cache=True,
+        ),
+    )
+    dumped = resp.model_dump()
+    assert dumped["content_studio"]["available"] is True
+    assert dumped["content_studio"]["has_planner"] is True
+
+
+def test_health_response_model_without_content_studio():
+    """TD-009: HealthResponse에 content_studio 없으면 None."""
+    resp = HealthResponse(
+        status="ok",
+        version="0.2.0",
+        components={"initialized": True},
+    )
+    assert resp.content_studio is None
+    dumped = resp.model_dump()
+    assert dumped["content_studio"] is None
 
 
 # ---------------------------------------------------------------------------

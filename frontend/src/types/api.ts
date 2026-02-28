@@ -194,10 +194,20 @@ export interface ContentPlanResponse {
 // Health API
 // ---------------------------------------------------------------------------
 
+export interface ContentStudioHealth {
+  available: boolean;
+  has_planner: boolean;
+  has_generator: boolean;
+  has_asset_generator: boolean;
+  has_assembler: boolean;
+  has_plan_cache: boolean;
+}
+
 export interface HealthResponse {
   status: string;
   version: string;
   components: Record<string, boolean>;
+  content_studio: ContentStudioHealth | null;
 }
 
 // ---------------------------------------------------------------------------

@@ -9,7 +9,79 @@ SKMS 도메인 데이터를 AntV 차트 포맷으로 변환하는 함수 3종:
 """
 from __future__ import annotations
 
-from typing import Any
+from typing import TypedDict
+
+
+# ---------------------------------------------------------------------------
+# TypedDict 정의
+# ---------------------------------------------------------------------------
+
+
+class TimelineEvent(TypedDict):
+    """타임라인 이벤트 항목."""
+
+    year: int
+    edition: str
+    label: str
+    category: str
+
+
+class TimelineChartData(TypedDict):
+    """AntV 타임라인 차트 데이터."""
+
+    chart_type: str
+    title: str
+    data: list[TimelineEvent]
+
+
+class NetworkNode(TypedDict):
+    """네트워크 그래프 노드."""
+
+    id: str
+    label: str
+    category: str
+
+
+class NetworkEdge(TypedDict):
+    """네트워크 그래프 엣지."""
+
+    source: str
+    target: str
+    weight: int
+
+
+class NetworkChartData(TypedDict):
+    """AntV 네트워크 그래프 데이터."""
+
+    chart_type: str
+    title: str
+    nodes: list[NetworkNode]
+    edges: list[NetworkEdge]
+
+
+class SankeyNode(TypedDict):
+    """산키 다이어그램 노드."""
+
+    id: str
+    label: str
+
+
+class SankeyLink(TypedDict):
+    """산키 다이어그램 링크."""
+
+    source: str
+    target: str
+    value: int
+    status: str
+
+
+class SankeyChartData(TypedDict):
+    """AntV 산키 다이어그램 데이터."""
+
+    chart_type: str
+    title: str
+    nodes: list[SankeyNode]
+    links: list[SankeyLink]
 
 
 # ---------------------------------------------------------------------------
@@ -17,11 +89,11 @@ from typing import Any
 # ---------------------------------------------------------------------------
 
 
-def build_timeline_data() -> dict[str, Any]:
+def build_timeline_data() -> TimelineChartData:
     """SKMS 개정 연혁 타임라인 데이터를 생성한다.
 
     Returns:
-        AntV timeline 차트 구조 (chart_type, title, data).
+        TimelineChartData (chart_type, title, data).
     """
     return {
         "chart_type": "timeline",
@@ -58,11 +130,11 @@ def build_timeline_data() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def build_network_data() -> dict[str, Any]:
+def build_network_data() -> NetworkChartData:
     """SKMS 경영요소 관계도 네트워크 데이터를 생성한다.
 
     Returns:
-        AntV network graph 구조 (chart_type, title, nodes, edges).
+        NetworkChartData (chart_type, title, nodes, edges).
     """
     return {
         "chart_type": "network",
@@ -105,11 +177,11 @@ def build_network_data() -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def build_sankey_data() -> dict[str, Any]:
+def build_sankey_data() -> SankeyChartData:
     """SKMS 개념 진화 산키 다이어그램 데이터를 생성한다.
 
     Returns:
-        AntV sankey 구조 (chart_type, title, nodes, links).
+        SankeyChartData (chart_type, title, nodes, links).
     """
     return {
         "chart_type": "sankey",

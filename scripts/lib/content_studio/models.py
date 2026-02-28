@@ -11,7 +11,7 @@ import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Literal, Union
+from typing import Any, Literal, TypedDict, Union
 
 import yaml
 
@@ -833,18 +833,45 @@ class ContentResult:
 
 
 # ---------------------------------------------------------------------------
+# 설정 TypedDict
+# ---------------------------------------------------------------------------
+
+
+class _ContentStudioConfigRequired(TypedDict):
+    """ContentStudioConfig 필수 키."""
+
+    output_dir: str
+
+
+class ContentStudioConfig(_ContentStudioConfigRequired, total=False):
+    """Content Studio 설정 딕셔너리 타입.
+
+    load_content_studio_config()의 반환 타입.
+    output_dir만 필수, 나머지는 선택.
+    """
+
+    mcp_servers: dict[str, Any]
+    lecture: dict[str, Any]
+    card_news: dict[str, Any]
+    workshop: dict[str, Any]
+    audio: dict[str, Any]
+    visualization: dict[str, Any]
+    quiz: dict[str, Any]
+
+
+# ---------------------------------------------------------------------------
 # 설정 로더
 # ---------------------------------------------------------------------------
 
 
-def load_content_studio_config(path: str | Path) -> dict[str, Any]:
+def load_content_studio_config(path: str | Path) -> ContentStudioConfig:
     """content_studio.yaml을 로드하고 기본 스키마를 검증한다.
 
     Args:
         path: YAML 파일 경로.
 
     Returns:
-        파싱된 설정 딕셔너리.
+        파싱된 ContentStudioConfig 딕셔너리.
 
     Raises:
         FileNotFoundError: 파일이 존재하지 않을 때.

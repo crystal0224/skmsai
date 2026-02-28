@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 import yaml
 
@@ -134,11 +134,31 @@ def select_layout(slide_plan: Any) -> str:
 
 
 # ---------------------------------------------------------------------------
+# TypedDict 정의
+# ---------------------------------------------------------------------------
+
+
+class TocEntry(TypedDict):
+    """TOC 항목 딕셔너리 타입."""
+
+    index: int
+    title: str
+
+
+class FooterData(TypedDict):
+    """슬라이드 Footer 딕셔너리 타입."""
+
+    company: str
+    date: str
+    show_page_number: bool
+
+
+# ---------------------------------------------------------------------------
 # TOC 생성
 # ---------------------------------------------------------------------------
 
 
-def generate_toc_data(slides: tuple | list) -> list[dict[str, Any]]:
+def generate_toc_data(slides: tuple | list) -> list[TocEntry]:
     """슬라이드 목록에서 TOC(목차) 데이터를 추출한다.
 
     section_header 레이아웃이거나 index <= 1인 슬라이드를 필터링한다.
@@ -147,9 +167,9 @@ def generate_toc_data(slides: tuple | list) -> list[dict[str, Any]]:
         slides: SlidePlan 목록.
 
     Returns:
-        TOC 항목 리스트 [{"index": int, "title": str}, ...].
+        TocEntry 리스트 [{"index": int, "title": str}, ...].
     """
-    toc: list[dict[str, Any]] = []
+    toc: list[TocEntry] = []
     for slide in slides:
         layout = getattr(slide, "layout", "")
         index = getattr(slide, "index", 0)
@@ -169,7 +189,7 @@ def generate_toc_data(slides: tuple | list) -> list[dict[str, Any]]:
 def generate_footer(
     company: str = "SK Group",
     date_str: str | None = None,
-) -> dict[str, Any]:
+) -> FooterData:
     """PPTX 슬라이드 footer 데이터를 생성한다.
 
     Args:
@@ -177,7 +197,7 @@ def generate_footer(
         date_str: 날짜 문자열 (ISO format). None이면 오늘 날짜.
 
     Returns:
-        Footer 딕셔너리.
+        FooterData 딕셔너리.
     """
     return {
         "company": company,

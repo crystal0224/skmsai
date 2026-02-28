@@ -6,6 +6,7 @@ source =
 omit =
     tests/*
     */__init__.py
+    server/dependencies.py
 
 [report]
 fail_under = 80

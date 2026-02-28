@@ -242,12 +242,30 @@ class TOCSectionSearchResponse(BaseModel):
 # ---------------------------------------------------------------------------
 
 
+class ContentStudioHealthResponse(BaseModel):
+    """Content Studio 헬스체크 상세 응답.
+
+    TD-009: 각 파이프라인 서비스의 가용 여부를 보고한다.
+    """
+
+    available: bool
+    has_planner: bool
+    has_generator: bool
+    has_asset_generator: bool
+    has_assembler: bool
+    has_plan_cache: bool
+
+
 class HealthResponse(BaseModel):
-    """헬스체크 응답."""
+    """헬스체크 응답.
+
+    TD-009: content_studio 필드 추가 (optional, backward compatible).
+    """
 
     status: str
     version: str
     components: dict[str, bool]
+    content_studio: ContentStudioHealthResponse | None = None
 
 
 # ---------------------------------------------------------------------------
