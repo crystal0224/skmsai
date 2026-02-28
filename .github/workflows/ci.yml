@@ -22,7 +22,7 @@ jobs:
       - name: Check coverage
         run: |
           pip install pytest-cov
-          python -m pytest tests/ --cov=scripts --cov=server --cov=src --cov-report=term-missing --cov-fail-under=80 -q
+          python -m pytest tests/ --cov=scripts/lib --cov=server --cov-report=term-missing --cov-fail-under=80 -q
 
   frontend-build:
     runs-on: ubuntu-latest

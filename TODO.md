@@ -817,9 +817,9 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 - [x] **TD-007** CI/CD 파이프라인 Phase 4 확장
   - `.github/workflows/ci.yml`: Python tests + coverage + frontend build
   - `.github/workflows/content-studio-tests.yml`: Content Studio 경로 필터 워크플로우
-- [ ] **TD-008** Docker 이미지 Phase 4 업데이트
-  - python-pptx, google-generativeai 의존성 추가
-  - output/ 볼륨 마운트 설정
+- [x] **TD-008** Docker 이미지 Phase 4 업데이트
+  - Dockerfile: output/ 디렉토리 + VOLUME 추가
+  - docker-compose.yml: GEMINI/ELEVENLABS API 키 + named volume
 - [ ] **TD-009** 모니터링 확장
   - Content Studio 메트릭: 생성 요청 수, 유형별 분포, 평균 생성 시간, 실패율
   - MCP 어댑터 헬스체크: /api/health에 MCP 서버 상태 포함

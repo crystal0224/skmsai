@@ -23,9 +23,12 @@ COPY migrations/ migrations/
 COPY prompts/ prompts/
 COPY guardrails/ guardrails/
 
-# 데이터 디렉토리 준비
-RUN mkdir -p data/processed indexes && \
+# 데이터 + output 디렉토리 준비
+RUN mkdir -p data/processed indexes output && \
     chown -R appuser:appuser /app
+
+# output 볼륨 (생성된 콘텐츠 파일 영속화)
+VOLUME /app/output
 
 # non-root 유저로 전환
 USER appuser
