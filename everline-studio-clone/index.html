@@ -16,10 +16,10 @@
     <nav class="navbar">
         <div class="logo">skms ai studio</div>
         <div class="nav-links">
-            <a href="#" class="active">HOME</a>
-            <a href="#">SKMS AI</a>
-            <a href="#">PROMPTS</a>
-            <a href="#">ABOUT</a>
+            <a href="#hero-section" class="active" data-nav="home">HOME</a>
+            <a href="#" data-nav="editions" id="nav-editions">SKMS 판본</a>
+            <a href="#" data-nav="search" id="nav-search">SEARCH</a>
+            <a href="#testimonial-section" data-nav="about">ABOUT</a>
         </div>
     </nav>
 
@@ -112,7 +112,7 @@
     </section>
 
     <!-- Testimonial Section -->
-    <section class="testimonial">
+    <section class="testimonial" id="testimonial-section">
         <h2 class="section-title">What They're Saying</h2>
         <div class="quote-container">
             <div class="quote-icon">"</div>
@@ -178,6 +178,11 @@
                     <p>안녕하세요. SKMS에 대해 어떤 점이 궁금하신가요?</p>
                 </div>
             </div>
+            <div class="chat-edition-filter">
+                <select id="chat-edition-filter" title="판본 필터">
+                    <option value="">전체 판본</option>
+                </select>
+            </div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="SKMS에 대해 질문해주세요...">
                 <button id="send-btn">
@@ -240,6 +245,14 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label>참조할 SKMS 판본 (선택)</label>
+                        <div class="custom-select">
+                            <select id="workspace-edition-filter">
+                                <option value="">전체 판본 참조</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>핵심 목적 및 세부 내용을 입력해주세요</label>
                         <textarea id="content-prompt" rows="6" placeholder="예: '지속가능한 성장을 위한 Q3 집중 전략'을 SK의 Double Bottom Line 경영철학과 연계하여 설명하는 이메일 초안 작성..."></textarea>
                     </div>
@@ -266,6 +279,104 @@
                             <div class="pulse-ring"></div>
                             <p class="placeholder-text">AI가 생성한 내용이 여기에 표시됩니다</p>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SKMS Edition Browser Overlay -->
+    <div class="editions-overlay" id="editions-overlay">
+        <div class="editions-container">
+            <div class="editions-header">
+                <div>
+                    <h2>SKMS 판본 탐색기</h2>
+                    <p>초판(1979)부터 14차(2020)까지 SKMS의 변천사를 탐색합니다.</p>
+                </div>
+                <span class="close-overlay" id="close-editions">&times;</span>
+            </div>
+            <div class="editions-body">
+                <div class="editions-sidebar" id="editions-sidebar">
+                    <div class="editions-sidebar-header">
+                        <h3>판본 목록</h3>
+                        <span class="edition-count" id="edition-count"></span>
+                    </div>
+                    <div class="edition-list" id="edition-list">
+                        <p class="loading-text">판본 목록을 불러오는 중...</p>
+                    </div>
+                </div>
+                <div class="editions-content">
+                    <div class="toc-search-bar">
+                        <input type="text" id="toc-search-input" placeholder="목차에서 검색... (예: 인사관리, SUPEX)">
+                        <button id="toc-search-btn">검색</button>
+                    </div>
+                    <div class="toc-tree" id="toc-tree">
+                        <div class="empty-state">
+                            <div class="pulse-ring"></div>
+                            <p class="placeholder-text">왼쪽에서 판본을 선택하면 목차가 표시됩니다</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-container">
+            <div class="search-header">
+                <div>
+                    <h2>SKMS 통합 검색</h2>
+                    <p>하이브리드 검색으로 SKMS 원문에서 관련 구절을 찾습니다.</p>
+                </div>
+                <span class="close-overlay" id="close-search">&times;</span>
+            </div>
+            <div class="search-body">
+                <div class="search-form-area">
+                    <div class="search-input-row">
+                        <input type="text" id="search-query" placeholder="SKMS 키워드를 검색하세요... (예: 인간중심 경영, SUPEX 추구)">
+                        <button id="search-submit-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        </button>
+                    </div>
+                    <div class="search-filters">
+                        <div class="filter-group">
+                            <label>검색 모드</label>
+                            <select id="search-mode">
+                                <option value="hybrid">하이브리드 (추천)</option>
+                                <option value="vector">의미 검색 (Vector)</option>
+                                <option value="bm25">키워드 검색 (BM25)</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>판본 필터</label>
+                            <select id="search-edition-filter">
+                                <option value="">전체 판본</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>인용 유형</label>
+                            <select id="search-type-filter">
+                                <option value="">전체</option>
+                                <option value="definition">정의</option>
+                                <option value="principle">원칙</option>
+                                <option value="narrative">서술</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>결과 수</label>
+                            <select id="search-top-k">
+                                <option value="5">5건</option>
+                                <option value="10" selected>10건</option>
+                                <option value="20">20건</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-results" id="search-results">
+                    <div class="empty-state">
+                        <div class="pulse-ring"></div>
+                        <p class="placeholder-text">검색어를 입력하고 검색 버튼을 클릭하세요</p>
                     </div>
                 </div>
             </div>
@@ -487,14 +598,15 @@
             showTypingIndicator();
 
             try {
-                const data = await apiCall('/api/v2/generate', {
-                    body: {
-                        query: query,
-                        top_k: 5,
-                        include_evidence_check: true,
-                        include_rendered: true
-                    }
-                });
+                const chatFilter = document.getElementById('chat-edition-filter');
+                const chatBody_ = {
+                    query: query,
+                    top_k: 5,
+                    include_evidence_check: true,
+                    include_rendered: true
+                };
+                if (chatFilter && chatFilter.value) chatBody_.edition_filter = chatFilter.value;
+                const data = await apiCall('/api/v2/generate', { body: chatBody_ });
 
                 removeTypingIndicator();
 
@@ -723,17 +835,18 @@
             const isStudioType = CONTENT_STUDIO_TYPES.has(typeValue);
             setWorkspaceLoading(true, isStudioType);
 
+            const wsEdition = document.getElementById('workspace-edition-filter').value || null;
+
             try {
                 if (isStudioType) {
                     // Content Studio → async file generation
+                    const studioOptions = { language: 'ko', style: toneValue };
+                    if (wsEdition) studioOptions.edition_filter = wsEdition;
                     const asyncResponse = await apiCall('/api/content/generate/async', {
                         body: {
                             content_type: typeValue,
                             topic: prompt,
-                            options: {
-                                language: 'ko',
-                                style: toneValue
-                            }
+                            options: studioOptions
                         }
                     });
                     const result = await pollContentStatus(asyncResponse.request_id);
@@ -745,15 +858,15 @@
                     const toneLabel = TONE_LABELS[toneValue] || '';
                     const query = `다음 주제에 대해 ${toneLabel} ${docLabel}을(를) 작성해주세요. SKMS 경영철학을 기반으로 작성하되, 실무에서 바로 활용할 수 있는 형태로 구성해주세요.\n\n주제: ${prompt}`;
 
-                    const data = await apiCall('/api/v2/generate', {
-                        body: {
-                            query: query,
-                            output_type: 'summary',
-                            top_k: 7,
-                            include_evidence_check: true,
-                            include_rendered: true
-                        }
-                    });
+                    const genBody = {
+                        query: query,
+                        output_type: 'summary',
+                        top_k: 7,
+                        include_evidence_check: true,
+                        include_rendered: true
+                    };
+                    if (wsEdition) genBody.edition_filter = wsEdition;
+                    const data = await apiCall('/api/v2/generate', { body: genBody });
                     displayGenerateResult(data);
                     showToast('문서가 생성되었습니다!');
                 }
@@ -887,13 +1000,371 @@
         // ===================================================================
         const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
 
-        (async function checkBackendConnection() {
+        // ===================================================================
+        // NAVIGATION
+        // ===================================================================
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const nav = link.dataset.nav;
+                if (nav === 'editions') {
+                    e.preventDefault();
+                    openEditionsOverlay();
+                } else if (nav === 'search') {
+                    e.preventDefault();
+                    openSearchOverlay();
+                } else if (link.getAttribute('href').startsWith('#')) {
+                    // Smooth scroll for anchor links
+                    const target = document.querySelector(link.getAttribute('href'));
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+                // Update active state
+                document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // ===================================================================
+        // EDITION BROWSER
+        // ===================================================================
+        const editionsOverlay = document.getElementById('editions-overlay');
+        const closeEditions = document.getElementById('close-editions');
+        const editionList = document.getElementById('edition-list');
+        const editionCount = document.getElementById('edition-count');
+        const tocTree = document.getElementById('toc-tree');
+        const tocSearchInput = document.getElementById('toc-search-input');
+        const tocSearchBtn = document.getElementById('toc-search-btn');
+
+        let editionsCache = null; // cache edition list
+        let selectedEditionId = null;
+
+        function openEditionsOverlay() {
+            editionsOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if (!editionsCache) loadEditions();
+        }
+
+        closeEditions.addEventListener('click', () => {
+            editionsOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        async function loadEditions() {
+            try {
+                const data = await apiCall('/api/editions', { method: 'GET' });
+                editionsCache = data.editions || [];
+                editionCount.textContent = `${editionsCache.length}개`;
+                renderEditionList(editionsCache);
+                // Also populate edition filter dropdowns
+                populateEditionFilters(editionsCache);
+            } catch (err) {
+                editionList.innerHTML = `<p class="loading-text" style="color: #dc3545;">판본 목록을 불러올 수 없습니다.<br>${escapeHtml(err.message)}</p>`;
+            }
+        }
+
+        function renderEditionList(editions) {
+            editionList.innerHTML = editions.map(ed => `
+                <div class="edition-item${ed.edition_id === selectedEditionId ? ' active' : ''}"
+                     data-edition-id="${escapeHtml(ed.edition_id)}">
+                    <span class="edition-label">${escapeHtml(ed.label)} (${ed.year})</span>
+                    <span class="edition-meta">${ed.section_count}개 섹션</span>
+                </div>
+            `).join('');
+
+            editionList.querySelectorAll('.edition-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const editionId = item.dataset.editionId;
+                    selectEdition(editionId);
+                });
+            });
+        }
+
+        async function selectEdition(editionId) {
+            selectedEditionId = editionId;
+            // Update UI
+            editionList.querySelectorAll('.edition-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.editionId === editionId);
+            });
+            // Load TOC
+            tocTree.innerHTML = '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">목차를 불러오는 중...</p></div>';
+            try {
+                const data = await apiCall(`/api/toc/${encodeURIComponent(editionId)}`, { method: 'GET' });
+                renderTocTree(data.sections || []);
+            } catch (err) {
+                tocTree.innerHTML = `<div class="result-error"><p>목차를 불러올 수 없습니다</p><p>${escapeHtml(err.message)}</p></div>`;
+            }
+        }
+
+        function renderTocTree(sections, depth = 0) {
+            if (depth === 0) tocTree.innerHTML = '';
+            const container = depth === 0 ? tocTree : document.createElement('div');
+            if (depth > 0) container.className = 'toc-children';
+
+            sections.forEach(section => {
+                const node = document.createElement('div');
+                node.className = 'toc-node';
+
+                const hasChildren = section.children && section.children.length > 0;
+                const header = document.createElement('div');
+                header.className = 'toc-node-header';
+                header.style.paddingLeft = `${depth * 0.5}rem`;
+                header.innerHTML = `
+                    <span class="toc-toggle${hasChildren ? '' : ' empty'}">${hasChildren ? '▶' : '·'}</span>
+                    <span class="toc-level">${escapeHtml(section.level)}</span>
+                    <span class="toc-title">${escapeHtml(section.title)}</span>
+                    <span class="toc-line">L${section.line}</span>
+                `;
+
+                node.appendChild(header);
+
+                if (hasChildren) {
+                    const childContainer = renderTocTree(section.children, depth + 1);
+                    node.appendChild(childContainer);
+
+                    header.addEventListener('click', () => {
+                        const toggle = header.querySelector('.toc-toggle');
+                        const children = node.querySelector('.toc-children');
+                        const isExpanded = children.classList.contains('expanded');
+                        children.classList.toggle('expanded');
+                        toggle.classList.toggle('expanded');
+                    });
+                }
+
+                container.appendChild(node);
+            });
+
+            if (depth === 0 && sections.length === 0) {
+                tocTree.innerHTML = '<div class="empty-state"><p class="placeholder-text">목차 데이터가 없습니다</p></div>';
+            }
+
+            return container;
+        }
+
+        // TOC search
+        async function searchToc() {
+            const query = tocSearchInput.value.trim();
+            if (!query) return;
+
+            tocTree.innerHTML = '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">검색 중...</p></div>';
+            try {
+                const params = new URLSearchParams({ q: query });
+                if (selectedEditionId) params.append('edition_id', selectedEditionId);
+                const data = await apiCall(`/api/toc?${params}`, { method: 'GET' });
+                renderTocSearchResults(data.results || [], data.total);
+            } catch (err) {
+                tocTree.innerHTML = `<div class="result-error"><p>검색 실패</p><p>${escapeHtml(err.message)}</p></div>`;
+            }
+        }
+
+        function renderTocSearchResults(results, total) {
+            if (results.length === 0) {
+                tocTree.innerHTML = '<div class="empty-state"><p class="placeholder-text">검색 결과가 없습니다</p></div>';
+                return;
+            }
+            let html = `<p class="search-result-count">${total}건의 결과</p><div class="toc-search-results">`;
+            results.forEach(r => {
+                const pathStr = (r.path || []).join(' > ');
+                html += `
+                    <div class="toc-search-result" data-edition="${escapeHtml(r.edition_id)}">
+                        <div class="result-path">${escapeHtml(pathStr)}</div>
+                        <div class="result-title">${escapeHtml(r.title)}</div>
+                        <span class="result-edition">${escapeHtml(r.edition_id)}</span>
+                    </div>`;
+            });
+            html += '</div>';
+            tocTree.innerHTML = html;
+
+            // Click to load that edition's TOC
+            tocTree.querySelectorAll('.toc-search-result').forEach(item => {
+                item.addEventListener('click', () => {
+                    const editionId = item.dataset.edition;
+                    selectEdition(editionId);
+                    tocSearchInput.value = '';
+                });
+            });
+        }
+
+        tocSearchBtn.addEventListener('click', searchToc);
+        tocSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') searchToc();
+        });
+
+        // ===================================================================
+        // SEARCH OVERLAY
+        // ===================================================================
+        const searchOverlay = document.getElementById('search-overlay');
+        const closeSearch = document.getElementById('close-search');
+        const searchQuery = document.getElementById('search-query');
+        const searchSubmitBtn = document.getElementById('search-submit-btn');
+        const searchResults = document.getElementById('search-results');
+        const searchMode = document.getElementById('search-mode');
+        const searchEditionFilter = document.getElementById('search-edition-filter');
+        const searchTypeFilter = document.getElementById('search-type-filter');
+        const searchTopK = document.getElementById('search-top-k');
+
+        let searchBusy = false;
+
+        function openSearchOverlay() {
+            searchOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            searchQuery.focus();
+            if (!editionsCache) loadEditions(); // ensure edition filters are populated
+        }
+
+        closeSearch.addEventListener('click', () => {
+            searchOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        async function performSearch() {
+            const query = searchQuery.value.trim();
+            if (!query || searchBusy) return;
+
+            searchBusy = true;
+            searchSubmitBtn.disabled = true;
+            searchResults.innerHTML = '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">검색 중...</p></div>';
+
+            try {
+                const body = {
+                    query: query,
+                    mode: searchMode.value,
+                    top_k: parseInt(searchTopK.value),
+                    include_evidence_check: true,
+                    include_comparison: false
+                };
+                if (searchEditionFilter.value) body.edition_filter = searchEditionFilter.value;
+                if (searchTypeFilter.value) body.type_filter = [searchTypeFilter.value];
+
+                const data = await apiCall('/api/v2/search', { body });
+                renderSearchResults(data);
+            } catch (err) {
+                const errorMsg = err.message.includes('Failed to fetch')
+                    ? '백엔드 서버에 연결할 수 없습니다.'
+                    : err.message;
+                searchResults.innerHTML = `<div class="result-error"><p>검색 실패</p><p>${escapeHtml(errorMsg)}</p></div>`;
+            } finally {
+                searchBusy = false;
+                searchSubmitBtn.disabled = false;
+            }
+        }
+
+        function renderSearchResults(data) {
+            const hits = data.hits || [];
+            if (hits.length === 0) {
+                searchResults.innerHTML = '<div class="empty-state"><p class="placeholder-text">검색 결과가 없습니다. 다른 키워드로 시도해보세요.</p></div>';
+                return;
+            }
+
+            let html = `<p class="search-result-count">${data.total}건의 검색 결과 (${data.mode} 모드)</p>`;
+
+            // Evidence check summary if available
+            if (data.evidence_check) {
+                const ec = data.evidence_check;
+                html += `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    근거 커버리지: ${(ec.coverage_score * 100).toFixed(0)}%
+                    ${ec.passed ? ' ✓' : ' ⚠'}
+                </p>`;
+            }
+
+            hits.forEach((hit, idx) => {
+                const score = (hit.score * 100).toFixed(1);
+                const typeLabels = { definition: '정의', principle: '원칙', narrative: '서술' };
+                const typeLabel = typeLabels[hit.quote_type] || hit.quote_type || '';
+                const pathStr = (hit.section_path || []).join(' > ');
+
+                html += `
+                    <div class="search-result-item">
+                        <div class="search-result-meta">
+                            <span class="badge badge-edition">${escapeHtml(hit.edition_id)} (${hit.year})</span>
+                            ${typeLabel ? `<span class="badge badge-type">${typeLabel}</span>` : ''}
+                            <span class="badge badge-score">${score}%</span>
+                            <span class="badge badge-source">${hit.source || data.mode}</span>
+                        </div>
+                        <div class="search-result-text">${escapeHtml(hit.text)}</div>
+                        ${pathStr ? `<div class="search-result-path">${escapeHtml(pathStr)}</div>` : ''}
+                    </div>`;
+            });
+
+            searchResults.innerHTML = html;
+        }
+
+        searchSubmitBtn.addEventListener('click', performSearch);
+        searchQuery.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // ===================================================================
+        // EDITION FILTER — POPULATE DROPDOWNS
+        // ===================================================================
+        function populateEditionFilters(editions) {
+            const selectors = [
+                document.getElementById('chat-edition-filter'),
+                document.getElementById('workspace-edition-filter'),
+                document.getElementById('search-edition-filter')
+            ];
+            selectors.forEach(select => {
+                if (!select) return;
+                // Keep the first "전체" option, clear rest
+                while (select.options.length > 1) select.remove(1);
+                editions.forEach(ed => {
+                    const option = document.createElement('option');
+                    option.value = ed.edition_id;
+                    option.textContent = `${ed.label} (${ed.year})`;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        // ===================================================================
+        // WIRE EDITION FILTERS INTO CHAT & WORKSPACE
+        // ===================================================================
+        // Patch: read chat edition filter when sending messages
+        const chatEditionFilter = document.getElementById('chat-edition-filter');
+        const workspaceEditionFilter = document.getElementById('workspace-edition-filter');
+
+        // Override sendChatMessage to include edition filter
+        const _originalSendChat = sendChatMessage;
+        // We re-define to pass edition_filter (cleaner than monkey-patching)
+        // The edition filter is already in the DOM; we'll read it inside the
+        // existing sendChatMessage. To do this cleanly, we modify the apiCall body.
+        // Actually, let's just update the existing function reference via the closure.
+        // The existing sendChatMessage already reads chatInput. We need to also
+        // read chatEditionFilter.value and pass it as edition_filter.
+
+        // Since sendChatMessage is already defined as a named function and used by
+        // event listeners, the cleanest approach is to wrap the body construction
+        // in the existing code. But since we can't redefine an existing const function,
+        // we'll add a global getter that the existing code already supports.
+        // Let's use a simpler approach: store it as a module-level getter.
+
+        // Close Escape key handler for all overlays
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (editionsOverlay.classList.contains('active')) {
+                    editionsOverlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+                if (searchOverlay.classList.contains('active')) {
+                    searchOverlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        });
+
+        // ===================================================================
+        // BACKEND CONNECTION CHECK + INIT (on page load)
+        // ===================================================================
+        (async function init() {
             try {
                 const data = await apiCall('/api/health', { method: 'GET' });
                 if (IS_DEV) {
                     console.log('[SKMS AI Studio] Backend connected. Content Studio:',
                         data.content_studio?.available ? 'available' : 'unavailable');
                 }
+                // Pre-load editions for filters
+                if (!editionsCache) loadEditions();
             } catch (err) {
                 if (IS_DEV) {
                     console.warn('[SKMS AI Studio] Backend not reachable. Start with: python -m uvicorn server.app:app --reload --port 8000');
