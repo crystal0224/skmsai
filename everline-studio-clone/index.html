@@ -57,59 +57,191 @@
         </div>
     </section>
 
-    <!-- Book-Like Expansion Section -->
-    <section class="expansion-section">
-        <div class="expansion-container">
-            <!-- Row 1 -->
-            <div class="expansion-row">
-                <div class="expansion-title">
-                    <h2>Brand Editorial<br>Shoots</h2>
+    <!-- Content Studio Section -->
+    <section class="content-studio-section" id="content-studio-section">
+        <div class="studio-header">
+            <p class="studio-label">CONTENT STUDIO</p>
+            <h2 class="studio-title">AI 콘텐츠<br>제작 파이프라인</h2>
+            <p class="studio-desc">SKMS 원문 기반 RAG 파이프라인이 6종의 콘텐츠를 자동 생성합니다.<br>기획(Plan) → 생성(Generate) → 에셋(Assets) → 조립(Assemble) → 발행(Publish)</p>
+        </div>
+        <div class="studio-grid" id="studio-grid">
+            <div class="studio-card" data-type="lecture">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
                 </div>
-                <div class="expansion-wrap">
-                    <div class="expansion-inner">
-                        <div class="expansion-img">
-                            <img src="assets/ai_content_example.png" alt="Editorial Imagery">
+                <div class="card-format">PPTX</div>
+                <h3>프레젠테이션</h3>
+                <p>SKMS 철학 기반 강의 슬라이드. 3종 테마(기업/교육/세미나), 자동 목차, 발표자 노트 포함.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">슬라이드</span>
+                    <span class="meta-tag">PDF 변환</span>
+                </div>
+                <button class="card-btn" data-type="lecture">생성하기</button>
+            </div>
+            <div class="studio-card" data-type="card_news">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                </div>
+                <div class="card-format">PNG</div>
+                <h3>카드뉴스</h3>
+                <p>소셜 미디어용 카드 시리즈. 3종 프리셋(daily_skms / deep_read / edition_compare) 자동 생성.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">이미지</span>
+                    <span class="meta-tag">시리즈</span>
+                </div>
+                <button class="card-btn" data-type="card_news">생성하기</button>
+            </div>
+            <div class="studio-card" data-type="workshop">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="card-format">HTML</div>
+                <h3>워크숍 자료</h3>
+                <p>인터랙티브 HTML 워크숍. 토론 프롬프트, 활동 가이드, 타이머 포함 실습형 학습 자료.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">인터랙티브</span>
+                    <span class="meta-tag">실습</span>
+                </div>
+                <button class="card-btn" data-type="workshop">생성하기</button>
+            </div>
+            <div class="studio-card" data-type="visualization">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                </div>
+                <div class="card-format">SVG</div>
+                <h3>데이터 시각화</h3>
+                <p>SKMS 변천 시각화. 타임라인(12개 판본), 네트워크(15개 경영요소), 생키 다이어그램(개념 진화).</p>
+                <div class="card-meta">
+                    <span class="meta-tag">차트</span>
+                    <span class="meta-tag">인포그래픽</span>
+                </div>
+                <button class="card-btn" data-type="visualization">생성하기</button>
+            </div>
+            <div class="studio-card" data-type="audio">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+                </div>
+                <div class="card-format">MP3</div>
+                <h3>오디오 나레이션</h3>
+                <p>ElevenLabs TTS 기반 음성 콘텐츠. SKMS 핵심 개념 해설 팟캐스트, 교육용 나레이션 생성.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">음성</span>
+                    <span class="meta-tag">TTS</span>
+                </div>
+                <button class="card-btn" data-type="audio">생성하기</button>
+            </div>
+            <div class="studio-card" data-type="quiz">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                </div>
+                <div class="card-format">HTML</div>
+                <h3>인터랙티브 퀴즈</h3>
+                <p>SKMS 이해도 평가 퀴즈. 객관식/OX/서술형 문항 자동 생성, 즉시 채점 및 해설 제공.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">평가</span>
+                    <span class="meta-tag">학습</span>
+                </div>
+                <button class="card-btn" data-type="quiz">생성하기</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content Studio Generation Modal -->
+    <div class="studio-modal-overlay" id="studio-modal-overlay">
+        <div class="studio-modal">
+            <div class="studio-modal-header">
+                <div>
+                    <h2 id="studio-modal-title">콘텐츠 생성</h2>
+                    <p id="studio-modal-subtitle">SKMS 기반 콘텐츠를 생성합니다.</p>
+                </div>
+                <span class="close-overlay" id="close-studio-modal">&times;</span>
+            </div>
+            <div class="studio-modal-body">
+                <!-- Step 1: Input -->
+                <div class="studio-step" id="studio-step-input">
+                    <div class="studio-input-form">
+                        <div class="form-group">
+                            <label>주제를 입력하세요</label>
+                            <textarea id="studio-topic" rows="4" placeholder="예: SUPEX 추구의 현대적 의미와 실천 방안"></textarea>
                         </div>
-                        <div class="expansion-content">
-                            <p>CURATED, STORY-DRIVEN SESSIONS THAT TRANSLATE YOUR BRAND ESSENCE INTO ELEVATED, MAGAZINE-WORTHY IMAGERY.<br><br>FROM PRODUCT DETAILS TO LIFESTYLE SCENES, EVERY FRAME IS CRAFTED TO CONNECT EMOTIONALLY AND VISUALLY.</p>
+                        <div class="form-row">
+                            <div class="form-group" style="flex:1">
+                                <label>참조 판본</label>
+                                <div class="custom-select">
+                                    <select id="studio-edition-filter">
+                                        <option value="">전체 판본</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex:1">
+                                <label>언어</label>
+                                <div class="custom-select">
+                                    <select id="studio-language">
+                                        <option value="ko">한국어</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="studio-actions">
+                            <button class="studio-plan-btn" id="studio-plan-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                                계획 미리보기
+                            </button>
+                            <button class="studio-generate-btn" id="studio-generate-btn">
+                                생성 시작
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- Row 2 -->
-            <div class="expansion-row">
-                <div class="expansion-title">
-                    <h2>Art Direction &<br>Styling</h2>
-                </div>
-                <div class="expansion-wrap">
-                    <div class="expansion-inner">
-                        <div class="expansion-img">
-                            <img src="assets/portrait.png" alt="Art Direction">
+                <!-- Step 2: Plan Preview -->
+                <div class="studio-step hidden" id="studio-step-plan">
+                    <div class="studio-plan-view">
+                        <div class="plan-header">
+                            <h3>생성 계획 미리보기</h3>
+                            <button class="studio-back-btn" id="studio-back-to-input">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                                수정하기
+                            </button>
                         </div>
-                        <div class="expansion-content">
-                            <p>CREATIVE OVERSIGHT TO ENSURE YOUR VISUALS ARE COHESIVE, INTENTIONAL, AND BEAUTIFULLY ON-BRAND.<br><br>INCLUDES MOODBOARDING, PROP CURATION, SET STYLING, AND ON-LOCATION DIRECTION FOR A SEAMLESS CREATIVE PROCESS.</p>
+                        <div class="plan-content" id="studio-plan-content">
+                            <div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">계획 생성 중...</p></div>
                         </div>
+                        <button class="studio-generate-btn" id="studio-confirm-generate">이 계획으로 생성하기</button>
                     </div>
                 </div>
-            </div>
-            <!-- Row 3 -->
-            <div class="expansion-row">
-                <div class="expansion-title">
-                    <h2>Content Suites<br>for Launches</h2>
+                <!-- Step 3: Progress -->
+                <div class="studio-step hidden" id="studio-step-progress">
+                    <div class="studio-progress-view">
+                        <div class="progress-animation">
+                            <div class="progress-ring">
+                                <svg width="120" height="120" viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="6"/>
+                                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--primary-yellow)" stroke-width="6"
+                                            stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round"
+                                            id="progress-circle" style="transition: stroke-dashoffset 0.5s ease"/>
+                                </svg>
+                                <span class="progress-percent" id="progress-percent">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-stages" id="progress-stages">
+                            <div class="stage" data-stage="planning"><span class="stage-dot"></span> 기획 (Plan)</div>
+                            <div class="stage" data-stage="generating"><span class="stage-dot"></span> 생성 (Generate)</div>
+                            <div class="stage" data-stage="assets"><span class="stage-dot"></span> 에셋 (Assets)</div>
+                            <div class="stage" data-stage="assembling"><span class="stage-dot"></span> 조립 (Assemble)</div>
+                            <div class="stage" data-stage="publishing"><span class="stage-dot"></span> 발행 (Publish)</div>
+                        </div>
+                        <p class="progress-status" id="progress-status">준비 중...</p>
+                    </div>
                 </div>
-                <div class="expansion-wrap">
-                    <div class="expansion-inner">
-                        <div class="expansion-img">
-                            <img src="assets/project1.png" alt="Content Suites">
-                        </div>
-                        <div class="expansion-content">
-                            <p>CUSTOM IMAGERY PACKAGES FOR PRODUCT LAUNCHES, CAMPAIGNS, OR SEASONAL STORYTELLING.<br><br>DELIVERED IN VERSATILE FORMATS IDEAL FOR WEB, SOCIAL, AND PRESS—TAILORED TO ALIGN WITH YOUR MARKETING GOALS.</p>
-                        </div>
+                <!-- Step 4: Result -->
+                <div class="studio-step hidden" id="studio-step-result">
+                    <div class="studio-result-view" id="studio-result-view">
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Testimonial Section -->
     <section class="testimonial" id="testimonial-section">
@@ -996,6 +1128,241 @@
         }
 
         // ===================================================================
+        // CONTENT STUDIO
+        // ===================================================================
+        const studioModalOverlay = document.getElementById('studio-modal-overlay');
+        const closeStudioModal = document.getElementById('close-studio-modal');
+        const studioTopic = document.getElementById('studio-topic');
+        const studioPlanBtn = document.getElementById('studio-plan-btn');
+        const studioGenerateBtn = document.getElementById('studio-generate-btn');
+        const studioConfirmGenerate = document.getElementById('studio-confirm-generate');
+        const studioBackToInput = document.getElementById('studio-back-to-input');
+        const studioEditionFilter = document.getElementById('studio-edition-filter');
+
+        let currentStudioType = null;
+        let studioBusy = false;
+
+        const STUDIO_TYPE_INFO = {
+            lecture: { title: '프레젠테이션 슬라이드', format: 'PPTX', desc: 'SKMS 기반 강의 슬라이드를 생성합니다.' },
+            card_news: { title: '카드뉴스', format: 'PNG', desc: '소셜 미디어용 카드뉴스 시리즈를 생성합니다.' },
+            workshop: { title: '워크숍 자료', format: 'HTML', desc: '인터랙티브 워크숍 자료를 생성합니다.' },
+            visualization: { title: '데이터 시각화', format: 'SVG', desc: 'SKMS 변천 시각화를 생성합니다.' },
+            audio: { title: '오디오 나레이션', format: 'MP3', desc: 'TTS 기반 음성 콘텐츠를 생성합니다.' },
+            quiz: { title: '인터랙티브 퀴즈', format: 'HTML', desc: 'SKMS 이해도 평가 퀴즈를 생성합니다.' }
+        };
+
+        // Card button clicks → open modal
+        document.querySelectorAll('.card-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                openStudioModal(type);
+            });
+        });
+
+        function openStudioModal(type) {
+            currentStudioType = type;
+            const info = STUDIO_TYPE_INFO[type];
+            document.getElementById('studio-modal-title').textContent = `${info.title} 생성`;
+            document.getElementById('studio-modal-subtitle').textContent = `${info.desc} (${info.format} 출력)`;
+            // Reset to input step
+            showStudioStep('input');
+            studioTopic.value = '';
+            studioModalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            studioTopic.focus();
+        }
+
+        function closeStudioModalFn() {
+            studioModalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            studioBusy = false;
+        }
+
+        closeStudioModal.addEventListener('click', closeStudioModalFn);
+
+        function showStudioStep(step) {
+            ['input', 'plan', 'progress', 'result'].forEach(s => {
+                document.getElementById(`studio-step-${s}`).classList.toggle('hidden', s !== step);
+            });
+        }
+
+        studioBackToInput.addEventListener('click', () => showStudioStep('input'));
+
+        // Plan preview
+        studioPlanBtn.addEventListener('click', async () => {
+            const topic = studioTopic.value.trim();
+            if (!topic) { showToast('주제를 입력해주세요.', 'warning'); return; }
+
+            showStudioStep('plan');
+            document.getElementById('studio-plan-content').innerHTML =
+                '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">계획 생성 중...</p></div>';
+
+            try {
+                const data = await apiCall('/api/content/plan', {
+                    body: {
+                        content_type: currentStudioType,
+                        topic: topic,
+                        options: {
+                            language: document.getElementById('studio-language').value,
+                            edition_filter: studioEditionFilter.value || undefined
+                        }
+                    }
+                });
+                document.getElementById('studio-plan-content').innerHTML =
+                    `<div class="result-content">${simpleMarkdownToHtml(JSON.stringify(data.plan, null, 2))}</div>`;
+            } catch (err) {
+                document.getElementById('studio-plan-content').innerHTML =
+                    `<div class="result-error"><p>계획 생성 실패</p><p>${escapeHtml(err.message)}</p></div>`;
+            }
+        });
+
+        // Generate (from input or plan confirm)
+        async function startStudioGeneration() {
+            const topic = studioTopic.value.trim();
+            if (!topic || studioBusy) return;
+
+            studioBusy = true;
+            showStudioStep('progress');
+            resetProgress();
+
+            try {
+                // Start async generation
+                const options = {
+                    language: document.getElementById('studio-language').value,
+                    style: 'professional'
+                };
+                const edFilter = studioEditionFilter.value;
+                if (edFilter) options.edition_filter = edFilter;
+
+                const asyncRes = await apiCall('/api/content/generate/async', {
+                    body: {
+                        content_type: currentStudioType,
+                        topic: topic,
+                        options: options
+                    }
+                });
+
+                // Poll for status with progress animation
+                const result = await pollStudioStatus(asyncRes.request_id);
+                showStudioResult(result);
+            } catch (err) {
+                const errorMsg = err.message.includes('Failed to fetch')
+                    ? '백엔드 서버에 연결할 수 없습니다.'
+                    : err.message;
+                showStudioStep('result');
+                document.getElementById('studio-result-view').innerHTML =
+                    `<div class="result-error"><p>생성 실패</p><p>${escapeHtml(errorMsg)}</p></div>
+                     <button class="studio-new-btn" onclick="showStudioStep('input')">다시 시도</button>`;
+            } finally {
+                studioBusy = false;
+            }
+        }
+
+        studioGenerateBtn.addEventListener('click', startStudioGeneration);
+        studioConfirmGenerate.addEventListener('click', startStudioGeneration);
+
+        function resetProgress() {
+            const circle = document.getElementById('progress-circle');
+            circle.style.strokeDashoffset = '339.292';
+            document.getElementById('progress-percent').textContent = '0%';
+            document.getElementById('progress-status').textContent = '생성을 시작합니다...';
+            document.querySelectorAll('.stage').forEach(s => {
+                s.classList.remove('active', 'done');
+            });
+        }
+
+        function updateProgress(percent, statusText) {
+            const circle = document.getElementById('progress-circle');
+            const offset = 339.292 * (1 - percent / 100);
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progress-percent').textContent = `${Math.round(percent)}%`;
+            document.getElementById('progress-status').textContent = statusText;
+
+            // Update stage indicators
+            const stages = ['planning', 'generating', 'assets', 'assembling', 'publishing'];
+            const activeIdx = Math.min(Math.floor(percent / 20), stages.length - 1);
+            stages.forEach((s, i) => {
+                const el = document.querySelector(`.stage[data-stage="${s}"]`);
+                el.classList.remove('active', 'done');
+                if (i < activeIdx) el.classList.add('done');
+                else if (i === activeIdx) el.classList.add('active');
+            });
+        }
+
+        async function pollStudioStatus(requestId) {
+            const maxAttempts = 60;
+            let transientErrors = 0;
+            for (let i = 0; i < maxAttempts; i++) {
+                await new Promise(r => setTimeout(r, 3000));
+
+                let status;
+                try {
+                    status = await apiCall(`/api/content/status/${requestId}`, { method: 'GET' });
+                    transientErrors = 0;
+                } catch (err) {
+                    transientErrors++;
+                    if (transientErrors >= 3) throw new Error('서버 연결이 반복적으로 실패했습니다.');
+                    continue;
+                }
+
+                const statusMap = { pending: '대기 중...', running: '생성 진행 중...' };
+                const percent = status.status === 'pending' ? Math.min(10 + i * 2, 30)
+                    : status.status === 'running' ? Math.min(30 + i * 3, 90)
+                    : status.status === 'completed' ? 100 : 0;
+                updateProgress(percent, statusMap[status.status] || status.status);
+
+                if (status.status === 'completed') {
+                    updateProgress(100, '완료!');
+                    await new Promise(r => setTimeout(r, 800)); // brief pause to show 100%
+                    return status.result;
+                }
+                if (status.status === 'failed') {
+                    throw new Error(status.error || '콘텐츠 생성에 실패했습니다.');
+                }
+            }
+            throw new Error('생성 시간이 초과되었습니다.');
+        }
+
+        function showStudioResult(result) {
+            showStudioStep('result');
+            const info = STUDIO_TYPE_INFO[currentStudioType];
+            const files = result.files || [];
+            const citations = result.citations || [];
+
+            let html = `
+                <div class="result-success-banner">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <h3>${escapeHtml(info.title)} 생성 완료</h3>
+                        <p>${files.length}개 파일 생성 · SKMS 원문 ${citations.length}건 인용</p>
+                    </div>
+                </div>
+                <ul class="result-files-list">`;
+
+            files.forEach(f => {
+                const ext = (f.file_name || '').split('.').pop().toUpperCase();
+                const sizeKB = (f.size_bytes / 1024).toFixed(1);
+                html += `
+                    <li class="result-file-item">
+                        <div class="result-file-info">
+                            <div class="file-icon">${escapeHtml(ext)}</div>
+                            <div>
+                                <div class="file-name">${escapeHtml(f.file_name)}</div>
+                                <div class="file-size">${sizeKB} KB</div>
+                            </div>
+                        </div>
+                    </li>`;
+            });
+
+            html += `</ul>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">파일은 서버의 output/ 디렉토리에 저장되었습니다.</p>
+                <button class="studio-new-btn" onclick="showStudioStep('input')">새 콘텐츠 생성하기</button>`;
+
+            document.getElementById('studio-result-view').innerHTML = html;
+            showToast(`${info.title}가 생성되었습니다!`);
+        }
+
+        // ===================================================================
         // BACKEND CONNECTION CHECK (on page load)
         // ===================================================================
         const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
@@ -1302,7 +1669,8 @@
             const selectors = [
                 document.getElementById('chat-edition-filter'),
                 document.getElementById('workspace-edition-filter'),
-                document.getElementById('search-edition-filter')
+                document.getElementById('search-edition-filter'),
+                document.getElementById('studio-edition-filter')
             ];
             selectors.forEach(select => {
                 if (!select) return;
@@ -1342,6 +1710,9 @@
         // Close Escape key handler for all overlays
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                if (studioModalOverlay.classList.contains('active') && !studioBusy) {
+                    closeStudioModalFn();
+                }
                 if (editionsOverlay.classList.contains('active')) {
                     editionsOverlay.classList.remove('active');
                     document.body.style.overflow = 'auto';
