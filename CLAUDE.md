@@ -56,6 +56,7 @@ This repository also contains a **Time-Aware RAG pipeline** built on top of SKMS
 ### Development Status
 - **Phase 0~3**: Complete (39 PRs, 1216 tests, 93% coverage)
 - **Phase 4**: Content Studio — COMPLETE (52 PRs, 1850 tests, 95.80% coverage)
+- **Phase 4.5**: Frontend Integration — IN PROGRESS (STEP 1–2 complete, 10/29 API connections, 1864 tests)
 - **Phase 5**: Roadmap planned (UX improvements, video gen, LMS integration)
 - **GitHub**: crystal0224/skmsai (private)
 
@@ -89,6 +90,7 @@ prompts/             # Edition-aware + content generation prompt templates
 config/              # content_studio.yaml, pptx_themes.yaml, nano_banana_style.yaml
 data/                # SKMSraw.txt, edition metadata YAML
 docs/                # Design documents, MCP setup guide, content studio guide
+everline-studio-clone/  # Frontend UI (vanilla HTML/CSS/JS, Phase 4.5)
 ```
 
 ### Architecture Summary
@@ -97,7 +99,7 @@ docs/                # Design documents, MCP setup guide, content studio guide
 - **Search**: Hybrid (ChromaDB vector + BM25 keyword) → rerank → temporal filter
 - **Generation**: QueryRouter → prompt template → LLM → OutputRenderer (5 types)
 - **Content Studio**: 5-stage pipeline (Plan → Generate → Assets → Assemble → Publish), 6 content types, Protocol-based MCP adapters, PlanCache (SHA256, 24h TTL)
-- **API**: FastAPI with closure-based DI (AppState pattern), async content generation endpoint
+- **API**: FastAPI with closure-based DI (AppState pattern), async content generation, file download endpoint
 - **Testing**: pytest, 95%+ coverage, `FastAPI_with_mock_state()` helper, ~70 test files
 
 ### Running the Project

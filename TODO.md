@@ -1,7 +1,8 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
-> 마지막 업데이트: 2026-02-28
-> Phase 0~3 완료 (39 PR) | Phase 4 + Cross-Cutting + Tech Debt 완료 (1850 tests, 95.80% coverage)
+> 마지막 업데이트: 2026-03-02
+> Phase 0~3 완료 (39 PR) | Phase 4 + Cross-Cutting + Tech Debt 완료 (1864 tests, 95.80% coverage)
+> Phase 4.5 진행 중: 프론트엔드 통합 STEP 1-2 완료 (10/29 API 연동)
 
 ---
 
@@ -825,27 +826,115 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 
 ---
 
-## Phase 4.5: 미완료 항목 (Content Studio 품질 보완)
+## Phase 4.5: 프론트엔드 통합 + Content Studio 품질 보완
 
+> 세부 실행 계획: `docs/plans/2026-03-02-frontend-integration-plan.md`
 > Phase 4 구현 완료 후 실제 운용을 위해 필요한 보완 작업
 
-### P0 — 블로킹 (실사용 차단)
-- [ ] **MCP 실제 API 키 검증**: 6개 어댑터(NanoBanana, AntV, ElevenLabs, markdown2pdf, Notion, GWS) 실제 API 연동 테스트
-  - NanoBanana: env var 통일 (`GOOGLE_API_KEY` → `GEMINI_API_KEY`), MCP vs Gemini SDK 방식 결정
-  - AntV: `_get_client()` 스텁 → 실제 MCP SDK 호출로 교체
-  - ElevenLabs: `pip install elevenlabs` + 라이브 TTS 호출 검증
-  - 예상 공수: 2~4시간
-- [ ] **비동기 진행률 표시**: 프론트엔드에서 async endpoint 활용 + 5단계 파이프라인 진행률 UI
-  - `ContentStudioPanel.tsx`의 `handleGenerate()`가 현재 동기 블로킹
-  - `/api/content/generate/async` + `/api/content/status/{request_id}` 폴링 연결
-  - 예상 공수: 3~5시간
+### 완료된 작업 (2026-03-02 세션)
 
-### P1 — 높은 우선순위
+| # | 작업 | 커밋 | 상세 |
+| --- | ------ | ------ | ------ |
+| 1 | Chat Widget ↔ /api/v2/generate 연동 | ec42cc1 | 판본 필터 포함 |
+| 2 | Workspace 모달 ↔ /api/v2/generate + async | ec42cc1 | 문서 생성 |
+| 3 | CORS 설정 (localhost:5500/5501) | ec42cc1 | |
+| 4 | 코드 리뷰 반영 (XSS, polling retry, busy reset) | ec42cc1 | |
+| 5 | 판본 탐색기 오버레이 (GET /api/editions + /api/toc) | aa535f0 | |
+| 6 | 통합 검색 오버레이 (POST /api/v2/search) | aa535f0 | |
+| 7 | 네비게이션 활성화 + 판본 필터 전체 연동 | aa535f0 | |
+| 8 | Content Studio 6종 카드 그리드 + 4단계 생성 모달 | 5bc2596 | |
+| 9 | SVG 원형 프로그레스 바 + 5단계 파이프라인 시각화 | 5bc2596 | 비동기 진행률 UI |
+| 10 | Plan 미리보기 (POST /api/content/plan) | 5bc2596 | |
+| 11 | **STEP 1**: Content Studio 타입별 옵션 폼 (6종 조건부 렌더링) | 6938f83 | collectTypeOptions() |
+| 12 | **STEP 2**: 파일 다운로드 엔드포인트 + 프론트 버튼 | 6938f83 | 14 tests 추가 |
+| 13 | 백엔드 수정: audio style / viz_type 전달 수정 | 6938f83 | _stage_plan() |
+
+### API 연결 현황 (10/29 엔드포인트)
+
+```text
+✅ GET  /api/health                                → 자동 연결 체크
+✅ GET  /api/editions                              → 판본 탐색기 + 필터 드롭다운
+✅ GET  /api/toc/{edition_id}                      → 목차 트리
+✅ GET  /api/toc?q=                                → 목차 검색
+✅ POST /api/v2/search                             → 검색 오버레이
+✅ POST /api/v2/generate                           → Chat + Workspace 문서 생성
+✅ POST /api/content/plan                          → Content Studio 계획 미리보기
+✅ POST /api/content/generate/async                → Content Studio 비동기 생성
+✅ GET  /api/content/status/{req_id}               → 비동기 폴링
+✅ GET  /api/content/download/{req_id}/{filename}  → 파일 다운로드
+```
+
+### 다음 세션 작업 — STEP 3~9
+
+#### STEP 3: 파일 미리보기 컴포넌트 (프론트엔드) [P1]
+
+> 의존성: STEP 2 ✅ | 수정 파일: `everline-studio-clone/index.html`, `styles.css`
+
+- [ ] 결과 화면(Step 4)에 타입별 미리보기 컴포넌트 추가
+- [ ] PNG/SVG: `<img>` 태그 인라인 표시 + 이미지 캐러셀
+- [ ] HTML (workshop/quiz): `<iframe>` sandbox 미리보기
+- [ ] MP3: `<audio>` 플레이어 컨트롤
+- [ ] PPTX/PDF: 첫 페이지 썸네일 + 다운로드 버튼
+
+#### STEP 4: MCP 어댑터 실제 API 검증 (백엔드) [P0]
+
+> 의존성: API 키 필요 | 수정 파일: `scripts/lib/content_studio/adapters/`
+
+- [ ] NanoBanana: GEMINI_API_KEY 환경변수 확인 + 실제 호출 테스트
+- [ ] AntV Chart: MCP 서버 연동 검증 또는 fallback 강화
+- [ ] ElevenLabs: API 키 설정 + 실제 TTS 생성 테스트
+- [ ] 각 어댑터 에러 핸들링 강화 (quota 초과, 네트워크 오류)
+- [ ] 스모크 테스트 스크립트: `scripts/test_mcp_live.py`
+
+#### STEP 5: Plan 아웃라인 편집 UI (프론트엔드) [P1]
+
+> 의존성: STEP 1 ✅ | 수정 파일: `everline-studio-clone/index.html`, `styles.css`
+
+- [ ] Plan JSON → 편집 가능한 구조화된 폼 변환
+- [ ] 슬라이드/카드 항목 드래그 앤 드롭 순서 변경
+- [ ] 개별 항목 제목/내용 인라인 편집
+- [ ] 항목 추가/삭제 버튼
+- [ ] 수정된 plan을 `/api/content/generate`에 전달
+
+#### STEP 6: Dashboard 모니터링 뷰 (프론트엔드) [P2]
+
+> 의존성: 없음 | 연결 엔드포인트: /api/dashboard/*, /api/quality/summary
+
+- [ ] 네비게이션에 "DASHBOARD" 링크 추가
+- [ ] 서비스 상태 카드 (search/generation/toc/content_studio)
+- [ ] 요청 메트릭 (총 요청, 성공률, p95 레이턴시)
+- [ ] 시간별 요청 추이 차트 (CSS bar chart)
+- [ ] Quality 요약 (전체 등급, 합격률, 커버리지)
+
+#### STEP 7: Publisher 실제 구현 — Notion/Google Workspace (백엔드) [P2]
+
+> 의존성: STEP 2 ✅ | 수정 파일: `scripts/lib/content_studio/adapters/notion.py`, `google_ws.py`
+
+- [ ] Notion: notion-client SDK → 페이지 생성 + 파일 업로드
+- [ ] Google Workspace: google-api-python-client → Drive 업로드 + Docs 생성
+- [ ] OAuth 토큰 관리
+- [ ] 프론트 결과 화면에 "Notion에 발행" / "Drive에 저장" 버튼
+
+#### STEP 8: Tech Debt 해소 (TD-001, TD-005) [P2]
+
+- [ ] **TD-001**: `scripts/lib/content_studio/` → `src/content_studio/` 이동 + import 경로 업데이트
+- [ ] **TD-005**: E2E 테스트 격리 환경 구축 (pytest-tmp-files 또는 Docker)
+
+#### STEP 9: E2E 통합 테스트 (프론트엔드 ↔ 백엔드) [P1]
+
+> 의존성: STEP 1~3 | 수정 파일: `tests/e2e/`
+
+- [ ] Playwright 또는 Cypress 설정
+- [ ] Chat 위젯 E2E: 메시지 전송 → 응답 표시
+- [ ] Content Studio E2E: 타입 선택 → 옵션 입력 → 생성 → 결과
+- [ ] 검색 E2E: 키워드 입력 → 필터 → 결과
+- [ ] 판본 탐색 E2E: 판본 선택 → 목차 트리
+- [ ] 에러 시나리오: 서버 미응답, 네트워크 오류
+
+### 기타 보완 항목
+
 - [ ] **RAG 검색 캐싱**: 기존 QueryCache를 ContentGenerator에 주입, 슬라이드별 중복 검색 제거
 - [ ] **오디오 품질 개선**: ElevenLabs 어댑터의 `b"".join()` → pydub `AudioSegment` 연결로 교체
-- [ ] **파일 다운로드 엔드포인트**: `GET /api/content/download/{request_id}/{filename}` + 프론트엔드 다운로드 버튼
-- [ ] **아웃라인 편집 UI**: PlanPreview를 편집 가능하게 변경 (드래그&드롭, 삭제, 수정)
-- [ ] **Notion/GWS 실제 구현**: mock 어댑터 → 실제 API 호출 (notion-client SDK, google-api-python-client)
 - [ ] **에셋 캐싱 검증**: 실제 MCP 연동 후 동일 프롬프트 2회 실행 시 캐시 히트 확인
 
 ---
@@ -855,24 +944,28 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 > Phase 4 Content Studio 완료 후 검토할 확장 기능
 
 ### 5.1 사용자 경험 개선
+
 - [ ] **아웃라인 편집**: 생성된 plan을 사용자가 수정 → 수정된 plan으로 콘텐츠 재생성
 - [ ] **부분 재생성**: 특정 슬라이드/카드만 재생성 (전체 재생성 비용 절감)
 - [ ] **이력 관리**: 생성된 콘텐츠 버전 관리 (이전 버전 비교/복원)
 - [ ] **즐겨찾기 주제**: 자주 사용하는 주제/옵션 프리셋 저장
 
 ### 5.2 콘텐츠 확장
+
 - [ ] **동영상 생성**: 슬라이드 + 오디오 → MP4 영상 (ffmpeg 기반)
 - [ ] **인터랙티브 콘텐츠**: H5P 또는 SCORM 패키지 생성 (LMS 연동)
 - [ ] **다국어 지원**: 한국어 → 영어/중국어 자동 번역 (해외 법인용)
 - [ ] **맞춤형 퀴즈**: 적응형 문항 (이전 답변 기반 난이도 조정)
 
 ### 5.3 플랫폼 연동
+
 - [ ] **LMS 직접 배포**: mySUNI / SK University LMS API 연동
 - [ ] **Slack/Teams 알림**: 콘텐츠 생성 완료 시 채널 알림
 - [ ] **스케줄링**: 정기 콘텐츠 생성 (매주 카드뉴스 자동 발행)
 - [ ] **분석 대시보드**: 생성된 콘텐츠 사용 통계 (조회수, 다운로드, 피드백)
 
 ### 5.4 RAG 파이프라인 고도화
+
 - [ ] **SKMS 15차 대응**: 차기 개정판 발행 시 자동 반영 파이프라인
 - [ ] **외부 자료 연동**: SKMS 이외 SK그룹 자료 (ESG 보고서, 연간보고서) RAG 통합
 - [ ] **사용자 피드백 루프**: 생성 품질에 대한 사용자 평가 → 프롬프트/파이프라인 자동 개선
