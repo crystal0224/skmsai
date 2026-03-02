@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKMS AI Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">skms ai studio</div>
+        <div class="nav-links">
+            <a href="#" class="active">HOME</a>
+            <a href="#">SKMS AI</a>
+            <a href="#">PROMPTS</a>
+            <a href="#">ABOUT</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title"><span id="typewriter-text"></span><span id="typewriter-cursor" class="blink">|</span></h1>
+            <p class="hero-subtitle">가장 진보된 형태의 SKMS 기반 AI 콘텐츠 제작 워크스페이스</p>
+            <a href="#" class="cta-button" id="btn-start-creating">시작하기 (START CREATING)</a>
+        </div>
+        <div class="hero-image-reveal" id="reveal-image">
+            <canvas id="ai-network-canvas"></canvas>
+            <div class="mysterious-overlay"></div>
+        </div>
+    </section>
+
+    <!-- AI Assistant Section -->
+    <section class="founder-section">
+        <div class="vertical-bar">
+            <span>EMPOWERING MEMBERS&nbsp;&nbsp;&nbsp;&nbsp;EMPOWERING MEMBERS&nbsp;&nbsp;&nbsp;&nbsp;EMPOWERING MEMBERS</span>
+        </div>
+        
+        <div class="founder-content">
+            <div class="founder-image">
+                <img src="assets/ai_assistant_portrait.png" alt="AI Assistant">
+                <div class="image-accent"></div>
+            </div>
+            <div class="founder-text">
+                <h2>Intelligent Companion &<br>Content Creator</h2>
+                <div class="prose">
+                    <p>SK의 경영철학에 대한 깊은 이해와 고도의 생성형 AI 역량을 결합한 SKMS AI STUDIO는 비즈니스 크리에이티비티에 대한 새로운 접근 방식을 제시합니다.</p>
+                    <p>단순한 결과물 생성을 넘어, 구성원들이 가치 있게 여기는 의미와 전략적 방향성에 부합하는 지능형 워크스페이스를 제공합니다. 아이데이션부터 문서 작성까지 모든 과정이 의도적으로 조율되어, 당신의 결과물이 SKMS의 핵심 가치와 공명할 수 있도록 돕습니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Book-Like Expansion Section -->
+    <section class="expansion-section">
+        <div class="expansion-container">
+            <!-- Row 1 -->
+            <div class="expansion-row">
+                <div class="expansion-title">
+                    <h2>Brand Editorial<br>Shoots</h2>
+                </div>
+                <div class="expansion-wrap">
+                    <div class="expansion-inner">
+                        <div class="expansion-img">
+                            <img src="assets/ai_content_example.png" alt="Editorial Imagery">
+                        </div>
+                        <div class="expansion-content">
+                            <p>CURATED, STORY-DRIVEN SESSIONS THAT TRANSLATE YOUR BRAND ESSENCE INTO ELEVATED, MAGAZINE-WORTHY IMAGERY.<br><br>FROM PRODUCT DETAILS TO LIFESTYLE SCENES, EVERY FRAME IS CRAFTED TO CONNECT EMOTIONALLY AND VISUALLY.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 2 -->
+            <div class="expansion-row">
+                <div class="expansion-title">
+                    <h2>Art Direction &<br>Styling</h2>
+                </div>
+                <div class="expansion-wrap">
+                    <div class="expansion-inner">
+                        <div class="expansion-img">
+                            <img src="assets/portrait.png" alt="Art Direction">
+                        </div>
+                        <div class="expansion-content">
+                            <p>CREATIVE OVERSIGHT TO ENSURE YOUR VISUALS ARE COHESIVE, INTENTIONAL, AND BEAUTIFULLY ON-BRAND.<br><br>INCLUDES MOODBOARDING, PROP CURATION, SET STYLING, AND ON-LOCATION DIRECTION FOR A SEAMLESS CREATIVE PROCESS.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Row 3 -->
+            <div class="expansion-row">
+                <div class="expansion-title">
+                    <h2>Content Suites<br>for Launches</h2>
+                </div>
+                <div class="expansion-wrap">
+                    <div class="expansion-inner">
+                        <div class="expansion-img">
+                            <img src="assets/project1.png" alt="Content Suites">
+                        </div>
+                        <div class="expansion-content">
+                            <p>CUSTOM IMAGERY PACKAGES FOR PRODUCT LAUNCHES, CAMPAIGNS, OR SEASONAL STORYTELLING.<br><br>DELIVERED IN VERSATILE FORMATS IDEAL FOR WEB, SOCIAL, AND PRESS—TAILORED TO ALIGN WITH YOUR MARKETING GOALS.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial">
+        <h2 class="section-title">What They're Saying</h2>
+        <div class="quote-container">
+            <div class="quote-icon">"</div>
+            <p class="quote">SKMS AI는 단순히 텍스트를 생성하는 것에 그치지 않고, 우리 철학 이면의 본질을 포착해냈습니다. 스튜디오와의 작업은 매끄럽고 영감을 주었으며 기대 이상이었습니다. 우리가 미처 말로 다 표현하기도 전에 전략적 비전을 이해하고 있었습니다.</p>
+            <p class="quote-author">— MEMBER OF SK</p>
+        </div>
+    </section>
+
+    <!-- Marquee Section -->
+    <div class="marquee-container">
+        <div class="marquee">
+            <span>AI EMPOWERED WORKFLOWS</span>
+            <span class="dot">•</span>
+            <span>AI EMPOWERED WORKFLOWS</span>
+            <span class="dot">•</span>
+            <span>AI EMPOWERED WORKFLOWS</span>
+            <span class="dot">•</span>
+            <span>AI EMPOWERED WORKFLOWS</span>
+            <span class="dot">•</span>
+            <span>AI EMPOWERED WORKFLOWS</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="contact-oval" id="footer-btn-start">
+            <h2>START CREATING</h2>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-links">
+                <a href="#">가이드라인 (GUIDELINES)</a>
+                <a href="#">자주 묻는 질문 (FAQ)</a>
+                <a href="#">고객 지원 (SUPPORT)</a>
+            </div>
+            <div class="studio-hours">
+                <p>INTERNAL TOOL</p>
+                <p>AVAILABLE 24/7</p>
+                <p>SK NETWORK</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SKMS RAG Chat Interface -->
+    <div class="chat-widget" id="chat-widget">
+        <div class="chat-btn" id="chat-toggle-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H5.17L4 17.17V4H20V16Z" fill="var(--bg-white)"/>
+                <path d="M7 9H17V11H7V9Z" fill="var(--bg-white)"/>
+                <path d="M7 13H14V15H7V13Z" fill="var(--bg-white)"/>
+            </svg>
+            <span>SKMS QA</span>
+        </div>
+        <div class="chat-window" id="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <span class="status-dot"></span>
+                    <h3>SKMS Assistant</h3>
+                </div>
+                <span class="close-chat" id="close-chat">&times;</span>
+            </div>
+            <div class="chat-body" id="chat-body">
+                <div class="message bot-message">
+                    <p>안녕하세요. SKMS에 대해 어떤 점이 궁금하신가요?</p>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="SKMS에 대해 질문해주세요...">
+                <button id="send-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Content Development Workspace Overlay -->
+    <div class="workspace-overlay" id="workspace-overlay">
+        <div class="workspace-container">
+            <div class="workspace-header">
+                <div>
+                    <h2>새 콘텐츠 작성</h2>
+                    <p>SKMS AI를 활용하여 비즈니스 문서를 생성합니다.</p>
+                </div>
+                <span class="close-workspace" id="close-workspace">&times;</span>
+            </div>
+            <div class="workspace-body">
+                <div class="workspace-form">
+                    <div class="form-group">
+                        <label>콘텐츠 종류를 선택해주세요</label>
+                        <div class="custom-select">
+                            <select id="content-type">
+                                <optgroup label="비즈니스 문서 생성">
+                                    <option value="email">이메일 초안 작성 (Email Draft)</option>
+                                    <option value="strategy">전략 기획서 작성 (Strategy Plan)</option>
+                                    <option value="presentation">프레젠테이션 대본 (Presentation Script)</option>
+                                    <option value="meeting">회의록 요약 및 Action Item 도출 (Meeting Notes)</option>
+                                    <option value="report">보고서 목차 구성 (Report Outline)</option>
+                                    <option value="announcement">사내 공지사항 작성 (Internal Announcement)</option>
+                                    <option value="press">보도자료 작성 (Press Release)</option>
+                                    <option value="blog">블로그/아티클 원고 (Blog Article)</option>
+                                    <option value="proposal">프로젝트 제안서 (Project Proposal)</option>
+                                    <option value="custom">기타 자유 문서 (Custom Document)</option>
+                                </optgroup>
+                                <optgroup label="콘텐츠 스튜디오 (파일 생성)">
+                                    <option value="lecture">프레젠테이션 슬라이드 (PPTX)</option>
+                                    <option value="card_news">카드뉴스 (Card News / PNG)</option>
+                                    <option value="workshop">워크숍 자료 (Workshop / HTML)</option>
+                                    <option value="visualization">데이터 시각화 (Visualization / SVG)</option>
+                                    <option value="audio">오디오 나레이션 (Audio / MP3)</option>
+                                    <option value="quiz">퀴즈 (Interactive Quiz / HTML)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>원하시는 톤 앤 매너</label>
+                        <div class="custom-select">
+                            <select id="content-tone">
+                                <option value="professional">전문적이고 핵심적인 (Professional & Concise)</option>
+                                <option value="visionary">비전 제시 및 영감을 주는 (Visionary & Inspiring)</option>
+                                <option value="analytical">분석적이고 객관적인 (Analytical & Objective)</option>
+                                <option value="friendly">친근하고 부드러운 (Friendly & Approachable)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>핵심 목적 및 세부 내용을 입력해주세요</label>
+                        <textarea id="content-prompt" rows="6" placeholder="예: '지속가능한 성장을 위한 Q3 집중 전략'을 SK의 Double Bottom Line 경영철학과 연계하여 설명하는 이메일 초안 작성..."></textarea>
+                    </div>
+                    <button class="generate-btn" id="generate-btn">
+                        <span>SKMS AI로 생성하기</span>
+                    </button>
+                </div>
+                <div class="workspace-results">
+                    <div class="results-header">
+                        <label>생성 결과</label>
+                        <div class="result-actions">
+                            <button class="action-btn" id="btn-copy">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                복사
+                            </button>
+                            <button class="action-btn" id="btn-regenerate">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path></svg>
+                                수정 및 재생성
+                            </button>
+                        </div>
+                    </div>
+                    <div class="result-box" id="result-box">
+                        <div class="empty-state">
+                            <div class="pulse-ring"></div>
+                            <p class="placeholder-text">AI가 생성한 내용이 여기에 표시됩니다</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-container" id="toast"></div>
+
+    <script>
+        // ===================================================================
+        // API CONFIGURATION
+        // ===================================================================
+        const API_BASE_URL = 'http://localhost:8000';
+
+        // Content Studio type mapping (value → backend content_type)
+        const CONTENT_STUDIO_TYPES = new Set([
+            'lecture', 'card_news', 'workshop', 'visualization', 'audio', 'quiz'
+        ]);
+
+        // Tone labels for prompt construction
+        const TONE_LABELS = {
+            professional: '전문적이고 핵심적인 톤으로',
+            visionary: '비전 제시 및 영감을 주는 톤으로',
+            analytical: '분석적이고 객관적인 톤으로',
+            friendly: '친근하고 부드러운 톤으로'
+        };
+
+        // Document type labels for prompt construction
+        const DOC_TYPE_LABELS = {
+            email: '이메일 초안',
+            strategy: '전략 기획서',
+            presentation: '프레젠테이션 대본',
+            meeting: '회의록 요약 및 Action Item',
+            report: '보고서 목차',
+            announcement: '사내 공지사항',
+            press: '보도자료',
+            blog: '블로그/아티클 원고',
+            proposal: '프로젝트 제안서',
+            custom: '문서'
+        };
+
+        // ===================================================================
+        // UTILITY FUNCTIONS
+        // ===================================================================
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function simpleMarkdownToHtml(text) {
+            if (!text) return '';
+            let html = escapeHtml(text);
+            // Headers
+            html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
+            // Bold and italic
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            // Inline code
+            html = html.replace(/`(.+?)`/g, '<code>$1</code>');
+            // Blockquotes
+            html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+            // Unordered lists
+            html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+            // Horizontal rules
+            html = html.replace(/^---$/gm, '<hr>');
+            // Line breaks (but not inside block elements)
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            // Wrap in paragraph if not already structured
+            if (!html.startsWith('<h') && !html.startsWith('<ul') && !html.startsWith('<blockquote')) {
+                html = '<p>' + html + '</p>';
+            }
+            return html;
+        }
+
+        async function apiCall(endpoint, { method = 'POST', body = null } = {}) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body && method !== 'GET') {
+                options.body = JSON.stringify(body);
+            }
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+                throw new Error(errorData.detail || errorData.error || `서버 오류 (HTTP ${response.status})`);
+            }
+            return response.json();
+        }
+
+        // Toast notification
+        let toastTimeout = null;
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast-container show';
+            if (type !== 'info') toast.classList.add(type);
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ===================================================================
+        // TYPEWRITER EFFECT
+        // ===================================================================
+        const typeText = "SKMS AI STUDIO";
+        const typeElement = document.getElementById("typewriter-text");
+        let typeIndex = 0;
+
+        function typeWriter() {
+            if (typeIndex < typeText.length) {
+                typeElement.textContent += typeText.charAt(typeIndex);
+                typeIndex++;
+                setTimeout(typeWriter, 150);
+            }
+        }
+        setTimeout(typeWriter, 500);
+
+        // ===================================================================
+        // HERO MOUSE TRACKING
+        // ===================================================================
+        const heroSection = document.getElementById('hero-section');
+        const revealImage = document.getElementById('reveal-image');
+
+        if (heroSection && revealImage) {
+            heroSection.addEventListener('mousemove', (e) => {
+                const rect = heroSection.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                revealImage.style.setProperty('--x', `${x}px`);
+                revealImage.style.setProperty('--y', `${y}px`);
+            });
+            heroSection.addEventListener('mouseleave', () => {
+                revealImage.style.setProperty('--x', `50%`);
+                revealImage.style.setProperty('--y', `50%`);
+            });
+        }
+
+        // ===================================================================
+        // CHAT WIDGET — UI TOGGLE
+        // ===================================================================
+        const chatToggleBtn = document.getElementById('chat-toggle-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChat = document.getElementById('close-chat');
+
+        chatToggleBtn.addEventListener('click', () => {
+            chatWindow.classList.add('active');
+            chatWindow.style.pointerEvents = 'auto';
+            chatToggleBtn.style.opacity = '0';
+            chatToggleBtn.style.pointerEvents = 'none';
+            document.getElementById('chat-input').focus();
+        });
+
+        closeChat.addEventListener('click', () => {
+            chatWindow.classList.remove('active');
+            chatToggleBtn.style.opacity = '1';
+            chatToggleBtn.style.pointerEvents = 'auto';
+            setTimeout(() => { chatWindow.style.pointerEvents = 'none'; }, 400);
+        });
+
+        // ===================================================================
+        // CHAT WIDGET — API INTEGRATION
+        // ===================================================================
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatBody = document.getElementById('chat-body');
+
+        function createChatMessage(content, isBot) {
+            const div = document.createElement('div');
+            div.className = `message ${isBot ? 'bot-message' : 'user-message'}`;
+            if (isBot) {
+                div.innerHTML = simpleMarkdownToHtml(content);
+            } else {
+                const p = document.createElement('p');
+                p.textContent = content;
+                div.appendChild(p);
+            }
+            return div;
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'message bot-message typing-indicator';
+            indicator.id = 'typing-indicator';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            chatBody.appendChild(indicator);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const el = document.getElementById('typing-indicator');
+            if (el) el.remove();
+        }
+
+        let chatBusy = false;
+
+        async function sendChatMessage() {
+            const query = chatInput.value.trim();
+            if (!query || chatBusy) return;
+
+            chatBusy = true;
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
+            // Add user message
+            chatBody.appendChild(createChatMessage(query, false));
+            chatInput.value = '';
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                const data = await apiCall('/api/v2/generate', {
+                    body: {
+                        query: query,
+                        top_k: 5,
+                        include_evidence_check: true,
+                        include_rendered: true
+                    }
+                });
+
+                removeTypingIndicator();
+
+                // Use rendered HTML if available, otherwise raw answer
+                const answer = data.answer || '응답을 생성할 수 없습니다.';
+                chatBody.appendChild(createChatMessage(answer, true));
+
+                // Show citation count
+                if (data.citations && data.citations.length > 0) {
+                    const citationEl = document.createElement('div');
+                    citationEl.className = 'message bot-message';
+                    citationEl.style.fontSize = '0.8rem';
+                    citationEl.style.opacity = '0.7';
+                    citationEl.style.padding = '0.5rem 1rem';
+                    citationEl.innerHTML = `<p>📎 ${data.citations.length}건의 SKMS 원문 인용</p>`;
+                    chatBody.appendChild(citationEl);
+                }
+            } catch (error) {
+                removeTypingIndicator();
+                const errorMsg = error.message.includes('Failed to fetch')
+                    ? '백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요. (localhost:8000)'
+                    : `오류가 발생했습니다: ${error.message}`;
+                chatBody.appendChild(createChatMessage(errorMsg, true));
+            } finally {
+                chatBusy = false;
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        }
+
+        sendBtn.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+        // ===================================================================
+        // WORKSPACE OVERLAY — UI TOGGLE
+        // ===================================================================
+        const startBtns = [
+            document.getElementById('btn-start-creating'),
+            document.getElementById('footer-btn-start')
+        ];
+        const workspaceOverlay = document.getElementById('workspace-overlay');
+        const closeWorkspace = document.getElementById('close-workspace');
+
+        startBtns.forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    workspaceOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+        });
+
+        function closeWorkspaceOverlay() {
+            workspaceOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            // Reset busy state so generate button works next time
+            workspaceBusy = false;
+            setWorkspaceLoading(false);
+        }
+
+        closeWorkspace.addEventListener('click', closeWorkspaceOverlay);
+
+        // Close workspace on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (workspaceOverlay.classList.contains('active')) {
+                    closeWorkspaceOverlay();
+                }
+            }
+        });
+
+        // ===================================================================
+        // WORKSPACE — CONTENT GENERATION INTEGRATION
+        // ===================================================================
+        const generateBtn = document.getElementById('generate-btn');
+        const contentTypeSelect = document.getElementById('content-type');
+        const contentToneSelect = document.getElementById('content-tone');
+        const contentPrompt = document.getElementById('content-prompt');
+        const resultBox = document.getElementById('result-box');
+        const btnCopy = document.getElementById('btn-copy');
+        const btnRegenerate = document.getElementById('btn-regenerate');
+
+        let lastGenerateParams = null;
+        let workspaceBusy = false;
+
+        function setWorkspaceLoading(isLoading, studioMode = false) {
+            if (isLoading) {
+                generateBtn.disabled = true;
+                btnCopy.disabled = true;
+                btnRegenerate.disabled = true;
+                generateBtn.innerHTML = '<span class="loading-dots">생성 중<span>.</span><span>.</span><span>.</span></span>';
+                const loadingMsg = studioMode
+                    ? 'AI가 파일을 생성하고 있습니다... (최대 수 분 소요)'
+                    : 'AI가 콘텐츠를 생성하고 있습니다...';
+                resultBox.innerHTML = `
+                    <div class="loading-state">
+                        <div class="pulse-ring"></div>
+                        <p class="placeholder-text">${loadingMsg}</p>
+                        <p class="progress-text" id="progress-text"></p>
+                    </div>`;
+                resultBox.style.justifyContent = 'center';
+                resultBox.style.alignItems = 'center';
+            } else {
+                generateBtn.disabled = false;
+                btnCopy.disabled = false;
+                btnRegenerate.disabled = false;
+                generateBtn.innerHTML = '<span>SKMS AI로 생성하기</span>';
+            }
+        }
+
+        function resetResultBox() {
+            resultBox.innerHTML = `
+                <div class="empty-state">
+                    <div class="pulse-ring"></div>
+                    <p class="placeholder-text">AI가 생성한 내용이 여기에 표시됩니다</p>
+                </div>`;
+            resultBox.style.justifyContent = 'center';
+            resultBox.style.alignItems = 'center';
+        }
+
+        function displayGenerateResult(data) {
+            const answer = data.rendered || data.answer || '';
+            resultBox.innerHTML = `<div class="result-content">${simpleMarkdownToHtml(answer)}</div>`;
+            resultBox.style.justifyContent = 'flex-start';
+            resultBox.style.alignItems = 'flex-start';
+
+            if (data.citations && data.citations.length > 0) {
+                resultBox.querySelector('.result-content').innerHTML += `
+                    <p class="citation-count">📎 SKMS 원문 ${data.citations.length}건 인용</p>`;
+            }
+        }
+
+        function displayContentStudioResult(result) {
+            let html = '<div class="result-content">';
+            html += '<h3>콘텐츠가 생성되었습니다</h3>';
+            if (result.files && result.files.length > 0) {
+                html += '<ul class="file-list">';
+                result.files.forEach(f => {
+                    const sizeKB = (f.size_bytes / 1024).toFixed(1);
+                    html += `<li><span>${escapeHtml(f.file_name)}</span><span class="file-size">${sizeKB} KB</span></li>`;
+                });
+                html += '</ul>';
+                html += '<p style="color: var(--text-muted); font-size: 0.9rem;">파일은 서버의 output/ 디렉토리에 저장되었습니다.</p>';
+            }
+            if (result.citations && result.citations.length > 0) {
+                html += `<p class="citation-count">📎 SKMS 원문 ${result.citations.length}건 인용</p>`;
+            }
+            html += '</div>';
+            resultBox.innerHTML = html;
+            resultBox.style.justifyContent = 'flex-start';
+            resultBox.style.alignItems = 'flex-start';
+        }
+
+        function displayError(message) {
+            resultBox.innerHTML = `
+                <div class="result-error">
+                    <p>오류 발생</p>
+                    <p>${escapeHtml(message)}</p>
+                </div>`;
+            resultBox.style.justifyContent = 'center';
+            resultBox.style.alignItems = 'center';
+        }
+
+        async function pollContentStatus(requestId) {
+            const maxAttempts = 60; // 5 minutes max (5s intervals)
+            let transientErrors = 0;
+            for (let i = 0; i < maxAttempts; i++) {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                let status;
+                try {
+                    status = await apiCall(`/api/content/status/${requestId}`, { method: 'GET' });
+                    transientErrors = 0; // reset on success
+                } catch (fetchErr) {
+                    transientErrors++;
+                    if (transientErrors >= 3) {
+                        throw new Error('서버 연결이 반복적으로 실패했습니다.');
+                    }
+                    continue; // skip this tick, retry next interval
+                }
+
+                // Update progress text
+                const progressEl = document.getElementById('progress-text');
+                if (progressEl) {
+                    const statusLabels = {
+                        pending: '대기 중...',
+                        running: '생성 진행 중...',
+                        completed: '완료!',
+                        failed: '실패'
+                    };
+                    progressEl.textContent = statusLabels[status.status] || status.status;
+                }
+
+                if (status.status === 'completed') return status.result;
+                if (status.status === 'failed') {
+                    throw new Error(status.error || '콘텐츠 생성에 실패했습니다.');
+                }
+            }
+            throw new Error('생성 시간이 초과되었습니다. (5분)');
+        }
+
+        async function generateContent() {
+            if (workspaceBusy) return;
+
+            const typeValue = contentTypeSelect.value;
+            const toneValue = contentToneSelect.value;
+            const prompt = contentPrompt.value.trim();
+
+            if (!prompt) {
+                showToast('핵심 목적 및 세부 내용을 입력해주세요.', 'warning');
+                contentPrompt.focus();
+                return;
+            }
+
+            lastGenerateParams = { typeValue, toneValue, prompt };
+            workspaceBusy = true;
+
+            const isStudioType = CONTENT_STUDIO_TYPES.has(typeValue);
+            setWorkspaceLoading(true, isStudioType);
+
+            try {
+                if (isStudioType) {
+                    // Content Studio → async file generation
+                    const asyncResponse = await apiCall('/api/content/generate/async', {
+                        body: {
+                            content_type: typeValue,
+                            topic: prompt,
+                            options: {
+                                language: 'ko',
+                                style: toneValue
+                            }
+                        }
+                    });
+                    const result = await pollContentStatus(asyncResponse.request_id);
+                    displayContentStudioResult(result);
+                    showToast('콘텐츠 파일이 생성되었습니다!');
+                } else {
+                    // Document generation → /api/v2/generate
+                    const docLabel = DOC_TYPE_LABELS[typeValue] || '문서';
+                    const toneLabel = TONE_LABELS[toneValue] || '';
+                    const query = `다음 주제에 대해 ${toneLabel} ${docLabel}을(를) 작성해주세요. SKMS 경영철학을 기반으로 작성하되, 실무에서 바로 활용할 수 있는 형태로 구성해주세요.\n\n주제: ${prompt}`;
+
+                    const data = await apiCall('/api/v2/generate', {
+                        body: {
+                            query: query,
+                            output_type: 'summary',
+                            top_k: 7,
+                            include_evidence_check: true,
+                            include_rendered: true
+                        }
+                    });
+                    displayGenerateResult(data);
+                    showToast('문서가 생성되었습니다!');
+                }
+            } catch (error) {
+                const errorMsg = error.message.includes('Failed to fetch')
+                    ? '백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.'
+                    : error.message;
+                displayError(errorMsg);
+                showToast('생성 중 오류가 발생했습니다.', 'error');
+            } finally {
+                workspaceBusy = false;
+                setWorkspaceLoading(false);
+            }
+        }
+
+        generateBtn.addEventListener('click', generateContent);
+
+        // Copy button
+        btnCopy.addEventListener('click', async () => {
+            const content = resultBox.querySelector('.result-content');
+            if (!content) {
+                showToast('복사할 내용이 없습니다.', 'warning');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(content.innerText);
+                showToast('클립보드에 복사되었습니다.');
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = content.innerText;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('클립보드에 복사되었습니다.');
+            }
+        });
+
+        // Regenerate button
+        btnRegenerate.addEventListener('click', () => {
+            if (!lastGenerateParams) {
+                showToast('재생성할 이전 요청이 없습니다.', 'warning');
+                return;
+            }
+            contentTypeSelect.value = lastGenerateParams.typeValue;
+            contentToneSelect.value = lastGenerateParams.toneValue;
+            contentPrompt.value = lastGenerateParams.prompt;
+            generateContent();
+        });
+
+        // ===================================================================
+        // AI NEURAL NETWORK CANVAS
+        // ===================================================================
+        const canvas = document.getElementById('ai-network-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 2.5;
+                    this.vy = (Math.random() - 0.5) * 2.5;
+                    this.radius = Math.random() * 2 + 0.5;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < 300; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                const bgGradient = ctx.createRadialGradient(
+                    canvas.width / 2, canvas.height / 2, 0,
+                    canvas.width / 2, canvas.height / 2, canvas.width
+                );
+                bgGradient.addColorStop(0, '#1a1c23');
+                bgGradient.addColorStop(1, '#08090b');
+                ctx.fillStyle = bgGradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 130) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(240, 228, 43, ${0.35 - dist / 400})`;
+                            ctx.lineWidth = 1.0;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // ===================================================================
+        // BACKEND CONNECTION CHECK (on page load)
+        // ===================================================================
+        const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
+
+        (async function checkBackendConnection() {
+            try {
+                const data = await apiCall('/api/health', { method: 'GET' });
+                if (IS_DEV) {
+                    console.log('[SKMS AI Studio] Backend connected. Content Studio:',
+                        data.content_studio?.available ? 'available' : 'unavailable');
+                }
+            } catch (err) {
+                if (IS_DEV) {
+                    console.warn('[SKMS AI Studio] Backend not reachable. Start with: python -m uvicorn server.app:app --reload --port 8000');
+                }
+            }
+        })();
+
+    </script>
+</body>
+</html>

@@ -46,6 +46,7 @@ htmlcov/
 # Temporary / build artifacts
 *.html
 !docs/**/*.html
+!everline-studio-clone/**/*.html
 
 # Eval reports (regenerable)
 eval/reports/
