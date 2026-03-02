@@ -13,13 +13,16 @@ Endpoints:
 from __future__ import annotations
 
 import logging
+import os
 import threading
 import time
 import uuid
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from scripts.lib.content_studio.errors import ContentStudioError, PlanningError
@@ -475,4 +478,91 @@ def create_content_router(state: Any) -> APIRouter:
             error=job.error,
         )
 
+    # -------------------------------------------------------------------
+    # File download endpoint
+    # -------------------------------------------------------------------
+
+    @router.get("/download/{request_id}/{filename}")
+    async def download_file(request_id: str, filename: str) -> FileResponse:
+        """생성된 파일을 다운로드한다.
+
+        request_id의 완료된 작업에서 생성된 파일 중 filename과 일치하는 파일을 반환한다.
+        Path traversal 공격을 방지하기 위해 filename을 검증한다.
+        """
+        # Validate request_id format (UUID)
+        try:
+            uuid.UUID(request_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="유효하지 않은 request_id 형식입니다.")
+
+        # Reject path traversal attempts in filename
+        if "/" in filename or "\\" in filename or ".." in filename:
+            raise HTTPException(status_code=400, detail="유효하지 않은 파일명입니다.")
+
+        # Look up the completed job
+        job = _job_store.get(request_id)
+        if job is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"작업을 찾을 수 없습니다: {request_id}",
+            )
+
+        if job.status != "completed" or job.result is None:
+            raise HTTPException(
+                status_code=400,
+                detail="완료된 작업에서만 파일을 다운로드할 수 있습니다.",
+            )
+
+        # Find matching file in result
+        matched_file = None
+        for f in job.result.files:
+            if f.file_name == filename:
+                matched_file = f
+                break
+
+        if matched_file is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"파일을 찾을 수 없습니다: {filename}",
+            )
+
+        file_path = Path(matched_file.file_path)
+        if not file_path.exists():
+            raise HTTPException(
+                status_code=404,
+                detail="파일이 서버에서 삭제되었습니다.",
+            )
+
+        # Final path traversal guard: file must be inside output/
+        output_base = Path("output").resolve()
+        resolved = file_path.resolve()
+        if not str(resolved).startswith(str(output_base)):
+            raise HTTPException(
+                status_code=403,
+                detail="접근이 허용되지 않은 경로입니다.",
+            )
+
+        return FileResponse(
+            path=str(resolved),
+            filename=filename,
+            media_type=_guess_media_type(filename),
+        )
+
     return router
+
+
+def _guess_media_type(filename: str) -> str:
+    """파일 확장자로 MIME 타입을 추정한다."""
+    ext = os.path.splitext(filename)[1].lower()
+    mime_map = {
+        ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ".html": "text/html",
+        ".svg": "image/svg+xml",
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".mp3": "audio/mpeg",
+        ".pdf": "application/pdf",
+        ".md": "text/markdown",
+    }
+    return mime_map.get(ext, "application/octet-stream")

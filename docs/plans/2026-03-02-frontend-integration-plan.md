@@ -18,58 +18,58 @@
 | 9 | SVG 원형 프로그레스 바 + 5단계 파이프라인 시각화 | 5bc2596 |
 | 10 | Plan 미리보기 (POST /api/content/plan) | 5bc2596 |
 
-### API 연결 현황 (9/29 엔드포인트)
+### API 연결 현황 (10/29 엔드포인트)
 ```
-✅ GET  /api/health                    → 자동 연결 체크
-✅ GET  /api/editions                  → 판본 탐색기 + 필터 드롭다운
-✅ GET  /api/toc/{edition_id}          → 목차 트리
-✅ GET  /api/toc?q=                    → 목차 검색
-✅ POST /api/v2/search                 → 검색 오버레이
-✅ POST /api/v2/generate               → Chat + Workspace 문서 생성
-✅ POST /api/content/plan              → Content Studio 계획 미리보기
-✅ POST /api/content/generate/async    → Content Studio 비동기 생성
-✅ GET  /api/content/status/{req_id}   → 비동기 폴링
+✅ GET  /api/health                                      → 자동 연결 체크
+✅ GET  /api/editions                                    → 판본 탐색기 + 필터 드롭다운
+✅ GET  /api/toc/{edition_id}                            → 목차 트리
+✅ GET  /api/toc?q=                                      → 목차 검색
+✅ POST /api/v2/search                                   → 검색 오버레이
+✅ POST /api/v2/generate                                 → Chat + Workspace 문서 생성
+✅ POST /api/content/plan                                → Content Studio 계획 미리보기
+✅ POST /api/content/generate/async                      → Content Studio 비동기 생성
+✅ GET  /api/content/status/{req_id}                     → 비동기 폴링
+✅ GET  /api/content/download/{req_id}/{filename}        → 파일 다운로드
 ```
 
 ---
 
 ## 미완료 작업 — 순차 실행 계획
 
-### STEP 1: Content Studio 타입별 옵션 폼 (프론트엔드)
-**우선순위:** P0 | **예상 시간:** 2-3시간 | **의존성:** 없음
+### ✅ STEP 1: Content Studio 타입별 옵션 폼 (프론트엔드) — 완료
+**우선순위:** P0 | **의존성:** 없음
 
-현재 Content Studio 생성 모달에 주제 입력만 있고, 콘텐츠 타입별 세부 옵션이 없음.
+**구현 내용:**
+- [x] `studio-modal-body`에 타입별 조건부 렌더링 추가 (`data-for` 속성)
+- [x] lecture: 소요시간(15/30/45/60/90분), 테마(Corporate/Education/Seminar), 발표자 노트 토글
+- [x] card_news: 카드 수(3-10, range slider), 스타일 선택
+- [x] workshop: 소요시간(30/60/90/120분), 스타일, 퀴즈 포함 토글
+- [x] visualization: 차트 유형(timeline/mindmap/sankey/radar/comparison/flowchart)
+- [x] audio: 소요시간(1-10분, range slider), 스타일(narration/dialogue/podcast)
+- [x] quiz: 문항 수(5-20, range slider), 스타일 선택
+- [x] `collectTypeOptions()` 함수로 API 요청에 포함
+- [x] 백엔드 수정: audio style, viz_type을 opts.style에서 읽도록 변경
 
-**작업 내용:**
-- [ ] `studio-modal-body`에 타입별 조건부 렌더링 추가
-- [ ] lecture: 소요시간(분), 테마(corporate/education/seminar), 발표자 노트 토글
-- [ ] card_news: 카드 수(3-10), 시리즈 프리셋(daily_skms/deep_read/edition_compare)
-- [ ] workshop: 소요시간, 퀴즈 포함 토글, 진행자 가이드 토글
-- [ ] visualization: 차트 유형(timeline/network/sankey/radar/mindmap)
-- [ ] audio: 소요시간, 스타일(narration/dialogue), 음성 선택
-- [ ] quiz: 문항 수(5-20), 난이도, 문항 유형(객관식/OX/서술형)
-- [ ] 선택된 옵션을 `options` 객체로 API 요청에 포함
-
-**수정 파일:** `everline-studio-clone/index.html` (JS + HTML)
-**백엔드 변경:** 없음 (이미 `ContentOptionsRequest`에 모든 필드 지원)
+**수정 파일:** `everline-studio-clone/index.html`, `styles.css`, `scripts/lib/content_studio/__init__.py`
 
 ---
 
-### STEP 2: 파일 다운로드 엔드포인트 (백엔드)
-**우선순위:** P0 | **예상 시간:** 1-2시간 | **의존성:** 없음
+### ✅ STEP 2: 파일 다운로드 엔드포인트 (백엔드) — 완료
+**우선순위:** P0 | **의존성:** 없음
 
-현재 생성된 파일은 서버의 `output/` 디렉토리에만 저장됨. 브라우저에서 다운로드 불가.
-
-**작업 내용:**
-- [ ] `GET /api/content/download/{request_id}/{filename}` 엔드포인트 추가
-- [ ] `FileResponse`로 스트리밍 반환 (MIME type 자동 감지)
-- [ ] request_id 기반 파일 경로 검증 (path traversal 방지)
-- [ ] Content-Disposition 헤더로 다운로드 유도
-- [ ] 테스트: 정상 다운로드, 404, path traversal 차단
+**구현 내용:**
+- [x] `GET /api/content/download/{request_id}/{filename}` 엔드포인트 추가
+- [x] `FileResponse`로 스트리밍 반환 (`_guess_media_type`으로 MIME 자동 감지)
+- [x] request_id UUID 형식 검증 + 파일명 path traversal 방지 (/, \\, .. 차단)
+- [x] `Path("output").resolve()` 기반 경로 검증으로 이중 보호
+- [x] 프론트엔드 결과 화면에 다운로드 버튼 연결
+- [x] 14개 테스트 작성 (성공, 404, path traversal, MIME type)
 
 **수정 파일:**
-- `server/routes/content.py` — 새 라우트 추가
-- `tests/test_content_studio/test_content_routes.py` — 테스트 추가
+- `server/routes/content.py` — 다운로드 라우트 + `_guess_media_type` 유틸
+- `everline-studio-clone/index.html` — 결과 화면 다운로드 버튼
+- `everline-studio-clone/styles.css` — `.file-download-btn` 스타일
+- `tests/test_content_studio/test_download_api.py` — 14개 테스트
 
 ---
 
@@ -195,9 +195,9 @@ Content Studio의 6개 MCP 어댑터가 모두 mock/fallback으로만 동작 중
 ## 실행 순서 요약
 
 ```
-STEP 1 ─── Content Studio 타입별 옵션 폼  ──── [P0, 2-3h, 프론트]
+STEP 1 ─── Content Studio 타입별 옵션 폼  ──── [P0, ✅ 완료]
   │
-STEP 2 ─── 파일 다운로드 엔드포인트  ────────── [P0, 1-2h, 백엔드]
+STEP 2 ─── 파일 다운로드 엔드포인트  ────────── [P0, ✅ 완료]
   │
 STEP 3 ─── 파일 미리보기 컴포넌트  ──────────── [P1, 3-4h, 프론트]
   │

@@ -35,6 +35,7 @@ from scripts.lib.content_studio.generator import (
     TemporalGuardrailProtocol,
 )
 from scripts.lib.content_studio.models import (
+    VALID_VIZ_TYPES,
     AudioPlan,
     CardNewsPlan,
     ContentOptions,
@@ -375,9 +376,17 @@ class ContentStudio:
                 plan = await self._planner.plan_workshop(topic, duration, opts)
             elif ct == "audio":
                 duration = opts.duration_min or 5
-                plan = await self._planner.plan_audio(topic, duration, "dialogue", opts)
+                audio_style = (
+                    opts.style
+                    if opts.style in ("narration", "dialogue", "podcast")
+                    else "dialogue"
+                )
+                plan = await self._planner.plan_audio(
+                    topic, duration, audio_style, opts
+                )
             elif ct == "visualization":
-                plan = await self._planner.plan_visualization(topic, "timeline", opts)
+                viz_type = opts.style if opts.style in VALID_VIZ_TYPES else "timeline"
+                plan = await self._planner.plan_visualization(topic, viz_type, opts)
             elif ct == "quiz":
                 num_q = opts.num_items or 10
                 plan = await self._planner.plan_quiz(topic, num_q, opts)

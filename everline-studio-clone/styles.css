@@ -1511,6 +1511,98 @@ a {
   display: flex;
   gap: 1rem;
 }
+/* Type-specific option panels */
+.type-options {
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 1.2rem;
+  animation: fadeInOptions 0.25s ease;
+}
+.type-options.hidden {
+  display: none;
+}
+@keyframes fadeInOptions {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Toggle switch */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text-main);
+  cursor: pointer;
+  user-select: none;
+}
+.toggle-label input[type="checkbox"] {
+  display: none;
+}
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: var(--border-color);
+  border-radius: 11px;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.25s;
+}
+.toggle-label input:checked + .toggle-switch {
+  background: var(--primary-yellow);
+}
+.toggle-label input:checked + .toggle-switch::after {
+  transform: translateX(18px);
+}
+/* Range slider */
+.range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 3px;
+  outline: none;
+  margin-top: 0.5rem;
+}
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary-yellow);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.range-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--primary-yellow);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
 .studio-actions {
   display: flex;
   gap: 1rem;
@@ -1720,6 +1812,24 @@ a {
 .file-size {
   font-size: 0.85rem;
   color: var(--text-muted);
+}
+.file-download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--primary-yellow);
+  color: var(--text-black);
+  text-decoration: none;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.file-download-btn:hover {
+  background: var(--text-black);
+  color: var(--primary-yellow);
+  transform: translateY(-1px);
 }
 .studio-new-btn {
   width: 100%;

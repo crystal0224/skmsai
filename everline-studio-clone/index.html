@@ -164,6 +164,149 @@
                             <label>주제를 입력하세요</label>
                             <textarea id="studio-topic" rows="4" placeholder="예: SUPEX 추구의 현대적 의미와 실천 방안"></textarea>
                         </div>
+                        <!-- Type-specific options (conditionally shown by JS) -->
+                        <div id="studio-type-options">
+                            <!-- lecture options -->
+                            <div class="type-options hidden" data-for="lecture">
+                                <div class="form-row">
+                                    <div class="form-group" style="flex:1">
+                                        <label>소요 시간</label>
+                                        <div class="custom-select">
+                                            <select id="opt-lecture-duration">
+                                                <option value="15">15분</option>
+                                                <option value="30" selected>30분</option>
+                                                <option value="45">45분</option>
+                                                <option value="60">60분</option>
+                                                <option value="90">90분</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="flex:1">
+                                        <label>테마</label>
+                                        <div class="custom-select">
+                                            <select id="opt-lecture-style">
+                                                <option value="professional">Corporate</option>
+                                                <option value="casual">Education</option>
+                                                <option value="academic">Seminar</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="toggle-row">
+                                    <label class="toggle-label">
+                                        <input type="checkbox" id="opt-lecture-notes" checked>
+                                        <span class="toggle-switch"></span>
+                                        발표자 노트 포함
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- card_news options -->
+                            <div class="type-options hidden" data-for="card_news">
+                                <div class="form-row">
+                                    <div class="form-group" style="flex:1">
+                                        <label>카드 수: <span id="opt-card-count-label">5</span>장</label>
+                                        <input type="range" class="range-slider" id="opt-card-count" min="3" max="10" value="5">
+                                    </div>
+                                    <div class="form-group" style="flex:1">
+                                        <label>스타일</label>
+                                        <div class="custom-select">
+                                            <select id="opt-card-style">
+                                                <option value="professional">Professional</option>
+                                                <option value="casual">Casual</option>
+                                                <option value="academic">Academic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- workshop options -->
+                            <div class="type-options hidden" data-for="workshop">
+                                <div class="form-row">
+                                    <div class="form-group" style="flex:1">
+                                        <label>소요 시간</label>
+                                        <div class="custom-select">
+                                            <select id="opt-workshop-duration">
+                                                <option value="30">30분</option>
+                                                <option value="60" selected>60분</option>
+                                                <option value="90">90분</option>
+                                                <option value="120">120분</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="flex:1">
+                                        <label>스타일</label>
+                                        <div class="custom-select">
+                                            <select id="opt-workshop-style">
+                                                <option value="professional">Professional</option>
+                                                <option value="casual">Casual</option>
+                                                <option value="academic">Academic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="toggle-row">
+                                    <label class="toggle-label">
+                                        <input type="checkbox" id="opt-workshop-quiz">
+                                        <span class="toggle-switch"></span>
+                                        학습 퀴즈 포함
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- visualization options -->
+                            <div class="type-options hidden" data-for="visualization">
+                                <div class="form-group">
+                                    <label>차트 유형</label>
+                                    <div class="custom-select">
+                                        <select id="opt-viz-type">
+                                            <option value="timeline">타임라인 (Timeline)</option>
+                                            <option value="mindmap">마인드맵 (Mindmap)</option>
+                                            <option value="sankey">상키 (Sankey)</option>
+                                            <option value="radar">레이더 (Radar)</option>
+                                            <option value="comparison">비교 (Comparison)</option>
+                                            <option value="flowchart">플로차트 (Flowchart)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- audio options -->
+                            <div class="type-options hidden" data-for="audio">
+                                <div class="form-row">
+                                    <div class="form-group" style="flex:1">
+                                        <label>소요 시간: <span id="opt-audio-dur-label">5</span>분</label>
+                                        <input type="range" class="range-slider" id="opt-audio-duration" min="1" max="10" value="5">
+                                    </div>
+                                    <div class="form-group" style="flex:1">
+                                        <label>스타일</label>
+                                        <div class="custom-select">
+                                            <select id="opt-audio-style">
+                                                <option value="narration">나레이션 (1인)</option>
+                                                <option value="dialogue" selected>대화 (2인)</option>
+                                                <option value="podcast">팟캐스트 (3인)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- quiz options -->
+                            <div class="type-options hidden" data-for="quiz">
+                                <div class="form-row">
+                                    <div class="form-group" style="flex:1">
+                                        <label>문항 수: <span id="opt-quiz-count-label">10</span>문항</label>
+                                        <input type="range" class="range-slider" id="opt-quiz-count" min="5" max="20" value="10">
+                                    </div>
+                                    <div class="form-group" style="flex:1">
+                                        <label>스타일</label>
+                                        <div class="custom-select">
+                                            <select id="opt-quiz-style">
+                                                <option value="professional">Professional</option>
+                                                <option value="casual">Casual</option>
+                                                <option value="academic">Academic</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-row">
                             <div class="form-group" style="flex:1">
                                 <label>참조 판본</label>
@@ -1164,12 +1307,65 @@
             const info = STUDIO_TYPE_INFO[type];
             document.getElementById('studio-modal-title').textContent = `${info.title} 생성`;
             document.getElementById('studio-modal-subtitle').textContent = `${info.desc} (${info.format} 출력)`;
+            // Show/hide type-specific options
+            document.querySelectorAll('.type-options').forEach(el => {
+                el.classList.toggle('hidden', el.dataset.for !== type);
+            });
             // Reset to input step
             showStudioStep('input');
             studioTopic.value = '';
             studioModalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
             studioTopic.focus();
+        }
+
+        // Range slider live label updates
+        document.getElementById('opt-card-count').addEventListener('input', e => {
+            document.getElementById('opt-card-count-label').textContent = e.target.value;
+        });
+        document.getElementById('opt-audio-duration').addEventListener('input', e => {
+            document.getElementById('opt-audio-dur-label').textContent = e.target.value;
+        });
+        document.getElementById('opt-quiz-count').addEventListener('input', e => {
+            document.getElementById('opt-quiz-count-label').textContent = e.target.value;
+        });
+
+        // Collect type-specific options into ContentOptionsRequest shape
+        function collectTypeOptions() {
+            const opts = {
+                language: document.getElementById('studio-language').value,
+            };
+            const edFilter = studioEditionFilter.value;
+            if (edFilter) opts.edition_filter = edFilter;
+
+            switch (currentStudioType) {
+                case 'lecture':
+                    opts.duration_min = parseInt(document.getElementById('opt-lecture-duration').value, 10);
+                    opts.style = document.getElementById('opt-lecture-style').value;
+                    opts.include_speaker_notes = document.getElementById('opt-lecture-notes').checked;
+                    break;
+                case 'card_news':
+                    opts.num_items = parseInt(document.getElementById('opt-card-count').value, 10);
+                    opts.style = document.getElementById('opt-card-style').value;
+                    break;
+                case 'workshop':
+                    opts.duration_min = parseInt(document.getElementById('opt-workshop-duration').value, 10);
+                    opts.style = document.getElementById('opt-workshop-style').value;
+                    opts.include_quiz = document.getElementById('opt-workshop-quiz').checked;
+                    break;
+                case 'visualization':
+                    opts.style = document.getElementById('opt-viz-type').value;
+                    break;
+                case 'audio':
+                    opts.duration_min = parseInt(document.getElementById('opt-audio-duration').value, 10);
+                    opts.style = document.getElementById('opt-audio-style').value;
+                    break;
+                case 'quiz':
+                    opts.num_items = parseInt(document.getElementById('opt-quiz-count').value, 10);
+                    opts.style = document.getElementById('opt-quiz-style').value;
+                    break;
+            }
+            return opts;
         }
 
         function closeStudioModalFn() {
@@ -1202,10 +1398,7 @@
                     body: {
                         content_type: currentStudioType,
                         topic: topic,
-                        options: {
-                            language: document.getElementById('studio-language').value,
-                            edition_filter: studioEditionFilter.value || undefined
-                        }
+                        options: collectTypeOptions()
                     }
                 });
                 document.getElementById('studio-plan-content').innerHTML =
@@ -1226,25 +1419,18 @@
             resetProgress();
 
             try {
-                // Start async generation
-                const options = {
-                    language: document.getElementById('studio-language').value,
-                    style: 'professional'
-                };
-                const edFilter = studioEditionFilter.value;
-                if (edFilter) options.edition_filter = edFilter;
-
+                // Start async generation with type-specific options
                 const asyncRes = await apiCall('/api/content/generate/async', {
                     body: {
                         content_type: currentStudioType,
                         topic: topic,
-                        options: options
+                        options: collectTypeOptions()
                     }
                 });
 
                 // Poll for status with progress animation
                 const result = await pollStudioStatus(asyncRes.request_id);
-                showStudioResult(result);
+                showStudioResult(result, asyncRes.request_id);
             } catch (err) {
                 const errorMsg = err.message.includes('Failed to fetch')
                     ? '백엔드 서버에 연결할 수 없습니다.'
@@ -1252,7 +1438,8 @@
                 showStudioStep('result');
                 document.getElementById('studio-result-view').innerHTML =
                     `<div class="result-error"><p>생성 실패</p><p>${escapeHtml(errorMsg)}</p></div>
-                     <button class="studio-new-btn" onclick="showStudioStep('input')">다시 시도</button>`;
+                     <button class="studio-new-btn studio-retry-btn">다시 시도</button>`;
+                document.querySelector('.studio-retry-btn')?.addEventListener('click', () => showStudioStep('input'));
             } finally {
                 studioBusy = false;
             }
@@ -1323,7 +1510,7 @@
             throw new Error('생성 시간이 초과되었습니다.');
         }
 
-        function showStudioResult(result) {
+        function showStudioResult(result, requestId) {
             showStudioStep('result');
             const info = STUDIO_TYPE_INFO[currentStudioType];
             const files = result.files || [];
@@ -1342,6 +1529,9 @@
             files.forEach(f => {
                 const ext = (f.file_name || '').split('.').pop().toUpperCase();
                 const sizeKB = (f.size_bytes / 1024).toFixed(1);
+                const downloadUrl = requestId
+                    ? `${API_BASE_URL}/api/content/download/${encodeURIComponent(requestId)}/${encodeURIComponent(f.file_name)}`
+                    : '#';
                 html += `
                     <li class="result-file-item">
                         <div class="result-file-info">
@@ -1351,14 +1541,17 @@
                                 <div class="file-size">${sizeKB} KB</div>
                             </div>
                         </div>
+                        <a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        </a>
                     </li>`;
             });
 
             html += `</ul>
-                <p style="color: var(--text-muted); font-size: 0.9rem;">파일은 서버의 output/ 디렉토리에 저장되었습니다.</p>
-                <button class="studio-new-btn" onclick="showStudioStep('input')">새 콘텐츠 생성하기</button>`;
+                <button class="studio-new-btn studio-new-content-btn">새 콘텐츠 생성하기</button>`;
 
             document.getElementById('studio-result-view').innerHTML = html;
+            document.querySelector('.studio-new-content-btn')?.addEventListener('click', () => showStudioStep('input'));
             showToast(`${info.title}가 생성되었습니다!`);
         }
 
