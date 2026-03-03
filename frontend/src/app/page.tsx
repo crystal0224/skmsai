@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Agentation } from "agentation";
 import SearchPanel from "@/components/SearchPanel";
 import GeneratePanel from "@/components/GeneratePanel";
 import TOCPanel from "@/components/TOCPanel";
@@ -74,6 +75,9 @@ export default function Home() {
           SKMS Time-Aware NotebookLM v2 &mdash; Powered by RAG Pipeline
         </div>
       </footer>
+
+      {/* Agentation - dev only visual feedback tool */}
+      {process.env.NODE_ENV === "development" && <Agentation />}
     </div>
   );
 }
