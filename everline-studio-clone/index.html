@@ -742,6 +742,23 @@
                         <p class="loading-text">Loading...</p>
                     </div>
                 </div>
+
+                <!-- Quality Status -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">품질 현황 (QUALITY STATUS)</h3>
+                    <div class="dashboard-quality-summary" id="dashboard-quality-summary">
+                        <p class="loading-text">Loading...</p>
+                    </div>
+                    <div class="dashboard-quality-coverage" id="dashboard-quality-coverage" style="margin-top: 1rem;"></div>
+                </div>
+
+                <!-- Health Detail -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">서비스 상세 (HEALTH DETAIL)</h3>
+                    <div class="dashboard-health-detail" id="dashboard-health-detail">
+                        <p class="loading-text">Loading...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1384,6 +1401,51 @@
             quiz: { title: '인터랙티브 퀴즈', format: 'HTML', desc: 'SKMS 이해도 평가 퀴즈를 생성합니다.' }
         };
 
+        let contentTypesLoaded = false;
+
+        async function loadContentTypes() {
+            if (contentTypesLoaded) return;
+            try {
+                const data = await apiCall('/api/content/types', { method: 'GET' });
+                if (!data || !data.types || data.types.length === 0) return;
+
+                // Update STUDIO_TYPE_INFO from API response
+                for (const typeInfo of data.types) {
+                    const formatLabel = (typeInfo.output_formats && typeInfo.output_formats.length > 0)
+                        ? typeInfo.output_formats[0].toUpperCase()
+                        : '';
+                    STUDIO_TYPE_INFO[typeInfo.type] = {
+                        title: typeInfo.label,
+                        format: formatLabel || (STUDIO_TYPE_INFO[typeInfo.type]?.format || ''),
+                        desc: typeInfo.description
+                    };
+                }
+
+                // Update card descriptions in the grid
+                const studioGrid = document.getElementById('studio-grid');
+                if (studioGrid) {
+                    for (const typeInfo of data.types) {
+                        const card = studioGrid.querySelector(`.studio-card[data-type="${typeInfo.type}"]`);
+                        if (card) {
+                            const descEl = card.querySelector('p');
+                            if (descEl) descEl.textContent = typeInfo.description;
+                            const formatEl = card.querySelector('.card-format');
+                            const fmt = (typeInfo.output_formats && typeInfo.output_formats.length > 0)
+                                ? typeInfo.output_formats[0].toUpperCase()
+                                : '';
+                            if (formatEl && fmt) formatEl.textContent = fmt;
+                        }
+                    }
+                }
+
+                contentTypesLoaded = true;
+                if (IS_DEV) console.log('[Content Studio] Content types loaded from API:', data.total);
+            } catch (err) {
+                // Fallback: keep hardcoded values
+                if (IS_DEV) console.warn('[Content Studio] Failed to load content types, using defaults:', err.message);
+            }
+        }
+
         // Card button clicks → open modal
         document.querySelectorAll('.card-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1393,6 +1455,7 @@
         });
 
         function openStudioModal(type) {
+            loadContentTypes(); // load from API (no-op if already loaded)
             currentStudioType = type;
             const info = STUDIO_TYPE_INFO[type];
             document.getElementById('studio-modal-title').textContent = `${info.title} 생성`;
@@ -2039,6 +2102,29 @@
             });
 
             html += `</div>
+
+                <div class="publish-section">
+                    <div class="publish-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        <span>발행 (Publish)</span>
+                    </div>
+                    <div class="publish-status-local">
+                        <span class="publish-check">&#10003;</span>
+                        <span>로컬 저장 완료</span>
+                    </div>
+                    <div class="publish-buttons">
+                        <button class="publish-btn publish-btn-notion" data-request-id="${escapeHtml(requestId || '')}" data-dest="notion">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M8 8v8M12 8v8M16 8v8"/></svg>
+                            Notion 발행
+                        </button>
+                        <button class="publish-btn publish-btn-gdrive" data-request-id="${escapeHtml(requestId || '')}" data-dest="google_ws">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 19h20L12 2z"/><path d="M12 2l10 17H9"/></svg>
+                            Google Drive 저장
+                        </button>
+                    </div>
+                    <div class="publish-feedback" id="publish-feedback"></div>
+                </div>
+
                 <button class="studio-new-btn studio-new-content-btn">새 콘텐츠 생성하기</button>`;
 
             document.getElementById('studio-result-view').innerHTML = html;
@@ -2054,8 +2140,48 @@
                 });
             });
 
+            // Publish button handlers
+            document.querySelectorAll('.publish-btn').forEach(btn => {
+                btn.addEventListener('click', () => handlePublish(btn));
+            });
+
             document.querySelector('.studio-new-content-btn')?.addEventListener('click', () => showStudioStep('input'));
             showToast(`${info.title}가 생성되었습니다!`);
+        }
+
+        async function handlePublish(btn) {
+            const reqId = btn.dataset.requestId;
+            const dest = btn.dataset.dest;
+            const feedback = document.getElementById('publish-feedback');
+            if (!reqId || !dest) return;
+
+            btn.disabled = true;
+            btn.classList.add('publish-btn-loading');
+            feedback.innerHTML = '<span class="publish-loading">' +
+                (dest === 'notion' ? 'Notion' : 'Google Drive') + '에 발행 중...</span>';
+
+            try {
+                const result = await apiCall(
+                    '/api/content/publish/' + encodeURIComponent(reqId),
+                    { body: { destination: dest } }
+                );
+                const pubResult = (result.results || [])[0];
+                if (pubResult && pubResult.success) {
+                    const urlLink = pubResult.url
+                        ? ' <a href="' + escapeHtml(pubResult.url) + '" target="_blank" rel="noopener">열기</a>'
+                        : '';
+                    feedback.innerHTML = '<span class="publish-success">' +
+                        (dest === 'notion' ? 'Notion' : 'Google Drive') + ' 발행 완료' + urlLink + '</span>';
+                } else {
+                    const errMsg = pubResult ? pubResult.error : '알 수 없는 오류';
+                    feedback.innerHTML = '<span class="publish-error">' + escapeHtml(errMsg || '발행 실패') + '</span>';
+                }
+            } catch (err) {
+                feedback.innerHTML = '<span class="publish-error">' + escapeHtml(err.message || '발행 실패') + '</span>';
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('publish-btn-loading');
+            }
         }
 
         // ===================================================================
@@ -2453,17 +2579,24 @@
 
         async function loadDashboardData() {
             try {
-                const [health, metrics, stats] = await Promise.all([
+                const [health, metrics, stats, qualitySummary, qualityCoverage, healthDetail] = await Promise.all([
                     apiCall('/api/health', { method: 'GET' }),
                     apiCall('/api/dashboard/metrics', { method: 'GET' }).catch(() => null),
                     apiCall('/api/dashboard/stats', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/quality/summary', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/quality/coverage', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/dashboard/health-detail', { method: 'GET' }).catch(() => null),
                 ]);
                 renderServiceStatus(health);
                 if (metrics) renderMetrics(metrics);
                 if (stats) renderStats(stats);
+                renderQualityStatus(qualitySummary, qualityCoverage);
+                renderHealthDetail(healthDetail);
             } catch (err) {
                 if (IS_DEV) console.warn('[Dashboard] Failed to load data:', err.message);
                 renderServiceStatus(null);
+                renderQualityStatus(null, null);
+                renderHealthDetail(null);
             }
         }
 
@@ -2564,6 +2697,133 @@
         }
 
         // ===================================================================
+        // QUALITY STATUS + HEALTH DETAIL RENDERERS
+        // ===================================================================
+        function renderQualityStatus(summary, coverage) {
+            const summaryEl = document.getElementById('dashboard-quality-summary');
+            const coverageEl = document.getElementById('dashboard-quality-coverage');
+
+            if (!summary || summary.status === 'no_results') {
+                if (summaryEl) {
+                    const qCount = summary ? summary.golden_questions : 0;
+                    summaryEl.innerHTML = `
+                        <div class="quality-notice">
+                            <p>평가 결과가 아직 없습니다. Golden QA 셋: ${qCount}건</p>
+                        </div>`;
+                }
+                if (coverageEl) coverageEl.innerHTML = '';
+                return;
+            }
+
+            if (summaryEl) {
+                const gradeClass = summary.gate_passed ? 'quality-pass' : 'quality-fail';
+                summaryEl.innerHTML = `
+                    <div class="dashboard-metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-value ${gradeClass}">${escapeHtml(summary.overall_grade)}</span>
+                            <span class="metric-label">전체 등급</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">${(summary.pass_rate * 100).toFixed(1)}%</span>
+                            <span class="metric-label">합격률 (${summary.passed}/${summary.evaluated})</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">${(summary.coverage_score * 100).toFixed(0)}%</span>
+                            <span class="metric-label">커버리지</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value ${summary.gate_passed ? 'quality-pass' : 'quality-fail'}">${summary.gate_passed ? 'PASS' : 'FAIL'}</span>
+                            <span class="metric-label">품질 게이트</span>
+                        </div>
+                    </div>`;
+            }
+
+            if (coverageEl && coverage && coverage.editions) {
+                const editions = coverage.editions;
+                if (editions.length === 0) {
+                    coverageEl.innerHTML = '';
+                    return;
+                }
+                const maxCount = Math.max(...editions.map(e => e.question_count), 1);
+                coverageEl.innerHTML = `
+                    <h4 class="coverage-subtitle">판본별 커버리지 (총 ${coverage.total_questions}건)</h4>
+                    <div class="coverage-bars">
+                        ${editions.map(ed => {
+                            const pct = Math.round((ed.question_count / maxCount) * 100);
+                            return `
+                                <div class="endpoint-bar-row">
+                                    <span class="endpoint-name">${escapeHtml(ed.edition)}</span>
+                                    <div class="endpoint-bar-track">
+                                        <div class="endpoint-bar-fill" style="width: ${pct}%"></div>
+                                    </div>
+                                    <span class="endpoint-count">${ed.question_count}</span>
+                                </div>`;
+                        }).join('')}
+                    </div>`;
+            }
+        }
+
+        function renderHealthDetail(detail) {
+            const el = document.getElementById('dashboard-health-detail');
+            if (!el) return;
+
+            if (!detail) {
+                el.innerHTML = '<p class="loading-text">서비스 상세 정보를 불러올 수 없습니다.</p>';
+                return;
+            }
+
+            const components = detail.components || {};
+            const componentEntries = Object.entries(components);
+            const metricsSummary = detail.metrics_summary || {};
+
+            el.innerHTML = `
+                <div class="health-detail-grid">
+                    <div class="health-info-card">
+                        <span class="health-info-label">서비스 상태</span>
+                        <span class="health-info-value status-badge ${detail.status === 'ok' ? 'status-on' : 'status-off'}">${escapeHtml(detail.status || 'N/A')}</span>
+                    </div>
+                    <div class="health-info-card">
+                        <span class="health-info-label">버전</span>
+                        <span class="health-info-value">${escapeHtml(detail.version || 'N/A')}</span>
+                    </div>
+                    <div class="health-info-card">
+                        <span class="health-info-label">총 요청 수</span>
+                        <span class="health-info-value">${(metricsSummary.total_requests || 0).toLocaleString()}</span>
+                    </div>
+                    <div class="health-info-card">
+                        <span class="health-info-label">가동 시간</span>
+                        <span class="health-info-value">${formatUptime(metricsSummary.uptime_seconds || 0)}</span>
+                    </div>
+                </div>
+                <div class="health-components">
+                    <h4 class="coverage-subtitle">컴포넌트 상태</h4>
+                    <div class="dashboard-status-grid" style="margin-top: 0.5rem;">
+                        ${componentEntries.map(([name, info]) => {
+                            const available = info.available;
+                            const displayName = name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                            return `
+                                <div class="status-card">
+                                    <span class="status-label">${escapeHtml(displayName)}</span>
+                                    <span class="status-badge ${available ? 'status-on' : 'status-off'}">${available ? 'ON' : 'OFF'}</span>
+                                </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+        }
+
+        function formatUptime(seconds) {
+            if (!seconds || seconds <= 0) return '0m';
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            if (hrs > 24) {
+                const days = Math.floor(hrs / 24);
+                const remHrs = hrs % 24;
+                return `${days}d ${remHrs}h`;
+            }
+            return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+        }
+
+        // ===================================================================
         // BACKEND CONNECTION CHECK + INIT (on page load)
         // ===================================================================
         (async function init() {
@@ -2573,8 +2833,9 @@
                     console.log('[SKMS AI Studio] Backend connected. Content Studio:',
                         data.content_studio?.available ? 'available' : 'unavailable');
                 }
-                // Pre-load editions for filters
+                // Pre-load editions for filters and content types
                 if (!editionsCache) loadEditions();
+                loadContentTypes();
             } catch (err) {
                 if (IS_DEV) {
                     console.warn('[SKMS AI Studio] Backend not reachable. Start with: python -m uvicorn server.app:app --reload --port 8000');

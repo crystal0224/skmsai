@@ -2760,6 +2760,151 @@ textarea.plan-field-input {
   color: var(--text-muted);
 }
 
+/* Quality Status */
+.dashboard-quality-summary .quality-pass {
+  color: #2e7d32;
+}
+.dashboard-quality-summary .quality-fail {
+  color: #c62828;
+}
+.quality-notice {
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+.coverage-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.6rem;
+}
+.coverage-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Health Detail */
+.health-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.health-info-card {
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.health-info-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.health-info-value {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-black);
+}
+.health-components {
+  margin-top: 1rem;
+}
+
+/* ===== Publish Section (STEP 7) ===== */
+.publish-section {
+  padding: 1.2rem 1.5rem;
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+.publish-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+  color: var(--text-main);
+}
+.publish-status-local {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #2e7d32;
+  margin-bottom: 0.8rem;
+}
+.publish-check {
+  width: 22px;
+  height: 22px;
+  background: #00a854;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.7rem;
+  flex-shrink: 0;
+}
+.publish-buttons {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.publish-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-white);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-main);
+}
+.publish-btn:hover {
+  border-color: var(--text-black);
+  background: var(--text-black);
+  color: var(--primary-yellow);
+}
+.publish-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.publish-btn-loading {
+  opacity: 0.6;
+}
+.publish-feedback {
+  font-size: 0.85rem;
+  min-height: 1.2em;
+}
+.publish-loading {
+  color: var(--text-muted);
+}
+.publish-success {
+  color: #2e7d32;
+}
+.publish-success a {
+  color: #1565c0;
+  text-decoration: underline;
+}
+.publish-error {
+  color: #c62828;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .founder-content, .projects-grid {
@@ -2783,7 +2928,7 @@ textarea.plan-field-input {
   .search-filters { flex-direction: column; }
   .search-form-area { padding: 1rem 1.5rem; }
   .search-results { padding: 1rem 1.5rem; }
-  .dashboard-status-grid, .dashboard-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-status-grid, .dashboard-metrics-grid, .health-detail-grid { grid-template-columns: repeat(2, 1fr); }
   .dashboard-body { padding: 1.5rem; }
   .endpoint-name { width: 140px; font-size: 0.75rem; }
 }

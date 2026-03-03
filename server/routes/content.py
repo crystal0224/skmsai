@@ -9,6 +9,7 @@ Endpoints:
 - GET  /api/content/types — 지원 콘텐츠 유형 목록
 - POST /api/content/generate/async — 비동기 콘텐츠 생성 (request_id 반환)
 - GET  /api/content/status/{request_id} — 생성 작업 상태 조회
+- POST /api/content/publish/{request_id} — 콘텐츠 발행 (local/notion/google_ws)
 """
 from __future__ import annotations
 
@@ -25,8 +26,9 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from src.content_studio.errors import ContentStudioError, PlanningError
+from src.content_studio.errors import ContentStudioError, PlanningError, PublishError
 from src.content_studio.models import ContentOptions, ContentRequest
+from src.content_studio.publisher import Publisher, PublishResult
 
 logger = logging.getLogger(__name__)
 
@@ -198,6 +200,39 @@ class GenerationStatusResponse(BaseModel):
     completed_at: float | None
     result: ContentGenerateResponse | None
     error: str | None
+
+
+# ---------------------------------------------------------------------------
+# Publish request / response models
+# ---------------------------------------------------------------------------
+
+VALID_DESTINATIONS = {"local", "notion", "google_ws"}
+
+
+class PublishRequest(BaseModel):
+    """발행 요청."""
+
+    destination: str = Field(
+        default="local",
+        description="발행 대상 (local, notion, google_ws)",
+    )
+
+
+class PublishResultResponse(BaseModel):
+    """개별 발행 결과."""
+
+    destination: str
+    url: str | None
+    success: bool
+    error: str | None
+    timestamp: str
+
+
+class PublishResponse(BaseModel):
+    """발행 응답."""
+
+    request_id: str
+    results: list[PublishResultResponse]
 
 
 # ---------------------------------------------------------------------------
@@ -548,6 +583,96 @@ def create_content_router(state: Any) -> APIRouter:
             media_type=_guess_media_type(filename),
         )
 
+    # -------------------------------------------------------------------
+    # Publish endpoint (STEP 7)
+    # -------------------------------------------------------------------
+
+    @router.post("/publish/{request_id}", response_model=PublishResponse)
+    async def publish_content(
+        request_id: str,
+        request: PublishRequest,
+    ) -> PublishResponse:
+        """생성된 콘텐츠를 지정 대상에 발행한다.
+
+        local은 항상 성공 (이미 output/에 저장됨).
+        notion/google_ws는 API 키 미설정 시 400을 반환한다.
+        """
+        # Validate request_id format (UUID)
+        try:
+            uuid.UUID(request_id)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail="유효하지 않은 request_id 형식입니다.",
+            )
+
+        # Validate destination
+        if request.destination not in VALID_DESTINATIONS:
+            raise HTTPException(
+                status_code=400,
+                detail=f"지원하지 않는 발행 대상입니다: {request.destination}. "
+                f"사용 가능: {', '.join(sorted(VALID_DESTINATIONS))}",
+            )
+
+        # Check job exists and is completed
+        job = _job_store.get(request_id)
+        if job is None:
+            raise HTTPException(
+                status_code=404,
+                detail=f"작업을 찾을 수 없습니다: {request_id}",
+            )
+
+        if job.status != "completed" or job.result is None:
+            raise HTTPException(
+                status_code=400,
+                detail="완료된 작업만 발행할 수 있습니다.",
+            )
+
+        # Build publisher with adapters from state (if available)
+        publisher = _get_publisher(state)
+
+        # For notion/google_ws, check adapter availability before calling
+        if request.destination in ("notion", "google_ws"):
+            adapter = publisher._adapters.get(request.destination)
+            if adapter is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"{request.destination} 어댑터가 등록되지 않았습니다. " f"API 키를 확인하세요.",
+                )
+            available = await adapter.is_available()
+            if not available:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"{request.destination} API 키가 설정되지 않았습니다. "
+                    f"서버 환경 변수를 확인하세요.",
+                )
+
+        try:
+            pub_results = await publisher.publish(
+                result=job.result,
+                destinations=[request.destination],
+            )
+        except PublishError as e:
+            logger.error("발행 실패 [%s]: %s", e.stage, e, exc_info=True)
+            raise HTTPException(status_code=500, detail=f"[{e.stage}] {e}")
+        except Exception as e:
+            logger.error("발행 실패: %s", e, exc_info=True)
+            raise HTTPException(status_code=500, detail=f"발행 중 오류: {e}")
+
+        return PublishResponse(
+            request_id=request_id,
+            results=[
+                PublishResultResponse(
+                    destination=r.destination,
+                    url=r.url,
+                    success=r.success,
+                    error=r.error,
+                    timestamp=r.timestamp,
+                )
+                for r in pub_results
+            ],
+        )
+
     return router
 
 
@@ -566,3 +691,11 @@ def _guess_media_type(filename: str) -> str:
         ".md": "text/markdown",
     }
     return mime_map.get(ext, "application/octet-stream")
+
+
+def _get_publisher(state: Any) -> Publisher:
+    """state에서 Publisher를 가져오거나 기본 Publisher를 생성한다."""
+    publisher = getattr(state, "publisher", None)
+    if publisher is not None:
+        return publisher
+    return Publisher()
