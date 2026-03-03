@@ -457,8 +457,38 @@ class FileAssembler:
                 out_path = self._output_path(
                     "card_news", f"{topic}-{card.index}", "html"
                 )
-                html = f"""<html><body style="width:1080px;height:1080px;background:#0052A2;color:white;padding:40px;">
-<h1>{card.headline}</h1><p>{card.body}</p></body></html>"""
+                # body에서 JSON/코드펜스 제거
+                body_text = card.body
+                if "```" in body_text:
+                    import re
+
+                    body_text = re.sub(
+                        r"```(?:json)?\s*\{.*?\}\s*```",
+                        "",
+                        body_text,
+                        flags=re.DOTALL,
+                    )
+                    body_text = body_text.strip()
+                # 줄바꿈을 <br>로 변환
+                body_html = body_text.replace("\n", "<br>")
+                quote_html = ""
+                if hasattr(card, "source_quote") and card.source_quote:
+                    quote_html = (
+                        f'<blockquote style="border-left:3px solid rgba(255,255,255,0.5);'
+                        f"padding-left:16px;margin-top:24px;font-style:italic;"
+                        f'font-size:14px;opacity:0.85;">{card.source_quote}</blockquote>'
+                    )
+                card_num = f'<div style="position:absolute;top:24px;right:32px;font-size:14px;opacity:0.6;">{card.index}/{len(cards)}</div>'
+                html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=1080"></head>
+<body style="margin:0;width:1080px;height:1080px;background:linear-gradient(135deg,#0052A2,#003d7a);color:white;font-family:'Pretendard',sans-serif;display:flex;flex-direction:column;justify-content:center;padding:60px;box-sizing:border-box;position:relative;">
+{card_num}
+<h1 style="font-size:42px;margin:0 0 24px;line-height:1.3;">{card.headline}</h1>
+<p style="font-size:22px;line-height:1.8;margin:0;flex:1;">{body_html}</p>
+{quote_html}
+<div style="position:absolute;bottom:24px;left:60px;font-size:12px;opacity:0.5;">SKMS Content Studio</div>
+</body></html>"""
                 out_path.write_text(html, encoding="utf-8")
                 results.append(
                     GeneratedFile(

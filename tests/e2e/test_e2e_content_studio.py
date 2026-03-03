@@ -23,7 +23,7 @@ def test_studio_modal_opens(page, base_url):
 
     # Modal title should mention the content type
     modal_title = page.locator("#studio-modal-title")
-    expect(modal_title).to_contain_text("프레젠테이션")
+    expect(modal_title).to_contain_text("강의자료")
 
     # Topic textarea should be visible
     topic_input = page.locator("#studio-topic")
