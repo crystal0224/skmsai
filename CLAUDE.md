@@ -56,7 +56,7 @@ This repository also contains a **Time-Aware RAG pipeline** built on top of SKMS
 ### Development Status
 - **Phase 0~3**: Complete (39 PRs, 1216 tests, 93% coverage)
 - **Phase 4**: Content Studio — COMPLETE (52 PRs, 1850 tests, 95.80% coverage)
-- **Phase 4.5**: Frontend Integration — IN PROGRESS (STEP 1–2 complete, 10/29 API connections, 1864 tests)
+- **Phase 4.5**: Frontend Integration — COMPLETE (STEP 1–9 done, 23/29 API connections, 1864+ tests, E2E 15 cases)
 - **Phase 5**: Roadmap planned (UX improvements, video gen, LMS integration)
 - **GitHub**: crystal0224/skmsai (private)
 
@@ -73,19 +73,20 @@ src/
 ├── toc/             # Table of contents API
 ├── cross_version/   # Cross-edition comparison service
 └── eval/            # Evaluation framework, quality gate
+src/
+└── content_studio/      # 5-stage Content Studio pipeline (Phase 4, moved from scripts/lib/)
+    ├── adapters/        # MCP adapters (NanoBanana, AntV, ElevenLabs, Notion, GWS)
+    ├── models.py        # ContentRequest/Plan/Result frozen dataclasses
+    ├── planner.py       # ContentPlanner (6 content types)
+    ├── generator.py     # ContentGenerator (RAG → LLM → sections)
+    ├── assembler.py     # FileAssembler (PPTX, HTML, PDF, SVG, MP3)
+    └── publisher.py     # Publisher (local, Notion, Google Workspace)
 scripts/
-├── lib/
-│   └── content_studio/  # 5-stage Content Studio pipeline (Phase 4)
-│       ├── adapters/    # MCP adapters (NanoBanana, AntV, ElevenLabs, Notion, GWS)
-│       ├── models.py    # ContentRequest/Plan/Result frozen dataclasses
-│       ├── planner.py   # ContentPlanner (6 content types)
-│       ├── generator.py # ContentGenerator (RAG → LLM → sections)
-│       ├── assembler.py # FileAssembler (PPTX, HTML, PDF, SVG, MP3)
-│       └── publisher.py # Publisher (local, Notion, Google Workspace)
 ├── 01~13_*.py           # Numbered scripts for build, eval, migration
+├── test_mcp_live.py     # MCP adapter smoke tests
 └── cleanup_output.py    # Output directory maintenance
 server/              # FastAPI production server (app.py, routes/, models.py)
-tests/               # ~70 test files, pytest + pytest-asyncio
+tests/               # ~70 test files, pytest + pytest-asyncio + Playwright E2E
 prompts/             # Edition-aware + content generation prompt templates
 config/              # content_studio.yaml, pptx_themes.yaml, nano_banana_style.yaml
 data/                # SKMSraw.txt, edition metadata YAML
@@ -99,8 +100,9 @@ everline-studio-clone/  # Frontend UI (vanilla HTML/CSS/JS, Phase 4.5)
 - **Search**: Hybrid (ChromaDB vector + BM25 keyword) → rerank → temporal filter
 - **Generation**: QueryRouter → prompt template → LLM → OutputRenderer (5 types)
 - **Content Studio**: 5-stage pipeline (Plan → Generate → Assets → Assemble → Publish), 6 content types, Protocol-based MCP adapters, PlanCache (SHA256, 24h TTL)
-- **API**: FastAPI with closure-based DI (AppState pattern), async content generation, file download endpoint
-- **Testing**: pytest, 95%+ coverage, `FastAPI_with_mock_state()` helper, ~70 test files
+- **API**: FastAPI with closure-based DI (AppState pattern), async content generation, file download, publish endpoint
+- **Frontend**: Vanilla HTML/CSS/JS SPA (everline-studio-clone/) — 6종 콘텐츠 생성, 미리보기, 플랜 편집, 대시보드, 발행
+- **Testing**: pytest, 95%+ coverage, `FastAPI_with_mock_state()` helper, ~70 test files + Playwright E2E 15 cases
 
 ### Running the Project
 ```bash
