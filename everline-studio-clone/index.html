@@ -20,6 +20,7 @@
             <a href="#" data-nav="editions" id="nav-editions">SKMS 판본</a>
             <a href="#" data-nav="search" id="nav-search">SEARCH</a>
             <a href="#testimonial-section" data-nav="about">ABOUT</a>
+            <a href="#" data-nav="dashboard" id="nav-dashboard">DASHBOARD</a>
         </div>
     </nav>
 
@@ -342,14 +343,25 @@
                     <div class="studio-plan-view">
                         <div class="plan-header">
                             <h3>생성 계획 미리보기</h3>
-                            <button class="studio-back-btn" id="studio-back-to-input">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                                수정하기
-                            </button>
+                            <div class="plan-header-actions">
+                                <button class="plan-toggle-btn" id="plan-toggle-json" title="JSON 보기">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+                                    JSON
+                                </button>
+                                <button class="plan-reset-btn" id="plan-reset-btn" title="편집 초기화">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                    편집 초기화
+                                </button>
+                                <button class="studio-back-btn" id="studio-back-to-input">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                                    수정하기
+                                </button>
+                            </div>
                         </div>
                         <div class="plan-content" id="studio-plan-content">
                             <div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">계획 생성 중...</p></div>
                         </div>
+                        <div class="plan-content hidden" id="studio-plan-json" style="font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all;"></div>
                         <button class="studio-generate-btn" id="studio-confirm-generate">이 계획으로 생성하기</button>
                     </div>
                 </div>
@@ -652,6 +664,82 @@
                     <div class="empty-state">
                         <div class="pulse-ring"></div>
                         <p class="placeholder-text">검색어를 입력하고 검색 버튼을 클릭하세요</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Overlay -->
+    <div class="dashboard-overlay" id="dashboard-overlay">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <div>
+                    <h2>SYSTEM DASHBOARD</h2>
+                    <p>서비스 상태 및 실시간 메트릭을 모니터링합니다.</p>
+                </div>
+                <span class="close-overlay" id="close-dashboard">&times;</span>
+            </div>
+            <div class="dashboard-body">
+                <!-- Service Status -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">SERVICE STATUS</h3>
+                    <div class="dashboard-status-grid" id="dashboard-status-grid">
+                        <div class="status-card">
+                            <span class="status-label">Search</span>
+                            <span class="status-badge" id="status-search">--</span>
+                        </div>
+                        <div class="status-card">
+                            <span class="status-label">Generation</span>
+                            <span class="status-badge" id="status-generation">--</span>
+                        </div>
+                        <div class="status-card">
+                            <span class="status-label">TOC</span>
+                            <span class="status-badge" id="status-toc">--</span>
+                        </div>
+                        <div class="status-card">
+                            <span class="status-label">Content Studio</span>
+                            <span class="status-badge" id="status-content-studio">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Summary -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">REQUEST METRICS</h3>
+                    <div class="dashboard-metrics-grid" id="dashboard-metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-value" id="metric-total-requests">--</span>
+                            <span class="metric-label">Total Requests</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value" id="metric-success-rate">--</span>
+                            <span class="metric-label">Success Rate</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value" id="metric-p95-latency">--</span>
+                            <span class="metric-label">p95 Latency (ms)</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value" id="metric-uptime">--</span>
+                            <span class="metric-label">Uptime</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Endpoints -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">TOP ENDPOINTS</h3>
+                    <div class="dashboard-endpoints" id="dashboard-endpoints">
+                        <p class="loading-text">Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Status Distribution -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">STATUS CODE DISTRIBUTION</h3>
+                    <div class="dashboard-status-dist" id="dashboard-status-dist">
+                        <p class="loading-text">Loading...</p>
                     </div>
                 </div>
             </div>
@@ -1284,6 +1372,8 @@
 
         let currentStudioType = null;
         let studioBusy = false;
+        let originalPlanData = null;  // original plan from API (for reset)
+        let showingPlanJson = false;  // toggle between edit view and JSON view
 
         const STUDIO_TYPE_INFO = {
             lecture: { title: '프레젠테이션 슬라이드', format: 'PPTX', desc: 'SKMS 기반 강의 슬라이드를 생성합니다.' },
@@ -1384,12 +1474,369 @@
 
         studioBackToInput.addEventListener('click', () => showStudioStep('input'));
 
-        // Plan preview
+        // ---------------------------------------------------------------
+        // PLAN EDITOR — Editable outline UI
+        // ---------------------------------------------------------------
+
+        // Detect the plan items key based on content type
+        function getPlanItemsKey(type) {
+            const keyMap = {
+                lecture: 'slides',
+                card_news: 'cards',
+                workshop: 'phases',
+                quiz: 'questions'
+            };
+            return keyMap[type] || null;
+        }
+
+        // Create a default empty item for each type
+        function createDefaultItem(type) {
+            switch (type) {
+                case 'lecture':
+                    return { title: '새 슬라이드', description: '', key_points: [] };
+                case 'card_news':
+                    return { card_number: 1, title: '새 카드', content: '' };
+                case 'workshop':
+                    return { name: '새 활동', duration_min: 10, activities: [] };
+                case 'quiz':
+                    return { question: '새 문항', options: ['A', 'B', 'C', 'D'], correct_answer: 'A', explanation: '' };
+                default:
+                    return {};
+            }
+        }
+
+        // Render a single plan item card (editable)
+        function renderPlanItemCard(item, index, type) {
+            const card = document.createElement('div');
+            card.className = 'plan-item-card';
+            card.draggable = true;
+            card.dataset.index = index;
+
+            // Drag handle
+            const handle = document.createElement('div');
+            handle.className = 'plan-item-handle';
+            handle.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"/></svg>';
+            card.appendChild(handle);
+
+            // Content area
+            const content = document.createElement('div');
+            content.className = 'plan-item-content';
+
+            const badge = document.createElement('span');
+            badge.className = 'plan-item-badge';
+
+            switch (type) {
+                case 'lecture':
+                    badge.textContent = `슬라이드 ${index + 1}`;
+                    content.appendChild(badge);
+                    content.appendChild(createField('title', '제목', item.title || ''));
+                    content.appendChild(createField('description', '설명', item.description || '', true));
+                    break;
+                case 'card_news':
+                    badge.textContent = `카드 ${index + 1}`;
+                    content.appendChild(badge);
+                    content.appendChild(createField('title', '제목', item.title || ''));
+                    content.appendChild(createField('content', '내용', item.content || '', true));
+                    break;
+                case 'workshop':
+                    badge.textContent = `페이즈 ${index + 1}`;
+                    content.appendChild(badge);
+                    content.appendChild(createField('name', '활동명', item.name || ''));
+                    content.appendChild(createField('duration_min', '소요시간 (분)', String(item.duration_min || ''), false, 'number'));
+                    break;
+                case 'quiz':
+                    badge.textContent = `문항 ${index + 1}`;
+                    content.appendChild(badge);
+                    content.appendChild(createField('question', '질문', item.question || '', true));
+                    if (item.options && item.options.length > 0) {
+                        const optLabel = document.createElement('label');
+                        optLabel.className = 'plan-field-label';
+                        optLabel.textContent = '선택지';
+                        content.appendChild(optLabel);
+                        item.options.forEach((opt, oi) => {
+                            content.appendChild(createField(`option_${oi}`, ``, opt, false, 'text', `option-${oi}`));
+                        });
+                    }
+                    content.appendChild(createField('correct_answer', '정답', item.correct_answer || ''));
+                    content.appendChild(createField('explanation', '해설', item.explanation || '', true));
+                    break;
+            }
+
+            card.appendChild(content);
+
+            // Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'plan-item-delete';
+            deleteBtn.title = '삭제';
+            deleteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+            deleteBtn.addEventListener('click', () => {
+                const currentIndex = Array.from(card.parentElement.children).indexOf(card);
+                removePlanItem(currentIndex);
+            });
+            card.appendChild(deleteBtn);
+
+            // HTML5 Drag events
+            card.addEventListener('dragstart', onDragStart);
+            card.addEventListener('dragover', onDragOver);
+            card.addEventListener('drop', onDrop);
+            card.addEventListener('dragend', onDragEnd);
+
+            return card;
+        }
+
+        // Helper: create an editable field
+        function createField(name, label, value, isTextarea, inputType, extraClass) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'plan-field';
+            if (label) {
+                const lbl = document.createElement('label');
+                lbl.className = 'plan-field-label';
+                lbl.textContent = label;
+                wrapper.appendChild(lbl);
+            }
+            let input;
+            if (isTextarea) {
+                input = document.createElement('textarea');
+                input.rows = 2;
+            } else {
+                input = document.createElement('input');
+                input.type = inputType || 'text';
+            }
+            input.className = 'plan-field-input';
+            if (extraClass) input.classList.add(extraClass);
+            input.name = name;
+            input.value = value;
+            wrapper.appendChild(input);
+            return wrapper;
+        }
+
+        // Render the full editable plan
+        function renderEditablePlan(plan, type) {
+            const container = document.getElementById('studio-plan-content');
+            container.innerHTML = '';
+
+            const itemsKey = getPlanItemsKey(type);
+            const items = itemsKey ? (plan[itemsKey] || []) : null;
+
+            if (!items) {
+                // Unsupported type (visualization, audio) — show raw JSON
+                container.innerHTML = `<pre style="white-space:pre-wrap;font-size:0.85rem;">${escapeHtml(JSON.stringify(plan, null, 2))}</pre>`;
+                document.getElementById('plan-reset-btn').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('plan-reset-btn').classList.remove('hidden');
+
+            const list = document.createElement('div');
+            list.className = 'plan-items-list';
+            list.id = 'plan-items-list';
+            items.forEach((item, i) => {
+                list.appendChild(renderPlanItemCard(item, i, type));
+            });
+            container.appendChild(list);
+
+            // "항목 추가" button
+            const addBtn = document.createElement('button');
+            addBtn.className = 'plan-add-btn';
+            addBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 항목 추가';
+            addBtn.addEventListener('click', () => addPlanItem(type));
+            container.appendChild(addBtn);
+
+            // Update JSON view
+            updatePlanJsonView();
+        }
+
+        // Collect current plan from the DOM inputs
+        function collectEditedPlan() {
+            if (!originalPlanData) return null;
+            const type = currentStudioType;
+            const itemsKey = getPlanItemsKey(type);
+            if (!itemsKey) return originalPlanData;
+
+            const cards = document.querySelectorAll('#plan-items-list .plan-item-card');
+            const items = [];
+            cards.forEach((card, idx) => {
+                const inputs = card.querySelectorAll('.plan-field-input');
+                const item = {};
+                switch (type) {
+                    case 'lecture':
+                        item.title = getInputVal(inputs, 'title');
+                        item.description = getInputVal(inputs, 'description');
+                        item.key_points = [];
+                        break;
+                    case 'card_news':
+                        item.card_number = idx + 1;
+                        item.title = getInputVal(inputs, 'title');
+                        item.content = getInputVal(inputs, 'content');
+                        break;
+                    case 'workshop':
+                        item.name = getInputVal(inputs, 'name');
+                        item.duration_min = parseInt(getInputVal(inputs, 'duration_min'), 10) || 10;
+                        item.activities = [];
+                        break;
+                    case 'quiz':
+                        item.question = getInputVal(inputs, 'question');
+                        item.options = [];
+                        inputs.forEach(inp => {
+                            if (inp.name.startsWith('option_')) {
+                                item.options.push(inp.value);
+                            }
+                        });
+                        item.correct_answer = getInputVal(inputs, 'correct_answer');
+                        item.explanation = getInputVal(inputs, 'explanation');
+                        break;
+                }
+                items.push(item);
+            });
+
+            return { ...originalPlanData, [itemsKey]: items };
+        }
+
+        function getInputVal(inputs, name) {
+            for (const inp of inputs) {
+                if (inp.name === name) return inp.value;
+            }
+            return '';
+        }
+
+        // Add a new plan item
+        function addPlanItem(type) {
+            const list = document.getElementById('plan-items-list');
+            if (!list) return;
+            const newIdx = list.children.length;
+            const newItem = createDefaultItem(type);
+            list.appendChild(renderPlanItemCard(newItem, newIdx, type));
+            updatePlanJsonView();
+            showToast('항목이 추가되었습니다.');
+        }
+
+        // Remove a plan item by index
+        function removePlanItem(index) {
+            const list = document.getElementById('plan-items-list');
+            if (!list) return;
+            if (list.children.length <= 1) {
+                showToast('최소 1개 항목이 필요합니다.', 'warning');
+                return;
+            }
+            list.children[index].remove();
+            // Re-index remaining cards
+            Array.from(list.children).forEach((card, i) => {
+                card.dataset.index = i;
+                const badge = card.querySelector('.plan-item-badge');
+                if (badge) {
+                    const labels = { lecture: '슬라이드', card_news: '카드', workshop: '페이즈', quiz: '문항' };
+                    badge.textContent = `${labels[currentStudioType] || ''} ${i + 1}`;
+                }
+            });
+            updatePlanJsonView();
+            showToast('항목이 삭제되었습니다.');
+        }
+
+        // ---------------------------------------------------------------
+        // DRAG & DROP — HTML5 Drag API
+        // ---------------------------------------------------------------
+        let dragSrcIndex = null;
+
+        function onDragStart(e) {
+            dragSrcIndex = parseInt(this.dataset.index, 10);
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', dragSrcIndex);
+        }
+
+        function onDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const card = e.currentTarget;
+            card.classList.add('drag-over');
+        }
+
+        function onDrop(e) {
+            e.preventDefault();
+            const card = e.currentTarget;
+            card.classList.remove('drag-over');
+            const dropIndex = parseInt(card.dataset.index, 10);
+            if (dragSrcIndex === null || dragSrcIndex === dropIndex) return;
+
+            const list = document.getElementById('plan-items-list');
+            const children = Array.from(list.children);
+            const draggedCard = children[dragSrcIndex];
+
+            // Move DOM node
+            if (dragSrcIndex < dropIndex) {
+                list.insertBefore(draggedCard, children[dropIndex].nextSibling);
+            } else {
+                list.insertBefore(draggedCard, children[dropIndex]);
+            }
+
+            // Re-index
+            Array.from(list.children).forEach((c, i) => {
+                c.dataset.index = i;
+                const badge = c.querySelector('.plan-item-badge');
+                if (badge) {
+                    const labels = { lecture: '슬라이드', card_news: '카드', workshop: '페이즈', quiz: '문항' };
+                    badge.textContent = `${labels[currentStudioType] || ''} ${i + 1}`;
+                }
+            });
+
+            updatePlanJsonView();
+            dragSrcIndex = null;
+        }
+
+        function onDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.plan-item-card').forEach(c => c.classList.remove('drag-over'));
+            dragSrcIndex = null;
+        }
+
+        // ---------------------------------------------------------------
+        // JSON TOGGLE & RESET
+        // ---------------------------------------------------------------
+        function updatePlanJsonView() {
+            const jsonContainer = document.getElementById('studio-plan-json');
+            const plan = collectEditedPlan();
+            if (plan) {
+                jsonContainer.textContent = JSON.stringify(plan, null, 2);
+            }
+        }
+
+        document.getElementById('plan-toggle-json').addEventListener('click', () => {
+            showingPlanJson = !showingPlanJson;
+            const editView = document.getElementById('studio-plan-content');
+            const jsonView = document.getElementById('studio-plan-json');
+            const toggleBtn = document.getElementById('plan-toggle-json');
+
+            editView.classList.toggle('hidden', showingPlanJson);
+            jsonView.classList.toggle('hidden', !showingPlanJson);
+            toggleBtn.textContent = showingPlanJson ? '편집' : 'JSON';
+
+            if (showingPlanJson) {
+                updatePlanJsonView();
+            }
+        });
+
+        document.getElementById('plan-reset-btn').addEventListener('click', () => {
+            if (!originalPlanData) return;
+            renderEditablePlan(originalPlanData, currentStudioType);
+            showingPlanJson = false;
+            document.getElementById('studio-plan-content').classList.remove('hidden');
+            document.getElementById('studio-plan-json').classList.add('hidden');
+            document.getElementById('plan-toggle-json').textContent = 'JSON';
+            showToast('계획이 초기화되었습니다.');
+        });
+
+        // ---------------------------------------------------------------
+        // Plan preview — fetch from API and render editable
+        // ---------------------------------------------------------------
         studioPlanBtn.addEventListener('click', async () => {
             const topic = studioTopic.value.trim();
             if (!topic) { showToast('주제를 입력해주세요.', 'warning'); return; }
 
             showStudioStep('plan');
+            showingPlanJson = false;
+            document.getElementById('studio-plan-content').classList.remove('hidden');
+            document.getElementById('studio-plan-json').classList.add('hidden');
+            document.getElementById('plan-toggle-json').textContent = 'JSON';
             document.getElementById('studio-plan-content').innerHTML =
                 '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">계획 생성 중...</p></div>';
 
@@ -1401,16 +1848,16 @@
                         options: collectTypeOptions()
                     }
                 });
-                document.getElementById('studio-plan-content').innerHTML =
-                    `<div class="result-content">${simpleMarkdownToHtml(JSON.stringify(data.plan, null, 2))}</div>`;
+                originalPlanData = data.plan;
+                renderEditablePlan(data.plan, currentStudioType);
             } catch (err) {
                 document.getElementById('studio-plan-content').innerHTML =
                     `<div class="result-error"><p>계획 생성 실패</p><p>${escapeHtml(err.message)}</p></div>`;
             }
         });
 
-        // Generate (from input or plan confirm)
-        async function startStudioGeneration() {
+        // Generate (from input step — no plan editing)
+        async function startStudioGeneration(editedPlan) {
             const topic = studioTopic.value.trim();
             if (!topic || studioBusy) return;
 
@@ -1419,13 +1866,18 @@
             resetProgress();
 
             try {
-                // Start async generation with type-specific options
+                const reqBody = {
+                    content_type: currentStudioType,
+                    topic: topic,
+                    options: collectTypeOptions()
+                };
+                // If an edited plan is provided, include it
+                if (editedPlan) {
+                    reqBody.plan = editedPlan;
+                }
+
                 const asyncRes = await apiCall('/api/content/generate/async', {
-                    body: {
-                        content_type: currentStudioType,
-                        topic: topic,
-                        options: collectTypeOptions()
-                    }
+                    body: reqBody
                 });
 
                 // Poll for status with progress animation
@@ -1445,8 +1897,11 @@
             }
         }
 
-        studioGenerateBtn.addEventListener('click', startStudioGeneration);
-        studioConfirmGenerate.addEventListener('click', startStudioGeneration);
+        studioGenerateBtn.addEventListener('click', () => startStudioGeneration(null));
+        studioConfirmGenerate.addEventListener('click', () => {
+            const editedPlan = collectEditedPlan();
+            startStudioGeneration(editedPlan);
+        });
 
         function resetProgress() {
             const circle = document.getElementById('progress-circle');
@@ -1510,6 +1965,38 @@
             throw new Error('생성 시간이 초과되었습니다.');
         }
 
+        function buildFilePreview(fileName, downloadUrl, ext) {
+            const lowerExt = ext.toLowerCase();
+            if (lowerExt === 'png' || lowerExt === 'jpg' || lowerExt === 'jpeg' || lowerExt === 'svg') {
+                return `
+                    <div class="preview-container preview-image-container">
+                        <img class="preview-image" src="${downloadUrl}" alt="${escapeHtml(fileName)}"
+                             onerror="this.parentElement.innerHTML='<div class=\\'preview-fallback\\'>미리보기를 불러올 수 없습니다</div>'" />
+                    </div>`;
+            }
+            if (lowerExt === 'html' || lowerExt === 'htm') {
+                return `
+                    <div class="preview-container preview-iframe-container">
+                        <iframe class="preview-iframe" sandbox="allow-scripts" src="${downloadUrl}"
+                                title="${escapeHtml(fileName)}"></iframe>
+                    </div>`;
+            }
+            if (lowerExt === 'mp3' || lowerExt === 'wav' || lowerExt === 'ogg') {
+                return `
+                    <div class="preview-container preview-audio-container">
+                        <audio class="preview-audio" controls preload="metadata" src="${downloadUrl}">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>`;
+            }
+            // PPTX, PDF, etc. — no inline preview
+            return `
+                <div class="preview-container preview-nopreview">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span>미리보기를 지원하지 않는 파일 형식입니다</span>
+                </div>`;
+        }
+
         function showStudioResult(result, requestId) {
             showStudioStep('result');
             const info = STUDIO_TYPE_INFO[currentStudioType];
@@ -1524,7 +2011,7 @@
                         <p>${files.length}개 파일 생성 · SKMS 원문 ${citations.length}건 인용</p>
                     </div>
                 </div>
-                <ul class="result-files-list">`;
+                <div class="result-preview-list">`;
 
             files.forEach(f => {
                 const ext = (f.file_name || '').split('.').pop().toUpperCase();
@@ -1532,25 +2019,41 @@
                 const downloadUrl = requestId
                     ? `${API_BASE_URL}/api/content/download/${encodeURIComponent(requestId)}/${encodeURIComponent(f.file_name)}`
                     : '#';
+                const preview = buildFilePreview(f.file_name, downloadUrl, ext);
                 html += `
-                    <li class="result-file-item">
-                        <div class="result-file-info">
-                            <div class="file-icon">${escapeHtml(ext)}</div>
-                            <div>
-                                <div class="file-name">${escapeHtml(f.file_name)}</div>
-                                <div class="file-size">${sizeKB} KB</div>
+                    <div class="result-preview-card">
+                        ${preview}
+                        <div class="preview-card-footer">
+                            <div class="result-file-info">
+                                <div class="file-icon">${escapeHtml(ext)}</div>
+                                <div>
+                                    <div class="file-name">${escapeHtml(f.file_name)}</div>
+                                    <div class="file-size">${sizeKB} KB</div>
+                                </div>
                             </div>
+                            <a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </a>
                         </div>
-                        <a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        </a>
-                    </li>`;
+                    </div>`;
             });
 
-            html += `</ul>
+            html += `</div>
                 <button class="studio-new-btn studio-new-content-btn">새 콘텐츠 생성하기</button>`;
 
             document.getElementById('studio-result-view').innerHTML = html;
+
+            // Image lightbox: click to expand
+            document.querySelectorAll('.preview-image').forEach(img => {
+                img.addEventListener('click', () => {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'preview-lightbox';
+                    overlay.innerHTML = `<img src="${img.src}" alt="${img.alt}" />`;
+                    overlay.addEventListener('click', () => overlay.remove());
+                    document.body.appendChild(overlay);
+                });
+            });
+
             document.querySelector('.studio-new-content-btn')?.addEventListener('click', () => showStudioStep('input'));
             showToast(`${info.title}가 생성되었습니다!`);
         }
@@ -1572,6 +2075,9 @@
                 } else if (nav === 'search') {
                     e.preventDefault();
                     openSearchOverlay();
+                } else if (nav === 'dashboard') {
+                    e.preventDefault();
+                    openDashboardOverlay();
                 } else if (link.getAttribute('href').startsWith('#')) {
                     // Smooth scroll for anchor links
                     const target = document.querySelector(link.getAttribute('href'));
@@ -1914,8 +2420,148 @@
                     searchOverlay.classList.remove('active');
                     document.body.style.overflow = 'auto';
                 }
+                if (dashboardOverlay.classList.contains('active')) {
+                    closeDashboardOverlay();
+                }
             }
         });
+
+        // ===================================================================
+        // DASHBOARD OVERLAY
+        // ===================================================================
+        const dashboardOverlay = document.getElementById('dashboard-overlay');
+        const closeDashboard = document.getElementById('close-dashboard');
+        let dashboardRefreshTimer = null;
+
+        function openDashboardOverlay() {
+            dashboardOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadDashboardData();
+            dashboardRefreshTimer = setInterval(loadDashboardData, 30000);
+        }
+
+        function closeDashboardOverlay() {
+            dashboardOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            if (dashboardRefreshTimer) {
+                clearInterval(dashboardRefreshTimer);
+                dashboardRefreshTimer = null;
+            }
+        }
+
+        closeDashboard.addEventListener('click', closeDashboardOverlay);
+
+        async function loadDashboardData() {
+            try {
+                const [health, metrics, stats] = await Promise.all([
+                    apiCall('/api/health', { method: 'GET' }),
+                    apiCall('/api/dashboard/metrics', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/dashboard/stats', { method: 'GET' }).catch(() => null),
+                ]);
+                renderServiceStatus(health);
+                if (metrics) renderMetrics(metrics);
+                if (stats) renderStats(stats);
+            } catch (err) {
+                if (IS_DEV) console.warn('[Dashboard] Failed to load data:', err.message);
+                renderServiceStatus(null);
+            }
+        }
+
+        function renderServiceStatus(health) {
+            const components = health?.components || {};
+            const csAvailable = health?.content_studio?.available || false;
+
+            const statusMap = {
+                'status-search': components.search_service,
+                'status-generation': components.generation_service,
+                'status-toc': components.toc_service,
+                'status-content-studio': csAvailable,
+            };
+
+            for (const [id, available] of Object.entries(statusMap)) {
+                const el = document.getElementById(id);
+                if (!el) continue;
+                if (available === undefined || available === null) {
+                    el.textContent = 'N/A';
+                    el.className = 'status-badge status-na';
+                } else if (available) {
+                    el.textContent = 'ON';
+                    el.className = 'status-badge status-on';
+                } else {
+                    el.textContent = 'OFF';
+                    el.className = 'status-badge status-off';
+                }
+            }
+        }
+
+        function renderMetrics(metrics) {
+            const totalEl = document.getElementById('metric-total-requests');
+            const rateEl = document.getElementById('metric-success-rate');
+            const latencyEl = document.getElementById('metric-p95-latency');
+            const uptimeEl = document.getElementById('metric-uptime');
+
+            if (totalEl) totalEl.textContent = metrics.total_requests.toLocaleString();
+
+            if (rateEl) {
+                const rate = metrics.total_requests > 0
+                    ? ((metrics.success_count / metrics.total_requests) * 100).toFixed(1)
+                    : '0.0';
+                rateEl.textContent = rate + '%';
+            }
+
+            if (latencyEl) {
+                latencyEl.textContent = metrics.latency.p95.toFixed(0);
+            }
+
+            if (uptimeEl) {
+                const hrs = Math.floor(metrics.uptime_seconds / 3600);
+                const mins = Math.floor((metrics.uptime_seconds % 3600) / 60);
+                uptimeEl.textContent = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+            }
+        }
+
+        function renderStats(stats) {
+            // Top Endpoints bar chart
+            const endpointsEl = document.getElementById('dashboard-endpoints');
+            const topEndpoints = stats.top_endpoints || [];
+
+            if (topEndpoints.length === 0) {
+                endpointsEl.innerHTML = '<p class="loading-text">No endpoint data yet.</p>';
+            } else {
+                const maxCount = Math.max(...topEndpoints.map(e => e.count), 1);
+                endpointsEl.innerHTML = topEndpoints.map(ep => {
+                    const pct = Math.round((ep.count / maxCount) * 100);
+                    const label = ep.endpoint.length > 30
+                        ? '...' + ep.endpoint.slice(-27)
+                        : ep.endpoint;
+                    return `
+                        <div class="endpoint-bar-row">
+                            <span class="endpoint-name">${escapeHtml(label)}</span>
+                            <div class="endpoint-bar-track">
+                                <div class="endpoint-bar-fill" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="endpoint-count">${ep.count}</span>
+                        </div>`;
+                }).join('');
+            }
+
+            // Status code distribution
+            const distEl = document.getElementById('dashboard-status-dist');
+            const distribution = stats.status_code_distribution || [];
+
+            if (distribution.length === 0) {
+                distEl.innerHTML = '<p class="loading-text">No status data yet.</p>';
+            } else {
+                distEl.innerHTML = distribution.map(item => {
+                    let colorClass = 'status-code-other';
+                    const code = item.status_code;
+                    if (code >= 200 && code < 300) colorClass = 'status-code-2xx';
+                    else if (code >= 400 && code < 500) colorClass = 'status-code-4xx';
+                    else if (code >= 500) colorClass = 'status-code-5xx';
+                    return `<span class="status-code-badge ${colorClass}">${code}: ${item.count}</span>`;
+                }).join('');
+            }
+        }
 
         // ===================================================================
         // BACKEND CONNECTION CHECK + INIT (on page load)
