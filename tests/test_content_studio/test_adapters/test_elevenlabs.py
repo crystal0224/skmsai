@@ -17,14 +17,14 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from scripts.lib.content_studio.adapters.base import AudioGenerator, MCPAdapter
-from scripts.lib.content_studio.adapters.elevenlabs import (
+from src.content_studio.adapters.base import AudioGenerator, MCPAdapter
+from src.content_studio.adapters.elevenlabs import (
     DEFAULT_MODEL,
     VOICE_MAP,
     ElevenLabsAdapter,
     ElevenLabsConfig,
 )
-from scripts.lib.content_studio.models import GeneratedAsset, ScriptSection
+from src.content_studio.models import GeneratedAsset, ScriptSection
 
 
 # ---------------------------------------------------------------------------

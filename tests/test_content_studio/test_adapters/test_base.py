@@ -8,14 +8,14 @@ from typing import Any
 
 import pytest
 
-from scripts.lib.content_studio.adapters.base import (
+from src.content_studio.adapters.base import (
     AudioGenerator,
     ChartGenerator,
     DocumentPublisher,
     ImageGenerator,
     MCPAdapter,
 )
-from scripts.lib.content_studio.models import GeneratedAsset
+from src.content_studio.models import GeneratedAsset
 
 
 # ---------------------------------------------------------------------------

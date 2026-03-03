@@ -102,7 +102,7 @@ def test_lifespan_content_studio_import_error():
     with (
         patch("server.app._state", state),
         patch.object(state, "initialize"),
-        patch.dict("sys.modules", {"scripts.lib.content_studio": None}),
+        patch.dict("sys.modules", {"src.content_studio": None}),
     ):
         from server.app import create_app
 

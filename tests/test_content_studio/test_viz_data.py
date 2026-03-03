@@ -4,7 +4,7 @@ PR-051: AntV 차트용 타임라인, 네트워크, 산키 데이터 구조 검�
 """
 from __future__ import annotations
 
-from scripts.lib.content_studio.viz_data import (
+from src.content_studio.viz_data import (
     build_network_data,
     build_sankey_data,
     build_timeline_data,

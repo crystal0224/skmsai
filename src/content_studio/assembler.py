@@ -15,11 +15,11 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
-from scripts.lib.content_studio.models import (
+from src.content_studio.models import (
     GeneratedAsset,
     GeneratedFile,
 )
-from scripts.lib.content_studio.pptx_templates import (
+from src.content_studio.pptx_templates import (
     PptxTheme,
     generate_footer,
     generate_toc_data,

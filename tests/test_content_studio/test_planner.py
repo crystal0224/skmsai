@@ -10,7 +10,7 @@ import json
 
 import pytest
 
-from scripts.lib.content_studio.models import (
+from src.content_studio.models import (
     AudioPlan,
     CardNewsPlan,
     ContentOptions,
@@ -19,7 +19,7 @@ from scripts.lib.content_studio.models import (
     VisualizationPlan,
     WorkshopPlan,
 )
-from scripts.lib.content_studio.planner import (
+from src.content_studio.planner import (
     ContentPlanner,
     _allocate_workshop_time,
     _audio_speaker_count,

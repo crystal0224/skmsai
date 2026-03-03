@@ -19,7 +19,7 @@ import logging
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
-from scripts.lib.content_studio.models import (
+from src.content_studio.models import (
     AudioPlan,
     CardNewsPlan,
     ContentOptions,
@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 # LLM Client Protocol
 # ---------------------------------------------------------------------------
 
-PROMPTS_DIR = Path(__file__).parent.parent.parent.parent / "prompts"
+PROMPTS_DIR = Path(__file__).parent.parent.parent / "prompts"
 
 
 @runtime_checkable

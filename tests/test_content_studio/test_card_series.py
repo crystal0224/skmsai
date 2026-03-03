@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from scripts.lib.content_studio.card_series import (
+from src.content_studio.card_series import (
     SERIES_PRESETS,
     SeriesConfig,
     build_image_prompt,

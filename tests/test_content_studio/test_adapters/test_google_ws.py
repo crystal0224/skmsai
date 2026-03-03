@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from scripts.lib.content_studio.adapters.base import DocumentPublisher, MCPAdapter
-from scripts.lib.content_studio.adapters.google_ws import (
+from src.content_studio.adapters.base import DocumentPublisher, MCPAdapter
+from src.content_studio.adapters.google_ws import (
     GoogleWorkspaceAdapter,
     GoogleWSConfig,
 )

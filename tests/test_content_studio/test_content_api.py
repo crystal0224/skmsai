@@ -8,15 +8,15 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from scripts.lib.content_studio import ContentStudio
-from scripts.lib.content_studio.assembler import AssemblerConfig, FileAssembler
-from scripts.lib.content_studio.asset_generator import AssetGenerator
-from scripts.lib.content_studio.generator import ContentGenerator
-from scripts.lib.content_studio.models import (
+from src.content_studio import ContentStudio
+from src.content_studio.assembler import AssemblerConfig, FileAssembler
+from src.content_studio.asset_generator import AssetGenerator
+from src.content_studio.generator import ContentGenerator
+from src.content_studio.models import (
     ContentOptions,
     GeneratedAsset,
 )
-from scripts.lib.content_studio.planner import ContentPlanner
+from src.content_studio.planner import ContentPlanner
 from server.routes.content import create_content_router
 
 # Mock classes imported from conftest (auto-discovered by pytest)

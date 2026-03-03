@@ -13,8 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-from scripts.lib.content_studio.adapters.base import DocumentPublisher, MCPAdapter
-from scripts.lib.content_studio.adapters.notion import (
+from src.content_studio.adapters.base import DocumentPublisher, MCPAdapter
+from src.content_studio.adapters.notion import (
     NotionAdapter,
     NotionConfig,
 )

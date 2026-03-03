@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from scripts.lib.content_studio.generator import (
+from src.content_studio.generator import (
     AudioContent,
     CardContent,
     CardNewsContent,
@@ -23,7 +23,7 @@ from scripts.lib.content_studio.generator import (
     _count_words,
     _format_hits_as_context,
 )
-from scripts.lib.content_studio.models import (
+from src.content_studio.models import (
     AudioPlan,
     CardNewsPlan,
     CardPlan,

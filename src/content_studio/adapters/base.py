@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
 
-from scripts.lib.content_studio.models import GeneratedAsset
+from src.content_studio.models import GeneratedAsset
 
 
 # ---------------------------------------------------------------------------

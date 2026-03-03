@@ -25,8 +25,8 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
-from scripts.lib.content_studio.errors import ContentStudioError, PlanningError
-from scripts.lib.content_studio.models import ContentOptions, ContentRequest
+from src.content_studio.errors import ContentStudioError, PlanningError
+from src.content_studio.models import ContentOptions, ContentRequest
 
 logger = logging.getLogger(__name__)
 
@@ -333,7 +333,7 @@ def create_content_router(state: Any) -> APIRouter:
     @router.get("/types", response_model=ContentTypesResponse)
     async def list_content_types() -> ContentTypesResponse:
         """지원하는 콘텐츠 유형 목록을 반환한다."""
-        from scripts.lib.content_studio import ContentStudio
+        from src.content_studio import ContentStudio
 
         type_infos = ContentStudio.content_types()
         return ContentTypesResponse(

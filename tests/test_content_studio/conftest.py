@@ -22,10 +22,10 @@ from typing import Any
 
 import pytest
 
-from scripts.lib.content_studio.assembler import AssemblerConfig, FileAssembler
-from scripts.lib.content_studio.asset_generator import AssetGenerator
-from scripts.lib.content_studio.generator import ContentGenerator
-from scripts.lib.content_studio.models import (
+from src.content_studio.assembler import AssemblerConfig, FileAssembler
+from src.content_studio.asset_generator import AssetGenerator
+from src.content_studio.generator import ContentGenerator
+from src.content_studio.models import (
     CardNewsPlan,
     CardPlan,
     ContentOptions,
@@ -33,8 +33,8 @@ from scripts.lib.content_studio.models import (
     LecturePlan,
     SlidePlan,
 )
-from scripts.lib.content_studio.planner import ContentPlanner
-from scripts.lib.content_studio import ContentStudio
+from src.content_studio.planner import ContentPlanner
+from src.content_studio import ContentStudio
 
 
 # ---------------------------------------------------------------------------
@@ -337,13 +337,38 @@ def sample_card_news_plan() -> CardNewsPlan:
 
 
 @pytest.fixture
-def assembler_config(tmp_path) -> AssemblerConfig:
+def isolated_output_dir(tmp_path):
+    """tmp_path 기반 격리된 출력 디렉토리 fixture.
+
+    tests가 공유 output/ 디렉토리를 오염시키지 않도록 tmp_path 하위에
+    output 디렉토리를 생성한다. 테스트 종료 시 자동 정리된다.
+
+    Returns:
+        Path: 격리된 출력 디렉토리 경로.
+    """
+    out = tmp_path / "output"
+    out.mkdir()
+    return out
+
+
+@pytest.fixture
+def assembler_config(isolated_output_dir) -> AssemblerConfig:
     """tmp_path 기반 AssemblerConfig fixture.
 
-    임시 출력 디렉토리를 사용하는 AssemblerConfig를 반환한다.
+    isolated_output_dir를 사용하는 AssemblerConfig를 반환한다.
     테스트 종료 시 자동 정리된다.
     """
-    return AssemblerConfig(output_dir=str(tmp_path / "out"))
+    return AssemblerConfig(output_dir=str(isolated_output_dir))
+
+
+@pytest.fixture
+def file_assembler(assembler_config) -> FileAssembler:
+    """격리된 출력 디렉토리를 사용하는 FileAssembler fixture.
+
+    assembler_config를 기반으로 FileAssembler 인스턴스를 생성한다.
+    공유 output/ 디렉토리에 파일을 생성하지 않는다.
+    """
+    return FileAssembler(assembler_config)
 
 
 @pytest.fixture

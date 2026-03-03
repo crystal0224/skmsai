@@ -17,15 +17,15 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from scripts.lib.content_studio.adapters.base import ImageGenerator, MCPAdapter
-from scripts.lib.content_studio.adapters.nano_banana import (
+from src.content_studio.adapters.base import ImageGenerator, MCPAdapter
+from src.content_studio.adapters.nano_banana import (
     ASPECT_RATIO_MAP,
     DEFAULT_OUTPUT_DIR,
     RESOLUTION_MAP,
     NanoBananaAdapter,
     NanoBananaConfig,
 )
-from scripts.lib.content_studio.models import GeneratedAsset
+from src.content_studio.models import GeneratedAsset
 
 
 # ---------------------------------------------------------------------------

@@ -63,7 +63,7 @@ async def lifespan(app: FastAPI):
 
     # Content Studio 초기화 (선택적 — LLM 클라이언트 없으면 비활성)
     try:
-        from scripts.lib.content_studio import ContentStudio
+        from src.content_studio import ContentStudio
 
         from server.dependencies import _make_anthropic_client
 

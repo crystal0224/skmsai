@@ -6,8 +6,8 @@ from __future__ import annotations
 
 import pytest
 
-from scripts.lib.content_studio.asset_generator import AssetGenerator
-from scripts.lib.content_studio.models import (
+from src.content_studio.asset_generator import AssetGenerator
+from src.content_studio.models import (
     GeneratedAsset,
     LecturePlan,
     SlidePlan,

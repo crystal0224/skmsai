@@ -15,7 +15,7 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
 
-from scripts.lib.content_studio.models import (
+from src.content_studio.models import (
     AudioPlan,
     CardNewsPlan,
     LecturePlan,

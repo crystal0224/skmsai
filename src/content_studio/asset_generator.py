@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
-from scripts.lib.content_studio.models import GeneratedAsset
+from src.content_studio.models import GeneratedAsset
 
 logger = logging.getLogger(__name__)
 

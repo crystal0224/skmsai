@@ -6,11 +6,11 @@ from __future__ import annotations
 
 import pytest
 
-from scripts.lib.content_studio import ContentStudio, CONTENT_TYPE_INFO
-from scripts.lib.content_studio.errors import PlanningError
-from scripts.lib.content_studio.assembler import AssemblerConfig, FileAssembler
-from scripts.lib.content_studio.asset_generator import AssetGenerator
-from scripts.lib.content_studio.generator import (
+from src.content_studio import ContentStudio, CONTENT_TYPE_INFO
+from src.content_studio.errors import PlanningError
+from src.content_studio.assembler import AssemblerConfig, FileAssembler
+from src.content_studio.asset_generator import AssetGenerator
+from src.content_studio.generator import (
     AudioContent,
     CardContent,
     CardNewsContent,
@@ -21,7 +21,7 @@ from scripts.lib.content_studio.generator import (
     SlideContent,
     WorkshopContent,
 )
-from scripts.lib.content_studio.models import (
+from src.content_studio.models import (
     AudioPlan,
     CardNewsPlan,
     CardPlan,
@@ -37,7 +37,7 @@ from scripts.lib.content_studio.models import (
     WorkshopPhase,
     WorkshopPlan,
 )
-from scripts.lib.content_studio.planner import ContentPlanner
+from src.content_studio.planner import ContentPlanner
 
 # Mock classes imported from conftest (auto-discovered by pytest)
 from tests.test_content_studio.conftest import (
@@ -409,7 +409,7 @@ class TestElapsedMs:
     def test_elapsed_positive(self):
         import time
 
-        from scripts.lib.content_studio import _elapsed_ms
+        from src.content_studio import _elapsed_ms
 
         start = time.time()
         ms = _elapsed_ms(start)
@@ -418,12 +418,12 @@ class TestElapsedMs:
 
 class TestExtractCitations:
     def test_none_content(self):
-        from scripts.lib.content_studio import _extract_citations
+        from src.content_studio import _extract_citations
 
         assert _extract_citations(None) == []
 
     def test_with_citations(self):
-        from scripts.lib.content_studio import _extract_citations
+        from src.content_studio import _extract_citations
 
         content = LectureContent(
             slides=(),
@@ -432,6 +432,6 @@ class TestExtractCitations:
         assert _extract_citations(content) == ["q-001", "q-002"]
 
     def test_no_citations_attr(self):
-        from scripts.lib.content_studio import _extract_citations
+        from src.content_studio import _extract_citations
 
         assert _extract_citations("string_without_citations") == []

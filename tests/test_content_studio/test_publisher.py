@@ -17,7 +17,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from scripts.lib.content_studio.publisher import Publisher, PublishResult
+from src.content_studio.publisher import Publisher, PublishResult
 
 
 # ---------------------------------------------------------------------------

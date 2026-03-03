@@ -11,8 +11,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from scripts.lib.content_studio import ContentStudio, PlanCache
-from scripts.lib.content_studio.models import (
+from src.content_studio import ContentStudio, PlanCache
+from src.content_studio.models import (
     ContentOptions,
     ContentRequest,
     LecturePlan,
@@ -22,8 +22,8 @@ from scripts.lib.content_studio.models import (
     WorkshopPlan,
     WorkshopPhase,
 )
-from scripts.lib.content_studio.plan_cache import CacheEntry, CacheStats
-from scripts.lib.content_studio.planner import ContentPlanner
+from src.content_studio.plan_cache import CacheEntry, CacheStats
+from src.content_studio.planner import ContentPlanner
 
 
 # ---------------------------------------------------------------------------

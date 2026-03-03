@@ -18,7 +18,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from scripts.lib.content_studio.adapters.antv_chart import (
+from src.content_studio.adapters.antv_chart import (
     VALID_CHART_TYPES,
     VALID_THEMES,
     AntVChartAdapter,
@@ -28,8 +28,8 @@ from scripts.lib.content_studio.adapters.antv_chart import (
     edition_timeline_data,
     element_radar_data,
 )
-from scripts.lib.content_studio.adapters.base import ChartGenerator, MCPAdapter
-from scripts.lib.content_studio.models import GeneratedAsset
+from src.content_studio.adapters.base import ChartGenerator, MCPAdapter
+from src.content_studio.models import GeneratedAsset
 
 
 # ---------------------------------------------------------------------------

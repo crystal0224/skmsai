@@ -10,16 +10,16 @@ import time
 
 import pytest
 
-from scripts.lib.content_studio import ContentStudio
-from scripts.lib.content_studio.assembler import AssemblerConfig, FileAssembler
-from scripts.lib.content_studio.asset_generator import AssetGenerator
-from scripts.lib.content_studio.generator import ContentGenerator
-from scripts.lib.content_studio.models import (
+from src.content_studio import ContentStudio
+from src.content_studio.assembler import AssemblerConfig, FileAssembler
+from src.content_studio.asset_generator import AssetGenerator
+from src.content_studio.generator import ContentGenerator
+from src.content_studio.models import (
     ContentOptions,
     ContentRequest,
     GeneratedAsset,
 )
-from scripts.lib.content_studio.planner import ContentPlanner
+from src.content_studio.planner import ContentPlanner
 
 # Mock classes imported from conftest (auto-discovered by pytest)
 from tests.test_content_studio.conftest import (

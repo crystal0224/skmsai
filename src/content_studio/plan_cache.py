@@ -15,7 +15,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from scripts.lib.content_studio.models import ContentOptions, ContentPlan
+from src.content_studio.models import ContentOptions, ContentPlan
 
 logger = logging.getLogger(__name__)
 

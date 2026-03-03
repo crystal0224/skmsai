@@ -10,13 +10,13 @@ from pathlib import Path
 
 import pytest
 
-from scripts.lib.content_studio.assembler import (
+from src.content_studio.assembler import (
     AssemblerConfig,
     FileAssembler,
     SK_BLUE,
 )
-from scripts.lib.content_studio.models import GeneratedAsset
-from scripts.lib.content_studio.pptx_templates import PptxTheme
+from src.content_studio.models import GeneratedAsset
+from src.content_studio.pptx_templates import PptxTheme
 
 
 # ---------------------------------------------------------------------------
@@ -168,7 +168,7 @@ class TestFileAssemblerBasic:
 class TestAssembleLecture:
     def test_html_fallback_when_no_pptx(self, tmp_path, monkeypatch):
         """python-pptx 없을 때 HTML fallback."""
-        import scripts.lib.content_studio.assembler as asm_module
+        import src.content_studio.assembler as asm_module
 
         original_import = (
             __builtins__.__import__

@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from scripts.lib.content_studio.models import GeneratedAsset, ScriptSection
+from src.content_studio.models import GeneratedAsset, ScriptSection
 
 logger = logging.getLogger(__name__)
 

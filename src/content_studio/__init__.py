@@ -18,23 +18,23 @@ import time
 from pathlib import Path
 from typing import Any
 
-from scripts.lib.content_studio.assembler import AssemblerConfig, FileAssembler
-from scripts.lib.content_studio.asset_generator import AssetGenerator
-from scripts.lib.content_studio.errors import (
+from src.content_studio.assembler import AssemblerConfig, FileAssembler
+from src.content_studio.asset_generator import AssetGenerator
+from src.content_studio.errors import (
     AssemblyError,
     AssetError,
     ContentStudioError,
     GenerationError,
     PlanningError,
 )
-from scripts.lib.content_studio.generator import (
+from src.content_studio.generator import (
     ContentGenerator,
     EvidenceFilterProtocol,
     GenerationServiceProtocol,
     SearchServiceProtocol,
     TemporalGuardrailProtocol,
 )
-from scripts.lib.content_studio.models import (
+from src.content_studio.models import (
     VALID_VIZ_TYPES,
     AudioPlan,
     CardNewsPlan,
@@ -50,8 +50,8 @@ from scripts.lib.content_studio.models import (
     WorkshopPlan,
     load_content_studio_config,
 )
-from scripts.lib.content_studio.plan_cache import CacheStats, PlanCache
-from scripts.lib.content_studio.planner import ContentPlanner, LLMClient
+from src.content_studio.plan_cache import CacheStats, PlanCache
+from src.content_studio.planner import ContentPlanner, LLMClient
 
 logger = logging.getLogger(__name__)
 

@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-from scripts.lib.content_studio.adapters.base import DocumentPublisher
+from src.content_studio.adapters.base import DocumentPublisher
 
 logger = logging.getLogger(__name__)
 

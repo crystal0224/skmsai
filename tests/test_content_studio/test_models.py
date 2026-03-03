@@ -7,7 +7,7 @@ from __future__ import annotations
 import pytest
 from pathlib import Path
 
-from scripts.lib.content_studio.models import (
+from src.content_studio.models import (
     AudioPlan,
     CardNewsPlan,
     CardPlan,
