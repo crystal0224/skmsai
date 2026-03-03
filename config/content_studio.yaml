@@ -38,8 +38,8 @@ content_studio:
   # 강의자료 설정
   lecture:
     min_slides: 5
-    max_slides: 30
-    minutes_per_slide: 2
+    max_slides: 15
+    minutes_per_slide: 3
     default_layout: "title_content_image"
     aspect_ratio: "16:9"
 

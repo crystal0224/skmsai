@@ -23,13 +23,9 @@
     {{
       "index": 1,
       "title": "슬라이드 제목",
-      "layout": "title_content | title_content_image | title_only | comparison | section_header",
-      "key_points": ["핵심 포인트 1", "핵심 포인트 2", "핵심 포인트 3"],
-      "rag_query": "RAG 검색에 사용할 쿼리",
-      "edition_filter": "특정 개정판 또는 null",
-      "asset_type": "image | chart | null",
-      "asset_prompt": "이미지/차트 생성 프롬프트 또는 null",
-      "speaker_notes": "발표자 노트 또는 null"
+      "layout": "title_content | title_only | section_header",
+      "key_points": ["핵심 포인트 1", "핵심 포인트 2"],
+      "rag_query": "RAG 검색 쿼리"
     }}
   ],
   "learning_objectives": ["학습 목표 1", "학습 목표 2", "학습 목표 3"]
@@ -41,7 +37,7 @@
 - 슬라이드 수는 정확히 {slide_count}장
 - 첫 슬라이드는 title_only 레이아웃 (표지)
 - 마지막 슬라이드는 section_header 레이아웃 (요약/Q&A)
-- learning_objectives는 3~5개
-- key_points는 슬라이드당 3~5개
+- learning_objectives는 3개
+- key_points는 슬라이드당 2~3개 (간결하게)
 - rag_query는 해당 슬라이드 내용을 검색할 수 있는 구체적인 쿼리
 - JSON만 출력하세요. 설명이나 코드 펜스 없이 순수 JSON만 반환하세요.

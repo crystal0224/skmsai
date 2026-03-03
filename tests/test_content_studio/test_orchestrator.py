@@ -359,8 +359,8 @@ class TestPipelineStages:
         assert result == []
 
     @pytest.mark.asyncio
-    async def test_stage_generate_visualization_skip(self, tmp_path):
-        """visualization은 generate 스킵."""
+    async def test_stage_generate_visualization_returns_plan(self, tmp_path):
+        """visualization은 content 생성 스킵 — plan 자체를 반환."""
         gen = ContentGenerator(
             search_service=MockSearchService(),
             generation_service=MockGenerationService(),
@@ -368,11 +368,11 @@ class TestPipelineStages:
         studio = ContentStudio(generator=gen)
         plan = VisualizationPlan(title="t", viz_type="timeline")
         result = await studio._stage_generate(plan, "visualization")
-        assert result is None
+        assert result is plan
 
     @pytest.mark.asyncio
-    async def test_stage_generate_quiz_skip(self, tmp_path):
-        """quiz는 generate 스킵."""
+    async def test_stage_generate_quiz_returns_plan(self, tmp_path):
+        """quiz는 content 생성 스킵 — plan 자체를 반환."""
         gen = ContentGenerator(
             search_service=MockSearchService(),
             generation_service=MockGenerationService(),
@@ -380,7 +380,7 @@ class TestPipelineStages:
         studio = ContentStudio(generator=gen)
         plan = QuizPlan(title="t", total_questions=5)
         result = await studio._stage_generate(plan, "quiz")
-        assert result is None
+        assert result is plan
 
 
 class TestContentTypeInfo:

@@ -615,9 +615,9 @@ class FileAssembler:
                     size_bytes=out_path.stat().st_size,
                 )
 
-        # No asset fallback
+        # No asset → HTML timeline fallback from VisualizationPlan
         out_path = self._output_path("visualization", topic, "html")
-        html = f"<html><body><h1>{topic}</h1><p>시각화 데이터 (차트 생성 불가)</p></body></html>"
+        html = _build_visualization_html(content, topic)
         out_path.write_text(html, encoding="utf-8")
         return GeneratedFile(
             file_type="html",
@@ -625,3 +625,178 @@ class FileAssembler:
             file_name=out_path.name,
             size_bytes=len(html.encode("utf-8")),
         )
+
+    # ----- Quiz (HTML) -----
+
+    def assemble_quiz(
+        self,
+        content: Any,
+        topic: str = "",
+    ) -> GeneratedFile:
+        """퀴즈 HTML 생성 — QuizPlan에서 인터랙티브 HTML."""
+        out_path = self._output_path("quiz", topic, "html")
+        html = _build_quiz_html(content, topic)
+        out_path.write_text(html, encoding="utf-8")
+        return GeneratedFile(
+            file_type="html",
+            file_path=str(out_path),
+            file_name=out_path.name,
+            size_bytes=len(html.encode("utf-8")),
+        )
+
+
+# ---------------------------------------------------------------------------
+# HTML builders for quiz and visualization
+# ---------------------------------------------------------------------------
+
+
+def _build_quiz_html(plan: Any, topic: str) -> str:
+    """QuizPlan → 인터랙티브 퀴즈 HTML."""
+    questions = getattr(plan, "questions", ())
+    if not questions:
+        return f"<html><body><h1>{topic}</h1><p>퀴즈 문항이 없습니다.</p></body></html>"
+
+    import html as html_mod
+
+    question_blocks = []
+    for q in questions:
+        choices_html = ""
+        for ci, choice in enumerate(q.choices):
+            escaped = html_mod.escape(choice)
+            choices_html += (
+                f'<button class="choice" data-q="{q.index}" data-c="{ci}" '
+                f'onclick="checkAnswer(this,{q.index},{q.correct_answer})">'
+                f'<span class="label">{chr(65 + ci)}</span> {escaped}</button>\n'
+            )
+        explanation_escaped = html_mod.escape(q.explanation)
+        source = html_mod.escape(getattr(q, "source_quote", ""))
+        source_html = f'<div class="source">출처: {source}</div>' if source else ""
+        question_blocks.append(
+            f'<div class="question" id="q{q.index}">'
+            f'<div class="q-num">Q{q.index}</div>'
+            f'<div class="q-text">{html_mod.escape(q.question_text)}</div>'
+            f'<div class="choices">{choices_html}</div>'
+            f'<div class="explanation" id="exp{q.index}" style="display:none;">'
+            f"{explanation_escaped}{source_html}</div>"
+            f"</div>"
+        )
+
+    questions_joined = "\n".join(question_blocks)
+    title_escaped = html_mod.escape(topic)
+    n = len(questions)
+    return (
+        "<!DOCTYPE html>\n"
+        '<html lang="ko">\n'
+        '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
+        f"<title>{title_escaped}</title>\n"
+        "<style>\n"
+        "body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f5f7fa;margin:0;padding:20px;color:#1a1a2e}\n"
+        "h1{text-align:center;color:#0052A2;margin:20px 0 30px;font-size:28px}\n"
+        ".question{background:white;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}\n"
+        ".q-num{color:#0052A2;font-weight:700;font-size:14px;margin-bottom:8px}\n"
+        ".q-text{font-size:18px;font-weight:600;line-height:1.6;margin-bottom:16px}\n"
+        ".choices{display:flex;flex-direction:column;gap:8px}\n"
+        ".choice{border:2px solid #e0e0e0;border-radius:8px;padding:12px 16px;background:white;cursor:pointer;"
+        "text-align:left;font-size:16px;transition:all 0.2s}\n"
+        ".choice:hover{border-color:#0052A2;background:#f0f4ff}\n"
+        ".choice .label{display:inline-block;width:28px;height:28px;border-radius:50%;background:#e8edf5;"
+        "text-align:center;line-height:28px;font-weight:700;margin-right:8px;font-size:14px}\n"
+        ".choice.correct{border-color:#2ecc71;background:#eafaf1}"
+        ".choice.correct .label{background:#2ecc71;color:white}\n"
+        ".choice.wrong{border-color:#e74c3c;background:#fdf2f2}"
+        ".choice.wrong .label{background:#e74c3c;color:white}\n"
+        ".choice.disabled{pointer-events:none;opacity:0.6}\n"
+        ".explanation{margin-top:16px;padding:16px;background:#f0f4ff;border-radius:8px;"
+        "font-size:15px;line-height:1.7;border-left:4px solid #0052A2}\n"
+        ".source{margin-top:8px;font-size:13px;color:#666;font-style:italic}\n"
+        ".score{text-align:center;font-size:20px;font-weight:700;color:#0052A2;margin-top:20px}\n"
+        "footer{text-align:center;margin-top:30px;color:#999;font-size:12px}\n"
+        "</style>\n"
+        "</head>\n<body>\n"
+        f"<h1>{title_escaped}</h1>\n"
+        f"{questions_joined}\n"
+        '<div class="score" id="score"></div>\n'
+        "<footer>SKMS Content Studio</footer>\n"
+        "<script>\n"
+        f"let answered=0,correct=0,total={n};\n"
+        "function checkAnswer(btn,qIdx,correctIdx){\n"
+        "  let btns=document.querySelectorAll('.choice[data-q=\"'+qIdx+'\"]');\n"
+        "  btns.forEach(b=>{b.classList.add('disabled');"
+        "if(parseInt(b.dataset.c)===correctIdx)b.classList.add('correct')});\n"
+        "  if(parseInt(btn.dataset.c)!==correctIdx)btn.classList.add('wrong');\n"
+        "  else correct++;\n"
+        "  answered++;\n"
+        "  document.getElementById('exp'+qIdx).style.display='block';\n"
+        "  if(answered===total)document.getElementById('score').textContent="
+        "'결과: '+total+'문제 중 '+correct+'개 정답 ('+Math.round(correct/total*100)+'%)';\n"
+        "}\n"
+        "</script>\n"
+        "</body></html>"
+    )
+
+
+def _build_visualization_html(plan: Any, topic: str) -> str:
+    """VisualizationPlan → HTML 타임라인."""
+    import html as html_mod
+
+    title = getattr(plan, "title", topic) or topic
+    description = getattr(plan, "data_description", "") or ""
+
+    editions = [
+        ("1979", "초판", "SK경영체계의 출발점"),
+        ("1981", "1차", "경영 원칙 체계화"),
+        ("1988", "5차", "경영 요소 분류 재편"),
+        ("1989", "6차", "SUPEX 추구 도입"),
+        ("1990", "7차", "관리 체계 정교화"),
+        ("1995", "8차", "글로벌 경영 반영"),
+        ("1997", "9차", "SUPEX 추구법 완성"),
+        ("1998", "10차", "구조조정기 반영"),
+        ("2004", "11차", "지배구조 변화 반영"),
+        ("2008", "12차", "사회적 책임 강화"),
+        ("2016", "13차", "SUPEX Company 개념"),
+        ("2020", "14차", "VWBE 문화 · 구성원 행복"),
+    ]
+
+    items = ""
+    for year, name, desc in editions:
+        items += (
+            f'<div class="tl-item">'
+            f'<div class="tl-year">{year}</div>'
+            f'<div class="tl-dot"></div>'
+            f'<div class="tl-card">'
+            f'<div class="tl-name">{html_mod.escape(name)} 개정판</div>'
+            f'<div class="tl-desc">{html_mod.escape(desc)}</div>'
+            f"</div></div>\n"
+        )
+
+    title_escaped = html_mod.escape(title)
+    desc_escaped = html_mod.escape(description)
+    return (
+        "<!DOCTYPE html>\n"
+        '<html lang="ko">\n'
+        '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
+        f"<title>{title_escaped}</title>\n"
+        "<style>\n"
+        "body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f5f7fa;margin:0;padding:20px;color:#1a1a2e}\n"
+        "h1{text-align:center;color:#0052A2;margin:20px 0 10px;font-size:28px}\n"
+        ".subtitle{text-align:center;color:#666;margin-bottom:30px;font-size:15px}\n"
+        ".timeline{position:relative;max-width:700px;margin:0 auto;padding:20px 0}\n"
+        ".timeline::before{content:'';position:absolute;left:80px;top:0;bottom:0;width:3px;"
+        "background:linear-gradient(180deg,#0052A2,#003d7a)}\n"
+        ".tl-item{display:flex;align-items:center;margin-bottom:16px;position:relative}\n"
+        ".tl-year{width:60px;text-align:right;font-weight:700;color:#0052A2;font-size:15px;flex-shrink:0}\n"
+        ".tl-dot{width:14px;height:14px;border-radius:50%;background:#0052A2;border:3px solid white;"
+        "box-shadow:0 0 0 2px #0052A2;margin:0 16px;flex-shrink:0;z-index:1}\n"
+        ".tl-card{background:white;border-radius:8px;padding:12px 16px;"
+        "box-shadow:0 2px 6px rgba(0,0,0,0.08);flex:1}\n"
+        ".tl-name{font-weight:700;font-size:16px;color:#1a1a2e}\n"
+        ".tl-desc{font-size:14px;color:#555;margin-top:4px}\n"
+        "footer{text-align:center;margin-top:30px;color:#999;font-size:12px}\n"
+        "</style>\n"
+        "</head>\n<body>\n"
+        f"<h1>{title_escaped}</h1>\n"
+        f'<div class="subtitle">{desc_escaped}</div>\n'
+        f'<div class="timeline">\n{items}</div>\n'
+        "<footer>SKMS Content Studio</footer>\n"
+        "</body></html>"
+    )

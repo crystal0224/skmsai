@@ -406,6 +406,10 @@ class ContentStudio:
 
     async def _stage_generate(self, plan: ContentPlan, content_type: str) -> Any:
         """Stage 2: Content 생성 (RAG 기반)."""
+        # visualization/quiz는 generator 없이도 plan 자체로 assembly 가능
+        if content_type in ("visualization", "quiz"):
+            return plan
+
         if self._generator is None:
             logger.warning("ContentGenerator 미설정 → 콘텐츠 생성 스킵")
             return None
@@ -418,9 +422,6 @@ class ContentStudio:
             return await self._generator.generate_workshop_content(plan)
         elif content_type == "audio" and isinstance(plan, AudioPlan):
             return await self._generator.generate_audio_content(plan)
-        elif content_type in ("visualization", "quiz"):
-            # visualization과 quiz는 plan 단계에서 충분하므로 content 생성 스킵
-            return None
         else:
             logger.warning("콘텐츠 생성 미지원 유형: %s", content_type)
             return None
@@ -479,12 +480,11 @@ class ContentStudio:
             return []
 
     def _assemble_quiz(self, content: Any, topic: str) -> list[GeneratedFile]:
-        """퀴즈 HTML 파일 조립 (FileAssembler 미지원 시 직접 생성)."""
+        """퀴즈 HTML 파일 조립 — QuizPlan으로 인터랙티브 HTML 생성."""
         if self._assembler is None:
             return []
 
-        # Quiz는 visualization과 유사하게 HTML fallback 사용
-        result = self._assembler.assemble_visualization(content, topic=f"quiz-{topic}")
+        result = self._assembler.assemble_quiz(content, topic=topic)
         return [result]
 
 

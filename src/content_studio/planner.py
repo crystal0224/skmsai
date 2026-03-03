@@ -67,16 +67,33 @@ def _load_prompt(name: str) -> str:
 def _parse_json(raw: str) -> dict[str, Any]:
     """LLM 응답에서 JSON을 추출하여 파싱한다.
 
-    코드 펜스(```json ... ```)를 자동으로 제거한다.
+    코드 펜스(```json ... ```)를 자동으로 제거하고,
+    흔한 JSON 구문 오류(trailing comma 등)를 자동 복구한다.
     """
+    import re
+
     text = raw.strip()
     if text.startswith("```"):
         lines = text.split("\n")
-        # 첫 줄(```json)과 마지막 줄(```) 제거
         start = 1
         end = len(lines) - 1 if lines[-1].strip() == "```" else len(lines)
         text = "\n".join(lines[start:end])
-    return json.loads(text)
+
+    # 1차 시도: 그대로 파싱
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    # 2차 시도: JSON 복구
+    # trailing comma 제거: ,] → ] / ,} → }
+    repaired = re.sub(r",\s*([\]}])", r"\1", text)
+    # 줄 끝 누락된 쉼표 추가: "value"\n"key" → "value",\n"key"
+    repaired = re.sub(r'(")\s*\n(\s*")', r"\1,\n\2", repaired)
+    # }{ 사이 쉼표 누락: }\n{ → },\n{
+    repaired = re.sub(r"}\s*\n(\s*\{)", r"},\n\1", repaired)
+
+    return json.loads(repaired)
 
 
 # ---------------------------------------------------------------------------
