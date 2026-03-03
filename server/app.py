@@ -65,7 +65,10 @@ async def lifespan(app: FastAPI):
     try:
         from scripts.lib.content_studio import ContentStudio
 
+        from server.dependencies import _make_anthropic_client
+
         _state.content_studio = ContentStudio.create(
+            llm_client=_make_anthropic_client(),
             search_service=_state.search_service,
             generation_service=_state.generation_service,
             evidence_filter=_state.evidence_filter,
