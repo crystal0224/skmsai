@@ -1,8 +1,8 @@
 # SKMS Time-Aware RAG Pipeline — TODO
 
-> 마지막 업데이트: 2026-03-02
-> Phase 0~3 완료 (39 PR) | Phase 4 + Cross-Cutting + Tech Debt 완료 (1864 tests, 95.80% coverage)
-> Phase 4.5 진행 중: 프론트엔드 통합 STEP 1-2 완료 (10/29 API 연동)
+> 마지막 업데이트: 2026-03-03
+> Phase 0~3 완료 (39 PR) | Phase 4 완료 (52 PR) | Phase 4.5 COMPLETE (STEP 1-9, 23/29 API, E2E 15 cases)
+> 1864+ tests, 95.80% coverage | E2E 콘텐츠 생성 검증 완료
 
 ---
 
@@ -831,7 +831,7 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 > 세부 실행 계획: `docs/plans/2026-03-02-frontend-integration-plan.md`
 > Phase 4 구현 완료 후 실제 운용을 위해 필요한 보완 작업
 
-### 완료된 작업 (2026-03-02 세션)
+### 완료된 작업
 
 | # | 작업 | 커밋 | 상세 |
 | --- | ------ | ------ | ------ |
@@ -845,11 +845,20 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 | 8 | Content Studio 6종 카드 그리드 + 4단계 생성 모달 | 5bc2596 | |
 | 9 | SVG 원형 프로그레스 바 + 5단계 파이프라인 시각화 | 5bc2596 | 비동기 진행률 UI |
 | 10 | Plan 미리보기 (POST /api/content/plan) | 5bc2596 | |
-| 11 | **STEP 1**: Content Studio 타입별 옵션 폼 (6종 조건부 렌더링) | 6938f83 | collectTypeOptions() |
-| 12 | **STEP 2**: 파일 다운로드 엔드포인트 + 프론트 버튼 | 6938f83 | 14 tests 추가 |
-| 13 | 백엔드 수정: audio style / viz_type 전달 수정 | 6938f83 | _stage_plan() |
+| 11 | **STEP 1**: Content Studio 타입별 옵션 폼 | 6938f83 | collectTypeOptions() |
+| 12 | **STEP 2**: 파일 다운로드 엔드포인트 + 프론트 버튼 | 6938f83 | 14 tests |
+| 13 | **STEP 3**: 파일 미리보기 (img/iframe/audio/lightbox) | 7317443 | 타입별 프리뷰 |
+| 14 | **STEP 4**: MCP 어댑터 라이브 검증 | 3df51e8 | scripts/test_mcp_live.py |
+| 15 | **STEP 5**: Plan 아웃라인 편집기 (drag-drop/JSON 토글) | 7317443 | renderEditablePlan() |
+| 16 | **STEP 6**: Dashboard 모니터링 뷰 | 7317443 | 상태카드+메트릭+차트 |
+| 17 | **STEP 7**: Publisher 발행 엔드포인트 + 프론트 버튼 | b0f426e | POST /api/content/publish |
+| 18 | **STEP 8**: TD-001 모듈 이동 + TD-005 테스트 격리 | 2762877 | src/content_studio/ |
+| 19 | **STEP 9**: Playwright E2E 테스트 (5 시나리오, 15 cases) | 3df51e8 | tests/e2e/ |
+| 20 | 미연결 API 프론트 통합 (quality/types/health-detail) | b0f426e | loadContentTypes() |
+| 21 | 중복 Next.js frontend/ 제거 + CI 정리 | bc9b535 | -8538 lines |
+| 22 | Anthropic → LLMClient Protocol 어댑터 | 8a57530 | 실제 생성 동작 |
 
-### API 연결 현황 (10/29 엔드포인트)
+### API 연결 현황 (23/29 엔드포인트)
 
 ```text
 ✅ GET  /api/health                                → 자동 연결 체크
@@ -862,80 +871,40 @@ google-generativeai>=0.8     # 나노바나나2 API (직접 호출 fallback)
 ✅ POST /api/content/generate/async                → Content Studio 비동기 생성
 ✅ GET  /api/content/status/{req_id}               → 비동기 폴링
 ✅ GET  /api/content/download/{req_id}/{filename}  → 파일 다운로드
+✅ GET  /api/content/types                         → 타입 목록 (동적 로드)
+✅ POST /api/content/publish/{req_id}              → 발행 (local/notion/google_ws)
+✅ GET  /api/dashboard/metrics                     → 요청 메트릭
+✅ GET  /api/dashboard/stats                       → 사용 통계
+✅ GET  /api/dashboard/health-detail               → 서비스 상세 정보
+✅ GET  /api/quality/summary                       → 품질 요약
+✅ GET  /api/quality/coverage                      → 커버리지
+⬚  POST /api/search (v1 legacy)                   → v2로 대체
+⬚  POST /api/generate (v1 legacy)                 → v2로 대체
+⬚  GET  /api/quality/report                       → 상세 리포트 (미노출)
+⬚  POST /api/content/generate (동기)              → async 사용 권장
+⬚  Notion OAuth callback                          → API 키 미설정
+⬚  Google Workspace OAuth callback                → OAuth 미구성
 ```
 
-### 다음 세션 작업 — STEP 3~9
+### E2E 콘텐츠 생성 검증 (2026-03-03)
 
-#### STEP 3: 파일 미리보기 컴포넌트 (프론트엔드) [P1]
+```text
+✅ card_news 플랜 생성 — 5장 카드, SKMS 인용 20개
+✅ card_news 비동기 생성 — 5개 HTML 파일 출력 (56초)
+✅ visualization 플랜 생성 — timeline 타입, 차트 옵션 포함
+✅ Gemini API 연동 확인 (GEMINI_API_KEY 설정 완료)
+⬚ ElevenLabs TTS — 향후 유료 플랜 전환 시 활성화
+```
 
-> 의존성: STEP 2 ✅ | 수정 파일: `everline-studio-clone/index.html`, `styles.css`
+### Phase 5 로드맵 (향후)
 
-- [ ] 결과 화면(Step 4)에 타입별 미리보기 컴포넌트 추가
-- [ ] PNG/SVG: `<img>` 태그 인라인 표시 + 이미지 캐러셀
-- [ ] HTML (workshop/quiz): `<iframe>` sandbox 미리보기
-- [ ] MP3: `<audio>` 플레이어 컨트롤
-- [ ] PPTX/PDF: 첫 페이지 썸네일 + 다운로드 버튼
-
-#### STEP 4: MCP 어댑터 실제 API 검증 (백엔드) [P0]
-
-> 의존성: API 키 필요 | 수정 파일: `scripts/lib/content_studio/adapters/`
-
-- [ ] NanoBanana: GEMINI_API_KEY 환경변수 확인 + 실제 호출 테스트
-- [ ] AntV Chart: MCP 서버 연동 검증 또는 fallback 강화
-- [ ] ElevenLabs: API 키 설정 + 실제 TTS 생성 테스트
-- [ ] 각 어댑터 에러 핸들링 강화 (quota 초과, 네트워크 오류)
-- [ ] 스모크 테스트 스크립트: `scripts/test_mcp_live.py`
-
-#### STEP 5: Plan 아웃라인 편집 UI (프론트엔드) [P1]
-
-> 의존성: STEP 1 ✅ | 수정 파일: `everline-studio-clone/index.html`, `styles.css`
-
-- [ ] Plan JSON → 편집 가능한 구조화된 폼 변환
-- [ ] 슬라이드/카드 항목 드래그 앤 드롭 순서 변경
-- [ ] 개별 항목 제목/내용 인라인 편집
-- [ ] 항목 추가/삭제 버튼
-- [ ] 수정된 plan을 `/api/content/generate`에 전달
-
-#### STEP 6: Dashboard 모니터링 뷰 (프론트엔드) [P2]
-
-> 의존성: 없음 | 연결 엔드포인트: /api/dashboard/*, /api/quality/summary
-
-- [ ] 네비게이션에 "DASHBOARD" 링크 추가
-- [ ] 서비스 상태 카드 (search/generation/toc/content_studio)
-- [ ] 요청 메트릭 (총 요청, 성공률, p95 레이턴시)
-- [ ] 시간별 요청 추이 차트 (CSS bar chart)
-- [ ] Quality 요약 (전체 등급, 합격률, 커버리지)
-
-#### STEP 7: Publisher 실제 구현 — Notion/Google Workspace (백엔드) [P2]
-
-> 의존성: STEP 2 ✅ | 수정 파일: `scripts/lib/content_studio/adapters/notion.py`, `google_ws.py`
-
-- [ ] Notion: notion-client SDK → 페이지 생성 + 파일 업로드
-- [ ] Google Workspace: google-api-python-client → Drive 업로드 + Docs 생성
-- [ ] OAuth 토큰 관리
-- [ ] 프론트 결과 화면에 "Notion에 발행" / "Drive에 저장" 버튼
-
-#### STEP 8: Tech Debt 해소 (TD-001, TD-005) [P2]
-
-- [ ] **TD-001**: `scripts/lib/content_studio/` → `src/content_studio/` 이동 + import 경로 업데이트
-- [ ] **TD-005**: E2E 테스트 격리 환경 구축 (pytest-tmp-files 또는 Docker)
-
-#### STEP 9: E2E 통합 테스트 (프론트엔드 ↔ 백엔드) [P1]
-
-> 의존성: STEP 1~3 | 수정 파일: `tests/e2e/`
-
-- [ ] Playwright 또는 Cypress 설정
-- [ ] Chat 위젯 E2E: 메시지 전송 → 응답 표시
-- [ ] Content Studio E2E: 타입 선택 → 옵션 입력 → 생성 → 결과
-- [ ] 검색 E2E: 키워드 입력 → 필터 → 결과
-- [ ] 판본 탐색 E2E: 판본 선택 → 목차 트리
-- [ ] 에러 시나리오: 서버 미응답, 네트워크 오류
-
-### 기타 보완 항목
-
-- [ ] **RAG 검색 캐싱**: 기존 QueryCache를 ContentGenerator에 주입, 슬라이드별 중복 검색 제거
-- [ ] **오디오 품질 개선**: ElevenLabs 어댑터의 `b"".join()` → pydub `AudioSegment` 연결로 교체
-- [ ] **에셋 캐싱 검증**: 실제 MCP 연동 후 동일 프롬프트 2회 실행 시 캐시 히트 확인
+- [ ] 모바일 반응형 CSS 보강
+- [ ] ElevenLabs 유료 플랜 → 오디오 콘텐츠 활성화
+- [ ] Notion/Google Workspace OAuth 설정 → 외부 발행
+- [ ] RAG 검색 캐싱 (슬라이드별 중복 검색 제거)
+- [ ] 에셋 캐싱 검증 (동일 프롬프트 캐시 히트)
+- [ ] 영상 콘텐츠 생성 (video type 추가)
+- [ ] LMS 통합 (mySUNI 연동)
 
 ---
 
