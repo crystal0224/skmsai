@@ -67,8 +67,25 @@ async def lifespan(app: FastAPI):
 
         from server.dependencies import _make_anthropic_client
 
+        class _AnthropicLLMAdapter:
+            """anthropic.Anthropic → LLMClient Protocol 어댑터."""
+
+            def __init__(self, client):
+                self._client = client
+
+            async def generate(self, prompt: str) -> str:
+                resp = self._client.messages.create(
+                    model="claude-sonnet-4-20250514",
+                    max_tokens=4096,
+                    messages=[{"role": "user", "content": prompt}],
+                )
+                return resp.content[0].text
+
+        raw_client = _make_anthropic_client()
+        llm_adapter = _AnthropicLLMAdapter(raw_client) if raw_client else None
+
         _state.content_studio = ContentStudio.create(
-            llm_client=_make_anthropic_client(),
+            llm_client=llm_adapter,
             search_service=_state.search_service,
             generation_service=_state.generation_service,
             evidence_filter=_state.evidence_filter,
