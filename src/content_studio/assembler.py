@@ -457,35 +457,38 @@ class FileAssembler:
                 out_path = self._output_path(
                     "card_news", f"{topic}-{card.index}", "html"
                 )
-                # body에서 JSON/코드펜스 제거
-                body_text = card.body
-                if "```" in body_text:
-                    import re
-
-                    body_text = re.sub(
-                        r"```(?:json)?\s*\{.*?\}\s*```",
-                        "",
-                        body_text,
-                        flags=re.DOTALL,
-                    )
-                    body_text = body_text.strip()
-                # 줄바꿈을 <br>로 변환
-                body_html = body_text.replace("\n", "<br>")
+                body_html = card.body.replace("\n", "<br>")
+                # 인용 블록
                 quote_html = ""
-                if hasattr(card, "source_quote") and card.source_quote:
+                source_quote = getattr(card, "source_quote", "")
+                source_edition = getattr(card, "source_edition", "")
+                if source_quote:
                     quote_html = (
-                        f'<blockquote style="border-left:3px solid rgba(255,255,255,0.5);'
-                        f"padding-left:16px;margin-top:24px;font-style:italic;"
-                        f'font-size:14px;opacity:0.85;">{card.source_quote}</blockquote>'
+                        (
+                            f'<blockquote style="border-left:3px solid rgba(255,255,255,0.5);'
+                            f"padding-left:16px;margin-top:24px;font-style:italic;"
+                            f'font-size:18px;opacity:0.9;line-height:1.6;">'
+                            f"「{source_quote}」"
+                            f'<span style="display:block;font-size:13px;margin-top:8px;opacity:0.7;">'
+                            f"(출처: {source_edition})</span>"
+                            f"</blockquote>"
+                        )
+                        if source_edition
+                        else (
+                            f'<blockquote style="border-left:3px solid rgba(255,255,255,0.5);'
+                            f"padding-left:16px;margin-top:24px;font-style:italic;"
+                            f'font-size:18px;opacity:0.9;line-height:1.6;">'
+                            f"「{source_quote}」</blockquote>"
+                        )
                     )
                 card_num = f'<div style="position:absolute;top:24px;right:32px;font-size:14px;opacity:0.6;">{card.index}/{len(cards)}</div>'
                 html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head><meta charset="utf-8"><meta name="viewport" content="width=1080"></head>
-<body style="margin:0;width:1080px;height:1080px;background:linear-gradient(135deg,#0052A2,#003d7a);color:white;font-family:'Pretendard',sans-serif;display:flex;flex-direction:column;justify-content:center;padding:60px;box-sizing:border-box;position:relative;">
+<body style="margin:0;width:1080px;height:1080px;background:linear-gradient(135deg,#0052A2,#003d7a);color:white;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;display:flex;flex-direction:column;justify-content:center;padding:60px;box-sizing:border-box;position:relative;">
 {card_num}
-<h1 style="font-size:42px;margin:0 0 24px;line-height:1.3;">{card.headline}</h1>
-<p style="font-size:22px;line-height:1.8;margin:0;flex:1;">{body_html}</p>
+<h1 style="font-size:40px;margin:0 0 20px;line-height:1.3;font-weight:700;">{card.headline}</h1>
+<p style="font-size:24px;line-height:1.9;margin:0 0 16px;">{body_html}</p>
 {quote_html}
 <div style="position:absolute;bottom:24px;left:60px;font-size:12px;opacity:0.5;">SKMS Content Studio</div>
 </body></html>"""

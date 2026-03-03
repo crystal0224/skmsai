@@ -204,7 +204,14 @@ class GenerationService:
     def load_prompts(self, prompts_dir: Path | None = None) -> None:
         """프롬프트 파일을 로드한다."""
         base = prompts_dir or Path(self._config.prompts_dir)
-        for name in ("answer", "content_gen", "router"):
+        prompt_names = (
+            "answer",
+            "content_gen",
+            "content_studio_generate",
+            "content_studio_card",
+            "router",
+        )
+        for name in prompt_names:
             path = base / f"{name}.md"
             if path.exists():
                 self._prompts[name] = path.read_text(encoding="utf-8")
@@ -219,6 +226,14 @@ class GenerationService:
         Returns:
             (prompt_text, prompt_name)
         """
+        if intent == "content_studio_card":
+            prompt = self._prompts.get("content_studio_card")
+            if prompt:
+                return prompt, "content_studio_card.md"
+        if intent == "content_studio":
+            prompt = self._prompts.get("content_studio_generate")
+            if prompt:
+                return prompt, "content_studio_generate.md"
         if intent == "content_generation":
             prompt = self._prompts.get("content_gen")
             if prompt:
