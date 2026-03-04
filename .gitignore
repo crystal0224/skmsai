@@ -53,3 +53,19 @@ eval/reports/
 
 # Content Studio output (generated files)
 output/
+
+# Skill packaging artifacts
+*.skill
+
+# Node.js / Frontend
+node_modules/
+.next/
+.turbo/
+frontend/node_modules/
+frontend/.next/
+
+# Pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/

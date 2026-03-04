@@ -5,6 +5,12 @@ import threading
 
 import pytest
 
+# Skip entire e2e directory when pytest-playwright is not installed
+# (provides the 'page' fixture required by all E2E tests)
+_pw = pytest.importorskip(
+    "pytest_playwright", reason="pytest-playwright not installed — skipping E2E tests"
+)
+
 
 class _QuietHandler(http.server.SimpleHTTPRequestHandler):
     """Suppress request logging in test output."""
