@@ -24,15 +24,15 @@ env/
 Thumbs.db
 
 # Large binary indexes (regenerable via scripts/03_build_indexes.py)
-indexes/chroma/
-indexes/bm25_index.pkl
+# indexes/chroma/       # Render 배포용으로 Git에 포함
+# indexes/bm25_index.pkl
 
 # Claude Code local settings
 .claude/
 
 # SQLite database (regenerable via scripts/migrate_quotes_to_db.py)
-data/skms.db
-*.db
+# data/skms.db          # Render 배포용으로 Git에 포함
+# *.db
 
 # Environment / secrets
 .env
@@ -69,3 +69,6 @@ frontend/.next/
 
 # mypy
 .mypy_cache/
+
+# Local Netlify folder
+.netlify

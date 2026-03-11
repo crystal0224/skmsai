@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: skmsai-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://skmsai.netlify.app

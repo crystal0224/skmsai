@@ -28,7 +28,6 @@
     <section class="hero" id="hero-section">
         <div class="hero-content">
             <h1 class="hero-title"><span id="typewriter-text"></span><span id="typewriter-cursor" class="blink">|</span></h1>
-            <p class="hero-subtitle">가장 진보된 형태의 SKMS 기반 AI 콘텐츠 제작 워크스페이스</p>
             <a href="#" class="cta-button" id="btn-start-creating">시작하기 (START CREATING)</a>
         </div>
         <div class="hero-image-reveal" id="reveal-image">
@@ -51,7 +50,7 @@
             <div class="founder-text">
                 <h2>Intelligent Companion &<br>Content Creator</h2>
                 <div class="prose">
-                    <p>SK의 경영철학에 대한 깊은 이해와 고도의 생성형 AI 역량을 결합한 SKMS AI STUDIO는 비즈니스 크리에이티비티에 대한 새로운 접근 방식을 제시합니다.</p>
+                    <p>SK의 경영철학에 대한 깊은 이해와 고도의 생성형 AI 역량을 결합한 SKMS AI STUDIO는 콘텐츠 제작에 대한 새로운 접근 방식을 제시합니다.</p>
                     <p>단순한 결과물 생성을 넘어, 구성원들이 가치 있게 여기는 의미와 전략적 방향성에 부합하는 지능형 워크스페이스를 제공합니다. 아이데이션부터 문서 작성까지 모든 과정이 의도적으로 조율되어, 당신의 결과물이 SKMS의 핵심 가치와 공명할 수 있도록 돕습니다.</p>
                 </div>
             </div>
@@ -487,7 +486,7 @@
             <div class="workspace-header">
                 <div>
                     <h2>새 콘텐츠 작성</h2>
-                    <p>SKMS AI를 활용하여 비즈니스 문서를 생성합니다.</p>
+                    <p>SKMS AI를 활용하여 콘텐츠를 생성합니다.</p>
                 </div>
                 <span class="close-workspace" id="close-workspace">&times;</span>
             </div>
@@ -497,19 +496,7 @@
                         <label>콘텐츠 종류를 선택해주세요</label>
                         <div class="custom-select">
                             <select id="content-type">
-                                <optgroup label="비즈니스 문서 생성">
-                                    <option value="email">이메일 초안 작성 (Email Draft)</option>
-                                    <option value="strategy">전략 기획서 작성 (Strategy Plan)</option>
-                                    <option value="presentation">프레젠테이션 대본 (Presentation Script)</option>
-                                    <option value="meeting">회의록 요약 및 Action Item 도출 (Meeting Notes)</option>
-                                    <option value="report">보고서 목차 구성 (Report Outline)</option>
-                                    <option value="announcement">사내 공지사항 작성 (Internal Announcement)</option>
-                                    <option value="press">보도자료 작성 (Press Release)</option>
-                                    <option value="blog">블로그/아티클 원고 (Blog Article)</option>
-                                    <option value="proposal">프로젝트 제안서 (Project Proposal)</option>
-                                    <option value="custom">기타 자유 문서 (Custom Document)</option>
-                                </optgroup>
-                                <optgroup label="콘텐츠 스튜디오 (파일 생성)">
+                                <optgroup label="콘텐츠 스튜디오">
                                     <option value="lecture">프레젠테이션 슬라이드 (PPTX)</option>
                                     <option value="card_news">카드뉴스 (Card News / PNG)</option>
                                     <option value="workshop">워크숍 자료 (Workshop / HTML)</option>
@@ -770,7 +757,9 @@
         // ===================================================================
         // API CONFIGURATION
         // ===================================================================
-        const API_BASE_URL = 'http://localhost:8000';
+        const API_BASE_URL = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : 'https://skmsai-api.onrender.com';
 
         // Content Studio type mapping (value → backend content_type)
         const CONTENT_STUDIO_TYPES = new Set([
