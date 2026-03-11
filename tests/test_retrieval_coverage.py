@@ -20,6 +20,7 @@ sys.path.insert(0, str(_PROJECT_ROOT))
 from scripts.lib.retrieval import (  # noqa: E402
     EDITION_ORDER,
     _apply_intent_policy,
+    _ensure_cross_version_coverage,
     _normalize_hit,
     _search_with_fallback,
     bm25_search,
@@ -28,6 +29,7 @@ from scripts.lib.retrieval import (  # noqa: E402
     hybrid_fusion,
     load_bm25_index,
     load_chroma_collection,
+    parse_edition_hints_from_query,
     retrieve_quotes,
     vector_search,
 )
@@ -489,3 +491,317 @@ def test_normalize_hit_section_path_json_error():
     raw = _make_raw_hit(section_path="not-valid-json[")
     result = _normalize_hit(raw)
     assert result["chapter_path"] == []
+
+
+# ---------------------------------------------------------------------------
+# parse_edition_hints_from_query — 질의에서 개정판 힌트 추출
+# ---------------------------------------------------------------------------
+
+
+def test_parse_edition_hints_basic():
+    """'초판과 14차' → 2개 edition_id 추출."""
+    result = parse_edition_hints_from_query("인간중심의 경영이 초판과 14차에서 어떻게 다른가?")
+    assert "1979-초판" in result
+    assert "2020-14차" in result
+    assert len(result) == 2
+
+
+def test_parse_edition_hints_year_pattern():
+    """'1979년과 2020년' → 연도 기반 추출."""
+    result = parse_edition_hints_from_query("1979년과 2020년의 인사관리 차이")
+    assert "1979-초판" in result
+    assert "2020-14차" in result
+
+
+def test_parse_edition_hints_single():
+    """단일 개정판 참조는 1건만 반환."""
+    result = parse_edition_hints_from_query("10차에서 인사관리는?")
+    assert result == ["1998-10차"]
+
+
+def test_parse_edition_hints_no_match():
+    """개정판 참조가 없으면 빈 리스트."""
+    result = parse_edition_hints_from_query("SUPEX란 무엇인가?")
+    assert result == []
+
+
+def test_parse_edition_hints_sorted_chronologically():
+    """결과가 연대순으로 정렬되는지 확인."""
+    result = parse_edition_hints_from_query("14차와 초판의 비교")
+    assert result == ["1979-초판", "2020-14차"]
+
+
+def test_parse_edition_hints_multiple():
+    """3개 이상 개정판 참조도 추출."""
+    result = parse_edition_hints_from_query("초판, 10차, 14차의 경영 요소 비교")
+    assert result == ["1979-초판", "1998-10차", "2020-14차"]
+
+
+def test_parse_edition_hints_dedup():
+    """'14차'와 '2020년' 중복 참조 시 deduplicated."""
+    result = parse_edition_hints_from_query("14차(2020년) 경영 정의")
+    assert result.count("2020-14차") == 1
+
+
+# ---------------------------------------------------------------------------
+# _ensure_cross_version_coverage — 보완 검색
+# ---------------------------------------------------------------------------
+
+
+def _make_bm25_corpus_multi_edition():
+    """여러 개정판에 걸친 BM25 코퍼스를 생성한다."""
+    from rank_bm25 import BM25Okapi
+
+    docs = (
+        [
+            {
+                "quote_id": f"1979-초판|경영|definition|{i:03d}",
+                "text": f"인간중심의 경영 원칙 텍스트 {i}",
+                "edition_id": "1979-초판",
+                "type": "definition",
+                "section_path": ["인간중심의 경영"],
+                "char_span": [100 * i, 100 * i + 50],
+                "sha256": f"hash_cho_{i}",
+                "quality_flags": [],
+            }
+            for i in range(3)
+        ]
+        + [
+            {
+                "quote_id": f"2020-14차|경영|definition|{i:03d}",
+                "text": f"인간중심의 경영 현대적 해석 {i}",
+                "edition_id": "2020-14차",
+                "type": "definition",
+                "section_path": ["인간중심의 경영"],
+                "char_span": [1000 + 100 * i, 1050 + 100 * i],
+                "sha256": f"hash_14_{i}",
+                "quality_flags": [],
+            }
+            for i in range(3)
+        ]
+        + [
+            {
+                "quote_id": f"1998-10차|경영|narrative|{i:03d}",
+                "text": f"경영 패러다임 변화 서술 {i}",
+                "edition_id": "1998-10차",
+                "type": "narrative",
+                "section_path": ["경영관리"],
+                "char_span": [2000 + 100 * i, 2050 + 100 * i],
+                "sha256": f"hash_10_{i}",
+                "quality_flags": [],
+            }
+            for i in range(3)
+        ]
+    )
+    tokenized = [d["text"].split() for d in docs]
+    bm25 = BM25Okapi(tokenized)
+    return {
+        "bm25": bm25,
+        "quote_ids": [d["quote_id"] for d in docs],
+        "quote_map": {d["quote_id"]: d for d in docs},
+    }
+
+
+def test_ensure_cross_version_coverage_adds_missing_edition():
+    """한쪽 edition만 있을 때 다른 쪽을 보완 검색으로 추가."""
+    bm25_data = _make_bm25_corpus_multi_edition()
+
+    # fused에 초판만 있는 상황 (14차 누락)
+    fused = [
+        {
+            "quote_id": "1979-초판|경영|definition|000",
+            "text": "인간중심의 경영 원칙 텍스트 0",
+            "score": 0.9,
+            "fusion_score": 0.9,
+            "source": "bm25",
+            "metadata": {"edition_id": "1979-초판", "type": "definition"},
+        },
+        {
+            "quote_id": "1979-초판|경영|definition|001",
+            "text": "인간중심의 경영 원칙 텍스트 1",
+            "score": 0.85,
+            "fusion_score": 0.85,
+            "source": "bm25",
+            "metadata": {"edition_id": "1979-초판", "type": "definition"},
+        },
+        {
+            "quote_id": "1979-초판|경영|definition|002",
+            "text": "인간중심의 경영 원칙 텍스트 2",
+            "score": 0.8,
+            "fusion_score": 0.8,
+            "source": "bm25",
+            "metadata": {"edition_id": "1979-초판", "type": "definition"},
+        },
+    ]
+
+    result = _ensure_cross_version_coverage(
+        query="인간중심의 경영",
+        fused=fused,
+        required_editions=["1979-초판", "2020-14차"],
+        final_top_k=5,
+        type_filter=None,
+        section_filter=None,
+        alpha=0.0,  # BM25 only
+        rrf_k=60,
+        score_threshold=0.0,
+        search_vec_k=10,
+        search_bm25_k=10,
+        collection=None,
+        bm25_data=bm25_data,
+        openai_client=None,
+        embedding_model="text-embedding-3-large",
+    )
+
+    editions = {h.get("metadata", {}).get("edition_id", "") for h in result}
+    assert "1979-초판" in editions, "초판이 결과에 없음"
+    assert "2020-14차" in editions, "14차가 보완 검색으로 추가되어야 함"
+    assert len(result) <= 5, f"final_top_k=5 초과: {len(result)}"
+
+
+def test_ensure_cross_version_coverage_no_change_when_covered():
+    """양쪽 edition 모두 있으면 결과를 변경하지 않음."""
+    fused = [
+        {
+            "quote_id": "q1",
+            "text": "초판 텍스트",
+            "score": 0.9,
+            "source": "bm25",
+            "metadata": {"edition_id": "1979-초판"},
+        },
+        {
+            "quote_id": "q2",
+            "text": "14차 텍스트",
+            "score": 0.85,
+            "source": "bm25",
+            "metadata": {"edition_id": "2020-14차"},
+        },
+    ]
+
+    result = _ensure_cross_version_coverage(
+        query="인간중심의 경영",
+        fused=fused,
+        required_editions=["1979-초판", "2020-14차"],
+        final_top_k=5,
+        type_filter=None,
+        section_filter=None,
+        alpha=0.0,
+        rrf_k=60,
+        score_threshold=0.0,
+        search_vec_k=10,
+        search_bm25_k=10,
+        collection=None,
+        bm25_data=None,
+        openai_client=None,
+        embedding_model="text-embedding-3-large",
+    )
+
+    assert result is fused, "이미 커버된 경우 원본 리스트를 그대로 반환해야 함"
+
+
+def test_ensure_cross_version_coverage_single_edition_noop():
+    """required_editions가 1개면 보완 검색 없이 원본 반환."""
+    fused = [{"quote_id": "q1", "metadata": {"edition_id": "1979-초판"}}]
+
+    result = _ensure_cross_version_coverage(
+        query="test",
+        fused=fused,
+        required_editions=["1979-초판"],
+        final_top_k=5,
+        type_filter=None,
+        section_filter=None,
+        alpha=0.0,
+        rrf_k=60,
+        score_threshold=0.0,
+        search_vec_k=10,
+        search_bm25_k=10,
+        collection=None,
+        bm25_data=None,
+        openai_client=None,
+        embedding_model="text-embedding-3-large",
+    )
+
+    assert result is fused
+
+
+def test_ensure_cross_version_respects_final_top_k():
+    """보완 검색 후에도 final_top_k를 초과하지 않음."""
+    bm25_data = _make_bm25_corpus_multi_edition()
+
+    # fused에 5건 모두 초판
+    fused = [
+        {
+            "quote_id": f"1979-초판|경영|definition|{i:03d}",
+            "text": f"텍스트 {i}",
+            "score": 0.9 - i * 0.01,
+            "fusion_score": 0.9 - i * 0.01,
+            "source": "bm25",
+            "metadata": {"edition_id": "1979-초판", "type": "definition"},
+        }
+        for i in range(5)
+    ]
+
+    result = _ensure_cross_version_coverage(
+        query="인간중심의 경영",
+        fused=fused,
+        required_editions=["1979-초판", "2020-14차"],
+        final_top_k=5,
+        type_filter=None,
+        section_filter=None,
+        alpha=0.0,
+        rrf_k=60,
+        score_threshold=0.0,
+        search_vec_k=10,
+        search_bm25_k=10,
+        collection=None,
+        bm25_data=bm25_data,
+        openai_client=None,
+        embedding_model="text-embedding-3-large",
+    )
+
+    assert len(result) <= 5, f"결과가 final_top_k=5를 초과: {len(result)}"
+    editions = {h.get("metadata", {}).get("edition_id", "") for h in result}
+    assert "2020-14차" in editions
+
+
+# ---------------------------------------------------------------------------
+# retrieve_quotes — evolution_comparison cross-version coverage (e2e)
+# ---------------------------------------------------------------------------
+
+
+def test_retrieve_quotes_evolution_cross_version_coverage():
+    """evolution_comparison 질의에서 양쪽 판본이 모두 검색되는지 확인."""
+    bm25_data = _make_bm25_corpus_multi_edition()
+
+    result = retrieve_quotes(
+        "인간중심의 경영 개념이 초판과 14차에서 어떻게 다른가?",
+        intent="evolution_comparison",
+        policy={"alpha": 0.0, "score_threshold": 0.0},  # BM25 only
+        top_k=5,
+        collection=None,
+        bm25_data=bm25_data,
+        openai_client=None,
+    )
+
+    editions = {r["edition"] for r in result}
+    assert "1979-초판" in editions, f"초판이 결과에 없음: editions={editions}"
+    assert "2020-14차" in editions, f"14차가 결과에 없음: editions={editions}"
+    assert len(result) <= 5
+
+
+def test_retrieve_quotes_evolution_no_edition_hints_still_works():
+    """개정판 힌트가 없는 evolution_comparison 질의는 정상 작동."""
+    bm25_data = _make_bm25_corpus_multi_edition()
+
+    result = retrieve_quotes(
+        "경영 요소의 변천사",
+        intent="evolution_comparison",
+        policy={"alpha": 0.0, "score_threshold": 0.0},
+        top_k=5,
+        collection=None,
+        bm25_data=bm25_data,
+        openai_client=None,
+    )
+
+    # 힌트가 없으면 보완 검색이 트리거되지 않지만 에러도 없어야 함
+    assert isinstance(result, list)
+    assert len(result) <= 5

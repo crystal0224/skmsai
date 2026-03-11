@@ -13,6 +13,7 @@
   - retrieve_quotes()       : 단일 엔트리 하이브리드 검색 (PR-1)
   - edition_sort_key()      : 개정판 연대순 정렬 키
   - EDITION_ORDER           : 개정판 연대순 매핑
+  - parse_edition_hints_from_query(): 질의에서 개정판 힌트 추출
 """
 from __future__ import annotations
 
@@ -64,6 +65,62 @@ def edition_sort_key(edition_id: str) -> int:
     if year_match:
         return int(year_match.group(1))
     return 9999
+
+
+# ---------------------------------------------------------------------------
+# Edition hint parser — cross-version 질의에서 개정판 힌트 추출
+# ---------------------------------------------------------------------------
+
+# 질의 텍스트에서 개정판 참조를 매칭하는 패턴
+_EDITION_HINT_PATTERNS: tuple[re.Pattern[str], ...] = (
+    re.compile(r"(\d+)\s*차"),  # "14차", "10 차"
+    re.compile(r"초판"),  # "초판"
+    re.compile(r"(\d{4})\s*년"),  # "1979년", "2020 년"
+)
+
+# 질의 텍스트 힌트 → EDITION_ORDER 키 매핑용 역인덱스
+_HINT_TO_EDITION: dict[str, str] = {}
+for _eid in EDITION_ORDER:
+    # "1979-초판" → hints: "초판", "1979"
+    # "2020-14차" → hints: "14차", "2020"
+    _parts = _eid.split("-", 1)
+    if len(_parts) == 2:
+        _HINT_TO_EDITION[_parts[1]] = _eid  # "초판", "14차" etc.
+        _HINT_TO_EDITION[_parts[0]] = _eid  # "1979", "2020" etc.
+
+
+def parse_edition_hints_from_query(query: str) -> list[str]:
+    """질의 텍스트에서 개정판 edition_id 목록을 추출한다.
+
+    예:
+      "초판과 14차 비교" → ["1979-초판", "2020-14차"]
+      "1979년과 2020년 차이" → ["1979-초판", "2020-14차"]
+      "10차에서 인사관리" → ["1998-10차"]
+
+    Returns:
+        매칭된 edition_id 리스트 (중복 제거, 연대순 정렬).
+    """
+    found: set[str] = set()
+
+    # "N차" 패턴
+    for m in _EDITION_HINT_PATTERNS[0].finditer(query):
+        hint_key = f"{m.group(1)}차"
+        if hint_key in _HINT_TO_EDITION:
+            found.add(_HINT_TO_EDITION[hint_key])
+
+    # "초판" 패턴
+    if _EDITION_HINT_PATTERNS[1].search(query):
+        if "초판" in _HINT_TO_EDITION:
+            found.add(_HINT_TO_EDITION["초판"])
+
+    # "YYYY년" 패턴
+    for m in _EDITION_HINT_PATTERNS[2].finditer(query):
+        year_key = m.group(1)
+        if year_key in _HINT_TO_EDITION:
+            found.add(_HINT_TO_EDITION[year_key])
+
+    # 연대순 정렬
+    return sorted(found, key=edition_sort_key)
 
 
 # ---------------------------------------------------------------------------
@@ -567,6 +624,148 @@ def _search_with_fallback(
     return _do_search(edition_filter=None, **search_args)
 
 
+def _ensure_cross_version_coverage(
+    query: str,
+    fused: list[dict],
+    required_editions: list[str],
+    final_top_k: int,
+    *,
+    type_filter: list[str] | None,
+    section_filter: str | None,
+    alpha: float,
+    rrf_k: int,
+    score_threshold: float,
+    search_vec_k: int,
+    search_bm25_k: int,
+    collection: Any,
+    bm25_data: dict | None,
+    openai_client: Any,
+    embedding_model: str,
+) -> list[dict]:
+    """Cross-version 질의에서 필요한 개정판이 모두 포함되도록 보완 검색한다.
+
+    required_editions에 명시된 개정판 중 fused 결과에 없는 것을 찾아
+    보완 검색을 실행하고, 기존 결과와 합친 뒤 final_top_k 이내로 조정한다.
+
+    전략:
+      1. fused 결과에서 covered edition 집합을 구한다.
+      2. required_editions 중 미커버 edition을 식별한다.
+      3. 미커버 edition 각각에 대해 edition_filter 검색을 실행한다.
+      4. 기존 결과에서 가장 많이 대표된 edition의 결과를 줄여서 공간을 확보한다.
+      5. 보완 결과를 삽입하여 final_top_k를 유지한다.
+
+    Args:
+        query: 검색 질의.
+        fused: 기존 fusion 결과 (list[dict]).
+        required_editions: 반드시 포함되어야 할 edition_id 목록.
+        final_top_k: 최종 반환 개수 상한.
+        (나머지): _do_search 파라미터.
+
+    Returns:
+        보완된 결과 리스트 (새 리스트, 원본 불변).
+    """
+    if not required_editions or len(required_editions) < 2:
+        return fused
+
+    # 1. covered editions 파악
+    covered: set[str] = set()
+    for h in fused:
+        eid = h.get("metadata", {}).get("edition_id", "")
+        covered.add(eid)
+
+    # 2. 미커버 edition 식별
+    missing = [eid for eid in required_editions if eid not in covered]
+    if not missing:
+        return fused
+
+    print(
+        f"[lib] cross-version 보완: required={required_editions}, "
+        f"covered={sorted(covered)}, missing={missing}",
+        file=sys.stderr,
+    )
+
+    # 3. 미커버 edition별 보완 검색 (각 1건씩)
+    supplements: list[dict] = []
+    for missing_eid in missing:
+        supplementary = _do_search(
+            query=query,
+            edition_filter=missing_eid,
+            type_filter=type_filter,
+            section_filter=section_filter,
+            alpha=alpha,
+            rrf_k=rrf_k,
+            score_threshold=score_threshold,
+            top_k=1,
+            search_vec_k=search_vec_k,
+            search_bm25_k=search_bm25_k,
+            collection=collection,
+            bm25_data=bm25_data,
+            openai_client=openai_client,
+            embedding_model=embedding_model,
+        )
+        if supplementary:
+            supplements.append(supplementary[0])
+            print(
+                f"[lib] cross-version 보완: {missing_eid} → 1건 추가",
+                file=sys.stderr,
+            )
+        else:
+            print(
+                f"[lib] cross-version 보완: {missing_eid} → 검색 결과 없음",
+                file=sys.stderr,
+            )
+
+    if not supplements:
+        return fused
+
+    # 4. 기존 결과에서 공간 확보 — 가장 많이 대표된 edition에서 뒤쪽 항목 제거
+    existing_ids = {h.get("quote_id") for h in fused}
+    # 중복 제거
+    new_supplements = [s for s in supplements if s.get("quote_id") not in existing_ids]
+
+    if not new_supplements:
+        return fused
+
+    slots_needed = len(new_supplements)
+    result = list(fused)  # shallow copy
+
+    if len(result) + slots_needed > final_top_k:
+        # edition별 빈도 카운트
+        edition_counts: dict[str, int] = {}
+        for h in result:
+            eid = h.get("metadata", {}).get("edition_id", "")
+            edition_counts[eid] = edition_counts.get(eid, 0) + 1
+
+        # 가장 많은 edition부터 뒤쪽 항목 제거
+        to_remove = len(result) + slots_needed - final_top_k
+        removed = 0
+        for _ in range(to_remove):
+            if not result:
+                break
+            # 현재 가장 많은 edition 찾기
+            max_eid = max(edition_counts, key=lambda e: edition_counts[e])
+            if edition_counts[max_eid] <= 1:
+                # 모든 edition이 1건씩이면 맨 뒤에서 제거
+                removed_hit = result.pop()
+                r_eid = removed_hit.get("metadata", {}).get("edition_id", "")
+                edition_counts[r_eid] = edition_counts.get(r_eid, 1) - 1
+                if edition_counts.get(r_eid, 0) <= 0:
+                    edition_counts.pop(r_eid, None)
+            else:
+                # 해당 edition의 마지막 항목 제거 (뒤에서부터 탐색)
+                for i in range(len(result) - 1, -1, -1):
+                    if result[i].get("metadata", {}).get("edition_id", "") == max_eid:
+                        result.pop(i)
+                        edition_counts[max_eid] -= 1
+                        if edition_counts[max_eid] <= 0:
+                            edition_counts.pop(max_eid, None)
+                        break
+            removed += 1
+
+    result.extend(new_supplements)
+    return result[:final_top_k]
+
+
 def retrieve_quotes(
     query: str,
     intent: str,
@@ -655,6 +854,28 @@ def retrieve_quotes(
         fallback_editions=fallback_editions,
         min_hits=min_hits,
     )
+
+    # --- Cross-version coverage guarantee ---
+    if intent == "evolution_comparison":
+        required_editions = parse_edition_hints_from_query(query)
+        if len(required_editions) >= 2:
+            fused = _ensure_cross_version_coverage(
+                query=query,
+                fused=fused,
+                required_editions=required_editions,
+                final_top_k=top_k,
+                type_filter=type_filter,
+                section_filter=section_filter,
+                alpha=alpha,
+                rrf_k=rrf_k,
+                score_threshold=score_threshold,
+                search_vec_k=search_vec_k,
+                search_bm25_k=search_bm25_k,
+                collection=collection,
+                bm25_data=bm25_data,
+                openai_client=openai_client,
+                embedding_model=embedding_model,
+            )
 
     # Intent-based post-processing
     fused = _apply_intent_policy(intent, edition_hint, fused, latest_first)
