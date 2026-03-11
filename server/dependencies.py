@@ -96,8 +96,9 @@ class AppState:
         # TOC 서비스 초기화
         structure_path = data_dir / "structure.json"
         if structure_path.exists():
-            raw_text_path = Path("data/raw/SKMSraw.txt")
+            raw_text_path = data_dir.parent / "raw" / "SKMSraw.txt"
             self.toc_service = TOCService.from_path(structure_path, raw_text_path)
+            logger.info("원문 경로: %s (exists=%s)", raw_text_path, raw_text_path.exists())
             logger.info(
                 "TOCService 초기화 완료: %d editions", self.toc_service.edition_count
             )

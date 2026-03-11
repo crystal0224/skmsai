@@ -106,10 +106,16 @@ class TOCService:
         """
         service = cls()
         service._load(path)
-        if raw_text_path and raw_text_path.exists():
-            with open(raw_text_path, encoding="utf-8") as f:
-                service._raw_lines = f.readlines()
-            logger.info("원문 로드 완료: %d lines", len(service._raw_lines))
+        if raw_text_path:
+            resolved = raw_text_path.resolve()
+            if resolved.exists():
+                with open(resolved, encoding="utf-8") as f:
+                    service._raw_lines = f.readlines()
+                logger.info(
+                    "원문 로드 완료: %d lines from %s", len(service._raw_lines), resolved
+                )
+            else:
+                logger.warning("원문 파일 없음: %s (resolved: %s)", raw_text_path, resolved)
         return service
 
     def _load(self, path: Path) -> None:
