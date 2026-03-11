@@ -98,6 +98,22 @@ def test_generation_config_missing_file():
     assert config.model == "claude-sonnet-4-20250514"
 
 
+def test_generation_config_respects_token_caps(tmp_path):
+    """토큰 cap 설정이 있으면 max_tokens를 클램프한다."""
+    yaml_content = (
+        "generation:\n"
+        "  max_tokens: 5000\n"
+        "  max_tokens_cap: 1200\n"
+        "  router_max_tokens: 900\n"
+        "  router_max_tokens_cap: 300\n"
+    )
+    config_path = tmp_path / "generation.yaml"
+    config_path.write_text(yaml_content)
+    config = GenerationConfig.from_yaml(config_path)
+    assert config.max_tokens == 1200
+    assert config.router_max_tokens == 300
+
+
 # ---------------------------------------------------------------------------
 # GenerationResult 테스트
 # ---------------------------------------------------------------------------

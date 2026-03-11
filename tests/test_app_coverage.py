@@ -18,6 +18,7 @@ pytest.importorskip("httpx")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
+from scripts.lib.security import RateLimitConfig, RateLimiter  # noqa: E402
 from server.dependencies import AppState  # noqa: E402
 
 
@@ -112,6 +113,60 @@ def test_lifespan_content_studio_import_error():
             resp = client.get("/api/health")
         # Content Studio 실패해도 서버는 정상 작동
         assert resp.status_code == 200
+
+
+def test_load_content_studio_llm_config_with_cap(tmp_path):
+    """Content Studio LLM 토큰이 설정 상한으로 클램프된다."""
+    from server.app import _load_content_studio_llm_config
+
+    config_path = tmp_path / "generation.yaml"
+    config_path.write_text(
+        (
+            "generation:\n"
+            "  content_studio_model: custom-studio-model\n"
+            "  content_studio_max_tokens: 9000\n"
+            "  content_studio_max_tokens_cap: 1024\n"
+        ),
+        encoding="utf-8",
+    )
+
+    model, max_tokens = _load_content_studio_llm_config(config_path)
+    assert model == "custom-studio-model"
+    assert max_tokens == 1024
+
+
+def test_rate_limit_blocks_expensive_post():
+    """비용이 큰 POST 경로는 레이트리밋 초과 시 429를 반환한다."""
+    from server.app import create_app
+
+    state = AppState()
+    state._initialized = True
+    state.search_service = MagicMock()
+    state.search_service.hybrid_search.return_value = []
+    state.search_service.vector_search.return_value = []
+    state.search_service.bm25_search.return_value = []
+
+    limiter = RateLimiter(
+        RateLimitConfig(
+            requests_per_minute=1,
+            burst_size=1,
+            enabled=True,
+        )
+    )
+
+    with (
+        patch("server.app._state", state),
+        patch("server.app._rate_limiter", limiter),
+        patch.object(state, "initialize"),
+    ):
+        app = create_app()
+        with TestClient(app) as client:
+            first = client.post("/api/search", json={"query": "테스트"})
+            second = client.post("/api/search", json={"query": "테스트"})
+
+    assert first.status_code == 200
+    assert second.status_code == 429
+    assert "Retry-After" in second.headers
 
 
 # ---------------------------------------------------------------------------

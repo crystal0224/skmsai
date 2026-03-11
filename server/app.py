@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from scripts.lib.metrics_collector import MetricsCollector
+from scripts.lib.security import RateLimitConfig, RateLimiter
 from server.dependencies import AppState
 from server.models import ErrorResponse
 from server.routes.content import create_content_router
@@ -44,6 +45,107 @@ logger = logging.getLogger(__name__)
 _state = AppState()
 _metrics = MetricsCollector()
 
+_RATE_LIMITED_PATH_PREFIXES = (
+    "/api/search",
+    "/api/v2/search",
+    "/api/generate",
+    "/api/v2/generate",
+    "/api/content/generate",
+    "/api/content/plan",
+)
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    """환경변수 bool 파서."""
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() not in {"0", "false", "no", "off"}
+
+
+def _env_int(name: str, default: int) -> int:
+    """환경변수 int 파서 (파싱 실패 시 기본값)."""
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        logger.warning("환경변수 %s 정수 파싱 실패: %r, 기본값 %d 사용", name, raw, default)
+        return default
+
+
+def _build_rate_limiter() -> RateLimiter:
+    """RateLimiter 인스턴스를 구성한다."""
+    enabled = _env_bool("RATE_LIMIT_ENABLED", True)
+    rpm = max(1, _env_int("RATE_LIMIT_REQUESTS_PER_MINUTE", 600))
+    burst = max(1, _env_int("RATE_LIMIT_BURST_SIZE", 120))
+    return RateLimiter(
+        RateLimitConfig(
+            requests_per_minute=rpm,
+            burst_size=burst,
+            enabled=enabled,
+        )
+    )
+
+
+def _is_rate_limited_request(method: str, path: str) -> bool:
+    """비용이 큰 API 요청에만 레이트리밋을 적용한다."""
+    if method != "POST":
+        return False
+    return path.startswith(_RATE_LIMITED_PATH_PREFIXES)
+
+
+def _resolve_client_id(request: Request) -> str:
+    """클라이언트 식별자를 추출한다 (X-Forwarded-For 우선)."""
+    forwarded = request.headers.get("x-forwarded-for", "")
+    if forwarded:
+        first = forwarded.split(",")[0].strip()
+        if first:
+            return first
+    if request.client and request.client.host:
+        return request.client.host
+    return "unknown"
+
+
+def _load_content_studio_llm_config(
+    path: Path = Path("config/generation.yaml"),
+) -> tuple[str, int]:
+    """Content Studio Planner용 LLM 모델/토큰 설정을 로드한다."""
+    default_model = "claude-sonnet-4-20250514"
+    default_max_tokens = 2048
+    default_cap = 4096
+
+    if not path.exists():
+        return default_model, default_max_tokens
+
+    try:
+        import yaml
+
+        with open(path, encoding="utf-8") as f:
+            raw = yaml.safe_load(f) or {}
+
+        generation = raw.get("generation", {}) if isinstance(raw, dict) else {}
+        model = str(generation.get("content_studio_model", generation.get("model", default_model)))
+        requested = int(generation.get("content_studio_max_tokens", default_max_tokens))
+        cap = int(generation.get("content_studio_max_tokens_cap", default_cap))
+        if cap < 1:
+            cap = default_cap
+        max_tokens = max(1, min(requested, cap))
+        if max_tokens != requested:
+            logger.warning(
+                "Content Studio max_tokens가 상한을 초과해 클램프됨: requested=%d, cap=%d",
+                requested,
+                cap,
+            )
+        return model, max_tokens
+    except Exception as e:
+        logger.warning("Content Studio LLM 설정 로드 실패, 기본값 사용: %s", e)
+        return default_model, default_max_tokens
+
+
+_rate_limiter = _build_rate_limiter()
+
 
 # ---------------------------------------------------------------------------
 # Lifespan
@@ -67,22 +169,34 @@ async def lifespan(app: FastAPI):
 
         from server.dependencies import _make_anthropic_client
 
+        studio_model, studio_max_tokens = _load_content_studio_llm_config()
+
         class _AnthropicLLMAdapter:
             """anthropic.Anthropic → LLMClient Protocol 어댑터."""
 
-            def __init__(self, client):
+            def __init__(self, client, *, model: str, max_tokens: int):
                 self._client = client
+                self._model = model
+                self._max_tokens = max_tokens
 
             async def generate(self, prompt: str) -> str:
                 resp = self._client.messages.create(
-                    model="claude-sonnet-4-20250514",
-                    max_tokens=4096,
+                    model=self._model,
+                    max_tokens=self._max_tokens,
                     messages=[{"role": "user", "content": prompt}],
                 )
                 return resp.content[0].text
 
         raw_client = _make_anthropic_client()
-        llm_adapter = _AnthropicLLMAdapter(raw_client) if raw_client else None
+        llm_adapter = (
+            _AnthropicLLMAdapter(
+                raw_client,
+                model=studio_model,
+                max_tokens=studio_max_tokens,
+            )
+            if raw_client
+            else None
+        )
 
         _state.content_studio = ContentStudio.create(
             llm_client=llm_adapter,
@@ -129,17 +243,59 @@ def create_app() -> FastAPI:
     @app.middleware("http")
     async def log_requests(request: Request, call_next):
         start = time.time()
+        path = request.url.path
+
+        # 비용이 큰 경로 보호: 레이트리밋
+        rate_result = None
+        if _is_rate_limited_request(request.method, path):
+            client_id = _resolve_client_id(request)
+            rate_result = _rate_limiter.check(client_id)
+            if not rate_result.allowed:
+                duration_ms = (time.time() - start) * 1000
+                response = JSONResponse(
+                    status_code=429,
+                    content=ErrorResponse(
+                        error="rate_limited",
+                        detail="요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
+                    ).model_dump(),
+                    headers={
+                        "Retry-After": str(max(1, int(rate_result.retry_after_seconds))),
+                        "X-RateLimit-Remaining": "0",
+                        "X-RateLimit-Limit": str(_rate_limiter.config.requests_per_minute),
+                    },
+                )
+                logger.warning(
+                    "%s %s → %d (rate_limited, %.1fms, client=%s)",
+                    request.method,
+                    path,
+                    response.status_code,
+                    duration_ms,
+                    client_id,
+                )
+                if not path.startswith("/api/dashboard"):
+                    _metrics.record(
+                        endpoint=path,
+                        method=request.method,
+                        status_code=response.status_code,
+                        duration_ms=duration_ms,
+                    )
+                return response
+
         response = await call_next(request)
+        if rate_result is not None:
+            response.headers["X-RateLimit-Remaining"] = str(rate_result.remaining)
+            response.headers["X-RateLimit-Limit"] = str(
+                _rate_limiter.config.requests_per_minute
+            )
         duration_ms = (time.time() - start) * 1000
         logger.info(
             "%s %s → %d (%.1fms)",
             request.method,
-            request.url.path,
+            path,
             response.status_code,
             duration_ms,
         )
         # 메트릭 기록 (대시보드 자체 요청은 제외)
-        path = request.url.path
         if not path.startswith("/api/dashboard"):
             _metrics.record(
                 endpoint=path,

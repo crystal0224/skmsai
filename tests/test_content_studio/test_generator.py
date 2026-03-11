@@ -104,6 +104,7 @@ class MockGenerationService:
         self._answer = answer
         self.call_count = 0
         self.last_query: str | None = None
+        self.last_context: str | None = None
 
     def generate(
         self,
@@ -114,6 +115,7 @@ class MockGenerationService:
     ) -> MockGenerationResult:
         self.call_count += 1
         self.last_query = query
+        self.last_context = context
         return MockGenerationResult(answer=self._answer)
 
 
@@ -389,6 +391,20 @@ class TestGenerateLectureContent:
 
         assert len(result.slides) == 1
         assert any("검색 결과 없음" in w for w in result.warnings)
+
+    @pytest.mark.asyncio
+    async def test_lecture_prompt_context_not_duplicated(self) -> None:
+        search = MockSearchService(hits=[_make_hit(text="중복검사용 컨텍스트")])
+        gen = MockGenerationService(answer="생성된 본문")
+        generator = ContentGenerator(search, gen)
+
+        plan = _make_lecture_plan(num_slides=1)
+        await generator.generate_lecture_content(plan)
+
+        assert gen.last_context is not None
+        assert "중복검사용 컨텍스트" in gen.last_context
+        assert gen.last_query is not None
+        assert "중복검사용 컨텍스트" not in gen.last_query
 
 
 # ---------------------------------------------------------------------------

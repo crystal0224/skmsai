@@ -222,7 +222,7 @@ class ContentGenerator:
 
             all_hits.extend(hits)
             context = _format_hits_as_context(hits)
-            prompt = _build_slide_prompt(slide_plan, context)
+            prompt = _build_slide_prompt(slide_plan)
 
             result = await asyncio.to_thread(
                 self._generation.generate,
@@ -277,7 +277,7 @@ class ContentGenerator:
 
             all_hits.extend(hits)
             context = _format_hits_as_context(hits)
-            prompt = _build_card_prompt(card_plan, context)
+            prompt = _build_card_prompt(card_plan)
 
             result = await asyncio.to_thread(
                 self._generation.generate,
@@ -333,7 +333,7 @@ class ContentGenerator:
 
             all_hits.extend(hits)
             context = _format_hits_as_context(hits)
-            prompt = _build_workshop_prompt(phase_plan, context)
+            prompt = _build_workshop_prompt(phase_plan)
 
             result = await asyncio.to_thread(
                 self._generation.generate,
@@ -386,7 +386,7 @@ class ContentGenerator:
 
             all_hits.extend(hits)
             context = _format_hits_as_context(hits)
-            prompt = _build_audio_prompt(section_plan, plan.style, context)
+            prompt = _build_audio_prompt(section_plan, plan.style)
 
             result = await asyncio.to_thread(
                 self._generation.generate,
@@ -490,7 +490,7 @@ def _format_hits_as_context(hits: list[SearchHit]) -> str:
     return "\n".join(parts)
 
 
-def _build_slide_prompt(slide_plan: Any, context: str) -> str:
+def _build_slide_prompt(slide_plan: Any) -> str:
     """슬라이드 생성 프롬프트."""
     key_points_str = "\n".join(f"- {kp}" for kp in slide_plan.key_points)
     return (
@@ -498,8 +498,7 @@ def _build_slide_prompt(slide_plan: Any, context: str) -> str:
         f"슬라이드 제목: {slide_plan.title}\n"
         f"레이아웃: {slide_plan.layout}\n"
         f"핵심 포인트:\n{key_points_str}\n\n"
-        f"[SKMS 원문 컨텍스트]\n{context}\n\n"
-        "위 SKMS 원문을 근거로 슬라이드 본문을 작성하세요.\n"
+        "제공된 컨텍스트의 SKMS 원문을 근거로 슬라이드 본문을 작성하세요.\n"
         "- 핵심 포인트 각각에 대해 2~3줄의 설명을 작성하세요.\n"
         "- 원문의 핵심 문장을 「따옴표」로 직접 인용하고 (출처: N차 개정판)을 명기하세요.\n"
         "- 명사형 종결(~함, ~임, ~필요)을 사용하세요.\n"
@@ -507,14 +506,13 @@ def _build_slide_prompt(slide_plan: Any, context: str) -> str:
     )
 
 
-def _build_card_prompt(card_plan: Any, context: str) -> str:
+def _build_card_prompt(card_plan: Any) -> str:
     """카드뉴스 생성 프롬프트."""
     return (
         f"[작성 요청] 카드뉴스 본문 (전 구성원 대상)\n\n"
         f"카드 제목: {card_plan.headline}\n"
         f"본문 가이드: {card_plan.body}\n\n"
-        f"[SKMS 원문 컨텍스트]\n{context}\n\n"
-        "위 SKMS 원문을 근거로 카드뉴스 본문을 작성하세요.\n"
+        "제공된 컨텍스트의 SKMS 원문을 근거로 카드뉴스 본문을 작성하세요.\n"
         "- 간결하고 임팩트 있는 2~3줄로 작성하세요.\n"
         "- 원문의 핵심 문장을 「따옴표」로 직접 인용하세요.\n"
         "- 명사형 종결(~함, ~임, ~것)을 사용하세요.\n"
@@ -522,7 +520,7 @@ def _build_card_prompt(card_plan: Any, context: str) -> str:
     )
 
 
-def _build_workshop_prompt(phase_plan: Any, context: str) -> str:
+def _build_workshop_prompt(phase_plan: Any) -> str:
     """워크숍 단계 생성 프롬프트."""
     return (
         f"[작성 요청] 워크숍 단계 콘텐츠 (리더/관리자 대상)\n\n"
@@ -530,8 +528,7 @@ def _build_workshop_prompt(phase_plan: Any, context: str) -> str:
         f"제목: {phase_plan.title}\n"
         f"소요시간: {phase_plan.duration_min}분\n"
         f"설명: {phase_plan.description}\n\n"
-        f"[SKMS 원문 컨텍스트]\n{context}\n\n"
-        "위 SKMS 원문을 근거로 워크숍 단계 내용을 작성하세요.\n"
+        "제공된 컨텍스트의 SKMS 원문을 근거로 워크숍 단계 내용을 작성하세요.\n"
         "- 진행자 가이드: 해당 단계에서 진행자가 할 말과 행동\n"
         "- 참가자 활동: 토론 질문이나 실습 내용\n"
         "- 원문의 핵심 문장을 「따옴표」로 직접 인용하세요.\n"
@@ -540,14 +537,13 @@ def _build_workshop_prompt(phase_plan: Any, context: str) -> str:
     )
 
 
-def _build_audio_prompt(section_plan: Any, style: str, context: str) -> str:
+def _build_audio_prompt(section_plan: Any, style: str) -> str:
     """오디오 대본 생성 프롬프트."""
     return (
         f"[작성 요청] 오디오 대본 ({style} 스타일)\n\n"
         f"발화자: {section_plan.speaker}\n"
         f"대본 가이드: {section_plan.text}\n\n"
-        f"[SKMS 원문 컨텍스트]\n{context}\n\n"
-        "위 SKMS 원문을 근거로 오디오 대본을 작성하세요.\n"
+        "제공된 컨텍스트의 SKMS 원문을 근거로 오디오 대본을 작성하세요.\n"
         f"- {style} 스타일에 맞게 자연스러운 구어체로 작성하세요.\n"
         "- 원문의 핵심 문장을 인용할 때는 「따옴표」를 사용하세요.\n"
         "- 오디오이므로 ~합니다/~입니다 해요체를 사용하세요.\n"

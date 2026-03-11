@@ -12,6 +12,7 @@ retrieval:
   # ---------------------------------------------------------------------------
   vector:
     provider: "chroma"  # chroma | pinecone
+    embedding_model: "text-embedding-3-large"  # OpenAI 임베딩 모델
     collection_name: "skms_quotes"
     top_k: 10
     score_threshold: 0.5

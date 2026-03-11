@@ -62,7 +62,11 @@ class AppState:
         bm25_index = BM25Index.from_path(bm25_path)
 
         # Embedding function (OpenAI)
-        embedding_fn = _make_embedding_fn()
+        embedding_model = vector_config.get("embedding_model") or os.environ.get(
+            "OPENAI_EMBEDDING_MODEL",
+            "text-embedding-3-large",
+        )
+        embedding_fn = _make_embedding_fn(embedding_model)
 
         self.search_service = SearchService(
             vector_store=vector_store,
@@ -134,7 +138,7 @@ def _load_yaml(path: Path) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def _make_embedding_fn() -> Any:
+def _make_embedding_fn(embedding_model: str = "text-embedding-3-large") -> Any:
     """OpenAI 임베딩 함수를 생성한다."""
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
@@ -147,9 +151,7 @@ def _make_embedding_fn() -> Any:
         client = OpenAI(api_key=api_key)
 
         def _embed(text: str) -> list[float]:
-            response = client.embeddings.create(
-                model="text-embedding-3-large", input=[text]
-            )
+            response = client.embeddings.create(model=embedding_model, input=[text])
             return response.data[0].embedding
 
         return _embed

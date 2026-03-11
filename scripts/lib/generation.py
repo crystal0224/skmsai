@@ -57,6 +57,28 @@ class GenerationConfig:
                 if key in gen:
                     defaults[key] = gen[key]
 
+            # Optional hard caps (cost guardrail)
+            # cap 미설정 시 기존 동작 유지.
+            if "max_tokens_cap" in gen:
+                try:
+                    cap = int(gen["max_tokens_cap"])
+                    if cap > 0:
+                        defaults["max_tokens"] = min(int(defaults["max_tokens"]), cap)
+                except (TypeError, ValueError):
+                    logger.warning("generation.max_tokens_cap 파싱 실패: %r", gen["max_tokens_cap"])
+            if "router_max_tokens_cap" in gen:
+                try:
+                    cap = int(gen["router_max_tokens_cap"])
+                    if cap > 0:
+                        defaults["router_max_tokens"] = min(
+                            int(defaults["router_max_tokens"]), cap
+                        )
+                except (TypeError, ValueError):
+                    logger.warning(
+                        "generation.router_max_tokens_cap 파싱 실패: %r",
+                        gen["router_max_tokens_cap"],
+                    )
+
         return cls(**defaults)
 
 

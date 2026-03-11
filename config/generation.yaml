@@ -7,10 +7,17 @@ generation:
   # LLM 모델 (답변 생성)
   model: "claude-sonnet-4-20250514"
   max_tokens: 3000
+  max_tokens_cap: 3000
 
   # 라우터 모델 (의도 분류)
   router_model: "claude-sonnet-4-20250514"
   router_max_tokens: 500
+  router_max_tokens_cap: 500
+
+  # Content Studio Planner용 모델/토큰 (server.app에서 사용)
+  content_studio_model: "claude-sonnet-4-20250514"
+  content_studio_max_tokens: 2048
+  content_studio_max_tokens_cap: 4096
 
   # 검증 실패 시 재시도 횟수
   max_retries: 1
