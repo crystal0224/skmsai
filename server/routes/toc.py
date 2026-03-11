@@ -64,6 +64,22 @@ def create_toc_router(state: AppState) -> APIRouter:
             node_count=toc.node_count,
         )
 
+    @router.get("/section-text")
+    async def get_section_text(
+        edition_id: str,
+        line: int,
+        max_lines: int = 100,
+    ) -> dict:
+        """섹션의 원문 텍스트를 반환한다."""
+        if not state.toc_service:
+            raise HTTPException(status_code=503, detail="TOC 서비스를 사용할 수 없습니다")
+
+        text = state.toc_service.get_section_text(edition_id, line, max_lines)
+        if text is None:
+            raise HTTPException(status_code=404, detail="원문 텍스트를 사용할 수 없습니다")
+
+        return {"edition_id": edition_id, "line": line, "text": text}
+
     @router.get("/toc", response_model=TOCSectionSearchResponse)
     async def search_sections(
         q: str,

@@ -590,6 +590,13 @@
                             <p class="placeholder-text">왼쪽에서 판본을 선택하면 목차가 표시됩니다</p>
                         </div>
                     </div>
+                    <div class="section-text-panel" id="section-text-panel" style="display:none;">
+                        <div class="section-text-header">
+                            <h4 id="section-text-title">원문</h4>
+                            <span class="close-section-text" id="close-section-text">&times;</span>
+                        </div>
+                        <div class="section-text-body" id="section-text-body"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2217,6 +2224,37 @@
         const tocTree = document.getElementById('toc-tree');
         const tocSearchInput = document.getElementById('toc-search-input');
         const tocSearchBtn = document.getElementById('toc-search-btn');
+        const sectionTextPanel = document.getElementById('section-text-panel');
+        const sectionTextTitle = document.getElementById('section-text-title');
+        const sectionTextBody = document.getElementById('section-text-body');
+        const closeSectionText = document.getElementById('close-section-text');
+
+        closeSectionText.addEventListener('click', () => {
+            sectionTextPanel.style.display = 'none';
+        });
+
+        async function loadSectionText(editionId, line, title) {
+            sectionTextPanel.style.display = 'block';
+            sectionTextTitle.textContent = title.length > 60 ? title.slice(0, 60) + '...' : title;
+            sectionTextBody.textContent = '원문을 불러오는 중...';
+            sectionTextPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            try {
+                const params = new URLSearchParams({ edition_id: editionId, line: line });
+                const data = await apiCall(`/api/section-text?${params}`, { method: 'GET' });
+                if (data.text) {
+                    const pre = document.createElement('pre');
+                    pre.className = 'section-raw-text';
+                    pre.textContent = data.text;
+                    sectionTextBody.textContent = '';
+                    sectionTextBody.appendChild(pre);
+                } else {
+                    sectionTextBody.textContent = '이 섹션에는 본문이 없습니다.';
+                }
+            } catch (err) {
+                sectionTextBody.textContent = '원문을 불러올 수 없습니다: ' + err.message;
+            }
+        }
 
         let editionsCache = null; // cache edition list
         let selectedEditionId = null;
@@ -2291,25 +2329,54 @@
                 const header = document.createElement('div');
                 header.className = 'toc-node-header';
                 header.style.paddingLeft = `${depth * 0.5}rem`;
-                header.innerHTML = `
-                    <span class="toc-toggle${hasChildren ? '' : ' empty'}">${hasChildren ? '▶' : '·'}</span>
-                    <span class="toc-level">${escapeHtml(section.level)}</span>
-                    <span class="toc-title">${escapeHtml(section.title)}</span>
-                    <span class="toc-line">L${section.line}</span>
-                `;
+                header.style.cursor = 'pointer';
 
+                const toggle = document.createElement('span');
+                toggle.className = 'toc-toggle' + (hasChildren ? '' : ' empty');
+                toggle.textContent = hasChildren ? '\u25B6' : '\u00B7';
+
+                const level = document.createElement('span');
+                level.className = 'toc-level';
+                level.textContent = section.level;
+
+                const title = document.createElement('span');
+                title.className = 'toc-title';
+                title.textContent = section.title;
+
+                const lineNum = document.createElement('span');
+                lineNum.className = 'toc-line';
+                lineNum.textContent = 'L' + section.line;
+
+                const readBtn = document.createElement('span');
+                readBtn.className = 'toc-read-btn';
+                readBtn.textContent = '\uD83D\uDCC4';
+                readBtn.title = '원문 보기';
+
+                header.append(toggle, level, title, lineNum, readBtn);
                 node.appendChild(header);
+
+                // 원문 보기 버튼 클릭
+                readBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (selectedEditionId) {
+                        loadSectionText(selectedEditionId, section.line, section.title);
+                    }
+                });
 
                 if (hasChildren) {
                     const childContainer = renderTocTree(section.children, depth + 1);
                     node.appendChild(childContainer);
 
                     header.addEventListener('click', () => {
-                        const toggle = header.querySelector('.toc-toggle');
                         const children = node.querySelector('.toc-children');
-                        const isExpanded = children.classList.contains('expanded');
                         children.classList.toggle('expanded');
                         toggle.classList.toggle('expanded');
+                    });
+                } else {
+                    header.addEventListener('click', () => {
+                        if (selectedEditionId) {
+                            loadSectionText(selectedEditionId, section.line, section.title);
+                        }
                     });
                 }
 

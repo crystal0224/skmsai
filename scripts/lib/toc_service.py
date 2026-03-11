@@ -94,12 +94,22 @@ class TOCService:
     def __init__(self) -> None:
         self._editions: dict[str, EditionTOC] = {}
         self._edition_infos: list[EditionInfo] = []
+        self._raw_lines: list[str] = []
 
     @classmethod
-    def from_path(cls, path: Path) -> TOCService:
-        """structure.json 파일에서 TOCService를 생성한다."""
+    def from_path(cls, path: Path, raw_text_path: Path | None = None) -> TOCService:
+        """structure.json 파일에서 TOCService를 생성한다.
+
+        Args:
+            path: structure.json 경로.
+            raw_text_path: SKMSraw.txt 경로 (섹션 본문 제공용, 옵션).
+        """
         service = cls()
         service._load(path)
+        if raw_text_path and raw_text_path.exists():
+            with open(raw_text_path, encoding="utf-8") as f:
+                service._raw_lines = f.readlines()
+            logger.info("원문 로드 완료: %d lines", len(service._raw_lines))
         return service
 
     def _load(self, path: Path) -> None:
@@ -161,6 +171,68 @@ class TOCService:
     def get_edition_ids(self) -> tuple[str, ...]:
         """모든 개정판 ID를 반환한다."""
         return tuple(self._editions.keys())
+
+    def get_section_text(
+        self,
+        edition_id: str,
+        line: int,
+        max_lines: int = 100,
+    ) -> str | None:
+        """섹션 시작 line부터 다음 섹션 직전까지의 원문 텍스트를 반환한다.
+
+        Args:
+            edition_id: 개정판 ID.
+            line: 섹션 시작 줄 번호 (1-based).
+            max_lines: 최대 반환 줄 수.
+
+        Returns:
+            원문 텍스트 또는 None (원문 미로드 시).
+        """
+        if not self._raw_lines:
+            return None
+
+        edition = self._editions.get(edition_id)
+        if not edition:
+            return None
+
+        # 해당 판본의 모든 섹션 line 번호를 수집 (flat)
+        all_lines = self._collect_section_lines(edition.sections)
+        all_lines.sort()
+
+        # 다음 섹션의 시작 line 찾기
+        next_line = None
+        for sl in all_lines:
+            if sl > line:
+                next_line = sl
+                break
+
+        # 판본의 end_line을 폴백으로 사용
+        edition_info = next(
+            (e for e in self._edition_infos if e.edition_id == edition_id), None
+        )
+        end_bound = (
+            next_line
+            if next_line
+            else (edition_info.end_line if edition_info else line + max_lines)
+        )
+
+        # line은 1-based, list는 0-based → 제목 줄 포함
+        start_idx = line - 1
+        end_idx = min(end_bound - 1, start_idx + max_lines)
+
+        if start_idx >= len(self._raw_lines) or start_idx < 0:
+            return ""
+
+        text_lines = self._raw_lines[start_idx:end_idx]
+        return "".join(text_lines).strip()
+
+    def _collect_section_lines(self, sections: tuple[TOCNode, ...]) -> list[int]:
+        """섹션 트리에서 모든 line 번호를 플랫하게 수집한다."""
+        lines: list[int] = []
+        for s in sections:
+            lines.append(s.line)
+            lines.extend(self._collect_section_lines(s.children))
+        return lines
 
     def search_sections(
         self,
