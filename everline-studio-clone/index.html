@@ -1725,44 +1725,49 @@
             updatePlanJsonView();
         }
 
-        // Collect current plan from the DOM inputs
+        // Collect current plan from the DOM inputs (PR-064: Fixed Model Mapping)
         function collectEditedPlan() {
             if (!originalPlanData) return null;
             const type = currentStudioType;
-            const itemsKey = getPlanItemsKey(type);
+            const itemsKey = getPlanItemsKey(type); // 'slides', 'cards', 'phases', etc.
             if (!itemsKey) return originalPlanData;
 
             const cards = document.querySelectorAll('#plan-items-list .plan-item-card');
             const items = [];
             cards.forEach((card, idx) => {
                 const inputs = card.querySelectorAll('.plan-field-input');
-                const item = {};
+                const item = { index: idx + 1 };
+                
                 switch (type) {
                     case 'lecture':
                         item.title = getInputVal(inputs, 'title');
-                        item.description = getInputVal(inputs, 'description');
-                        item.key_points = [];
+                        item.governing_message = getInputVal(inputs, 'governing_message') || getInputVal(inputs, 'description');
+                        item.layout = getInputVal(inputs, 'layout') || 'title_content';
+                        // Handle comma-separated key points
+                        const kp = getInputVal(inputs, 'key_points');
+                        item.key_points = kp ? kp.split(',').map(s => s.trim()) : [];
+                        item.rag_query = getInputVal(inputs, 'rag_query') || item.title;
+                        item.speaker_notes = getInputVal(inputs, 'speaker_notes');
                         break;
                     case 'card_news':
-                        item.card_number = idx + 1;
-                        item.title = getInputVal(inputs, 'title');
-                        item.content = getInputVal(inputs, 'content');
+                        item.headline = getInputVal(inputs, 'headline') || getInputVal(inputs, 'title');
+                        item.body = getInputVal(inputs, 'body') || getInputVal(inputs, 'content');
+                        item.design_hint = getInputVal(inputs, 'design_hint');
                         break;
                     case 'workshop':
-                        item.name = getInputVal(inputs, 'name');
-                        item.duration_min = parseInt(getInputVal(inputs, 'duration_min'), 10) || 10;
-                        item.activities = [];
+                        item.title = getInputVal(inputs, 'title') || getInputVal(inputs, 'name');
+                        item.phase_type = getInputVal(inputs, 'phase_type') || 'main';
+                        item.content_text = getInputVal(inputs, 'content') || '';
                         break;
                     case 'quiz':
-                        item.question = getInputVal(inputs, 'question');
-                        item.options = [];
+                        item.question_text = getInputVal(inputs, 'question');
+                        item.choices = [];
                         inputs.forEach(inp => {
-                            if (inp.name.startsWith('option_')) {
-                                item.options.push(inp.value);
-                            }
+                            if (inp.name.startsWith('option_')) item.choices.push(inp.value);
                         });
-                        item.correct_answer = getInputVal(inputs, 'correct_answer');
+                        item.correct_answer = parseInt(getInputVal(inputs, 'correct_answer')) || 0;
                         item.explanation = getInputVal(inputs, 'explanation');
+                        item.difficulty = 'medium';
                         break;
                 }
                 items.push(item);
@@ -1935,29 +1940,40 @@
             }
         });
 
-        // Generate (from input step — no plan editing)
+        // Generate (from input step or plan step)
         async function startStudioGeneration(editedPlan) {
             const topic = studioTopic.value.trim();
             if (!topic || studioBusy) return;
 
             studioBusy = true;
-            showStudioStep('progress');
-            resetProgress();
+            updateStudioStep('progress');
+            updateProgressUI(5, 'planning');
 
             try {
                 const reqBody = {
                     content_type: currentStudioType,
                     topic: topic,
-                    options: collectTypeOptions()
+                    options: collectTypeOptions(),
+                    plan_override: editedPlan || null
                 };
-                // If an edited plan is provided, include it
-                if (editedPlan) {
-                    reqBody.plan = editedPlan;
-                }
 
-                const asyncRes = await apiCall('/api/content/generate/async', {
-                    body: reqBody
+                const resp = await apiCall('/api/content/generate/async', {
+                    method: 'POST',
+                    body: JSON.stringify(reqBody)
                 });
+
+                if (resp && resp.request_id) {
+                    pollGenerationStatus(resp.request_id);
+                } else {
+                    throw new Error('요청 ID를 받지 못했습니다.');
+                }
+            } catch (err) {
+                console.error('Generation start failed:', err);
+                showToast('생성 실패: ' + err.message);
+                updateStudioStep('input');
+                studioBusy = false;
+            }
+        }
 
                 // Poll for status with progress animation
                 const result = await pollStudioStatus(asyncRes.request_id);

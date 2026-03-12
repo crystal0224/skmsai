@@ -198,6 +198,7 @@ class ContentOptionsRequest(BaseModel):
     edition_filter: str | None = Field(default=None, description="개정판 필터")
     style: str = Field(default="professional", description="시각 스타일")
     language: str = Field(default="ko", description="출력 언어")
+    target_audience: str = Field(default="general", description="대상 독자 (general, executive 등)")
     include_quiz: bool = Field(default=False, description="퀴즈 포함 여부")
     include_speaker_notes: bool = Field(default=True, description="발표자 노트 포함")
 
@@ -218,6 +219,10 @@ class ContentGenerateRequest(BaseModel):
     options: ContentOptionsRequest = Field(
         default_factory=ContentOptionsRequest,
         description="생성 옵션",
+    )
+    plan_override: dict[str, Any] | None = Field(
+        default=None,
+        description="사용자가 편집한 계획안 (있으면 플래닝 단계 스킵)",
     )
 
 

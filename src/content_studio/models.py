@@ -121,6 +121,7 @@ class ContentRequest:
     content_type: str
     topic: str
     options: ContentOptions = field(default_factory=ContentOptions)
+    plan_override: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if self.content_type not in VALID_CONTENT_TYPES:
@@ -138,6 +139,7 @@ class ContentRequest:
             "content_type": self.content_type,
             "topic": self.topic,
             "options": self.options.to_dict(),
+            "plan_override": self.plan_override,
         }
 
     @classmethod
@@ -152,6 +154,7 @@ class ContentRequest:
             content_type=data["content_type"],
             topic=data["topic"],
             options=options,
+            plan_override=data.get("plan_override"),
         )
 
 

@@ -347,13 +347,18 @@ class ContentStudio:
     # -----------------------------------------------------------------------
 
     async def _stage_plan(self, request: ContentRequest) -> ContentPlan:
-        """Stage 1: Plan 생성 (캐시 히트 시 LLM 호출 스킵)."""
-        if self._planner is None:
-            raise PlanningError("ContentPlanner가 초기화되지 않았습니다")
-
+        """Stage 1: Plan 생성 (오버라이드 또는 캐시 히트 시 스킵)."""
         ct = request.content_type
         opts = request.options
         topic = request.topic
+
+        # [PR-064] 사용자가 직접 수정한 Plan이 있으면 즉시 사용
+        if request.plan_override:
+            logger.info(f"[{ct}] 사용자 편집 플랜 적용 (Stage 1 스킵)")
+            return self._convert_to_plan_object(ct, request.plan_override)
+
+        if self._planner is None:
+            raise PlanningError("ContentPlanner가 초기화되지 않았습니다")
 
         # 캐시 조회
         cache_key: str | None = None
@@ -486,6 +491,32 @@ class ContentStudio:
 
         result = self._assembler.assemble_quiz(content, topic=topic)
         return [result]
+
+    def _convert_to_plan_object(self, content_type: str, data: dict[str, Any]) -> Any:
+        """원시 dict 데이터를 적절한 Plan 데이터 클래스로 변환한다."""
+        from src.content_studio.models import (
+            AudioPlan,
+            CardNewsPlan,
+            LecturePlan,
+            QuizPlan,
+            VisualizationPlan,
+            WorkshopPlan,
+        )
+
+        if content_type == "lecture":
+            return LecturePlan.from_dict(data)
+        elif content_type == "card_news":
+            return CardNewsPlan.from_dict(data)
+        elif content_type == "workshop":
+            return WorkshopPlan.from_dict(data)
+        elif content_type == "audio":
+            return AudioPlan.from_dict(data)
+        elif content_type == "visualization":
+            return VisualizationPlan.from_dict(data)
+        elif content_type == "quiz":
+            return QuizPlan.from_dict(data)
+        else:
+            raise ValueError(f"변환 미지원 콘텐츠 유형: {content_type}")
 
 
 # ---------------------------------------------------------------------------
