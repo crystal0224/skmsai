@@ -193,38 +193,39 @@ def segment_by_headers(
     text: str,
     edition_start_line: int,
     sections: list[dict],
-    header_pats: list[tuple[str, re.Pattern]],
     chunking_cfg: dict,
 ) -> list[dict]:
-    """텍스트를 헤더 경계 기반 세그먼트로 분할한다.
+    """텍스트를 명시적 헤더 라인 번호 기반 세그먼트로 분할한다.
 
     각 세그먼트는 하나의 헤더부터 다음 헤더 직전까지의 텍스트 블록.
     """
     lines = text.splitlines(keepends=True)
     min_tokens = chunking_cfg.get("min_tokens", 100)
-    overlap_tokens = chunking_cfg.get("overlap_tokens", 50)
 
-    # 헤더 위치 수집
-    header_indices: list[int] = []  # 0-based index in lines
-    for idx, line in enumerate(lines):
-        stripped = line.strip()
-        if not stripped:
-            continue
-        for _, regex in header_pats:
-            if regex.search(stripped):
-                header_indices.append(idx)
-                break
+    # 1. sections 트리에서 모든 헤더의 절대 라인 번호를 수집
+    header_lines_abs = set()
+    def _collect_lines(nodes):
+        for node in nodes:
+            header_lines_abs.add(node["line"])
+            _collect_lines(node.get("children", []))
+    _collect_lines(sections)
+
+    # 2. 상대 라인 번호(0-based index)로 변환
+    header_indices = []
+    for idx in range(len(lines)):
+        abs_line = edition_start_line + idx
+        if abs_line in header_lines_abs:
+            header_indices.append(idx)
 
     # 세그먼트 경계 결정
     if not header_indices:
         boundaries = [0]
     else:
-        boundaries = list(header_indices)
+        boundaries = list(sorted(header_indices))
         if boundaries[0] != 0:
             boundaries.insert(0, 0)
 
     segments: list[dict] = []
-    char_offset = 0
     line_char_offsets = []
     running = 0
     for line in lines:
@@ -241,9 +242,7 @@ def segment_by_headers(
 
         abs_line = edition_start_line + start_idx
         section_path = get_section_path(sections, abs_line)
-        char_start = (
-            line_char_offsets[start_idx] if start_idx < len(line_char_offsets) else 0
-        )
+        char_start = line_char_offsets[start_idx] if start_idx < len(line_char_offsets) else 0
         char_end = char_start + len(seg_text)
 
         segments.append(
@@ -257,10 +256,10 @@ def segment_by_headers(
             }
         )
 
-    # 너무 작은 세그먼트를 이전 세그먼트에 병합
+    # 너무 작은 세그먼트를 이전 세그먼트에 병합 (단, 다른 섹션이면 병합하지 않음)
     merged: list[dict] = []
     for seg in segments:
-        if merged and seg["token_count"] < min_tokens:
+        if merged and seg["token_count"] < min_tokens and merged[-1]["section_path"] == seg["section_path"]:
             prev = merged[-1]
             prev["text"] += seg["text"]
             prev["char_end"] = seg["char_end"]
@@ -454,7 +453,6 @@ def main() -> None:
                 doc["text"],
                 doc["start_line"],
                 sections,
-                header_pats,
                 chunking_cfg,
             )
 
