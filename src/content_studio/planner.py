@@ -112,6 +112,8 @@ class ContentPlanner:
     def __init__(self, llm_client: LLMClient, config: dict[str, Any]) -> None:
         self._llm = llm_client
         self._config = config
+        # 전문가 프레임워크 라이브러리 사전 로드
+        self._expert_knowledge = _load_prompt("expert_frameworks.md")
 
     # -----------------------------------------------------------------------
     # Lecture
@@ -140,30 +142,30 @@ class ContentPlanner:
             max_slides,
         )
 
-        # 1단계: 전략가 (Strategist) - 내러티브 및 분량 설계
+        # 1단계: 전략가 (Strategist) - 내러티브 및 분량 설계 (전문가 지식 주입)
         strat_prompt_template = _load_prompt("lecture_strategist.md")
-        strat_prompt = strat_prompt_template.format(
+        full_strat_prompt = f"{self._expert_knowledge}\n\n{strat_prompt_template.format(
             topic=topic,
-            duration_min=duration_min or 30, # 기본값은 주되 에이전트에게 자율권 부여
+            duration_min=duration_min or 30,
             slide_count=target_slide_count or 10,
             target_audience=options.target_audience,
-        )
-        strategy_data = await self._call_llm_json(strat_prompt)
+        )}"
+        strategy_data = await self._call_llm_json(full_strat_prompt)
         
-        # AI 추천 분량 적용 (사용자가 UI에서 선택하지 않았을 때만)
+        # AI 추천 분량 적용
         actual_duration = duration_min or strategy_data.get("recommended_duration", 30)
         actual_slides = strategy_data.get("recommended_slides", target_slide_count)
         
         strategy_json_str = json.dumps(strategy_data, ensure_ascii=False, indent=2)
 
-        # 2단계: 카피라이터 (Copywriter) - 맥킨지식 텍스트 작성
+        # 2단계: 카피라이터 (Copywriter) - 맥킨지식 텍스트 작성 (전문가 지식 주입)
         copy_prompt_template = _load_prompt("lecture_copywriter.md")
-        copy_prompt = copy_prompt_template.format(
+        full_copy_prompt = f"{self._expert_knowledge}\n\n{copy_prompt_template.format(
             topic=topic,
             strategy_json=strategy_json_str,
             target_audience=options.target_audience,
-        )
-        copy_data = await self._call_llm_json(copy_prompt)
+        )}"
+        copy_data = await self._call_llm_json(full_copy_prompt)
         
         # [Task 3] 내용 과다 슬라이드 실질적 분할 및 재정렬
         copy_data["slides"] = self._split_overflow_slides(copy_data.get("slides", []))
@@ -247,30 +249,30 @@ class ContentPlanner:
 
         clamped_cards = _clamp(num_cards, min_cards, max_cards)
 
-        # 1단계: 전략가 (Strategist Agent) - 스토리라인 및 수량 기획
+        # 1단계: 전략가 (Strategist Agent) - 스토리라인 및 수량 기획 (전문가 지식 주입)
         strat_prompt_template = _load_prompt("cardnews_strategist.md")
-        strat_prompt = strat_prompt_template.format(
+        full_strat_prompt = f"{self._expert_knowledge}\n\n{strat_prompt_template.format(
             topic=topic,
             num_cards=num_cards or 5,
             style=options.style,
             target_audience=options.target_audience,
-        )
-        strategy_data = await self._call_llm_json(strat_prompt)
+        )}"
+        strategy_data = await self._call_llm_json(full_strat_prompt)
         
         # AI 추천 수량 적용
         actual_cards = num_cards or strategy_data.get("recommended_cards", 5)
         
         strategy_json_str = json.dumps(strategy_data, ensure_ascii=False, indent=2)
 
-        # 2단계: 카피라이터 (Copywriter Agent) - 카피 작성
+        # 2단계: 카피라이터 (Copywriter Agent) - 카피 작성 (전문가 지식 주입)
         copy_prompt_template = _load_prompt("cardnews_copywriter.md")
-        copy_prompt = copy_prompt_template.format(
+        full_copy_prompt = f"{self._expert_knowledge}\n\n{copy_prompt_template.format(
             topic=topic,
             language=options.language,
             strategy_json=strategy_json_str,
             target_audience=options.target_audience,
-        )
-        copy_data = await self._call_llm_json(copy_prompt)
+        )}"
+        copy_data = await self._call_llm_json(full_copy_prompt)
         copy_json_str = json.dumps(copy_data, ensure_ascii=False, indent=2)
 
         # 3단계: 아트 디렉터 (Art Director Agent) - 시각 기획 및 최종 조립
