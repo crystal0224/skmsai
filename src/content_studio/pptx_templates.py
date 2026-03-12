@@ -22,25 +22,25 @@ import yaml
 
 @dataclass(frozen=True)
 class PptxTheme:
-    """PPTX 색상 테마 — 불변.
+    """PPTX 색상 테마 — 불변 (미니멀리즘 규격).
 
     Attributes:
         name: 테마 표시 이름.
-        primary: 주 색상 (hex).
-        secondary: 보조 색상 (hex).
-        accent: 강조 색상 (hex).
-        background: 배경 색상 (hex).
-        text: 텍스트 색상 (hex).
+        primary: 주 강조 색상 (SK Blue).
+        secondary: 보조 색상 (연한 블루 또는 회색).
+        accent: 포인트 색상.
+        background: 배경 색상 (화이트 고정).
+        text: 기본 텍스트 색상 (다크 그레이).
         font: 기본 폰트 이름.
     """
 
-    name: str
-    primary: str
-    secondary: str
-    accent: str
-    background: str
-    text: str
-    font: str
+    name: str = "minimal_corporate"
+    primary: str = "#0052A2"
+    secondary: str = "#6C757D"
+    accent: str = "#0052A2"
+    background: str = "#FFFFFF"
+    text: str = "#1A1A2E"
+    font: str = "Pretendard"
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> PptxTheme:
@@ -107,30 +107,61 @@ def select_theme(style: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# 레이아웃 선택
+# 레이아웃 선택 (PR-055: Intelligent Layout Selection)
 # ---------------------------------------------------------------------------
+
+_LAYOUT_NAME_TO_INDEX: dict[str, int] = {
+    "title_only": 0,
+    "title_content": 1,
+    "section_header": 2,
+    "title_content_image": 1,  # 보통 Title and Content 사용 후 이미지 배치
+    "comparison": 3,
+    "two_content": 3,
+    "content_with_caption": 7,
+    "picture_with_caption": 8,
+}
 
 
 def select_layout(slide_plan: Any) -> str:
-    """슬라이드 콘텐츠에 기반해 레이아웃을 자동 선택한다.
+    """슬라이드 콘텐츠 및 디자인 힌트에 기반해 레이아웃을 자동 선택한다.
 
     Args:
         slide_plan: SlidePlan 또는 key_points/layout 속성을 가진 객체.
 
     Returns:
-        레이아웃 이름 문자열.
+        레이아웃 이름 문자열 (VALID_LAYOUTS 중 하나).
     """
-    # 명시적 layout 속성이 있으면 우선 사용
-    if hasattr(slide_plan, "layout") and slide_plan.layout:
-        return slide_plan.layout
+    layout = getattr(slide_plan, "layout", "title_content")
+    hint = getattr(slide_plan, "design_hint", "") or ""
+    hint = hint.lower()
 
-    # key_points 개수에 따른 자동 선택
-    if hasattr(slide_plan, "key_points") and slide_plan.key_points:
-        if len(slide_plan.key_points) <= 3:
-            return "title_content"
-        return "title_content_image"
+    # 1. 명시적 레이아웃이 title_content일 때 design_hint로 세분화
+    if layout == "title_content":
+        if "비교" in hint or "대비" in hint or "comparison" in hint:
+            return "comparison"
+        if "이미지 강조" in hint or "비주얼" in hint:
+            return "picture_with_caption"
+        if "요약" in hint or "결론" in hint:
+            return "content_with_caption"
 
-    return "title_content"
+    # 2. 에셋 유무에 따른 보정
+    if hasattr(slide_plan, "asset_type") and slide_plan.asset_type == "image":
+        if layout == "title_content":
+            return "title_content_image"
+
+    return layout
+
+
+def get_layout_index(layout_name: str) -> int:
+    """레이아웃 이름에 해당하는 python-pptx 슬라이드 레이아웃 인덱스를 반환한다.
+
+    Args:
+        layout_name: 레이아웃 이름 (title_only, comparison 등).
+
+    Returns:
+        슬라이드 레이아웃 인덱스 (0~10). 기본값 1 (Title and Content).
+    """
+    return _LAYOUT_NAME_TO_INDEX.get(layout_name, 1)
 
 
 # ---------------------------------------------------------------------------

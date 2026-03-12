@@ -257,23 +257,27 @@ class SlidePlan:
     Attributes:
         index: 슬라이드 순서 (1-based).
         title: 슬라이드 제목.
+        governing_message: 슬라이드 핵심 결론 (거버닝 메시지).
         layout: 레이아웃 유형.
         key_points: 핵심 포인트 (3~5개).
         rag_query: RAG 검색에 사용할 쿼리.
         edition_filter: 특정 개정판 제한.
         asset_type: 에셋 유형 (image, chart, None).
         asset_prompt: 이미지/차트 생성 프롬프트.
+        design_hint: 시각적 구성 의도.
         speaker_notes: 발표자 노트.
     """
 
     index: int
     title: str
+    governing_message: str | None = None
     layout: str = "title_content"
     key_points: tuple[str, ...] = ()
     rag_query: str = ""
     edition_filter: str | None = None
     asset_type: str | None = None
     asset_prompt: str | None = None
+    design_hint: str | None = None
     speaker_notes: str | None = None
 
     def __post_init__(self) -> None:
@@ -288,12 +292,14 @@ class SlidePlan:
         return {
             "index": self.index,
             "title": self.title,
+            "governing_message": self.governing_message,
             "layout": self.layout,
             "key_points": list(self.key_points),
             "rag_query": self.rag_query,
             "edition_filter": self.edition_filter,
             "asset_type": self.asset_type,
             "asset_prompt": self.asset_prompt,
+            "design_hint": self.design_hint,
             "speaker_notes": self.speaker_notes,
         }
 
@@ -302,12 +308,14 @@ class SlidePlan:
         return cls(
             index=data["index"],
             title=data["title"],
+            governing_message=data.get("governing_message"),
             layout=data.get("layout", "title_content"),
             key_points=tuple(data.get("key_points", ())),
             rag_query=data.get("rag_query", ""),
             edition_filter=data.get("edition_filter"),
             asset_type=data.get("asset_type"),
             asset_prompt=data.get("asset_prompt"),
+            design_hint=data.get("design_hint"),
             speaker_notes=data.get("speaker_notes"),
         )
 
@@ -370,6 +378,7 @@ class CardPlan:
         body: 본문 (2~3줄).
         source_quote: 출처 quote_id.
         image_prompt: 나노바나나2 이미지 생성 프롬프트.
+        design_hint: 디자인 가이드 (색상 톤, 배치 등).
         text_overlay: 이미지 위 텍스트 오버레이.
     """
 
@@ -378,6 +387,7 @@ class CardPlan:
     body: str
     source_quote: str = ""
     image_prompt: str = ""
+    design_hint: str | None = None
     text_overlay: str | None = None
 
     def __post_init__(self) -> None:
@@ -391,6 +401,7 @@ class CardPlan:
             "body": self.body,
             "source_quote": self.source_quote,
             "image_prompt": self.image_prompt,
+            "design_hint": self.design_hint,
             "text_overlay": self.text_overlay,
         }
 
@@ -402,6 +413,7 @@ class CardPlan:
             body=data["body"],
             source_quote=data.get("source_quote", ""),
             image_prompt=data.get("image_prompt", ""),
+            design_hint=data.get("design_hint"),
             text_overlay=data.get("text_overlay"),
         )
 

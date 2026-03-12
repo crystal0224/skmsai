@@ -116,12 +116,25 @@ class AssetGenerator:
             생성된 에셋 목록. 실패한 에셋은 제외 (경고 로그).
         """
         asset_requests = self._extract_asset_requests(plan)
+        
+        # 병렬 실행 (PR-053: Parallel Asset Generation)
+        import asyncio
+        tasks = [self._generate_single(req) for req in asset_requests]
+        raw_results = await asyncio.gather(*tasks, return_exceptions=True)
+        
         results: list[GeneratedAsset] = []
-
-        for req in asset_requests:
-            asset = await self._generate_single(req)
-            if asset is not None:
-                results.append(asset)
+        for i, res in enumerate(raw_results):
+            if isinstance(res, GeneratedAsset):
+                results.append(res)
+            elif isinstance(res, Exception):
+                req = asset_requests[i]
+                logger.error(
+                    f"에셋 생성 중 예외 발생 (type={req.get('asset_type')}): {res}", 
+                    exc_info=True
+                )
+            elif res is None:
+                # _generate_single 내부에서 실패하여 None을 반환한 경우 (이미 로그 남김)
+                pass
 
         return results
 

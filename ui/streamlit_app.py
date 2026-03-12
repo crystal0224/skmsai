@@ -277,6 +277,145 @@ def _render_toc_node(node: dict, indent: int) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Page: 컨텐츠 스튜디오 (PR-056: UI Integration)
+# ---------------------------------------------------------------------------
+
+
+def render_content_studio_page() -> None:
+    """컨텐츠 스튜디오 탭을 렌더링한다."""
+    st.header("✨ 컨텐츠 스튜디오")
+    st.caption("주제만 입력하면 전문가 수준의 교육 컨텐츠를 자동 생성합니다.")
+
+    # 1. 지원 유형 로드
+    types_data = _api_get("/content/types")
+    if not types_data:
+        st.error("컨텐츠 유형 정보를 가져올 수 없습니다.")
+        return
+
+    type_options = {t["type"]: f"{t['label']} ({t['description']})" for t in types_data["types"]}
+
+    # 2. 입력 폼
+    with st.form("studio_form"):
+        col1, col2 = st.columns([1, 2])
+        with col1:
+            content_type = st.selectbox("콘텐츠 유형", list(type_options.keys()), format_func=lambda x: type_options[x])
+        with col2:
+            topic = st.text_input("주제", placeholder="예: VWBE와 구성원의 행복", help="구체적인 주제를 입력할수록 품질이 좋아집니다.")
+
+        with st.expander("세부 옵션"):
+            o_col1, o_col2, o_col3 = st.columns(3)
+            with o_col1:
+                duration = st.number_input("소요 시간(분)", 5, 180, 30)
+                num_items = st.number_input("수량(슬라이드/카드 등)", 3, 30, 5)
+            with o_col2:
+                style = st.selectbox("시각 스타일", ["professional", "casual", "academic"])
+                language = st.selectbox("언어", ["ko", "en"])
+            with o_col3:
+                edition = st.text_input("개정판 필터 (선택)", placeholder="예: 2020-14차")
+                include_quiz = st.checkbox("퀴즈 포함", value=False)
+
+        submit = st.form_submit_button("컨텐츠 생성 시작", type="primary")
+
+    # 3. 생성 프로세스 (비동기)
+    if submit:
+        if not topic:
+            st.warning("주제를 입력해주세요.")
+            return
+
+        payload = {
+            "content_type": content_type,
+            "topic": topic,
+            "options": {
+                "duration_min": int(duration),
+                "num_items": int(num_items),
+                "style": style,
+                "language": language,
+                "edition_filter": edition if edition else None,
+                "include_quiz": include_quiz,
+            }
+        }
+
+        with st.spinner("생성 작업 요청 중..."):
+            resp = _api_post("/content/generate/async", payload)
+
+        if resp and "request_id" in resp:
+            req_id = resp["request_id"]
+            st.session_state[f"job_{req_id}"] = {"status": "pending", "topic": topic}
+            st.info(f"작업이 시작되었습니다. (ID: {req_id[:8]})")
+            
+            # 진행 상태 표시를 위한 placeholder
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            # 폴링 루프
+            import time
+            max_retries = 120 # 2분
+            for i in range(max_retries):
+                time.sleep(2)
+                status_data = _api_get(f"/content/status/{req_id}")
+                if not status_data:
+                    continue
+                
+                status = status_data["status"]
+                status_text.text(f"현재 상태: {status} ({i*2}초 경과)")
+                
+                if status == "running":
+                    progress_bar.progress(30 + (i % 60))
+                elif status == "completed":
+                    progress_bar.progress(100)
+                    st.success("🎉 컨텐츠 생성이 완료되었습니다!")
+                    _render_generation_result(req_id, status_data["result"])
+                    break
+                elif status == "failed":
+                    st.error(f"생성 실패: {status_data.get('error', '알 수 없는 오류')}")
+                    break
+            else:
+                st.warning("시간이 너무 오래 걸립니다. 나중에 '작업 확인' 메뉴에서 확인하세요.")
+
+
+def _render_generation_result(req_id: str, result: dict) -> None:
+    """생성 완료된 결과를 화면에 표시한다."""
+    st.divider()
+    st.subheader(f"생성 결과: {result['topic']}")
+    
+    # 파일 목록
+    cols = st.columns(len(result["files"]) if result["files"] else 1)
+    for i, file in enumerate(result["files"]):
+        with cols[i % len(cols)]:
+            st.write(f"📄 **{file['file_type'].upper()}**")
+            st.caption(f"{file['file_name']}")
+            # 다운로드 버튼 (API 엔드포인트 연결)
+            download_url = f"{API_BASE}/content/download/{req_id}/{file['file_name']}"
+            st.markdown(f"[⬇️ 다운로드]({download_url})")
+
+    # 인용 및 메타데이터
+    with st.expander("인용 및 상세 정보"):
+        st.write("**참조된 SKMS 원문:**")
+        for cite in result.get("citations", []):
+            st.code(cite)
+        
+        st.write("**생성 통계:**")
+        st.json(result.get("metadata", {}))
+    
+    # 발행 옵션
+    st.divider()
+    st.subheader("🚀 플랫폼 발행")
+    p_col1, p_col2 = st.columns([1, 2])
+    with p_col1:
+        dest = st.selectbox("발행 대상", ["local", "notion", "google_ws"])
+    with p_col2:
+        if st.button("발행 실행"):
+            with st.spinner(f"{dest}로 발행 중..."):
+                pub_resp = _api_post(f"/content/publish/{req_id}", {"destination": dest})
+                if pub_resp and pub_resp.get("results"):
+                    for r in pub_resp["results"]:
+                        if r["success"]:
+                            st.success(f"발행 성공! URL: {r.get('url')}")
+                        else:
+                            st.error(f"발행 실패: {r.get('error')}")
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -324,7 +463,7 @@ def main() -> None:
         st.sidebar.caption(f"API URL: {API_BASE}")
 
     # 탭
-    tab_search, tab_generate, tab_toc = st.tabs(["🔍 검색", "✨ 생성", "📋 목차"])
+    tab_search, tab_generate, tab_toc, tab_studio = st.tabs(["🔍 검색", "✨ 생성", "📋 목차", "🎨 스튜디오"])
 
     with tab_search:
         render_search_page()
@@ -334,6 +473,9 @@ def main() -> None:
 
     with tab_toc:
         render_toc_page()
+
+    with tab_studio:
+        render_content_studio_page()
 
 
 if __name__ == "__main__":

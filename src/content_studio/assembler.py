@@ -41,6 +41,17 @@ SK_GRAY = "6C757D"
 SK_LIGHT_GRAY = "F8F9FA"
 WHITE = "FFFFFF"
 
+# ---------------------------------------------------------------------------
+# 디자인 시스템 규격 (Typography Hierarchy)
+# ---------------------------------------------------------------------------
+
+FONT_SIZE_TITLE = 24
+FONT_SIZE_GOVERNING = 18
+FONT_SIZE_KEY_POINT = 16
+FONT_SIZE_BODY = 14
+FONT_SIZE_CITATION = 11
+FONT_SIZE_FOOTER = 8
+
 # 슬라이드 크기 (16:9, EMU 단위)
 SLIDE_WIDTH_EMU = 12192000  # 33.867 cm
 SLIDE_HEIGHT_EMU = 6858000  # 19.05 cm
@@ -243,53 +254,94 @@ class FileAssembler:
         slide_number = len(prs.slides) + 1  # TOC 다음부터
 
         for slide_content in slides:
-            # 레이아웃 자동 선택
+            # 레이아웃 지능적 선택 (PR-055)
             layout_name = select_layout(slide_content)
-            slide_layout = prs.slide_layouts[1]  # Title and Content
+            layout_idx = get_layout_index(layout_name)
+            slide_layout = prs.slide_layouts[layout_idx]
             slide = prs.slides.add_slide(slide_layout)
 
-            # 제목
-            if slide.shapes.title:
-                slide.shapes.title.text = slide_content.title
-                if title_color:
-                    slide.shapes.title.text_frame.paragraphs[
-                        0
-                    ].font.color.rgb = RGBColor(*title_color)
-                slide.shapes.title.text_frame.paragraphs[0].font.name = font_name
+            # 제목 및 거버닝 메시지 고정 렌더링 (PR-057: Fixed Header/Governing Message)
+            self._add_fixed_title_and_governing(
+                slide, 
+                prs,
+                slide_content.title,
+                getattr(slide_content, "governing_message", ""),
+                font_name,
+                title_color,
+                text_color,
+                Pt,
+                Inches,
+                RGBColor
+            )
 
-            # 본문
-            body_placeholder = None
-            for shape in slide.placeholders:
-                if shape.placeholder_format.idx == 1:
-                    body_placeholder = shape
-                    break
+            # 본문 배치 (레이아웃에 따른 지능적 분배)
+            # 고정 헤더와 겹치지 않도록 본문 영역은 1.8인치 아래로 설정
+            placeholders = sorted(
+                [s for s in slide.placeholders if s.placeholder_format.idx in (1, 2)],
+                key=lambda x: x.placeholder_format.idx
+            )
+            
+            key_points = slide_content.key_points if hasattr(slide_content, "key_points") else ()
+            body_text = getattr(slide_content, "body_text", "")
+...
 
-            if body_placeholder is not None:
-                tf = body_placeholder.text_frame
-                tf.clear()
-                # key points
-                for i, point in enumerate(slide_content.key_points):
-                    p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-                    p.text = point
-                    p.font.size = Pt(16)
-                    p.font.name = font_name
-                    if text_color:
-                        p.font.color.rgb = RGBColor(*text_color)
+    def _add_fixed_title_and_governing(
+        self,
+        slide: Any,
+        prs: Any,
+        title: str,
+        governing: str,
+        font_name: str,
+        title_color: tuple[int, int, int] | None,
+        text_color: tuple[int, int, int] | None,
+        Pt: Any,
+        Inches: Any,
+        RGBColor: Any
+    ) -> None:
+        """모든 슬라이드에서 제목과 거버닝 메시지를 장식 없이 고정된 위치와 크기로 렌더링한다."""
+        # 1. 제목 (Title) - 24pt Bold (Blue 강조)
+        title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.4), prs.slide_width - Inches(1.0), Inches(0.6))
+        tf = title_box.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = title
+        p.font.size = Pt(FONT_SIZE_TITLE)
+        p.font.bold = True
+        p.font.name = font_name
+        p.font.color.rgb = RGBColor(0, 82, 162) # #0052A2 (SK Blue)
 
-                # 본문 텍스트
-                if slide_content.body_text:
-                    p = tf.add_paragraph()
-                    p.text = slide_content.body_text
-                    p.font.size = Pt(14)
-                    p.font.name = font_name
-                    if text_color:
-                        p.font.color.rgb = RGBColor(*text_color)
+        # 2. 거버닝 메시지 (Governing Message) - 18pt (Dark Gray)
+        if governing:
+            # 장식 요소 제거: 시각적 피로도를 줄이기 위해 여백으로만 구분
+            gov_box = slide.shapes.add_textbox(Inches(0.5), Inches(1.05), prs.slide_width - Inches(1.0), Inches(0.5))
+            tf_gov = gov_box.text_frame
+            tf_gov.word_wrap = True
+            p_gov = tf_gov.paragraphs[0]
+            p_gov.text = governing
+            p_gov.font.size = Pt(FONT_SIZE_GOVERNING)
+            p_gov.font.name = font_name
+            p_gov.font.color.rgb = RGBColor(26, 26, 46) # #1A1A2E (Dark Gray)
+
+            if layout_name in ("comparison", "two_content") and len(placeholders) >= 2:
+                # 데이터를 반으로 나눔
+                mid = (len(key_points) + 1) // 2
+                left_points = key_points[:mid]
+                right_points = key_points[mid:]
+                
+                # 왼쪽 placeholder
+                self._fill_placeholder(placeholders[0], left_points, "", font_name, text_color, Pt, RGBColor)
+                # 오른쪽 placeholder
+                self._fill_placeholder(placeholders[1], right_points, "", font_name, text_color, Pt, RGBColor)
+            elif placeholders:
+                # 기본 단일 placeholder
+                self._fill_placeholder(placeholders[0], key_points, body_text, font_name, text_color, Pt, RGBColor)
 
             # 이미지 삽입
             asset = asset_map.get(slide_content.index)
             if asset and os.path.exists(asset.file_path):
                 try:
-                    left = Inches(7.0)
+                    # 레이아웃에 맞춰 이미지 위치 조정
+                    left = Inches(7.0) if layout_name == "title_content_image" else Inches(1.0)
                     top = Inches(1.5)
                     width = Inches(3.0)
                     slide.shapes.add_picture(asset.file_path, left, top, width=width)
@@ -297,9 +349,10 @@ class FileAssembler:
                     logger.warning(f"이미지 삽입 실패 (slide {slide_content.index}): {e}")
 
             # 발표자 노트
-            if slide_content.speaker_notes:
+            speaker_notes = getattr(slide_content, "speaker_notes", "")
+            if speaker_notes:
                 notes_slide = slide.notes_slide
-                notes_slide.notes_text_frame.text = slide_content.speaker_notes
+                notes_slide.notes_text_frame.text = speaker_notes
 
             # 푸터 (슬라이드 번호 + 회사명 + 날짜)
             if footer_data.get("show_page_number"):
@@ -414,6 +467,33 @@ class FileAssembler:
             size_bytes=len(text.encode("utf-8")),
         )
 
+    def _fill_placeholder(self, shape: Any, key_points: tuple[str, ...], body_text: str, font_name: str, text_color: tuple[int, int, int] | None, Pt: Any, RGBColor: Any) -> None:
+        """Placeholder 텍스트 프레임을 장식 없이 체계적인 위계로 채운다."""
+        tf = shape.text_frame
+        tf.clear()
+        tf.word_wrap = True
+        
+        # 1. 핵심 포인트 (Key Points) - 16pt Bold (Blue 강조)
+        for i, point in enumerate(key_points):
+            p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+            p.text = f"• {point}"
+            p.font.size = Pt(FONT_SIZE_KEY_POINT)
+            p.font.bold = True
+            p.font.name = font_name
+            # 포인트 텍스트도 블루 계열로 통일하여 시각적 흐름 유지
+            p.font.color.rgb = RGBColor(0, 82, 162) # #0052A2
+            p.space_after = Pt(8)
+
+        # 2. 본문 텍스트 (Body Text) - 14pt (Dark Gray)
+        if body_text:
+            p = tf.add_paragraph()
+            p.text = body_text
+            p.font.size = Pt(FONT_SIZE_BODY)
+            p.font.bold = False
+            p.font.name = font_name
+            p.font.color.rgb = RGBColor(26, 26, 46) # #1A1A2E
+            p.space_before = Pt(12) # 정보 덩어리 사이의 충분한 여백
+
     # ----- Card News (PNG set) -----
 
     def assemble_card_news(
@@ -422,7 +502,10 @@ class FileAssembler:
         assets: list[GeneratedAsset] | None = None,
         topic: str = "",
     ) -> tuple[GeneratedFile, ...]:
-        """카드뉴스 PNG 세트 또는 HTML fallback."""
+        """카드뉴스 PNG 세트 또는 HTML fallback.
+
+        PR-055: design_hint 기반 스타일 차별화.
+        """
         results = []
         cards = content.cards if hasattr(content, "cards") else ()
 
@@ -453,44 +536,44 @@ class FileAssembler:
                     )
                 )
             else:
-                # HTML fallback
+                # HTML fallback (미니멀 디자인 시스템 적용)
                 out_path = self._output_path(
                     "card_news", f"{topic}-{card.index}", "html"
                 )
                 body_html = card.body.replace("\n", "<br>")
+                
+                # 디자인 시스템 고정: 화이트 배경 + 블루 강조
+                bg_style = "#FFFFFF"
+                accent_color = "#0052A2" # SK Blue
+                text_color = "#1A1A2E"   # Dark Gray
+                border_color = "rgba(0, 82, 162, 0.2)"
+
                 # 인용 블록
                 quote_html = ""
                 source_quote = getattr(card, "source_quote", "")
                 source_edition = getattr(card, "source_edition", "")
                 if source_quote:
                     quote_html = (
-                        (
-                            f'<blockquote style="border-left:3px solid rgba(255,255,255,0.5);'
-                            f"padding-left:16px;margin-top:24px;font-style:italic;"
-                            f'font-size:18px;opacity:0.9;line-height:1.6;">'
-                            f"「{source_quote}」"
-                            f'<span style="display:block;font-size:13px;margin-top:8px;opacity:0.7;">'
-                            f"(출처: {source_edition})</span>"
-                            f"</blockquote>"
-                        )
-                        if source_edition
-                        else (
-                            f'<blockquote style="border-left:3px solid rgba(255,255,255,0.5);'
-                            f"padding-left:16px;margin-top:24px;font-style:italic;"
-                            f'font-size:18px;opacity:0.9;line-height:1.6;">'
-                            f"「{source_quote}」</blockquote>"
-                        )
+                        f'<blockquote style="border-left:4px solid {accent_color};'
+                        f"padding-left:20px;margin-top:30px;font-style:italic;"
+                        f'font-size:20px;color:#4A4A4A;line-height:1.6;background:#F8F9FA;padding-top:15px;padding-bottom:15px;">'
+                        f"「{source_quote}」"
+                        f'<span style="display:block;font-size:14px;margin-top:10px;color:{accent_color};font-weight:600;">'
+                        f"— {source_edition}</span>"
+                        f"</blockquote>"
                     )
-                card_num = f'<div style="position:absolute;top:24px;right:32px;font-size:14px;opacity:0.6;">{card.index}/{len(cards)}</div>'
+                
+                card_num = f'<div style="position:absolute;top:40px;right:60px;font-size:16px;color:#999;font-weight:600;">{card.index} / {len(cards)}</div>'
                 html = f"""<!DOCTYPE html>
 <html lang="ko">
 <head><meta charset="utf-8"><meta name="viewport" content="width=1080"></head>
-<body style="margin:0;width:1080px;height:1080px;background:linear-gradient(135deg,#0052A2,#003d7a);color:white;font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;display:flex;flex-direction:column;justify-content:center;padding:60px;box-sizing:border-box;position:relative;">
+<body style="margin:0;width:1080px;height:1080px;background:{bg_style};color:{text_color};font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;display:flex;flex-direction:column;justify-content:center;padding:100px;box-sizing:border-box;position:relative;border:20px solid {accent_color};">
 {card_num}
-<h1 style="font-size:40px;margin:0 0 20px;line-height:1.3;font-weight:700;">{card.headline}</h1>
-<p style="font-size:24px;line-height:1.9;margin:0 0 16px;">{body_html}</p>
+<div style="width:80px;height:4px;background:{accent_color};margin-bottom:30px;"></div>
+<h1 style="font-size:52px;margin:0 0 30px;line-height:1.2;font-weight:800;color:{accent_color}; letter-spacing:-1px;">{card.headline}</h1>
+<p style="font-size:28px;line-height:1.7;margin:0 0 20px;color:#333;font-weight:400;">{body_html}</p>
 {quote_html}
-<div style="position:absolute;bottom:24px;left:60px;font-size:12px;opacity:0.5;">SKMS Content Studio</div>
+<div style="position:absolute;bottom:60px;left:100px;font-size:14px;color:#AAA;letter-spacing:2px;font-weight:600;">SKMS CONTENT STUDIO</div>
 </body></html>"""
                 out_path.write_text(html, encoding="utf-8")
                 results.append(
@@ -504,31 +587,53 @@ class FileAssembler:
 
         return tuple(results)
 
-    # ----- Workshop (PDF) -----
-
     def assemble_workshop(
         self,
         content: Any,
         assets: list[GeneratedAsset] | None = None,
         topic: str = "",
     ) -> GeneratedFile:
-        """워크숍 PDF (Markdown → HTML fallback)."""
+        """워크숍 가이드 HTML (미니멀 디자인 시스템)."""
         phases = content.phases if hasattr(content, "phases") else ()
-        lines = [f"# {topic} — 워크숍 진행자 가이드\n"]
+        
+        phase_html = ""
         for phase in phases:
-            lines.append(f"## {phase.title} ({phase.phase_type})")
-            lines.append(phase.content_text)
-            lines.append("")
+            phase_html += f"""
+            <div style="margin-bottom:40px; padding:30px; border-left:4px solid #0052A2; background:#F8F9FA;">
+                <div style="color:#0052A2; font-weight:800; font-size:14px; margin-bottom:10px; letter-spacing:1px;">{phase.phase_type.upper()} PHASE</div>
+                <h2 style="margin:0 0 15px; font-size:24px; color:#1A1A2E;">{phase.title}</h2>
+                <div style="font-size:16px; line-height:1.8; color:#444;">{phase.content_text.replace(chr(10), '<br>')}</div>
+            </div>
+            """
 
-        text = "\n".join(lines)
+        html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<style>
+    body{{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif; background:#FFFFFF; color:#1A1A2E; margin:0; padding:60px; line-height:1.6;}}
+    header{{border-bottom:2px solid #EEE; margin-bottom:50px; padding-bottom:30px;}}
+    h1{{color:#0052A2; font-size:36px; margin:0 0 10px; font-weight:800;}}
+    .meta{{color:#666; font-size:16px;}}
+    footer{{margin-top:100px; color:#AAA; font-size:12px; letter-spacing:1px; border-top:1px solid #EEE; padding-top:20px;}}
+</style>
+</head>
+<body>
+    <header>
+        <h1>{topic}</h1>
+        <div class="meta">SKMS 워크숍 진행자 가이드</div>
+    </header>
+    {phase_html}
+    <footer>SKMS CONTENT STUDIO</footer>
+</body></html>"""
+
         out_path = self._output_path("workshop", topic, "html")
-        out_path.write_text(text, encoding="utf-8")
+        out_path.write_text(html, encoding="utf-8")
 
         return GeneratedFile(
             file_type="html",
             file_path=str(out_path),
             file_name=out_path.name,
-            size_bytes=len(text.encode("utf-8")),
+            size_bytes=len(html.encode("utf-8")),
         )
 
     # ----- Audio (MP3 / script fallback) -----
@@ -539,7 +644,7 @@ class FileAssembler:
         assets: list[GeneratedAsset] | None = None,
         topic: str = "",
     ) -> GeneratedFile:
-        """오디오 MP3 합성 또는 스크립트 텍스트 fallback."""
+        """오디오 스크립트 HTML (미니멀 디자인 시스템)."""
         # MP3 에셋이 있으면 합성 시도
         if assets:
             mp3_assets = [a for a in assets if a.asset_type == "audio"]
@@ -551,21 +656,43 @@ class FileAssembler:
 
         # 스크립트 텍스트 fallback
         sections = content.sections if hasattr(content, "sections") else ()
-        lines = [f"# {topic} — 오디오 스크립트\n"]
+        
+        script_html = ""
         for sec in sections:
-            lines.append(f"**[{sec.speaker}]**")
-            lines.append(sec.text)
-            lines.append("")
+            script_html += f"""
+            <div style="margin-bottom:30px; display:flex; gap:20px;">
+                <div style="width:100px; flex-shrink:0; font-weight:800; color:#0052A2; text-align:right; font-size:14px; padding-top:5px;">{sec.speaker}</div>
+                <div style="background:#F8F9FA; padding:20px; border-radius:4px; flex:1; font-size:16px; line-height:1.7; color:#333;">{sec.text.replace(chr(10), '<br>')}</div>
+            </div>
+            """
 
-        text = "\n".join(lines)
+        html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8">
+<style>
+    body{{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif; background:#FFFFFF; color:#1A1A2E; margin:0; padding:60px; line-height:1.6;}}
+    header{{border-bottom:2px solid #EEE; margin-bottom:50px; padding-bottom:30px;}}
+    h1{{color:#0052A2; font-size:36px; margin:0 0 10px; font-weight:800;}}
+    footer{{margin-top:100px; color:#AAA; font-size:12px; letter-spacing:1px; border-top:1px solid #EEE; padding-top:20px;}}
+</style>
+</head>
+<body>
+    <header>
+        <h1>{topic}</h1>
+        <div style="color:#666; font-size:16px;">오디오 교육 대본</div>
+    </header>
+    <div style="max-width:800px;">{script_html}</div>
+    <footer>SKMS CONTENT STUDIO</footer>
+</body></html>"""
+
         out_path = self._output_path("audio", topic, "html")
-        out_path.write_text(text, encoding="utf-8")
+        out_path.write_text(html, encoding="utf-8")
 
         return GeneratedFile(
             file_type="html",
             file_path=str(out_path),
             file_name=out_path.name,
-            size_bytes=len(text.encode("utf-8")),
+            size_bytes=len(html.encode("utf-8")),
         )
 
     def _merge_audio(
@@ -690,27 +817,27 @@ def _build_quiz_html(plan: Any, topic: str) -> str:
         '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
         f"<title>{title_escaped}</title>\n"
         "<style>\n"
-        "body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f5f7fa;margin:0;padding:20px;color:#1a1a2e}\n"
-        "h1{text-align:center;color:#0052A2;margin:20px 0 30px;font-size:28px}\n"
-        ".question{background:white;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}\n"
-        ".q-num{color:#0052A2;font-weight:700;font-size:14px;margin-bottom:8px}\n"
-        ".q-text{font-size:18px;font-weight:600;line-height:1.6;margin-bottom:16px}\n"
-        ".choices{display:flex;flex-direction:column;gap:8px}\n"
-        ".choice{border:2px solid #e0e0e0;border-radius:8px;padding:12px 16px;background:white;cursor:pointer;"
-        "text-align:left;font-size:16px;transition:all 0.2s}\n"
-        ".choice:hover{border-color:#0052A2;background:#f0f4ff}\n"
-        ".choice .label{display:inline-block;width:28px;height:28px;border-radius:50%;background:#e8edf5;"
-        "text-align:center;line-height:28px;font-weight:700;margin-right:8px;font-size:14px}\n"
-        ".choice.correct{border-color:#2ecc71;background:#eafaf1}"
-        ".choice.correct .label{background:#2ecc71;color:white}\n"
-        ".choice.wrong{border-color:#e74c3c;background:#fdf2f2}"
-        ".choice.wrong .label{background:#e74c3c;color:white}\n"
-        ".choice.disabled{pointer-events:none;opacity:0.6}\n"
-        ".explanation{margin-top:16px;padding:16px;background:#f0f4ff;border-radius:8px;"
-        "font-size:15px;line-height:1.7;border-left:4px solid #0052A2}\n"
-        ".source{margin-top:8px;font-size:13px;color:#666;font-style:italic}\n"
-        ".score{text-align:center;font-size:20px;font-weight:700;color:#0052A2;margin-top:20px}\n"
-        "footer{text-align:center;margin-top:30px;color:#999;font-size:12px}\n"
+        "body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#FFFFFF;margin:0;padding:40px;color:#1A1A2E;line-height:1.6}\n"
+        "h1{text-align:left;color:#0052A2;margin:0 0 40px;font-size:32px;font-weight:800;border-bottom:3px solid #0052A2;padding-bottom:15px}\n"
+        ".question{background:white;border-radius:0;padding:30px 0;margin-bottom:30px;border-bottom:1px solid #EEE}\n"
+        ".q-num{color:#0052A2;font-weight:800;font-size:16px;margin-bottom:10px;letter-spacing:1px}\n"
+        ".q-text{font-size:20px;font-weight:600;margin-bottom:20px}\n"
+        ".choices{display:flex;flex-direction:column;gap:12px}\n"
+        ".choice{border:1px solid #DDD;border-radius:4px;padding:15px 20px;background:white;cursor:pointer;"
+        "text-align:left;font-size:16px;transition:all 0.2s;color:#444}\n"
+        ".choice:hover{border-color:#0052A2;background:#F0F7FF;color:#0052A2}\n"
+        ".choice .label{display:inline-block;width:24px;height:24px;border-radius:2px;background:#F0F0F0;"
+        "text-align:center;line-height:24px;font-weight:700;margin-right:12px;font-size:13px}\n"
+        ".choice.correct{border-color:#28a745;background:#f8fff9;color:#28a745}"
+        ".choice.correct .label{background:#28a745;color:white}\n"
+        ".choice.wrong{border-color:#dc3545;background:#fff8f8;color:#dc3545}"
+        ".choice.wrong .label{background:#dc3545;color:white}\n"
+        ".choice.disabled{pointer-events:none;opacity:0.7}\n"
+        ".explanation{margin-top:20px;padding:20px;background:#F8F9FA;border-left:5px solid #0052A2;"
+        "font-size:15px;color:#555}\n"
+        ".source{margin-top:10px;font-size:13px;color:#0052A2;font-weight:600}\n"
+        ".score{text-align:center;font-size:24px;font-weight:800;color:#0052A2;margin-top:50px;padding:30px;background:#F0F7FF;border-radius:8px}\n"
+        "footer{text-align:left;margin-top:60px;color:#AAA;font-size:12px;letter-spacing:1px}\n"
         "</style>\n"
         "</head>\n<body>\n"
         f"<h1>{title_escaped}</h1>\n"
@@ -777,21 +904,20 @@ def _build_visualization_html(plan: Any, topic: str) -> str:
         '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
         f"<title>{title_escaped}</title>\n"
         "<style>\n"
-        "body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f5f7fa;margin:0;padding:20px;color:#1a1a2e}\n"
-        "h1{text-align:center;color:#0052A2;margin:20px 0 10px;font-size:28px}\n"
-        ".subtitle{text-align:center;color:#666;margin-bottom:30px;font-size:15px}\n"
-        ".timeline{position:relative;max-width:700px;margin:0 auto;padding:20px 0}\n"
-        ".timeline::before{content:'';position:absolute;left:80px;top:0;bottom:0;width:3px;"
-        "background:linear-gradient(180deg,#0052A2,#003d7a)}\n"
-        ".tl-item{display:flex;align-items:center;margin-bottom:16px;position:relative}\n"
-        ".tl-year{width:60px;text-align:right;font-weight:700;color:#0052A2;font-size:15px;flex-shrink:0}\n"
-        ".tl-dot{width:14px;height:14px;border-radius:50%;background:#0052A2;border:3px solid white;"
-        "box-shadow:0 0 0 2px #0052A2;margin:0 16px;flex-shrink:0;z-index:1}\n"
-        ".tl-card{background:white;border-radius:8px;padding:12px 16px;"
-        "box-shadow:0 2px 6px rgba(0,0,0,0.08);flex:1}\n"
-        ".tl-name{font-weight:700;font-size:16px;color:#1a1a2e}\n"
-        ".tl-desc{font-size:14px;color:#555;margin-top:4px}\n"
-        "footer{text-align:center;margin-top:30px;color:#999;font-size:12px}\n"
+        "body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#FFFFFF;margin:0;padding:40px;color:#1A1A2E}\n"
+        "h1{text-align:left;color:#0052A2;margin:0 0 10px;font-size:32px;font-weight:800}\n"
+        ".subtitle{text-align:left;color:#666;margin-bottom:50px;font-size:16px;border-left:4px solid #0052A2;padding-left:15px}\n"
+        ".timeline{position:relative;max-width:800px;margin:0;padding:20px 0}\n"
+        ".timeline::before{content:'';position:absolute;left:100px;top:0;bottom:0;width:2px;"
+        "background:#EEE}\n"
+        ".tl-item{display:flex;align-items:flex-start;margin-bottom:40px;position:relative}\n"
+        ".tl-year{width:80px;text-align:right;font-weight:800;color:#0052A2;font-size:18px;flex-shrink:0;padding-top:10px}\n"
+        ".tl-dot{width:12px;height:12px;border-radius:50%;background:#FFFFFF;border:3px solid #0052A2;"
+        "margin:15px 20px 0;flex-shrink:0;z-index:1}\n"
+        ".tl-card{background:#F8F9FA;border-radius:0;padding:20px 25px;flex:1;border-left:2px solid #0052A2}\n"
+        ".tl-name{font-weight:700;font-size:18px;color:#1A1A2E}\n"
+        ".tl-desc{font-size:15px;color:#444;margin-top:8px;line-height:1.6}\n"
+        "footer{text-align:left;margin-top:80px;color:#AAA;font-size:12px;letter-spacing:1px}\n"
         "</style>\n"
         "</head>\n<body>\n"
         f"<h1>{title_escaped}</h1>\n"

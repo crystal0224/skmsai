@@ -52,50 +52,114 @@ class GenerationJob:
     error: str | None
 
 
+import json
+import sqlite3
+from datetime import datetime
+
 # ---------------------------------------------------------------------------
-# Thread-safe in-memory job store
+# Persistent Job Store (PR-054: Database-backed Job Store)
 # ---------------------------------------------------------------------------
 
 
-class _JobStore:
-    """스레드 안전한 인메모리 작업 저장소."""
+class DatabaseJobStore:
+    """SQLite 기반의 영속적 작업 저장소."""
 
-    def __init__(self) -> None:
-        self._lock = threading.Lock()
-        self._jobs: dict[str, GenerationJob] = {}
+    def __init__(self, db_path: str = "data/content_jobs.db") -> None:
+        self.db_path = Path(db_path)
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self._init_db()
+
+    def _init_db(self) -> None:
+        """데이터베이스 및 테이블 초기화."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS jobs (
+                    request_id TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    content_type TEXT NOT NULL,
+                    topic TEXT NOT NULL,
+                    created_at REAL NOT NULL,
+                    completed_at REAL,
+                    result TEXT,
+                    error TEXT
+                )
+                """
+            )
+            conn.commit()
 
     def put(self, job: GenerationJob) -> None:
-        with self._lock:
-            self._jobs = {**self._jobs, job.request_id: job}
+        """새 작업을 저장한다."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute(
+                "INSERT INTO jobs VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    job.request_id,
+                    job.status,
+                    job.content_type,
+                    job.topic,
+                    job.created_at,
+                    job.completed_at,
+                    json.dumps(job.result) if job.result else None,
+                    job.error,
+                ),
+            )
+            conn.commit()
 
     def get(self, request_id: str) -> GenerationJob | None:
-        with self._lock:
-            return self._jobs.get(request_id)
+        """작업을 조회한다."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            row = conn.execute("SELECT * FROM jobs WHERE request_id = ?", (request_id,)).fetchone()
+            if not row:
+                return None
+            
+            result_val = json.loads(row["result"]) if row["result"] else None
+            # result_val이 dict일 경우 다시 ContentGenerateResponse로 변환될 수 있게 처리
+            return GenerationJob(
+                request_id=row["request_id"],
+                status=row["status"],
+                content_type=row["content_type"],
+                topic=row["topic"],
+                created_at=row["created_at"],
+                completed_at=row["completed_at"],
+                result=result_val,
+                error=row["error"],
+            )
 
     def update(self, request_id: str, **kwargs: Any) -> GenerationJob | None:
-        """기존 job의 필드를 업데이트한 새 GenerationJob을 저장한다."""
-        with self._lock:
-            existing = self._jobs.get(request_id)
-            if existing is None:
-                return None
-            fields = {
-                "request_id": existing.request_id,
-                "status": existing.status,
-                "content_type": existing.content_type,
-                "topic": existing.topic,
-                "created_at": existing.created_at,
-                "completed_at": existing.completed_at,
-                "result": existing.result,
-                "error": existing.error,
-            }
-            fields.update(kwargs)
-            updated = GenerationJob(**fields)
-            self._jobs = {**self._jobs, updated.request_id: updated}
-            return updated
+        """기존 작업을 업데이트한다."""
+        existing = self.get(request_id)
+        if not existing:
+            return None
+
+        # Update SQL dynamically
+        updates = []
+        params = []
+        for k, v in kwargs.items():
+            if k == "result" and v is not None:
+                updates.append("result = ?")
+                params.append(json.dumps(v))
+            else:
+                updates.append(f"{k} = ?")
+                params.append(v)
+        
+        if not updates:
+            return existing
+
+        params.append(request_id)
+        with sqlite3.connect(self.db_path) as conn:
+            conn.execute(
+                f"UPDATE jobs SET {', '.join(updates)} WHERE request_id = ?",
+                tuple(params),
+            )
+            conn.commit()
+        
+        return self.get(request_id)
 
 
-# Module-level singleton
-_job_store = _JobStore()
+# Module-level singleton (SQLite-backed)
+_job_store = DatabaseJobStore()
 
 
 # ---------------------------------------------------------------------------

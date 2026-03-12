@@ -40,9 +40,10 @@ class SlideContent:
 
     index: int
     title: str
-    body_text: str
-    key_points: tuple[str, ...]
-    quote_ids: tuple[str, ...]
+    governing_message: str = ""
+    body_text: str = ""
+    key_points: tuple[str, ...] = ()
+    quote_ids: tuple[str, ...] = ()
     speaker_notes: str = ""
 
 
