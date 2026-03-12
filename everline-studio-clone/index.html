@@ -20,10 +20,10 @@
         <div class="logo">skms ai studio</div>
         <div class="nav-links">
             <a href="#hero-section" class="active" data-nav="home">HOME</a>
-            <a href="#" data-nav="editions" id="nav-editions">SKMS 판본</a>
+            <a href="#" data-nav="editions" id="nav-editions">EDITIONS</a>
             <a href="#" data-nav="search" id="nav-search">SEARCH</a>
-            <a href="#testimonial-section" data-nav="about">ABOUT</a>
             <a href="#" data-nav="dashboard" id="nav-dashboard">DASHBOARD</a>
+            <a href="#content-studio-section" class="nav-cta" id="nav-studio">START STUDIO</a>
         </div>
     </nav>
 
@@ -455,7 +455,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="contact-oval" id="footer-btn-start">
-            <h2>START CREATING</h2>
+            <h2>START YOUR JOURNEY</h2>
         </div>
         <div class="footer-bottom">
             <div class="footer-links">
@@ -490,10 +490,18 @@
                 <span class="close-chat" id="close-chat">&times;</span>
             </div>
             <div class="chat-body" id="chat-body">
-                <div class="message bot-message">
-                    <p>안녕하세요. SKMS에 대해 어떤 점이 궁금하신가요?</p>
-                </div>
+               <div class="message bot-message">
+                   <p>안녕하세요. SKMS에 대해 어떤 점이 궁금하신가요?</p>
+               </div>
+               <!-- Chat Starter Chips -->
+               <div class="chat-starters">
+                   <button class="starter-chip" data-query="행복이란 무엇인가요?">😊 행복의 정의</button>
+                   <button class="starter-chip" data-query="VWBE의 실천 방안을 알려줘">⚙️ VWBE 실천</button>
+                   <button class="starter-chip" data-query="14차 개정판의 핵심 변화는?">📜 개정판 변화</button>
+                   <button class="starter-chip" data-query="SUPEX 추구 방법론 요약">🚀 SUPEX 추구</button>
+               </div>
             </div>
+
             <div class="chat-edition-filter">
                 <select id="chat-edition-filter" title="판본 필터">
                     <option value="">전체 판본</option>
@@ -1085,6 +1093,17 @@
                 e.preventDefault();
                 sendChatMessage();
             }
+        });
+
+        // [Phase 9] Chat Starter Chips Handler
+        document.querySelectorAll('.starter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const query = chip.getAttribute('data-query');
+                chatInput.value = query;
+                sendChatMessage();
+                // 칩 컨테이너 숨기기 (한 번 사용 후 공간 확보)
+                chip.parentElement.style.display = 'none';
+            });
         });
 
         // ===================================================================

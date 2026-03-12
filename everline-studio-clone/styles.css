@@ -120,6 +120,47 @@ a {
   width: 100%;
 }
 
+.nav-cta {
+  background: var(--sk-blue);
+  color: white !important;
+  padding: 0.5rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  transition: var(--transition-smooth);
+}
+
+.nav-cta:hover {
+  background: var(--sk-blue-hover);
+  transform: translateY(-2px);
+}
+
+/* Chat Starter Chips */
+.chat-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 1.25rem 1rem;
+}
+
+.starter-chip {
+  background: #f0f7ff;
+  border: 1px solid #d0e5ff;
+  color: var(--sk-blue);
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.starter-chip:hover {
+  background: var(--sk-blue);
+  color: white;
+  border-color: var(--sk-blue);
+}
+
 /* Hero Section */
 .hero {
   min-height: 85vh;
@@ -611,11 +652,11 @@ a {
 }
 
 .contact-oval {
-  width: 60vw;
-  max-width: 800px;
-  height: 250px;
-  background-color: var(--primary-yellow);
-  border: 1px solid var(--text-black);
+  width: 50vw;
+  max-width: 600px;
+  height: 160px;
+  background-color: var(--sk-blue);
+  border: none;
   border-radius: 500px;
   display: flex;
   align-items: center;
@@ -625,22 +666,24 @@ a {
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 82, 162, 0.2);
 }
 
 .contact-oval:hover {
-  transform: scale(1.02);
-  background-color: var(--text-black);
+  transform: scale(1.05);
+  background-color: var(--sk-blue-hover);
 }
 
 .contact-oval h2 {
-  font-size: 5vw; /* scale nicely */
-  color: var(--text-black);
+  font-size: 3vw;
+  color: #FFFFFF;
   z-index: 1;
-  transition: color 0.3s;
+  letter-spacing: 2px;
+  transition: all 0.3s;
 }
 
 .contact-oval:hover h2 {
-  color: var(--primary-yellow);
+  letter-spacing: 4px;
 }
 
 .footer-bottom {
