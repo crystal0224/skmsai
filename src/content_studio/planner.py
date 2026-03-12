@@ -191,20 +191,23 @@ class ContentPlanner:
         return new_slides
 
         # 3단계: 아트 디렉터 (Art Director) - 시각화 및 레이아웃 확정
+        # [병목 해소] 디자인 지시는 비교적 가벼운 작업이므로 빠른 모델 권장
         art_prompt_template = _load_prompt("lecture_art_director.md")
         art_prompt = art_prompt_template.format(
             topic=topic,
             copy_json=copy_json_str,
         )
-        art_data = await self._call_llm_json(art_prompt)
+        # LLMClient가 모델명을 지원한다고 가정 (미지원 시 기본 모델 유지)
+        art_data = await self._llm.generate(art_prompt, model="gpt-4o-mini", json_mode=True)
 
         # 4단계: 수석 에디터 (Quality Reviewer) - 최종 검수 및 퀄리티 정제
+        # [병목 해소] 검수 작업도 빠른 모델로 처리
         review_prompt_template = _load_prompt("quality_reviewer.md")
         review_prompt = review_prompt_template.format(
             topic=topic,
             final_plan_json=json.dumps(art_data, ensure_ascii=False, indent=2),
         )
-        final_data = await self._call_llm_json(review_prompt)
+        final_data = await self._llm.generate(review_prompt, model="gpt-4o-mini", json_mode=True)
 
         # 최종 데이터 모델 조립
         if "learning_objectives" not in final_data and "learning_objectives" in copy_data:

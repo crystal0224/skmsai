@@ -2,9 +2,13 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# 시스템 의존성
+# 시스템 의존성 (한글 폰트 및 폰트 설정 도구 추가)
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    fonts-nanum \
+    fontconfig && \
+    fc-cache -f -v && \
     rm -rf /var/lib/apt/lists/*
 
 # Python 의존성 (경량 deploy 버전)

@@ -56,9 +56,13 @@ FONT_SIZE_FOOTER = 8
 SLIDE_WIDTH_EMU = 12192000  # 33.867 cm
 SLIDE_HEIGHT_EMU = 6858000  # 19.05 cm
 
-# 기본 폰트
-DEFAULT_FONT = "맑은 고딕"
-FALLBACK_FONT = "Arial"
+# 기본 폰트 (Pretendard 선호, 서버는 NanumGothic)
+DEFAULT_FONT = "Pretendard"
+SERVER_FONT = "NanumGothic"
+FALLBACK_FONT = "맑은 고딕"
+
+# Pretendard 웹폰트 (HTML용 CDN)
+PRETENDARD_CSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />'
 
 
 # ---------------------------------------------------------------------------
@@ -211,6 +215,9 @@ class FileAssembler:
         title_color = self._parse_hex_color(theme.primary) if theme else None
         text_color = self._parse_hex_color(theme.text) if theme else None
         font_name = theme.font if theme else self._config.font_name
+        # [폰트 고도화] 리눅스 서버(Docker) 환경이면 설치된 NanumGothic 강제 적용
+        if os.name != 'nt':
+            font_name = "NanumGothic"
 
         # 에셋 인덱스 매핑
         asset_map: dict[int, GeneratedAsset] = {}
@@ -690,7 +697,7 @@ class FileAssembler:
                 card_num = f'<div style="position:absolute;top:40px;right:60px;font-size:16px;color:#999;font-weight:600;">{card.index} / {len(cards)}</div>'
                 html = f"""<!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="utf-8"><meta name="viewport" content="width=1080"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">{PRETENDARD_CSS}</head>
 <body style="margin:0;width:1080px;height:1080px;background:{bg_style};color:{text_color};font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;display:flex;flex-direction:column;justify-content:center;padding:100px;box-sizing:border-box;position:relative;border:20px solid {accent_color};">
 {card_num}
 <div style="width:80px;height:4px;background:{accent_color};margin-bottom:30px;"></div>
