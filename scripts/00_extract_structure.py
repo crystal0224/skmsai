@@ -139,9 +139,17 @@ def parse_headers(
 
             for level, regex in header_pats:
                 if regex.search(text):
+                    # [Phase 11] 제목에 본문이 결합된 형태 처리 (1. 제목: 본문)
+                    clean_title = text
+                    if ":" in text:
+                        parts = text.split(":", 1)
+                        # 제목 부분이 너무 길지 않고(패턴 매칭 부위), 뒤에 충분한 내용이 있다면 분리
+                        if len(parts[0]) < 100: 
+                            clean_title = parts[0].strip()
+                    
                     section = {
                         "level": level,
-                        "title": text,
+                        "title": clean_title,
                         "line": line_no,
                         "children": [],
                     }
