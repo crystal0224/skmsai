@@ -2503,65 +2503,51 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         function renderTocTree(sections, depth = 0) {
             if (depth === 0) tocTree.innerHTML = '';
             const container = depth === 0 ? tocTree : document.createElement('div');
-            if (depth > 0) container.className = 'toc-children';
+            if (depth > 0) {
+                container.className = 'toc-children expanded'; // 기본적으로 모두 펼침
+            }
 
             sections.forEach(section => {
                 const node = document.createElement('div');
-                node.className = 'toc-node';
+                node.className = `toc-node depth-${depth}`;
 
                 const hasChildren = section.children && section.children.length > 0;
                 const header = document.createElement('div');
                 header.className = 'toc-node-header';
-                header.style.paddingLeft = `${depth * 0.5}rem`;
+                header.style.paddingLeft = `${depth * 1.2 + 1}rem`;
                 header.style.cursor = 'pointer';
 
-                const toggle = document.createElement('span');
-                toggle.className = 'toc-toggle' + (hasChildren ? '' : ' empty');
-                toggle.textContent = hasChildren ? '\u25B6' : '\u00B7';
+                // 위계에 따른 폰트 스타일 차별화
+                const fontSize = depth === 0 ? '1.05rem' : '0.95rem';
+                const fontWeight = depth === 0 ? '700' : (depth === 1 ? '600' : '400');
+                const color = depth === 0 ? '#000' : '#444';
 
-                const level = document.createElement('span');
-                level.className = 'toc-level';
-                level.textContent = section.level;
+                header.innerHTML = `
+                    <span class="toc-bullet">${depth === 0 ? '■' : '·'}</span>
+                    <span class="toc-title" style="font-size: ${fontSize}; font-weight: ${fontWeight}; color: ${color}; flex: 1;">
+                        ${escapeHtml(section.title)}
+                    </span>
+                    <span class="toc-line-tag">L${section.line}</span>
+                `;
 
-                const title = document.createElement('span');
-                title.className = 'toc-title';
-                title.textContent = section.title;
-
-                const lineNum = document.createElement('span');
-                lineNum.className = 'toc-line';
-                lineNum.textContent = 'L' + section.line;
-
-                const readBtn = document.createElement('span');
-                readBtn.className = 'toc-read-btn';
-                readBtn.textContent = '\uD83D\uDCC4';
-                readBtn.title = '원문 보기';
-
-                header.append(toggle, level, title, lineNum, readBtn);
                 node.appendChild(header);
 
-                // 원문 보기 버튼 클릭
-                readBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (selectedEditionId) {
-                        loadSectionText(selectedEditionId, section.line, section.title);
+                // 제목 클릭 시 본문 로드
+                header.addEventListener('click', (e) => {
+                    // 하위 메뉴 토글 기능은 유지하되 본문 로드를 우선함
+                    if (hasChildren && e.target.classList.contains('toc-bullet')) {
+                        const childCont = node.querySelector('.toc-children');
+                        childCont.classList.toggle('expanded');
+                    } else {
+                        if (selectedEditionId) {
+                            loadSectionText(selectedEditionId, section.line, section.title);
+                        }
                     }
                 });
 
                 if (hasChildren) {
                     const childContainer = renderTocTree(section.children, depth + 1);
                     node.appendChild(childContainer);
-
-                    header.addEventListener('click', () => {
-                        const children = node.querySelector('.toc-children');
-                        children.classList.toggle('expanded');
-                        toggle.classList.toggle('expanded');
-                    });
-                } else {
-                    header.addEventListener('click', () => {
-                        if (selectedEditionId) {
-                            loadSectionText(selectedEditionId, section.line, section.title);
-                        }
-                    });
                 }
 
                 container.appendChild(node);

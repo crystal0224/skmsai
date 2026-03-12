@@ -70,9 +70,9 @@ def create_toc_router(state: AppState) -> APIRouter:
         line: int,
         title: str | None = None,
     ) -> dict:
-        """섹션의 모든 텍스트 조각을 합쳐서 전문을 반환한다 (DB 기반 통합).
+        """섹션의 전문을 반환한다 (지능형 문맥 병합).
 
-        PR-075: 다중 텍스트 조각 통합 기능 (Full-Text 보장).
+        PR-076: 제목만 있는 조각과 상세 본문이 분리된 경우를 위해 전후 문맥을 자동 병합.
         """
         import sqlite3
         from pathlib import Path
@@ -85,24 +85,36 @@ def create_toc_router(state: AppState) -> APIRouter:
             with sqlite3.connect(db_path) as conn:
                 conn.row_factory = sqlite3.Row
                 
-                # 1. 먼저 제목(title)으로 해당 섹션의 모든 조각을 찾음 (가장 정확한 방법)
-                # section_path 컬럼에 제목이 포함된 모든 데이터를 가져옴
+                # 1. 제목 기반 매칭 (section_path에 제목이 포함된 모든 조각)
                 rows = []
                 if title:
-                    query_title = "SELECT text FROM quotes WHERE edition_id = ? AND section_path LIKE ? ORDER BY start_line"
+                    # 제목이 포함된 모든 경로의 조각을 찾음
+                    query_title = "SELECT text, start_line FROM quotes WHERE edition_id = ? AND section_path LIKE ? ORDER BY start_line"
                     rows = conn.execute(query_title, (edition_id, f'%"{title}"%')).fetchall()
                 
-                # 2. 제목으로 결과가 없으면 line 번호 기반으로 근처 조각들을 가져옴 (Fallback)
-                if not rows:
-                    query_line = "SELECT text FROM quotes WHERE edition_id = ? AND start_line >= ? AND start_line < ? + 10 ORDER BY start_line"
-                    rows = conn.execute(query_line, (edition_id, line, line)).fetchall()
-
-                if rows:
-                    # 모든 조각을 하나의 텍스트로 합침
-                    full_text = "\n\n".join([row["text"] for row in rows])
-                    return {"edition_id": edition_id, "line": line, "text": full_text}
+                # 2. 라인 기반 매칭 (제목 매칭이 부실하거나 결과가 없을 때)
+                # 요청한 라인을 포함하거나, 요청 라인 바로 뒤에 나오는 조각들을 긁어모음
+                query_line = """
+                    SELECT text, start_line FROM quotes 
+                    WHERE edition_id = ? 
+                    AND (
+                        (start_line BETWEEN ? - 5 AND ? + 5) -- 요청 라인 근처
+                        OR (text LIKE ?) -- 텍스트 내에 제목이 포함된 경우
+                    )
+                    ORDER BY start_line
+                """
+                line_rows = conn.execute(query_line, (edition_id, line, line, f"%{title}%" if title else "%NONE%")).fetchall()
                 
-                return {"edition_id": edition_id, "line": line, "text": "해당 섹션의 본문 데이터를 찾을 수 없습니다."}
+                # 중복 제거 및 합치기 (start_line 기준 정렬 유지)
+                all_results = {r["start_line"]: r["text"] for r in rows + line_rows}
+                sorted_lines = sorted(all_results.keys())
+                
+                if sorted_lines:
+                    full_text = "\n\n".join([all_results[l] for l in sorted_lines])
+                    # 너무 중복되는 내용은 간단히 정제 (옵션)
+                    return {"edition_id": edition_id, "line": line, "text": full_text.strip()}
+                
+                return {"edition_id": edition_id, "line": line, "text": "해당 섹션의 상세 내용을 찾을 수 없습니다."}
         except Exception as e:
             return {"edition_id": edition_id, "line": line, "text": f"본문 로드 중 오류 발생: {str(e)}"}
 
