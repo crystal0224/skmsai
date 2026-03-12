@@ -2431,31 +2431,46 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         });
 
         async function loadEditions() {
+            const listEl = document.getElementById('edition-list');
+            if (!listEl) return;
+            
+            listEl.innerHTML = '<p class="loading-text">판본 정보를 불러오는 중...</p>';
+            
             try {
                 const data = await apiCall('/api/editions', { method: 'GET' });
                 editionsCache = data.editions || [];
-                editionCount.textContent = `${editionsCache.length}개`;
+                if (editionCount) editionCount.textContent = `${editionsCache.length}개`;
+                
+                if (editionsCache.length === 0) {
+                    listEl.innerHTML = '<p class="empty-text">로드된 판본이 없습니다.</p>';
+                    return;
+                }
+
                 renderEditionList(editionsCache);
-                // Also populate edition filter dropdowns
                 populateEditionFilters(editionsCache);
             } catch (err) {
-                editionList.innerHTML = `<p class="loading-text" style="color: #dc3545;">판본 목록을 불러올 수 없습니다.<br>${escapeHtml(err.message)}</p>`;
+                console.error('Failed to load editions:', err);
+                listEl.innerHTML = `<p class="loading-text" style="color: #E4002B;">오류: ${escapeHtml(err.message)}</p>`;
             }
         }
 
         function renderEditionList(editions) {
-            editionList.innerHTML = editions.map(ed => `
+            const listEl = document.getElementById('edition-list');
+            if (!listEl) return;
+
+            listEl.innerHTML = editions.map(ed => `
                 <div class="edition-item${ed.edition_id === selectedEditionId ? ' active' : ''}"
-                     data-edition-id="${escapeHtml(ed.edition_id)}">
-                    <span class="edition-label">${escapeHtml(ed.label)} (${ed.year})</span>
-                    <span class="edition-meta">${ed.section_count}개 섹션</span>
+                     data-id="${escapeHtml(ed.edition_id)}">
+                    <div class="edition-label">${escapeHtml(ed.label)}</div>
+                    <div class="edition-meta">${ed.year}년 · ${ed.section_count}개 섹션</div>
                 </div>
             `).join('');
 
-            editionList.querySelectorAll('.edition-item').forEach(item => {
+            // 이벤트 리스너 재등록
+            listEl.querySelectorAll('.edition-item').forEach(item => {
                 item.addEventListener('click', () => {
-                    const editionId = item.dataset.editionId;
-                    selectEdition(editionId);
+                    const eid = item.getAttribute('data-id');
+                    selectEdition(eid);
                 });
             });
         }
