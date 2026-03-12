@@ -380,7 +380,12 @@
                     <span class="status-dot"></span>
                     <h3>SKMS Assistant</h3>
                 </div>
-                <span class="close-chat" id="close-chat">&times;</span>
+                <div class="chat-header-actions" style="display: flex; gap: 10px; align-items: center;">
+                    <span class="expand-chat" id="expand-chat" title="전체화면" style="cursor: pointer; opacity: 0.7; transition: opacity 0.2s;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                    </span>
+                    <span class="close-chat" id="close-chat" style="font-size: 20px; cursor: pointer;">&times;</span>
+                </div>
             </div>
             <div class="chat-body" id="chat-body">
                <div class="message bot-message">
@@ -2318,6 +2323,29 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
 
         // ===================================================================
+        // [Phase 11] Chat Fullscreen Toggle
+        const expandChatBtn = document.getElementById('expand-chat');
+        const chatWindow = document.getElementById('chat-window');
+        let isChatFullscreen = false;
+
+        if (expandChatBtn && chatWindow) {
+            expandChatBtn.addEventListener('click', () => {
+                isChatFullscreen = !isChatFullscreen;
+                chatWindow.classList.toggle('full-screen');
+                
+                // Toggle Icon (Expand vs Shrink)
+                if (isChatFullscreen) {
+                    expandChatBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>';
+                    expandChatBtn.title = '축소하기';
+                    document.body.style.overflow = 'hidden'; // 화면 고정
+                } else {
+                    expandChatBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+                    expandChatBtn.title = '전체화면';
+                    document.body.style.overflow = ''; // 고정 해제
+                }
+            });
+        }
+
         // NAVIGATION
         // ===================================================================
         document.querySelectorAll('.nav-links a').forEach(link => {

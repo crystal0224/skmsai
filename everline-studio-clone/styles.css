@@ -3158,3 +3158,23 @@ textarea.plan-field-input {
   background: var(--sk-blue);
   color: white;
 }
+
+/* Chat Fullscreen Mode */
+.chat-window.full-screen {
+  width: 100vw;
+  height: 100vh;
+  bottom: 0;
+  right: 0;
+  max-height: none;
+  border-radius: 0;
+  z-index: 2500;
+}
+
+.chat-window.full-screen .chat-body {
+  height: calc(100vh - 180px); /* 헤더, 필터, 입력창 제외 높이 */
+}
+
+.expand-chat:hover {
+  opacity: 1 !important;
+  color: var(--sk-blue);
+}
