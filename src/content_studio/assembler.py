@@ -192,8 +192,11 @@ class FileAssembler:
         """
         try:
             from pptx import Presentation
-            from pptx.util import Inches, Pt, Emu
+            from pptx.util import Inches, Pt
             from pptx.dml.color import RGBColor
+            from pptx.enum.shapes import MSO_SHAPE
+            from pptx.enum.text import PP_ALIGN
+
             from pptx.enum.text import PP_ALIGN
         except ImportError:
             logger.warning("python-pptx 미설치. 텍스트 fallback 사용.")
@@ -254,8 +257,14 @@ class FileAssembler:
         slide_number = len(prs.slides) + 1  # TOC 다음부터
 
         for slide_content in slides:
-            # 레이아웃 지능적 선택 (PR-055)
+            # 레이아웃 및 도식화 판단 (PR-061: Semantic Diagrams)
             layout_name = select_layout(slide_content)
+            hint = (getattr(slide_content, "design_hint", "") or "").lower()
+            
+            # 도식화 트리거 조건
+            is_process = any(x in hint for x in ["프로세스", "단계", "process", "flow"])
+            is_matrix = any(x in hint for x in ["매트릭스", "4분면", "matrix", "quadrant"])
+
             layout_idx = get_layout_index(layout_name)
             slide_layout = prs.slide_layouts[layout_idx]
             slide = prs.slides.add_slide(slide_layout)
@@ -274,15 +283,26 @@ class FileAssembler:
                 RGBColor
             )
 
-            # 본문 배치 (레이아웃에 따른 지능적 분배)
-            # 고정 헤더와 겹치지 않도록 본문 영역은 1.8인치 아래로 설정
-            placeholders = sorted(
-                [s for s in slide.placeholders if s.placeholder_format.idx in (1, 2)],
-                key=lambda x: x.placeholder_format.idx
-            )
-            
             key_points = slide_content.key_points if hasattr(slide_content, "key_points") else ()
             body_text = getattr(slide_content, "body_text", "")
+
+            # [Task 2] 도식화 엔진 실행 또는 일반 텍스트 배치
+            if is_process and 3 <= len(key_points) <= 5:
+                self._draw_process_diagram(slide, key_points, font_name, Pt, Inches, RGBColor)
+            elif is_matrix and len(key_points) == 4:
+                self._draw_matrix_diagram(slide, key_points, font_name, Pt, Inches, RGBColor)
+            else:
+                # 기존 텍스트 배치 로직
+                placeholders = sorted(
+                    [s for s in slide.placeholders if s.placeholder_format.idx in (1, 2)],
+                    key=lambda x: x.placeholder_format.idx
+                )
+                if layout_name in ("comparison", "two_content") and len(placeholders) >= 2:
+                    mid = (len(key_points) + 1) // 2
+                    self._fill_placeholder(placeholders[0], key_points[:mid], "", font_name, text_color, Pt, RGBColor)
+                    self._fill_placeholder(placeholders[1], key_points[mid:], "", font_name, text_color, Pt, RGBColor)
+                elif placeholders:
+                    self._fill_placeholder(placeholders[0], key_points, body_text, font_name, text_color, Pt, RGBColor)
 ...
 
     def _add_fixed_title_and_governing(
@@ -493,6 +513,74 @@ class FileAssembler:
             p.font.name = font_name
             p.font.color.rgb = RGBColor(26, 26, 46) # #1A1A2E
             p.space_before = Pt(12) # 정보 덩어리 사이의 충분한 여백
+
+    def _draw_process_diagram(self, slide: Any, points: tuple[str, ...], font_name: str, Pt: Any, Inches: Any, RGBColor: Any) -> None:
+        """단계별 화살표 프로세스 도식을 그린다."""
+        n = min(len(points), 5)
+        margin_x = Inches(0.5)
+        avail_width = slide.parent.slide_width - (margin_x * 2)
+        box_width = (avail_width / n) - Inches(0.2)
+        box_height = Inches(1.8)
+        top = Inches(2.2)
+
+        for i in range(n):
+            left = margin_x + (i * (box_width + Inches(0.2)))
+            # 화살표 오각형 (Pentagon)
+            shape = slide.shapes.add_shape(MSO_SHAPE.PENTAGON, left, top, box_width, box_height)
+            shape.fill.solid()
+            # 그라데이션 블루: 1단계(연함) -> n단계(진함)
+            blue_val = 200 - (i * 30)
+            shape.fill.fore_color.rgb = RGBColor(0, 82, max(blue_val, 100))
+            shape.line.visible = False
+            
+            tf = shape.text_frame
+            tf.word_wrap = True
+            p = tf.paragraphs[0]
+            p.alignment = PP_ALIGN.CENTER
+            p.text = f"STEP {i+1}"
+            p.font.size = Pt(12)
+            p.font.bold = True
+            p.font.color.rgb = RGBColor(255, 255, 255)
+            
+            p2 = tf.add_paragraph()
+            p2.alignment = PP_ALIGN.CENTER
+            p2.text = points[i]
+            p2.font.size = Pt(14)
+            p2.font.bold = False
+            p2.font.color.rgb = RGBColor(255, 255, 255)
+
+    def _draw_matrix_diagram(self, slide: Any, points: tuple[str, ...], font_name: str, Pt: Any, Inches: Any, RGBColor: Any) -> None:
+        """2x2 매트릭스 도식을 그린다."""
+        margin_left = (slide.parent.slide_width - Inches(6.0)) / 2
+        top = Inches(2.0)
+        box_size = Inches(2.8)
+        gap = Inches(0.15)
+
+        coords = [
+            (margin_left, top), (margin_left + box_size + gap, top),
+            (margin_left, top + box_size + gap), (margin_left + box_size + gap, top + box_size + gap)
+        ]
+        
+        # 4개 영역 색상 분화
+        colors = [(0, 82, 162), (40, 110, 180), (80, 140, 200), (120, 170, 220)]
+
+        for i in range(min(len(points), 4)):
+            left, t = coords[i]
+            shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, t, box_size, box_size)
+            shape.fill.solid()
+            shape.fill.fore_color.rgb = RGBColor(*colors[i])
+            shape.line.color.rgb = RGBColor(255, 255, 255)
+            shape.line.width = Pt(2)
+            
+            tf = shape.text_frame
+            tf.word_wrap = True
+            p = tf.paragraphs[0]
+            p.alignment = PP_ALIGN.CENTER
+            p.text = points[i]
+            p.font.size = Pt(16)
+            p.font.bold = True
+            p.font.name = font_name
+            p.font.color.rgb = RGBColor(255, 255, 255)
 
     # ----- Card News (PNG set) -----
 

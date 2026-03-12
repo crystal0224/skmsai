@@ -158,14 +158,37 @@ class ContentPlanner:
         )
         copy_data = await self._call_llm_json(copy_prompt)
         
-        # [Task 3 기초] 내용 과다 슬라이드 감지 및 분할 힌트 생성
-        for slide in copy_data.get("slides", []):
-            points = slide.get("key_points", [])
-            if len(points) > 5:
-                slide["overflow_warning"] = True
-                slide["split_suggestion"] = "내용이 많으므로 2장으로 분할하거나 프로세스 도식화 권장"
+        # [Task 3] 내용 과다 슬라이드 실질적 분할 및 재정렬
+        copy_data["slides"] = self._split_overflow_slides(copy_data.get("slides", []))
 
         copy_json_str = json.dumps(copy_data, ensure_ascii=False, indent=2)
+...
+    def _split_overflow_slides(self, slides: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """내용이 너무 많은 슬라이드를 논리적으로 분할한다."""
+        new_slides = []
+        for slide in slides:
+            points = slide.get("key_points", [])
+            if len(points) > 5:
+                # 1번 슬라이드: 앞쪽 3개 포인트
+                s1 = slide.copy()
+                s1["key_points"] = points[:3]
+                s1["design_hint"] = "내용 분할 - 도입부 강조"
+                new_slides.append(s1)
+                
+                # 2번 슬라이드: 뒤쪽 포인트
+                s2 = slide.copy()
+                s2["title"] = f"{slide['title']} (계속)"
+                s2["key_points"] = points[3:]
+                s2["governing_message"] = f"앞선 내용에 이어, {s2['governing_message']}"
+                s2["design_hint"] = "내용 분할 - 결론부 강조"
+                new_slides.append(s2)
+            else:
+                new_slides.append(slide)
+        
+        # 인덱스 재정렬
+        for i, s in enumerate(new_slides):
+            s["index"] = i + 1
+        return new_slides
 
         # 3단계: 아트 디렉터 (Art Director) - 시각화 및 레이아웃 확정
         art_prompt_template = _load_prompt("lecture_art_director.md")
