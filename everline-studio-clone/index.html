@@ -187,182 +187,58 @@
                 <span class="close-overlay" id="close-studio-modal">&times;</span>
             </div>
             <div class="studio-modal-body">
-                <!-- Step 1: Input -->
+                <!-- Step 1: Input (Phase 10 Simplified) -->
                 <div class="studio-step" id="studio-step-input">
                     <div class="studio-input-form">
                         <div class="form-group">
-                            <label>주제를 입력하세요</label>
-                            <textarea id="studio-topic" rows="4" placeholder="예: SUPEX 추구의 현대적 의미와 실천 방안"></textarea>
+                            <label>제작할 주제를 입력하세요</label>
+                            <textarea id="studio-topic" rows="4" placeholder="예: VWBE와 SUPEX 추구의 실천적 방안"></textarea>
                         </div>
-                        <!-- Type-specific options (conditionally shown by JS) -->
-                        <div id="studio-type-options">
-                            <!-- lecture options -->
-                            <div class="type-options hidden" data-for="lecture">
-                                <div class="form-row">
-                                    <div class="form-group" style="flex:1">
-                                        <label>소요 시간</label>
-                                        <div class="custom-select">
-                                            <select id="opt-lecture-duration">
-                                                <option value="15">15분</option>
-                                                <option value="30" selected>30분</option>
-                                                <option value="45">45분</option>
-                                                <option value="60">60분</option>
-                                                <option value="90">90분</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group" style="flex:1">
-                                        <label>테마</label>
-                                        <div class="custom-select">
-                                            <select id="opt-lecture-style">
-                                                <option value="professional">Corporate</option>
-                                                <option value="casual">Education</option>
-                                                <option value="academic">Seminar</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="toggle-row">
-                                    <label class="toggle-label">
-                                        <input type="checkbox" id="opt-lecture-notes" checked>
-                                        <span class="toggle-switch"></span>
-                                        발표자 노트 포함
-                                    </label>
-                                </div>
-                            </div>
-                            <!-- card_news options -->
-                            <div class="type-options hidden" data-for="card_news">
-                                <div class="form-row">
-                                    <div class="form-group" style="flex:1">
-                                        <label>카드 수: <span id="opt-card-count-label">5</span>장</label>
-                                        <input type="range" class="range-slider" id="opt-card-count" min="3" max="10" value="5">
-                                    </div>
-                                    <div class="form-group" style="flex:1">
-                                        <label>스타일</label>
-                                        <div class="custom-select">
-                                            <select id="opt-card-style">
-                                                <option value="professional">Professional</option>
-                                                <option value="casual">Casual</option>
-                                                <option value="academic">Academic</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- workshop options -->
-                            <div class="type-options hidden" data-for="workshop">
-                                <div class="form-row">
-                                    <div class="form-group" style="flex:1">
-                                        <label>소요 시간</label>
-                                        <div class="custom-select">
-                                            <select id="opt-workshop-duration">
-                                                <option value="30">30분</option>
-                                                <option value="60" selected>60분</option>
-                                                <option value="90">90분</option>
-                                                <option value="120">120분</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group" style="flex:1">
-                                        <label>스타일</label>
-                                        <div class="custom-select">
-                                            <select id="opt-workshop-style">
-                                                <option value="professional">Professional</option>
-                                                <option value="casual">Casual</option>
-                                                <option value="academic">Academic</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="toggle-row">
-                                    <label class="toggle-label">
-                                        <input type="checkbox" id="opt-workshop-quiz">
-                                        <span class="toggle-switch"></span>
-                                        학습 퀴즈 포함
-                                    </label>
-                                </div>
-                            </div>
-                            <!-- visualization options -->
-                            <div class="type-options hidden" data-for="visualization">
-                                <div class="form-group">
-                                    <label>차트 유형</label>
+                        
+                        <div id="studio-intelligent-options" style="margin-top: 20px; border-top: 1px solid #EEE; padding-top: 20px;">
+                            <div class="form-row">
+                                <div class="form-group" style="flex:1">
+                                    <label>대상 독자 (Target)</label>
                                     <div class="custom-select">
-                                        <select id="opt-viz-type">
-                                            <option value="timeline">타임라인 (Timeline)</option>
-                                            <option value="mindmap">마인드맵 (Mindmap)</option>
-                                            <option value="sankey">상키 (Sankey)</option>
-                                            <option value="radar">레이더 (Radar)</option>
-                                            <option value="comparison">비교 (Comparison)</option>
-                                            <option value="flowchart">플로차트 (Flowchart)</option>
+                                        <select id="studio-target-audience">
+                                            <option value="general">일반 구성원</option>
+                                            <option value="new_employee">신입 사원</option>
+                                            <option value="manager" selected>팀장/관리자</option>
+                                            <option value="executive">임원/의사결정자</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="flex:1">
+                                    <label>출력 언어</label>
+                                    <div class="custom-select">
+                                        <select id="studio-language">
+                                            <option value="ko" selected>한국어 (KOR)</option>
+                                            <option value="en">영어 (ENG)</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
-                            <!-- audio options -->
-                            <div class="type-options hidden" data-for="audio">
-                                <div class="form-row">
-                                    <div class="form-group" style="flex:1">
-                                        <label>소요 시간: <span id="opt-audio-dur-label">5</span>분</label>
-                                        <input type="range" class="range-slider" id="opt-audio-duration" min="1" max="10" value="5">
-                                    </div>
-                                    <div class="form-group" style="flex:1">
-                                        <label>스타일</label>
-                                        <div class="custom-select">
-                                            <select id="opt-audio-style">
-                                                <option value="narration">나레이션 (1인)</option>
-                                                <option value="dialogue" selected>대화 (2인)</option>
-                                                <option value="podcast">팟캐스트 (3인)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- quiz options -->
-                            <div class="type-options hidden" data-for="quiz">
-                                <div class="form-row">
-                                    <div class="form-group" style="flex:1">
-                                        <label>문항 수: <span id="opt-quiz-count-label">10</span>문항</label>
-                                        <input type="range" class="range-slider" id="opt-quiz-count" min="5" max="20" value="10">
-                                    </div>
-                                    <div class="form-group" style="flex:1">
-                                        <label>스타일</label>
-                                        <div class="custom-select">
-                                            <select id="opt-quiz-style">
-                                                <option value="professional">Professional</option>
-                                                <option value="casual">Casual</option>
-                                                <option value="academic">Academic</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group" style="flex:1">
-                                <label>참조 판본</label>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label>기반 판본 (선택)</label>
                                 <div class="custom-select">
                                     <select id="studio-edition-filter">
-                                        <option value="">전체 판본</option>
+                                        <option value="">전체 판본 기반 (추천)</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group" style="flex:1">
-                                <label>언어</label>
-                                <div class="custom-select">
-                                    <select id="studio-language">
-                                        <option value="ko">한국어</option>
-                                        <option value="en">English</option>
-                                    </select>
-                                </div>
-                            </div>
+                            <p style="font-size: 0.8rem; color: #888; margin-top: 15px; font-style: italic; line-height: 1.4;">
+                                * 분량과 시각화 방식은 입력하신 주제의 깊이에 따라 AI 전략가가 제안합니다.<br>
+                                * [기획안 생성] 단계에서 AI의 제안을 직접 수정할 수 있습니다.
+                            </p>
                         </div>
-                        <div class="studio-actions">
+
+                        <div class="studio-actions" style="margin-top: 30px;">
                             <button class="studio-plan-btn" id="studio-plan-btn">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
-                                계획 미리보기
+                                기획안 생성 & 확인
                             </button>
                             <button class="studio-generate-btn" id="studio-generate-btn">
-                                생성 시작
+                                바로 생성 시작
                             </button>
                         </div>
                     </div>
@@ -370,6 +246,23 @@
                 <!-- Step 2: Plan Preview -->
                 <div class="studio-step hidden" id="studio-step-plan">
                     <div class="studio-plan-view">
+                        <!-- AI Recommendation Summary -->
+                        <div id="plan-recommendation-bar" style="background: #F0F7FF; border: 1px solid #D0E5FF; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; gap: 25px;">
+                                <div class="rec-item">
+                                    <span style="font-size: 0.8rem; color: #666; display: block; margin-bottom: 4px;">추천 소요 시간</span>
+                                    <input type="number" id="rec-duration" style="width: 50px; font-weight: 700; border: none; background: transparent; color: #0052A2; font-size: 1.1rem;"> <span style="font-weight: 700; color: #0052A2;">분</span>
+                                </div>
+                                <div class="rec-item" id="rec-slides-group">
+                                    <span style="font-size: 0.8rem; color: #666; display: block; margin-bottom: 4px;">추천 슬라이드 수</span>
+                                    <input type="number" id="rec-count" style="width: 50px; font-weight: 700; border: none; background: transparent; color: #0052A2; font-size: 1.1rem;"> <span style="font-weight: 700; color: #0052A2;">장</span>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.85rem; color: #0052A2; background: #FFF; padding: 5px 12px; border-radius: 20px; border: 1px solid #D0E5FF;">
+                                ✨ 주제의 깊이를 분석한 최적의 구성입니다
+                            </div>
+                        </div>
+
                         <div class="plan-header">
                             <h3>생성 계획 미리보기</h3>
                             <div class="plan-header-actions">
@@ -1564,39 +1457,26 @@
 
         // Collect type-specific options into ContentOptionsRequest shape
         function collectTypeOptions() {
+            // [Phase 10] Simplified Common Options
             const opts = {
-                language: document.getElementById('studio-language').value,
+                language: document.getElementById('studio-language')?.value || 'ko',
+                target_audience: document.getElementById('studio-target-audience')?.value || 'general'
             };
-            const edFilter = studioEditionFilter.value;
+            
+            const edFilter = document.getElementById('studio-edition-filter')?.value;
             if (edFilter) opts.edition_filter = edFilter;
 
-            switch (currentStudioType) {
-                case 'lecture':
-                    opts.duration_min = parseInt(document.getElementById('opt-lecture-duration').value, 10);
-                    opts.style = document.getElementById('opt-lecture-style').value;
-                    opts.include_speaker_notes = document.getElementById('opt-lecture-notes').checked;
-                    break;
-                case 'card_news':
-                    opts.num_items = parseInt(document.getElementById('opt-card-count').value, 10);
-                    opts.style = document.getElementById('opt-card-style').value;
-                    break;
-                case 'workshop':
-                    opts.duration_min = parseInt(document.getElementById('opt-workshop-duration').value, 10);
-                    opts.style = document.getElementById('opt-workshop-style').value;
-                    opts.include_quiz = document.getElementById('opt-workshop-quiz').checked;
-                    break;
-                case 'visualization':
-                    opts.style = document.getElementById('opt-viz-type').value;
-                    break;
-                case 'audio':
-                    opts.duration_min = parseInt(document.getElementById('opt-audio-duration').value, 10);
-                    opts.style = document.getElementById('opt-audio-style').value;
-                    break;
-                case 'quiz':
-                    opts.num_items = parseInt(document.getElementById('opt-quiz-count').value, 10);
-                    opts.style = document.getElementById('opt-quiz-style').value;
-                    break;
+            // AI가 제안하거나 사용자가 수정한 분량 정보 수집 (PR-071)
+            const durationInput = document.getElementById('rec-duration');
+            const countInput = document.getElementById('rec-count');
+            
+            if (durationInput && durationInput.value) {
+                opts.duration_min = parseInt(durationInput.value, 10);
             }
+            if (countInput && countInput.value) {
+                opts.num_items = parseInt(countInput.value, 10);
+            }
+
             return opts;
         }
 
@@ -1996,6 +1876,24 @@
                     }
                 });
                 originalPlanData = data.plan;
+                
+                // [Phase 10] AI 추천 수치 UI 세팅 (PR-071)
+                const durationInput = document.getElementById('rec-duration');
+                const countInput = document.getElementById('rec-count');
+                const countLabel = document.querySelector('#rec-slides-group span:first-child');
+                
+                if (data.plan) {
+                    if (durationInput) durationInput.value = data.plan.recommended_duration || 30;
+                    if (countInput) countInput.value = data.plan.recommended_slides || data.plan.recommended_cards || 5;
+                    
+                    // 유형별 라벨 변경
+                    if (countLabel) {
+                        if (currentStudioType === 'lecture') countLabel.textContent = '추천 슬라이드 수';
+                        else if (currentStudioType === 'card_news') countLabel.textContent = '추천 카드 수';
+                        else if (currentStudioType === 'quiz') countLabel.textContent = '추천 문항 수';
+                    }
+                }
+
                 renderEditablePlan(data.plan, currentStudioType);
             } catch (err) {
                 document.getElementById('studio-plan-content').innerHTML =

@@ -6,15 +6,18 @@
 주제: {topic}
 카드 수: {num_cards}장
 스타일: {style}
-
 ## 지시사항
-주제를 분석하여, 카드가 넘어갈 때마다 몰입도가 높아지는 기승전결(Hook -> Problem -> Solution -> Action) 구조의 스토리라인을 작성하세요.
+1. 주제를 분석하여 스토리의 기승전결이 가장 완벽하게 전달될 수 있는 **최적의 카드 수(3~10장 사이)**를 스스로 결정하세요.
+2. 카드가 넘어갈 때마다 몰입도가 높아지는 구조의 스토리라인을 작성하세요.
 
 ## 출력 JSON 스키마
 ```json
 {{
-  "series_title": "시리즈 전체를 아우르는 매력적인 타이틀",
-  "target_audience": "핵심 타겟 독자층과 그들의 니즈",
+  "series_title": "시리즈 타이틀",
+  "recommended_cards": 5,
+  "target_audience": "핵심 타겟 독자층",
+...
+
   "cards_strategy": [
     {{
       "index": 1,

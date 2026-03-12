@@ -6,15 +6,19 @@
 주제: {topic}
 총 시간: {duration_min}분
 슬라이드 목표 수: {slide_count}장
-
 ## 지시사항
-단순한 지식 전달이 아닌, '도입(Hook) - 전개(Body) - 심화(Insight) - 결론(Summary)'의 기승전결이 뚜렷한 아웃라인을 잡으세요.
+1. 주제의 범위와 깊이를 분석하여, 학습자가 내용을 완전히 소화하는 데 필요한 **최적의 강의 시간(15~90분 사이)**과 **슬라이드 수(5~30장 사이)**를 스스로 결정하세요.
+2. 단순한 지식 전달이 아닌, '도입(Hook) - 전개(Body) - 심화(Insight) - 결론(Summary)'의 기승전결이 뚜렷한 아웃라인을 설계하세요.
 
 ## 출력 JSON 스키마
 ```json
 {{
   "curriculum_title": "강의 전체를 관통하는 핵심 제목",
+  "recommended_duration": 30, 
+  "recommended_slides": 10,
   "learning_flow": [
+...
+
     {{
       "phase": "intro | body | insight | summary",
       "target_slides": 2,
