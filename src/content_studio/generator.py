@@ -495,23 +495,25 @@ class ContentGenerator:
 
 
 def _format_hits_as_context(hits: list[SearchHit]) -> str:
-    """SearchHit 목록을 LLM 컨텍스트 문자열로 변환."""
+    """SearchHit 목록을 구조화된 LLM 컨텍스트 문자열로 변환 (RAG 고도화)."""
     if not hits:
-        return "(검색 결과 없음)"
+        return "(검색 결과 없음: SKMS 원문 근거가 필요합니다)"
 
     parts: list[str] = []
     for i, hit in enumerate(hits, start=1):
-        section = " > ".join(hit.section_path) if hit.section_path else "unknown"
+        # 목차 경로(Breadcrumb)를 위계로 명시
+        hierarchy = " > ".join(hit.section_path) if hit.section_path else "Root"
+        
         part = (
-            f"[CHUNK {i}]\n"
-            f"quote_id: {hit.quote_id}\n"
-            f"edition: {hit.edition_id}\n"
-            f"section: {section}\n"
-            f"type: {hit.quote_type}\n"
-            f"---\n"
-            f"{hit.text}\n"
+            f"### [SOURCE {i}: {hit.quote_id}]\n"
+            f"- 판본(Edition): {hit.edition_id}\n"
+            f"- 위계(Hierarchy): {hierarchy}\n"
+            f"- 유형(Type): {hit.quote_type}\n"
+            f"- 본문 내용: {hit.text}\n"
+            f"--------------------------------------------------\n"
         )
         parts.append(part)
+    
     return "\n".join(parts)
 
 

@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="styles.css">
+    <!-- Visualization Libraries (AntV) -->
+    <script src="https://unpkg.com/@antv/g6@4.8.24/dist/g6.min.js"></script>
+    <script src="https://unpkg.com/@antv/g2@4.2.10/dist/g2.min.js"></script>
 </head>
 <body>
 
@@ -2059,10 +2062,23 @@
             }
             throw new Error('생성 시간이 초과되었습니다.');
         }
+function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
+    const lowerExt = ext.toLowerCase();
 
-        function buildFilePreview(fileName, downloadUrl, ext) {
-            const lowerExt = ext.toLowerCase();
-            if (lowerExt === 'png' || lowerExt === 'jpg' || lowerExt === 'jpeg' || lowerExt === 'svg') {
+    // [Task 2] 의미론적 시각화 전용 렌더링 영역
+    if (vizData && vizData.data) {
+        const vizId = `viz-${Math.random().toString(36).substr(2, 9)}`;
+        setTimeout(() => renderAntVChart(vizId, vizData), 100);
+        return `
+            <div class="preview-container preview-viz-container" style="background:#F8F9FA; padding:20px;">
+                <div id="${vizId}" style="width:100%; height:400px;"></div>
+                <div style="margin-top:15px; font-size:13px; color:#666; text-align:center;">
+                    <strong>통찰 분석:</strong> ${escapeHtml(vizData.reasoning || '구조적 관계 분석 결과입니다.')}
+                </div>
+            </div>`;
+    }
+...
+
                 return `
                     <div class="preview-container preview-image-container">
                         <img class="preview-image" src="${downloadUrl}" alt="${escapeHtml(fileName)}"
@@ -2100,7 +2116,69 @@
                 </div>`;
         }
 
-        function showStudioResult(result, requestId) {
+        function renderAntVChart(containerId, vizData) {
+            const container = document.getElementById(containerId);
+            if (!container || !vizData || !vizData.data) return;
+
+            const { viz_type, data } = vizData;
+            
+            if (viz_type === 'network' && data.nodes) {
+                // [Accuracy Focus] 계층형 레이아웃으로 관계 명확화
+                const graph = new G6.Graph({
+                    container: containerId,
+                    width: container.scrollWidth,
+                    height: 400,
+                    fitView: true,
+                    layout: {
+                        type: 'dagre',
+                        rankdir: 'LR', // Left to Right
+                        nodesep: 30,
+                        ranksep: 50,
+                    },
+                    defaultNode: {
+                        size: [80, 40],
+                        type: 'rect',
+                        style: { fill: '#F0F7FF', stroke: '#0052A2', lineWidth: 2, radius: 4 },
+                        labelCfg: { style: { fill: '#1A1A2E', fontSize: 12, fontWeight: 600 } }
+                    },
+                    defaultEdge: {
+                        type: 'polyline',
+                        style: { stroke: '#0052A2', lineWidth: 1, endArrow: true, opacity: 0.6 }
+                    }
+                });
+                graph.data(data);
+                graph.render();
+            } else if (viz_type === 'radar' && data.indicators) {
+                // [Structural Focus] G2를 활용한 밸런스 차트
+                const chart = new G2.Chart({
+                    container: containerId,
+                    autoFit: true,
+                    height: 400,
+                });
+                chart.data(data.indicators);
+                chart.coordinate('polar', { radius: 0.8 });
+                chart.axis('name', { line: null, tickLine: null, grid: { line: { style: { lineDash: [3, 3] } } } });
+                chart.axis('value', { grid: { line: { type: 'circle' } } });
+                chart.line().position('name*value').color('#0052A2').size(2);
+                chart.area().position('name*value').color('#0052A2').style({ fillOpacity: 0.2 });
+                chart.point().position('name*value').color('#0052A2').shape('circle').size(4).style({ stroke: '#fff', lineWidth: 1 });
+                chart.render();
+            } else if (viz_type === 'timeline' && data.items) {
+                // [Logit Focus] 리스트 기반의 타임라인 시각화
+                container.innerHTML = `
+                    <div style="display:flex; flex-direction:column; gap:15px; padding:10px; max-height:350px; overflow-y:auto;">
+                        ${data.items.map(item => `
+                            <div style="display:flex; gap:20px; border-left:3px solid #0052A2; padding-left:15px; position:relative;">
+                                <div style="font-weight:800; color:#0052A2; width:60px; font-size:14px;">${item.date}</div>
+                                <div>
+                                    <div style="font-weight:700; font-size:15px; margin-bottom:4px;">${item.label}</div>
+                                    <div style="font-size:13px; color:#666; line-height:1.5;">${item.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+            }
+        }
             showStudioStep('result');
             const info = STUDIO_TYPE_INFO[currentStudioType];
             const files = result.files || [];
@@ -2122,7 +2200,7 @@
                 const downloadUrl = requestId
                     ? `${API_BASE_URL}/api/content/download/${encodeURIComponent(requestId)}/${encodeURIComponent(f.file_name)}`
                     : '#';
-                const preview = buildFilePreview(f.file_name, downloadUrl, ext);
+                const preview = buildFilePreview(f.file_name, downloadUrl, ext, result.plan);
                 html += `
                     <div class="result-preview-card">
                         ${preview}
