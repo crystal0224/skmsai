@@ -356,7 +356,43 @@ class FileAssembler:
                 # 기본 단일 placeholder
                 self._fill_placeholder(placeholders[0], key_points, body_text, font_name, text_color, Pt, RGBColor)
 
+            # [Task 4] 핵심 개념 아이콘 추가 (PR-062: Icon System)
+            self._add_concept_icon(slide, slide_content.title, Inches, RGBColor)
+
             # 이미지 삽입
+...
+    def _add_concept_icon(self, slide: Any, title: str, Inches: Any, RGBColor: Any) -> None:
+        """제목 키워드를 분석하여 상징적인 아이콘(도형)을 추가한다."""
+        from pptx.enum.shapes import MSO_SHAPE
+        
+        # 키워드별 도형 매핑 (미니멀 전문 디자인용)
+        icon_map = {
+            "행복": MSO_SHAPE.HEART,
+            "인간": MSO_SHAPE.SMILEY_FACE,
+            "VWBE": MSO_SHAPE.GEAR,
+            "SUPEX": MSO_SHAPE.STAR_5_POINT,
+            "이해관계자": MSO_SHAPE.FLOWCHART_CONNECTOR,
+            "경영": MSO_SHAPE.CHART_UP,
+            "원칙": MSO_SHAPE.SEAL_4,
+            "조직": MSO_SHAPE.HEXAGON,
+            "구성원": MSO_SHAPE.OVAL
+        }
+        
+        target_shape = None
+        for kw, shape_type in icon_map.items():
+            if kw in title:
+                target_shape = shape_type
+                break
+        
+        if target_shape:
+            # 우측 상단에 작고 세련되게 배치 (Inches(9.2), Inches(0.4))
+            icon_size = Inches(0.3)
+            shape = slide.shapes.add_shape(target_shape, slide.parent.slide_width - Inches(0.8), Inches(0.45), icon_size, icon_size)
+            shape.fill.solid()
+            # 은은한 라이트 블루 계열로 브랜드 강조
+            shape.fill.fore_color.rgb = RGBColor(0, 82, 162) # SK Blue
+            shape.line.visible = False
+            shape.shadow.inherit = False # 그림자 제거로 미니멀 유지
             asset = asset_map.get(slide_content.index)
             if asset and os.path.exists(asset.file_path):
                 try:

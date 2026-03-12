@@ -196,15 +196,21 @@ class ContentPlanner:
             topic=topic,
             copy_json=copy_json_str,
         )
-        final_data = await self._call_llm_json(art_prompt)
+        art_data = await self._call_llm_json(art_prompt)
 
-        # 최종 데이터 모델 조립 (learning_objectives 누락 방지)
+        # 4단계: 수석 에디터 (Quality Reviewer) - 최종 검수 및 퀄리티 정제
+        review_prompt_template = _load_prompt("quality_reviewer.md")
+        review_prompt = review_prompt_template.format(
+            topic=topic,
+            final_plan_json=json.dumps(art_data, ensure_ascii=False, indent=2),
+        )
+        final_data = await self._call_llm_json(review_prompt)
+
+        # 최종 데이터 모델 조립
         if "learning_objectives" not in final_data and "learning_objectives" in copy_data:
             final_data["learning_objectives"] = copy_data["learning_objectives"]
         
-        # duration_min 보정
         final_data["duration_min"] = duration_min
-
         return LecturePlan.from_dict(final_data)
 
     # -----------------------------------------------------------------------
@@ -256,7 +262,15 @@ class ContentPlanner:
             series_title=strategy_data.get("series_title", topic),
             copy_json=copy_json_str,
         )
-        final_data = await self._call_llm_json(art_prompt)
+        art_data = await self._call_llm_json(art_prompt)
+
+        # 4단계: 수석 에디터 (Quality Reviewer) - 최종 검수
+        review_prompt_template = _load_prompt("quality_reviewer.md")
+        review_prompt = review_prompt_template.format(
+            topic=topic,
+            final_plan_json=json.dumps(art_data, ensure_ascii=False, indent=2),
+        )
+        final_data = await self._call_llm_json(review_prompt)
 
         return CardNewsPlan.from_dict(final_data)
 
