@@ -123,34 +123,66 @@ class ContentPlanner:
         duration_min: int,
         options: ContentOptions,
     ) -> LecturePlan:
-        """강의자료 슬라이드 계획을 생성한다.
+        """강의자료 슬라이드 계획을 생성한다 (Multi-Agent 파이프라인).
 
-        슬라이드 수 = duration_min / minutes_per_slide, min/max로 클램핑.
+        PR-060: Strategist -> Copywriter -> Art Director 3단계 협업 및 슬라이드 최적화.
         """
+        import json
+        
         lecture_cfg = self._config.get("lecture", {})
         minutes_per_slide = lecture_cfg.get("minutes_per_slide", 2)
         min_slides = lecture_cfg.get("min_slides", 5)
         max_slides = lecture_cfg.get("max_slides", 30)
 
-        slide_count = _clamp(
+        target_slide_count = _clamp(
             round(duration_min / minutes_per_slide),
             min_slides,
             max_slides,
         )
 
-        prompt_template = _load_prompt("content_lecture.md")
-        prompt = prompt_template.format(
+        # 1단계: 전략가 (Strategist) - 내러티브 설계
+        strat_prompt_template = _load_prompt("lecture_strategist.md")
+        strat_prompt = strat_prompt_template.format(
             topic=topic,
             duration_min=duration_min,
-            slide_count=slide_count,
-            style=options.style,
-            language=options.language,
-            edition_filter=options.edition_filter or "전체",
-            include_speaker_notes=options.include_speaker_notes,
+            slide_count=target_slide_count,
         )
+        strategy_data = await self._call_llm_json(strat_prompt)
+        strategy_json_str = json.dumps(strategy_data, ensure_ascii=False, indent=2)
 
-        data = await self._call_llm_json(prompt)
-        return LecturePlan.from_dict(data)
+        # 2단계: 카피라이터 (Copywriter) - 맥킨지식 텍스트 작성
+        copy_prompt_template = _load_prompt("lecture_copywriter.md")
+        copy_prompt = copy_prompt_template.format(
+            topic=topic,
+            strategy_json=strategy_json_str,
+        )
+        copy_data = await self._call_llm_json(copy_prompt)
+        
+        # [Task 3 기초] 내용 과다 슬라이드 감지 및 분할 힌트 생성
+        for slide in copy_data.get("slides", []):
+            points = slide.get("key_points", [])
+            if len(points) > 5:
+                slide["overflow_warning"] = True
+                slide["split_suggestion"] = "내용이 많으므로 2장으로 분할하거나 프로세스 도식화 권장"
+
+        copy_json_str = json.dumps(copy_data, ensure_ascii=False, indent=2)
+
+        # 3단계: 아트 디렉터 (Art Director) - 시각화 및 레이아웃 확정
+        art_prompt_template = _load_prompt("lecture_art_director.md")
+        art_prompt = art_prompt_template.format(
+            topic=topic,
+            copy_json=copy_json_str,
+        )
+        final_data = await self._call_llm_json(art_prompt)
+
+        # 최종 데이터 모델 조립 (learning_objectives 누락 방지)
+        if "learning_objectives" not in final_data and "learning_objectives" in copy_data:
+            final_data["learning_objectives"] = copy_data["learning_objectives"]
+        
+        # duration_min 보정
+        final_data["duration_min"] = duration_min
+
+        return LecturePlan.from_dict(final_data)
 
     # -----------------------------------------------------------------------
     # Card News
