@@ -360,20 +360,30 @@ class ContentPlanner:
         viz_type: str,
         options: ContentOptions,
     ) -> VisualizationPlan:
-        """시각화 계획을 생성한다."""
-        viz_cfg = self._config.get("visualization", {})
+        """시각화 계획을 생성한다 (Viz Strategist 에이전트 기반).
 
-        prompt_template = _load_prompt("content_visualization.md")
+        PR-068: Intelligent Visualization Strategy & Data Extraction.
+        """
+        viz_cfg = self._config.get("visualization", {})
+        
+        # 시각화 전략가 에이전트 호출
+        prompt_template = _load_prompt("viz_strategist.md")
         prompt = prompt_template.format(
             topic=topic,
-            viz_type=viz_type,
-            theme=viz_cfg.get("default_theme", "classic"),
-            language=options.language,
-            edition_filter=options.edition_filter or "전체",
         )
-
-        data = await self._call_llm_json(prompt)
-        return VisualizationPlan.from_dict(data)
+        
+        # 데이터 추출 (gpt-4o-mini 사용하여 빠른 처리)
+        viz_data = await self._llm.generate(prompt, model="gpt-4o-mini", json_mode=True)
+        
+        # 최종 모델로 변환
+        return VisualizationPlan(
+            viz_type=viz_data.get("viz_type", viz_type),
+            data_structure=viz_data.get("data", {}),
+            chart_options={
+                **viz_cfg.get("default_options", {}),
+                **viz_data.get("design_config", {})
+            }
+        )
 
     # -----------------------------------------------------------------------
     # Quiz
