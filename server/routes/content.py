@@ -772,6 +772,24 @@ def create_content_router(state: Any) -> APIRouter:
             ],
         )
 
+    @router.get("/sample/{filename}")
+    async def download_sample(filename: str):
+        """샘플 결과물 파일을 다운로드한다."""
+        sample_path = Path("output/sample") / filename
+        
+        # Path traversal guard
+        if not sample_path.resolve().relative_to(Path("output").resolve()):
+             raise HTTPException(status_code=403, detail="접근 권한이 없습니다.")
+
+        if not sample_path.exists():
+            raise HTTPException(status_code=404, detail="샘플 파일을 찾을 수 없습니다.")
+
+        return FileResponse(
+            path=str(sample_path),
+            filename=filename,
+            media_type=_guess_media_type(filename),
+        )
+
     return router
 
 

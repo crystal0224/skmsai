@@ -174,9 +174,38 @@ class TOCService:
         """특정 개정판의 TOC 트리를 반환한다."""
         return self._editions.get(edition_id)
 
-    def get_edition_ids(self) -> tuple[str, ...]:
+    def get_section_ids(self) -> tuple[str, ...]:
         """모든 개정판 ID를 반환한다."""
         return tuple(self._editions.keys())
+
+    def get_section_content_from_db(self, edition_id: str, title: str) -> str | None:
+        """DB에서 제목과 판본 ID를 기반으로 본문을 직접 조회한다.
+
+        PR-073: DB 기반 원문 조회 기능 추가.
+        """
+        import sqlite3
+        db_path = Path("data/skms.db")
+        if not db_path.exists():
+            logger.warning("SKMS DB 파일 없음: %s", db_path)
+            return None
+
+        try:
+            with sqlite3.connect(db_path) as conn:
+                conn.row_factory = sqlite3.Row
+                # 제목이 정확히 일치하거나 부분 일치하는 섹션 조회
+                query = "SELECT content FROM sections WHERE edition_id = ? AND title = ? LIMIT 1"
+                row = conn.execute(query, (edition_id, title)).fetchone()
+                
+                if row:
+                    return row["content"]
+                
+                # 정확히 일치하는 게 없으면 LIKE 검색 (부분 일치)
+                query_like = "SELECT content FROM sections WHERE edition_id = ? AND title LIKE ? LIMIT 1"
+                row_like = conn.execute(query_like, (edition_id, f"%{title}%")).fetchone()
+                return row_like["content"] if row_like else None
+        except Exception as e:
+            logger.error("DB 본문 조회 중 오류 발생: %s", e)
+            return None
 
     def get_section_text(
         self,

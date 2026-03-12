@@ -3084,16 +3084,20 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const type = link.getAttribute('data-type');
-                const sampleUrls = {
-                    lecture: "https://skmsai-api.onrender.com/api/content/download/sample/lecture.pptx",
-                    card_news: "https://skmsai-api.onrender.com/api/content/download/sample/card_news.html",
-                    workshop: "https://skmsai-api.onrender.com/api/content/download/sample/workshop.html",
-                    visualization: "https://skmsai-api.onrender.com/api/content/download/sample/viz.html",
-                    audio: "https://skmsai-api.onrender.com/api/content/download/sample/audio.mp3",
-                    quiz: "https://skmsai-api.onrender.com/api/content/download/sample/quiz.html"
+                const filenames = {
+                    lecture: "lecture.pptx",
+                    card_news: "card_news.html",
+                    workshop: "workshop.html",
+                    visualization: "viz.html",
+                    audio: "audio.mp3",
+                    quiz: "quiz.html"
                 };
-                if (sampleUrls[type]) window.open(sampleUrls[type], '_blank');
-                else showToast('샘플을 준비 중입니다.');
+                if (filenames[type]) {
+                    const downloadUrl = `${API_BASE_URL}/api/content/sample/${filenames[type]}`;
+                    window.open(downloadUrl, '_blank');
+                } else {
+                    showToast('샘플을 준비 중입니다.');
+                }
             });
         });
 
