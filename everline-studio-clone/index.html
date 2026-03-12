@@ -85,7 +85,7 @@
     <section class="content-studio-section" id="content-studio-section">
         <div class="studio-header">
             <p class="studio-label">CONTENT STUDIO</p>
-            <h2 class="studio-title">AI 콘텐츠<br>제작 파이프라인</h2>
+            <h2 class="studio-title" id="studio-section-title">AI 콘텐츠<br>제작 파이프라인</h2>
             <p class="studio-desc">SKMS 원문 기반 RAG 파이프라인이 6종의 콘텐츠를 자동 생성합니다.<br>기획(Plan) → 생성(Generate) → 에셋(Assets) → 조립(Assemble) → 발행(Publish)</p>
         </div>
         <div class="studio-grid" id="studio-grid">
@@ -359,8 +359,9 @@
             <div class="studio-hours">
                 <p>INTERNAL TOOL</p>
                 <p>AVAILABLE 24/7</p>
-                <p>SK NETWORK</p>
+                <p style="margin-top: 10px;"><a href="#" id="restart-tour" style="color: var(--sk-blue); text-decoration: underline; font-size: 0.8rem;">온보딩 가이드 다시보기</a></p>
             </div>
+
         </div>
     </footer>
 
@@ -3199,12 +3200,12 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
             {
                 title: "역대 판본 탐색 📚",
                 desc: "1979년 초판부터 현재의 14차 개정판까지, SKMS의 모든 역사와 원문을 이 메뉴에서 자유롭게 열람하실 수 있습니다.",
-                target: "editions-btn"
+                target: "nav-editions"
             },
             {
                 title: "지능형 검색 🔍",
                 desc: "궁금한 키워드를 입력해 보세요. RAG 기술이 수많은 원문 데이터 중 당신에게 가장 필요한 답변을 즉시 찾아줍니다.",
-                target: "search-btn"
+                target: "nav-search"
             },
             {
                 title: "컨텐츠 스튜디오 🎨",
@@ -3220,11 +3221,22 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
 
         let currentStepIdx = 0;
 
-        function startTour() {
-            if (localStorage.getItem('skms_tour_completed')) return;
+        function startTour(force = false) {
+            if (!force && localStorage.getItem('skms_tour_completed')) return;
             
             document.getElementById('tour-overlay').classList.add('active');
             showStep(0);
+        }
+
+        // ... (showStep, endTour 등 기존 함수 유지) ...
+
+        // Manual Restart Event
+        const restartBtn = document.getElementById('restart-tour');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                startTour(true);
+            });
         }
 
         function showStep(idx) {
