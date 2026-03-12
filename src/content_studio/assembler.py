@@ -411,11 +411,18 @@ class FileAssembler:
                 except Exception as e:
                     logger.warning(f"이미지 삽입 실패 (slide {slide_content.index}): {e}")
 
-            # 발표자 노트
+            # 발표자 노트 및 상세 출처 (PR-063: Deep Grounding)
             speaker_notes = getattr(slide_content, "speaker_notes", "")
-            if speaker_notes:
+            source_info = ""
+            if hasattr(slide_content, "source_details") and slide_content.source_details:
+                source_info = "\n\n" + "-"*30 + "\n📜 근거 원문 상세:\n"
+                for detail in slide_content.source_details:
+                    source_info += f"• [{detail['edition']}] {detail['page']}p: {detail['text']}\n"
+            
+            full_notes = speaker_notes + source_info
+            if full_notes:
                 notes_slide = slide.notes_slide
-                notes_slide.notes_text_frame.text = speaker_notes
+                notes_slide.notes_text_frame.text = full_notes
 
             # 푸터 (슬라이드 번호 + 회사명 + 날짜)
             if footer_data.get("show_page_number"):

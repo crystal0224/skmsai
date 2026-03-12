@@ -146,6 +146,7 @@ class ContentPlanner:
             topic=topic,
             duration_min=duration_min,
             slide_count=target_slide_count,
+            target_audience=options.target_audience,
         )
         strategy_data = await self._call_llm_json(strat_prompt)
         strategy_json_str = json.dumps(strategy_data, ensure_ascii=False, indent=2)
@@ -155,6 +156,7 @@ class ContentPlanner:
         copy_prompt = copy_prompt_template.format(
             topic=topic,
             strategy_json=strategy_json_str,
+            target_audience=options.target_audience,
         )
         copy_data = await self._call_llm_json(copy_prompt)
         
@@ -196,6 +198,7 @@ class ContentPlanner:
         art_prompt = art_prompt_template.format(
             topic=topic,
             copy_json=copy_json_str,
+            target_audience=options.target_audience,
         )
         # LLMClient가 모델명을 지원한다고 가정 (미지원 시 기본 모델 유지)
         art_data = await self._llm.generate(art_prompt, model="gpt-4o-mini", json_mode=True)
@@ -206,6 +209,7 @@ class ContentPlanner:
         review_prompt = review_prompt_template.format(
             topic=topic,
             final_plan_json=json.dumps(art_data, ensure_ascii=False, indent=2),
+            target_audience=options.target_audience,
         )
         final_data = await self._llm.generate(review_prompt, model="gpt-4o-mini", json_mode=True)
 
@@ -244,6 +248,7 @@ class ContentPlanner:
             topic=topic,
             num_cards=clamped_cards,
             style=options.style,
+            target_audience=options.target_audience,
         )
         strategy_data = await self._call_llm_json(strat_prompt)
         strategy_json_str = json.dumps(strategy_data, ensure_ascii=False, indent=2)
@@ -254,6 +259,7 @@ class ContentPlanner:
             topic=topic,
             language=options.language,
             strategy_json=strategy_json_str,
+            target_audience=options.target_audience,
         )
         copy_data = await self._call_llm_json(copy_prompt)
         copy_json_str = json.dumps(copy_data, ensure_ascii=False, indent=2)
@@ -264,6 +270,7 @@ class ContentPlanner:
             topic=topic,
             series_title=strategy_data.get("series_title", topic),
             copy_json=copy_json_str,
+            target_audience=options.target_audience,
         )
         art_data = await self._call_llm_json(art_prompt)
 
@@ -272,6 +279,7 @@ class ContentPlanner:
         review_prompt = review_prompt_template.format(
             topic=topic,
             final_plan_json=json.dumps(art_data, ensure_ascii=False, indent=2),
+            target_audience=options.target_audience,
         )
         final_data = await self._call_llm_json(review_prompt)
 

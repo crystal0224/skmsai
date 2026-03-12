@@ -68,6 +68,7 @@ class ContentOptions:
         edition_filter: 특정 개정판 제한 (예: "2020-14차").
         style: 시각 스타일 (professional, casual, academic).
         language: 출력 언어 (ko, en).
+        target_audience: 대상 독자 (general, new_employee, manager, executive).
         include_quiz: 학습 퀴즈 포함 여부.
         include_speaker_notes: 발표자 노트 포함 여부.
     """
@@ -77,6 +78,7 @@ class ContentOptions:
     edition_filter: str | None = None
     style: str = "professional"
     language: str = "ko"
+    target_audience: str = "general"
     include_quiz: bool = False
     include_speaker_notes: bool = True
 
@@ -87,6 +89,7 @@ class ContentOptions:
             "edition_filter": self.edition_filter,
             "style": self.style,
             "language": self.language,
+            "target_audience": self.target_audience,
             "include_quiz": self.include_quiz,
             "include_speaker_notes": self.include_speaker_notes,
         }
@@ -99,6 +102,7 @@ class ContentOptions:
             edition_filter=data.get("edition_filter"),
             style=data.get("style", "professional"),
             language=data.get("language", "ko"),
+            target_audience=data.get("target_audience", "general"),
             include_quiz=data.get("include_quiz", False),
             include_speaker_notes=data.get("include_speaker_notes", True),
         )

@@ -44,6 +44,7 @@ class SlideContent:
     body_text: str = ""
     key_points: tuple[str, ...] = ()
     quote_ids: tuple[str, ...] = ()
+    source_details: tuple[dict[str, Any], ...] = () # 상세 출처 (PR-063)
     speaker_notes: str = ""
 
 
@@ -62,8 +63,10 @@ class CardContent:
 
     index: int
     headline: str
-    body: str
-    quote_ids: tuple[str, ...]
+    body_text: str
+    quote_ids: tuple[str, ...] = ()
+    source_details: tuple[dict[str, Any], ...] = ()
+
     source_quote: str = ""
     source_edition: str = ""
 
@@ -235,12 +238,23 @@ class ContentGenerator:
             hit_quote_ids = tuple(h.quote_id for h in hits)
             all_quote_ids.extend(hit_quote_ids)
 
+            # [Task 3] 상세 출처 추출 (PR-063)
+            source_details = []
+            for hit in hits:
+                source_details.append({
+                    "edition": hit.edition_id,
+                    "page": hit.metadata.get("page", "N/A") if hit.metadata else "N/A",
+                    "text": hit.text[:100] + "..." if len(hit.text) > 100 else hit.text
+                })
+
             slide_content = SlideContent(
                 index=slide_plan.index,
                 title=slide_plan.title,
+                governing_message=slide_plan.governing_message or "",
                 body_text=_sanitize_llm_output(result.answer),
                 key_points=slide_plan.key_points,
                 quote_ids=hit_quote_ids,
+                source_details=tuple(source_details),
                 speaker_notes=slide_plan.speaker_notes or "",
             )
             slides.append(slide_content)
@@ -290,6 +304,15 @@ class ContentGenerator:
             hit_quote_ids = tuple(h.quote_id for h in hits)
             all_quote_ids.extend(hit_quote_ids)
 
+            # [Task 3] 상세 출처 추출 (PR-063)
+            source_details = []
+            for hit in hits:
+                source_details.append({
+                    "edition": hit.edition_id,
+                    "page": hit.metadata.get("page", "N/A") if hit.metadata else "N/A",
+                    "text": hit.text[:100] + "..." if len(hit.text) > 100 else hit.text
+                })
+
             # JSON 파싱 시도 → 실패 시 prose fallback
             body, source_quote, source_edition = _parse_card_json(result.answer)
 
@@ -298,6 +321,7 @@ class ContentGenerator:
                 headline=card_plan.headline,
                 body=body,
                 quote_ids=hit_quote_ids,
+                source_details=tuple(source_details),
                 source_quote=source_quote,
                 source_edition=source_edition,
             )
