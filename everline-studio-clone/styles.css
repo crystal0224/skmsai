@@ -1,14 +1,15 @@
 :root {
-  /* Color Palette - Premium Light / Yellow Theme */
-  --primary-yellow: #f0e42b;
-  --primary-yellow-hover: #d9cd1f;
+  /* Color Palette - SK Corporate Identity (Phase 8 Refined) */
+  --sk-blue: #0052A2;
+  --sk-blue-hover: #003d7a;
+  --sk-red: #E4002B;
   --bg-white: #ffffff;
-  --bg-light: #f7f7f7;   /* slightly gray to contrast with white cards */
+  --bg-light: #f7f7f7;
   --bg-card: #ffffff;
-  --text-black: #080808;
-  --text-main: #111111;
-  --text-muted: #555555;
-  --border-color: rgba(0, 0, 0, 0.1);
+  --text-black: #1A1A2E;
+  --text-main: #333333;
+  --text-muted: #666666;
+  --border-color: rgba(0, 0, 0, 0.08);
   --glass-bg: rgba(255, 255, 255, 0.85);
 
   /* Fonts */
@@ -121,45 +122,101 @@ a {
 
 /* Hero Section */
 .hero {
-  min-height: 100vh;
-  background-color: var(--primary-yellow);
+  min-height: 85vh;
+  background-color: var(--bg-white);
+  background-image: radial-gradient(circle at 50% 50%, #f0f7ff 0%, #ffffff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   padding: 0 4rem;
   overflow: hidden;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.hero-content {
-  text-align: center;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  pointer-events: none;
+.hero-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--sk-blue);
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
 }
 
 .hero-title {
-  font-size: 10.5vw;
+  font-size: 5rem;
   letter-spacing: -2px;
   margin: 0;
-  display: flex;
-  gap: 2vw;
-  color: #ffffff;
-  -webkit-text-stroke: 2px #0f2043; /* Deep elegant navy blue */
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Added subtle shadow for legibility if it overlaps yellow part */
+  color: var(--text-black);
+  line-height: 1.1;
+  text-shadow: none;
+  -webkit-text-stroke: 0;
 }
 
-.outline-text {
-  color: #ffffff;
-  -webkit-text-stroke: 0px transparent;
-  font-size: 0.35em; /* Smaller size */
-  vertical-align: top; /* Align to top */
-  position: relative;
-  top: 0.1em; /* Slight adjustment to align perfectly with the baseline of the top part of 'SKMS AI' */
-  letter-spacing: 2px;
+.hero-sub {
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  margin-top: 1.5rem;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+.secondary-button {
+  margin-top: 3.5rem;
+  padding: 0.6rem 1.6rem;
+  border: 1.2px solid var(--sk-blue);
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sk-blue);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.secondary-button:hover {
+  background: #f0f7ff;
+}
+
+/* Process Guide */
+.process-guide {
+  background: var(--bg-white);
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.guide-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.step-num {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sk-blue);
+  opacity: 0.3;
+}
+
+.step-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-black);
+}
+
+.step-arrow {
+  color: #DDD;
+  font-size: 1.2rem;
 }
 
 
@@ -2976,4 +3033,85 @@ textarea.plan-field-input {
   .dashboard-status-grid, .dashboard-metrics-grid, .health-detail-grid { grid-template-columns: repeat(2, 1fr); }
   .dashboard-body { padding: 1.5rem; }
   .endpoint-name { width: 140px; font-size: 0.75rem; }
+}
+
+/* Phase 8: Showcase & Onboarding Styles */
+.view-sample-link {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--sk-blue);
+  text-decoration: underline;
+  opacity: 0.7;
+  transition: var(--transition-smooth);
+}
+
+.view-sample-link:hover {
+  opacity: 1;
+}
+
+.process-guide {
+  background: #fdfdfd;
+  padding: 3rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.guide-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.step-num {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--sk-blue);
+  background: #F0F7FF;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.step-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-black);
+}
+
+.step-arrow {
+  color: #EEE;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+.fact-check-small-btn {
+  background: #F0F7FF;
+  color: var(--sk-blue);
+  border: 1px solid #D0E5FF;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fact-check-small-btn:hover {
+  background: var(--sk-blue);
+  color: white;
 }

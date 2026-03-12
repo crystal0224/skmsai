@@ -30,12 +30,33 @@
     <!-- Hero Section -->
     <section class="hero" id="hero-section">
         <div class="hero-content">
-            <h1 class="hero-title"><span id="typewriter-text"></span><span id="typewriter-cursor" class="blink">|</span></h1>
-            <a href="#" class="cta-button" id="btn-start-creating">시작하기 (START CREATING)</a>
+            <p class="hero-label">SKMS AI CONTENT STUDIO</p>
+            <h1 class="hero-title" style="margin-bottom: 20px;">당신의 통찰을<br>전문가급 콘텐츠로.</h1>
+            <p class="hero-sub">주제만 입력하세요. SKMS 원문 기반의 기획안부터<br>PPTX, 카드뉴스, 영상 강의까지 한 번에 완성됩니다.</p>
+            <div style="margin-top: 40px; display: flex; gap: 15px; justify-content: center;">
+                <a href="#content-studio-section" class="cta-button">콘텐츠 제작 시작</a>
+                <a href="#" class="secondary-button" id="btn-view-samples">샘플 결과물 보기</a>
+            </div>
         </div>
-        <div class="hero-image-reveal" id="reveal-image">
-            <canvas id="ai-network-canvas"></canvas>
-            <div class="mysterious-overlay"></div>
+    </section>
+
+    <!-- Simple 3-Step Process Guide -->
+    <section class="process-guide">
+        <div class="guide-container">
+            <div class="step">
+                <span class="step-num">01</span>
+                <span class="step-text">주제 및 타겟 입력</span>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <span class="step-num">02</span>
+                <span class="step-text">AI 기획안 직접 수정</span>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <span class="step-num">03</span>
+                <span class="step-text">영상·문서 즉시 다운로드</span>
+            </div>
         </div>
     </section>
 
@@ -80,6 +101,7 @@
                     <span class="meta-tag">PDF 변환</span>
                 </div>
                 <button class="card-btn" data-type="lecture">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="lecture">전문가용 샘플 보기</a>
             </div>
             <div class="studio-card" data-type="card_news">
                 <div class="card-icon">
@@ -93,6 +115,7 @@
                     <span class="meta-tag">시리즈</span>
                 </div>
                 <button class="card-btn" data-type="card_news">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="card_news">디자인 샘플 보기</a>
             </div>
             <div class="studio-card" data-type="workshop">
                 <div class="card-icon">
@@ -106,6 +129,7 @@
                     <span class="meta-tag">실습</span>
                 </div>
                 <button class="card-btn" data-type="workshop">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="workshop">가이드 샘플 보기</a>
             </div>
             <div class="studio-card" data-type="visualization">
                 <div class="card-icon">
@@ -119,6 +143,7 @@
                     <span class="meta-tag">인포그래픽</span>
                 </div>
                 <button class="card-btn" data-type="visualization">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="visualization">차트 샘플 보기</a>
             </div>
             <div class="studio-card" data-type="audio">
                 <div class="card-icon">
@@ -132,6 +157,7 @@
                     <span class="meta-tag">TTS</span>
                 </div>
                 <button class="card-btn" data-type="audio">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="audio">음성 샘플 듣기</a>
             </div>
             <div class="studio-card" data-type="quiz">
                 <div class="card-icon">
@@ -145,6 +171,7 @@
                     <span class="meta-tag">학습</span>
                 </div>
                 <button class="card-btn" data-type="quiz">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="quiz">문제 샘플 풀기</a>
             </div>
         </div>
     </section>
@@ -3107,6 +3134,48 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
             }
             return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
         }
+
+        // ===================================================================
+        // CONTENT STUDIO EVENT LISTENERS (Phase 8 Refined)
+        // ===================================================================
+        
+        // "시작하기" 버튼 스크롤
+        document.getElementById('btn-start-creating')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('content-studio-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // "샘플 결과물 보기" 버튼
+        document.getElementById('btn-view-samples')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.open('https://skmsai-api.onrender.com/api/content/samples', '_blank');
+        });
+
+        // 카드 생성 버튼 클릭
+        document.querySelectorAll('.card-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentStudioType = btn.getAttribute('data-type');
+                openStudioModal(currentStudioType);
+            });
+        });
+
+        // 샘플 보기 링크 클릭
+        document.querySelectorAll('.view-sample-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const type = link.getAttribute('data-type');
+                const sampleUrls = {
+                    lecture: "https://skmsai-api.onrender.com/api/content/download/sample/lecture.pptx",
+                    card_news: "https://skmsai-api.onrender.com/api/content/download/sample/card_news.html",
+                    workshop: "https://skmsai-api.onrender.com/api/content/download/sample/workshop.html",
+                    visualization: "https://skmsai-api.onrender.com/api/content/download/sample/viz.html",
+                    audio: "https://skmsai-api.onrender.com/api/content/download/sample/audio.mp3",
+                    quiz: "https://skmsai-api.onrender.com/api/content/download/sample/quiz.html"
+                };
+                if (sampleUrls[type]) window.open(sampleUrls[type], '_blank');
+                else showToast('샘플을 준비 중입니다.');
+            });
+        });
 
         // ===================================================================
         // BACKEND CONNECTION CHECK + INIT (on page load)
