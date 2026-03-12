@@ -855,6 +855,70 @@ class FileAssembler:
             size_bytes=size,
         )
 
+    # ----- Video Studio (MP4) -----
+
+    def assemble_video(
+        self,
+        content: Any,
+        assets: list[GeneratedAsset],
+        topic: str = "",
+    ) -> GeneratedFile:
+        """슬라이드 이미지와 오디오를 합성하여 MP4 영상 강의를 생성한다.
+
+        PR-065: Video Studio Engine 기초 구현.
+        """
+        import subprocess
+        import tempfile
+
+        # 1. 에셋 분류 (이미지 vs 오디오)
+        image_assets = sorted([a for a in assets if a.asset_type == "image"], 
+                             key=lambda x: dict(x.metadata or {}).get("slide_index", 0))
+        audio_assets = sorted([a for a in assets if a.asset_type == "audio"],
+                             key=lambda x: dict(x.metadata or {}).get("slide_index", 0))
+
+        if not image_assets or not audio_assets:
+            logger.warning("이미지 또는 오디오 에셋 부족으로 영상 생성을 스킵합니다.")
+            return None
+
+        out_path = self._output_path("lectures", f"{topic}-video", "mp4")
+        
+        # 2. 임시 작업 디렉토리 생성
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            # ffmpeg용 input 리스트 파일 생성
+            concat_file = Path(tmp_dir) / "inputs.txt"
+            
+            with open(concat_file, "w", encoding="utf-8") as f:
+                for img in image_assets:
+                    f.write(f"file '{os.path.abspath(img.file_path)}'\n")
+                    f.write("duration 5\n") # Day 2에서 동적 계산 로직 추가 예정
+                # ffmpeg bug 방지 위해 마지막 파일 한 번 더 기재
+                if image_assets:
+                    f.write(f"file '{os.path.abspath(image_assets[-1].file_path)}'\n")
+
+            # 3. FFmpeg 실행 (이미지 시퀀스 + 오디오 합성)
+            try:
+                # [참고] audio_assets[0]은 전체 합성된 오디오이거나 첫 번째 오디오일 수 있음
+                # Day 2에서 오디오 합본 자동 생성 로직과 연동 예정
+                cmd = [
+                    "ffmpeg", "-y",
+                    "-f", "concat", "-safe", "0", "-i", str(concat_file),
+                    "-i", os.path.abspath(audio_assets[0].file_path),
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "25",
+                    "-shortest",
+                    str(out_path)
+                ]
+                subprocess.run(cmd, check=True, capture_output=True)
+            except Exception as e:
+                logger.error(f"영상 합성 실패: {e}")
+                return None
+
+        return GeneratedFile(
+            file_type="mp4",
+            file_path=str(out_path),
+            file_name=out_path.name,
+            size_bytes=out_path.stat().st_size if out_path.exists() else 0,
+        )
+
     # ----- Visualization (SVG/PNG passthrough) -----
 
     def assemble_visualization(
