@@ -48,7 +48,7 @@ retrieval:
   hybrid:
     alpha: 0.6  # 벡터 vs 키워드 가중치 (0=키워드 전용, 1=벡터 전용)
     rrf_k: 60   # Reciprocal Rank Fusion 상수
-    final_top_k: 5
+    final_top_k: 20  # 리랭커를 위해 후보군 확대 (Surgery 2)
 
   # ---------------------------------------------------------------------------
   # 리랭커 설정 (PR-021)
@@ -57,7 +57,7 @@ retrieval:
   # cross-encoder: sentence-transformers 패키지 필요
   # ---------------------------------------------------------------------------
   reranker:
-    enabled: false
+    enabled: true
     backend: "cohere"             # "cohere" | "cross-encoder"
     model: "rerank-v3.5"          # cohere: rerank-v3.5 | cross-encoder: cross-encoder/ms-marco-MiniLM-L-6-v2
     top_n: 5

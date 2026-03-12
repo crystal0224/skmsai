@@ -780,7 +780,21 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Fact-Check Modal (Surgery 3) -->
+    <div class="studio-modal-overlay" id="factcheck-modal-overlay" style="z-index: 2000;">
+        <div class="studio-modal" style="max-width: 800px;">
+            <div class="studio-modal-header">
+                <div>
+                    <h2>🔎 근거 원문 검증 (FACT-CHECK)</h2>
+                    <p>생성된 문장의 실제 SKMS 원문 근거를 확인합니다.</p>
+                </div>
+                <span class="close-overlay" id="close-factcheck-modal">&times;</span>
+            </div>
+            <div class="studio-modal-body" id="factcheck-content" style="padding: 30px; background: #F8F9FA; min-height: 300px;">
+                <!-- Content will be injected by JS -->
+            </div>
+        </div>
+    </div>
     <div class="toast-container" id="toast"></div>
 
     <script>
@@ -1995,6 +2009,38 @@
             }
         }
 
+        // [Surgery 3] Fact-Check Modal Logic
+        function openFactCheck(details) {
+            const modal = document.getElementById('factcheck-modal-overlay');
+            const content = document.getElementById('factcheck-content');
+            if (!modal || !content) return;
+
+            let html = '<div class="fact-check-list">';
+            details.forEach((d, i) => {
+                html += `
+                    <div style="margin-bottom:25px; padding-bottom:20px; border-bottom:1px solid #DDD;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <span style="background:#0052A2; color:white; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:600;">SOURCE ${i+1}</span>
+                            <span style="color:#666; font-size:12px; font-weight:600;">${escapeHtml(d.edition)} | ${escapeHtml(d.page)}p</span>
+                        </div>
+                        <div style="font-size:13px; color:#0052A2; font-weight:700; margin-bottom:8px;">위계: ${escapeHtml(d.section)}</div>
+                        <div style="background:white; padding:15px; border-radius:4px; border-left:4px solid #0052A2; font-size:14px; line-height:1.7; color:#333; box-shadow:inset 0 2px 4px rgba(0,0,0,0.05);">
+                            ${escapeHtml(d.text)}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        // Close Fact-Check Modal
+        document.getElementById('close-factcheck-modal')?.addEventListener('click', () => {
+            document.getElementById('factcheck-modal-overlay').classList.remove('active');
+        });
+
         studioGenerateBtn.addEventListener('click', () => startStudioGeneration(null));
         studioConfirmGenerate.addEventListener('click', () => {
             const editedPlan = collectEditedPlan();
@@ -2201,6 +2247,20 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                     ? `${API_BASE_URL}/api/content/download/${encodeURIComponent(requestId)}/${encodeURIComponent(f.file_name)}`
                     : '#';
                 const preview = buildFilePreview(f.file_name, downloadUrl, ext, result.plan);
+                // [Surgery 3] 팩트체크 데이터 추출 및 버튼 생성
+                let factCheckBtn = '';
+                const itemsKey = getPlanItemsKey(currentStudioType);
+                if (result.plan && result.plan[itemsKey]) {
+                    const details = [];
+                    result.plan[itemsKey].forEach(item => {
+                        if (item.source_details) details.push(...item.source_details);
+                    });
+                    if (details.length > 0) {
+                        const detailsJson = JSON.stringify(details).replace(/'/g, "&apos;");
+                        factCheckBtn = `<button class="fact-check-small-btn" onclick='openFactCheck(${detailsJson})' title="SKMS 근거 원문 확인">🔎 근거 검증</button>`;
+                    }
+                }
+
                 html += `
                     <div class="result-preview-card">
                         ${preview}
@@ -2212,9 +2272,12 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                                     <div class="file-size">${sizeKB} KB</div>
                                 </div>
                             </div>
-                            <a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            </a>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                ${factCheckBtn}
+                                <a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </a>
+                            </div>
                         </div>
                     </div>`;
             });

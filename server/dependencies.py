@@ -68,10 +68,17 @@ class AppState:
         )
         embedding_fn = _make_embedding_fn(embedding_model)
 
+        # Reranker 초기화 (PR-021)
+        from scripts.lib.reranker import RerankerConfig, create_reranker
+
+        reranker_config = RerankerConfig.from_dict(retrieval.get("reranker", {}))
+        reranker = create_reranker(reranker_config)
+
         self.search_service = SearchService(
             vector_store=vector_store,
             bm25_index=bm25_index,
             embedding_fn=embedding_fn,
+            reranker=reranker,
         )
         logger.info(
             "SearchService 초기화 완료: vector=%s, bm25=%s",

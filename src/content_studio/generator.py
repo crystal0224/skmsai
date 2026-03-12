@@ -235,29 +235,42 @@ class ContentGenerator:
                 intent="content_studio",
             )
 
-            hit_quote_ids = tuple(h.quote_id for h in hits)
-            all_quote_ids.extend(hit_quote_ids)
-
-            # [Task 3] 상세 출처 추출 (PR-063)
+            # [수술 1] 인용 추출 및 검증 로직 (PR-069)
+            raw_answer = result.answer
+            extracted_ids = _extract_refs_from_text(raw_answer)
+            
+            # 유효한 인용구 필터링 (실제 hits에 존재하는 것만)
+            valid_hit_ids = {h.quote_id for h in hits}
+            verified_ids = [rid for rid in extracted_ids if rid in valid_hit_ids]
+            
+            # 상세 출처 맵 생성 (PR-069: Deep Grounding)
             source_details = []
             for hit in hits:
-                source_details.append({
-                    "edition": hit.edition_id,
-                    "page": hit.metadata.get("page", "N/A") if hit.metadata else "N/A",
-                    "text": hit.text[:100] + "..." if len(hit.text) > 100 else hit.text
-                })
+                if hit.quote_id in verified_ids:
+                    source_details.append({
+                        "id": hit.quote_id,
+                        "edition": hit.edition_id,
+                        "page": hit.metadata.get("page", "N/A") if hit.metadata else "N/A",
+                        "section": " > ".join(hit.section_path) if hit.section_path else "Root",
+                        "text": hit.text # 전체 텍스트 보냄 (UI에서 처리)
+                    })
+
+            # 최종 텍스트 정제: (Ref: ...) 태그 제거
+            import re
+            clean_body = re.sub(r"\(Ref:\s*[^\)]+\)", "", _sanitize_llm_output(raw_answer)).strip()
 
             slide_content = SlideContent(
                 index=slide_plan.index,
                 title=slide_plan.title,
                 governing_message=slide_plan.governing_message or "",
-                body_text=_sanitize_llm_output(result.answer),
+                body_text=clean_body,
                 key_points=slide_plan.key_points,
-                quote_ids=hit_quote_ids,
+                quote_ids=tuple(verified_ids),
                 source_details=tuple(source_details),
                 speaker_notes=slide_plan.speaker_notes or "",
             )
             slides.append(slide_content)
+            all_quote_ids.extend(verified_ids)
 
         # Quality checks
         warnings.extend(await self._run_quality_checks(all_hits, all_quote_ids))
@@ -301,31 +314,48 @@ class ContentGenerator:
                 intent="content_studio_card",
             )
 
-            hit_quote_ids = tuple(h.quote_id for h in hits)
-            all_quote_ids.extend(hit_quote_ids)
-
-            # [Task 3] 상세 출처 추출 (PR-063)
+            # [수술 1] 인용 추출 및 검증 로직 (PR-069)
+            # 카드뉴스는 JSON 또는 prose 출력이므로 양쪽 대응
+            body, s_quote, s_edition = _parse_card_json(result.answer)
+            
+            # 본문에 포함된 (Ref: ID) 추출
+            extracted_ids = _extract_refs_from_text(body)
+            valid_hit_ids = {h.quote_id for h in hits}
+            verified_ids = [rid for rid in extracted_ids if rid in valid_hit_ids]
+            
+            # 상세 출처 맵 (PR-069: Deep Grounding)
             source_details = []
             for hit in hits:
-                source_details.append({
-                    "edition": hit.edition_id,
-                    "page": hit.metadata.get("page", "N/A") if hit.metadata else "N/A",
-                    "text": hit.text[:100] + "..." if len(hit.text) > 100 else hit.text
-                })
+                if hit.quote_id in verified_ids:
+                    source_details.append({
+                        "id": hit.quote_id,
+                        "edition": hit.edition_id,
+                        "page": hit.metadata.get("page", "N/A") if hit.metadata else "N/A",
+                        "section": " > ".join(hit.section_path) if hit.section_path else "Root",
+                        "text": hit.text
+                    })
 
-            # JSON 파싱 시도 → 실패 시 prose fallback
-            body, source_quote, source_edition = _parse_card_json(result.answer)
+            # 주 출처 보정 (검증된 인용이 있다면 이를 우선 사용)
+            if verified_ids:
+                primary_hit = next((h for h in hits if h.quote_id == verified_ids[0]), hits[0])
+                s_quote = primary_hit.text
+                s_edition = primary_hit.edition_id
+
+            # 최종 텍스트 정제
+            import re
+            clean_body = re.sub(r"\(Ref:\s*[^\)]+\)", "", body).strip()
 
             card_content = CardContent(
                 index=card_plan.index,
                 headline=card_plan.headline,
-                body=body,
-                quote_ids=hit_quote_ids,
+                body=clean_body,
+                quote_ids=tuple(verified_ids),
                 source_details=tuple(source_details),
-                source_quote=source_quote,
-                source_edition=source_edition,
+                source_quote=s_quote,
+                source_edition=s_edition,
             )
             cards.append(card_content)
+            all_quote_ids.extend(verified_ids)
 
         warnings.extend(await self._run_quality_checks(all_hits, all_quote_ids))
 
@@ -681,3 +711,26 @@ def _count_words(text: str) -> int:
     if not text:
         return 0
     return len(text.split())
+
+
+def _extract_refs_from_text(text: str) -> list[str]:
+    """텍스트 내의 (Ref: ID) 패턴을 감지하여 고유 ID 목록을 추출한다."""
+    import re
+
+    if not text:
+        return []
+
+    # (Ref: q-123) 또는 (Ref: quote_123) 패턴 매칭
+    pattern = r"\(Ref:\s*([^\)]+)\)"
+    matches = re.findall(pattern, text)
+
+    # 공백 제거 및 중복 제거
+    unique_ids = []
+    seen = set()
+    for m in matches:
+        ref_id = m.strip()
+        if ref_id and ref_id not in seen:
+            unique_ids.append(ref_id)
+            seen.add(ref_id)
+
+    return unique_ids
