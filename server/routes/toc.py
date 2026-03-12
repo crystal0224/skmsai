@@ -68,32 +68,38 @@ def create_toc_router(state: AppState) -> APIRouter:
     async def get_section_text(
         edition_id: str,
         line: int,
-        max_lines: int = 100,
+        title: str | None = None,
     ) -> dict:
-        """섹션의 원문 텍스트를 반환한다."""
-        if not state.toc_service:
-            raise HTTPException(status_code=503, detail="TOC 서비스를 사용할 수 없습니다")
+        """섹션의 원문 텍스트를 반환한다 (DB 직접 조회).
 
-        text = state.toc_service.get_section_text(edition_id, line, max_lines)
-        if text is None:
-            import os
+        PR-074: DB 기반 원문 조회 기능으로 교체 (안정성 확보).
+        """
+        import sqlite3
+        import json
+        from pathlib import Path
 
-            raw_path = os.path.join("data", "raw", "SKMSraw.txt")
-            return {
-                "edition_id": edition_id,
-                "line": line,
-                "text": "",
-                "debug": {
-                    "raw_lines_count": len(state.toc_service._raw_lines),
-                    "raw_path_exists": os.path.exists(raw_path),
-                    "cwd": os.getcwd(),
-                    "data_raw_files": os.listdir("data/raw")
-                    if os.path.isdir("data/raw")
-                    else "NOT_FOUND",
-                },
-            }
+        db_path = Path("data/skms.db")
+        if not db_path.exists():
+            raise HTTPException(status_code=500, detail="데이터베이스를 찾을 수 없습니다")
 
-        return {"edition_id": edition_id, "line": line, "text": text}
+        try:
+            with sqlite3.connect(db_path) as conn:
+                conn.row_factory = sqlite3.Row
+                # 1. edition_id와 line 번호로 조회
+                query = "SELECT text FROM quotes WHERE edition_id = ? AND start_line = ? LIMIT 1"
+                row = conn.execute(query, (edition_id, line)).fetchone()
+                
+                # 2. 결과가 없으면 제목(title)으로 유사 검색 시도
+                if not row and title:
+                    query_title = "SELECT text FROM quotes WHERE edition_id = ? AND section_path LIKE ? LIMIT 1"
+                    row = conn.execute(query_title, (edition_id, f'%"{title}"%')).fetchone()
+
+                if row:
+                    return {"edition_id": edition_id, "line": line, "text": row["text"]}
+                
+                return {"edition_id": edition_id, "line": line, "text": "해당 섹션의 본문을 DB에서 찾을 수 없습니다."}
+        except Exception as e:
+            return {"edition_id": edition_id, "line": line, "text": f"본문 로드 중 오류 발생: {str(e)}"}
 
     @router.get("/toc", response_model=TOCSectionSearchResponse)
     async def search_sections(

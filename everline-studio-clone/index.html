@@ -2394,25 +2394,33 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         });
 
         async function loadSectionText(editionId, line, title) {
-            sectionTextPanel.style.display = 'block';
-            sectionTextTitle.textContent = title.length > 60 ? title.slice(0, 60) + '...' : title;
-            sectionTextBody.textContent = '원문을 불러오는 중...';
-            sectionTextPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            const panel = document.getElementById('section-text-panel');
+            const body = document.getElementById('section-text-body');
+            const titleEl = document.getElementById('section-text-title');
+            
+            if (!panel || !body) return;
+
+            panel.style.display = 'block';
+            titleEl.textContent = title;
+            body.innerHTML = '<p class="loading-text">원문을 DB에서 불러오는 중...</p>';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
             try {
-                const params = new URLSearchParams({ edition_id: editionId, line: line });
+                // [Phase 11] 제목 정보를 함께 보내어 검색 정합성 확보 (PR-074)
+                const params = new URLSearchParams({ 
+                    edition_id: editionId, 
+                    line: line,
+                    title: title 
+                });
                 const data = await apiCall(`/api/section-text?${params}`, { method: 'GET' });
+                
                 if (data.text) {
-                    const pre = document.createElement('pre');
-                    pre.className = 'section-raw-text';
-                    pre.textContent = data.text;
-                    sectionTextBody.textContent = '';
-                    sectionTextBody.appendChild(pre);
+                    body.innerHTML = `<pre class="section-raw-text" style="white-space: pre-wrap; font-family: inherit; line-height: 1.8; color: #333; font-size: 0.95rem;">${escapeHtml(data.text)}</pre>`;
                 } else {
-                    sectionTextBody.textContent = '이 섹션에는 본문이 없습니다.';
+                    body.innerHTML = '<p class="empty-text">해당 섹션의 본문 데이터를 찾을 수 없습니다.</p>';
                 }
             } catch (err) {
-                sectionTextBody.textContent = '원문을 불러올 수 없습니다: ' + err.message;
+                body.innerHTML = `<p class="error-text">원문 로드 실패: ${escapeHtml(err.message)}</p>`;
             }
         }
 
