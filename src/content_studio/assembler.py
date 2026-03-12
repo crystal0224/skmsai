@@ -863,53 +863,84 @@ class FileAssembler:
         assets: list[GeneratedAsset],
         topic: str = "",
     ) -> GeneratedFile:
-        """슬라이드 이미지와 오디오를 합성하여 MP4 영상 강의를 생성한다.
+        """슬라이드 이미지와 오디오를 정밀하게 합성하여 자막이 포함된 MP4 영상을 생성한다.
 
-        PR-065: Video Studio Engine 기초 구현.
+        PR-066: Intelligent Sync & Subtitle Engine.
         """
         import subprocess
         import tempfile
+        import json
 
-        # 1. 에셋 분류 (이미지 vs 오디오)
+        # 1. 에셋 분류 및 정렬
         image_assets = sorted([a for a in assets if a.asset_type == "image"], 
                              key=lambda x: dict(x.metadata or {}).get("slide_index", 0))
         audio_assets = sorted([a for a in assets if a.asset_type == "audio"],
                              key=lambda x: dict(x.metadata or {}).get("slide_index", 0))
 
         if not image_assets or not audio_assets:
-            logger.warning("이미지 또는 오디오 에셋 부족으로 영상 생성을 스킵합니다.")
+            logger.warning("영상 생성을 위한 에셋(이미지/오디오)이 부족합니다.")
             return None
 
         out_path = self._output_path("lectures", f"{topic}-video", "mp4")
         
-        # 2. 임시 작업 디렉토리 생성
+        # 2. 작업 시작
         with tempfile.TemporaryDirectory() as tmp_dir:
-            # ffmpeg용 input 리스트 파일 생성
-            concat_file = Path(tmp_dir) / "inputs.txt"
+            # A. 개별 슬라이드 영상 조각 생성 (이미지 + 오디오 + 자막)
+            slide_clips = []
             
-            with open(concat_file, "w", encoding="utf-8") as f:
-                for img in image_assets:
-                    f.write(f"file '{os.path.abspath(img.file_path)}'\n")
-                    f.write("duration 5\n") # Day 2에서 동적 계산 로직 추가 예정
-                # ffmpeg bug 방지 위해 마지막 파일 한 번 더 기재
-                if image_assets:
-                    f.write(f"file '{os.path.abspath(image_assets[-1].file_path)}'\n")
+            # 발표자 노트 가져오기 (자막용)
+            slides_data = content.slides if hasattr(content, "slides") else []
+            notes_map = {s.index: s.speaker_notes for s in slides_data}
 
-            # 3. FFmpeg 실행 (이미지 시퀀스 + 오디오 합성)
-            try:
-                # [참고] audio_assets[0]은 전체 합성된 오디오이거나 첫 번째 오디오일 수 있음
-                # Day 2에서 오디오 합본 자동 생성 로직과 연동 예정
+            for i, img in enumerate(image_assets):
+                img_path = os.path.abspath(img.file_path)
+                # 매칭되는 오디오 찾기
+                slide_idx = dict(img.metadata or {}).get("slide_index")
+                audio = next((a for a in audio_assets if dict(a.metadata or {}).get("slide_index") == slide_idx), None)
+                
+                if not audio: continue
+                
+                audio_path = os.path.abspath(audio.file_path)
+                duration = self._get_audio_duration(audio_path)
+                
+                # 자막 텍스트 (발표자 노트)
+                raw_note = notes_map.get(slide_idx, "")
+                subtitle = self._sanitize_subtitle(raw_note)
+                
+                clip_path = Path(tmp_dir) / f"slide_{i:03d}.mp4"
+                
+                # FFmpeg: 이미지 + 오디오 + 자막 합성
+                # 가독성 높은 자막 디자인: 하단 중앙, 반투명 배경, 나눔고딕
+                drawtext_filter = (
+                    f"drawtext=text='{subtitle}':fontcolor=white:fontsize=24:"
+                    f"box=1:boxcolor=black@0.5:boxborderw=10:x=(w-text_w)/2:y=h-80"
+                ) if subtitle else "nullsrc" # 자막 없으면 빈 필터
+
                 cmd = [
-                    "ffmpeg", "-y",
-                    "-f", "concat", "-safe", "0", "-i", str(concat_file),
-                    "-i", os.path.abspath(audio_assets[0].file_path),
-                    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", "25",
-                    "-shortest",
-                    str(out_path)
+                    "ffmpeg", "-y", "-loop", "1", "-i", img_path, "-i", audio_path,
+                    "-vf", f"scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,format=yuv420p,{drawtext_filter}",
+                    "-c:v", "libx264", "-t", str(duration), "-c:a", "aac", "-b:a", "192k",
+                    str(clip_path)
                 ]
                 subprocess.run(cmd, check=True, capture_output=True)
+                slide_clips.append(clip_path)
+
+            if not slide_clips: return None
+
+            # B. 모든 조각 합치기
+            concat_file = Path(tmp_dir) / "clips.txt"
+            with open(concat_file, "w", encoding="utf-8") as f:
+                for clip in slide_clips:
+                    f.write(f"file '{clip.name}'\n")
+
+            try:
+                # 최종 인코딩 (BGM 레이어는 Day 3에서 추가)
+                subprocess.run([
+                    "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file),
+                    "-c", "copy", str(out_path)
+                ], check=True, capture_output=True)
             except Exception as e:
-                logger.error(f"영상 합성 실패: {e}")
+                logger.error(f"최종 영상 병합 실패: {e}")
                 return None
 
         return GeneratedFile(
@@ -918,6 +949,29 @@ class FileAssembler:
             file_name=out_path.name,
             size_bytes=out_path.stat().st_size if out_path.exists() else 0,
         )
+
+    def _get_audio_duration(self, file_path: str) -> float:
+        """ffprobe를 사용하여 오디오 파일의 길이를 초 단위로 반환한다."""
+        import subprocess
+        import json
+        try:
+            cmd = [
+                "ffprobe", "-v", "quiet", "-print_format", "json",
+                "-show_format", "-show_streams", file_path
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            data = json.loads(result.stdout)
+            return float(data["format"]["duration"])
+        except Exception:
+            return 5.0 # Fallback
+
+    def _sanitize_subtitle(self, text: str) -> str:
+        """자막 텍스트를 ffmpeg 필터에 안전하게 정제한다 (작은따옴표 탈출 등)."""
+        if not text: return ""
+        # 출처 정보 등은 자막에서 제외하고 핵심 본문만 (첫 2문장 정도)
+        lines = text.split("\n")[0] # 첫 줄만 사용하거나 적절히 자름
+        safe = lines.replace("'", "").replace(":", "\\:").replace('"', "")
+        return safe[:100] # 너무 길면 자름
 
     # ----- Visualization (SVG/PNG passthrough) -----
 

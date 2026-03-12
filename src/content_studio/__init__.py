@@ -453,10 +453,21 @@ class ContentStudio:
         asset_list = assets if assets else None
 
         if content_type == "lecture" and content is not None:
-            result = self._assembler.assemble_lecture(
+            # 1. PPTX 조립
+            pptx_file = self._assembler.assemble_lecture(
                 content, assets=asset_list, topic=topic
             )
-            return [result]
+            files = [pptx_file]
+            
+            # 2. 영상 강의 합성 (PR-066: Auto Video Generation)
+            try:
+                video_file = self._assembler.assemble_video(content, assets, topic)
+                if video_file:
+                    files.append(video_file)
+            except Exception as e:
+                logger.warning(f"영상 강의 생성 실패 (스킵): {e}")
+                
+            return files
         elif content_type == "card_news" and content is not None:
             results = self._assembler.assemble_card_news(
                 content, assets=asset_list, topic=topic
