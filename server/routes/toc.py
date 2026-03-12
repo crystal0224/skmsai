@@ -76,7 +76,22 @@ def create_toc_router(state: AppState) -> APIRouter:
 
         text = state.toc_service.get_section_text(edition_id, line, max_lines)
         if text is None:
-            raise HTTPException(status_code=404, detail="원문 텍스트를 사용할 수 없습니다")
+            import os
+
+            raw_path = os.path.join("data", "raw", "SKMSraw.txt")
+            return {
+                "edition_id": edition_id,
+                "line": line,
+                "text": "",
+                "debug": {
+                    "raw_lines_count": len(state.toc_service._raw_lines),
+                    "raw_path_exists": os.path.exists(raw_path),
+                    "cwd": os.getcwd(),
+                    "data_raw_files": os.listdir("data/raw")
+                    if os.path.isdir("data/raw")
+                    else "NOT_FOUND",
+                },
+            }
 
         return {"edition_id": edition_id, "line": line, "text": text}
 
