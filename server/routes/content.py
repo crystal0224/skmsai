@@ -157,6 +157,29 @@ class DatabaseJobStore:
         
         return self.get(request_id)
 
+    def list_all(self, limit: int = 50) -> list[GenerationJob]:
+        """최근 작업 목록을 조회한다."""
+        with sqlite3.connect(self.db_path) as conn:
+            conn.row_factory = sqlite3.Row
+            rows = conn.execute(
+                "SELECT * FROM jobs ORDER BY created_at DESC LIMIT ?", (limit,)
+            ).fetchall()
+            
+            jobs = []
+            for row in rows:
+                result_val = json.loads(row["result"]) if row["result"] else None
+                jobs.append(GenerationJob(
+                    request_id=row["request_id"],
+                    status=row["status"],
+                    content_type=row["content_type"],
+                    topic=row["topic"],
+                    created_at=row["created_at"],
+                    completed_at=row["completed_at"],
+                    result=result_val,
+                    error=row["error"],
+                ))
+            return jobs
+
 
 # Module-level singleton (SQLite-backed)
 _job_store = DatabaseJobStore()
@@ -314,6 +337,12 @@ def create_content_router(state: Any) -> APIRouter:
         FastAPI APIRouter.
     """
     router = APIRouter(prefix="/api/content", tags=["content-studio"])
+
+    @router.get("/jobs")
+    async def list_jobs(limit: int = 50):
+        """최근 작업 목록을 조회한다."""
+        jobs = _job_store.list_all(limit=limit)
+        return {"jobs": [j.__dict__ for j in jobs]}
 
     def _get_studio():
         """state에서 ContentStudio를 가져온다."""
