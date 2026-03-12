@@ -934,11 +934,36 @@ class FileAssembler:
                     f.write(f"file '{clip.name}'\n")
 
             try:
-                # 최종 인코딩 (BGM 레이어는 Day 3에서 추가)
-                subprocess.run([
-                    "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file),
-                    "-c", "copy", str(out_path)
-                ], check=True, capture_output=True)
+                # 최종 영상 병합 (BGM 레이어 추가 및 오디오 더킹)
+                bgm_path = os.path.join("config", "bgm_corporate.mp3")
+                
+                if os.path.exists(bgm_path):
+                    # 전문 믹싱: 나레이션(0) + BGM(1) 합성
+                    # amix 필터로 믹싱하되 BGM 볼륨을 낮게(0.1) 조정
+                    cmd = [
+                        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file),
+                        "-i", bgm_path,
+                        "-filter_complex", 
+                        "[1:a]volume=0.1,adelay=1000|1000[bgm];" # BGM 1초 지연 및 볼륨 10%
+                        "[0:a][bgm]amix=inputs=2:duration=first:dropout_transition=2[aout]",
+                        "-map", "0:v", "-map", "[aout]",
+                        "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
+                        str(out_path)
+                    ]
+                else:
+                    # BGM 없을 시 기존 방식대로 병합
+                    subprocess.run([
+                        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file),
+                        "-c", "copy", str(out_path)
+                    ], check=True, capture_output=True)
+                    return GeneratedFile(
+                        file_type="mp4",
+                        file_path=str(out_path),
+                        file_name=out_path.name,
+                        size_bytes=out_path.stat().st_size if out_path.exists() else 0,
+                    )
+
+                subprocess.run(cmd, check=True, capture_output=True)
             except Exception as e:
                 logger.error(f"최종 영상 병합 실패: {e}")
                 return None
