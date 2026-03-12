@@ -826,6 +826,7 @@ class ContentResult:
         citations: 사용된 quote_id 목록.
         metadata: 생성 메타데이터 (소요시간, RAG 횟수 등).
         plan: 사용된 계획.
+        cost_report: API 사용 비용 정보 (추가).
     """
 
     content_type: str
@@ -834,6 +835,7 @@ class ContentResult:
     citations: tuple[str, ...]
     metadata: tuple[tuple[str, Any], ...] = ()
     plan: ContentPlan | None = None
+    cost_report: dict[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if self.content_type not in VALID_CONTENT_TYPES:
@@ -848,6 +850,7 @@ class ContentResult:
             "citations": list(self.citations),
             "metadata": dict(self.metadata),
             "plan": plan_dict,
+            "cost_report": self.cost_report,
         }
 
 

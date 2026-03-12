@@ -243,6 +243,7 @@ class ContentGenerateResponse(BaseModel):
     files: list[GeneratedFileResponse]
     citations: list[str]
     metadata: dict[str, Any]
+    cost_report: dict[str, Any] | None = None
 
 
 class ContentPlanResponse(BaseModel):

@@ -20,6 +20,7 @@ from typing import Any
 
 from src.content_studio.assembler import AssemblerConfig, FileAssembler
 from src.content_studio.asset_generator import AssetGenerator
+from src.content_studio.cost_estimator import CostReport
 from src.content_studio.errors import (
     AssemblyError,
     AssetError,
@@ -246,28 +247,30 @@ class ContentStudio:
         """콘텐츠 생성 전체 파이프라인을 실행한다.
 
         5단계: Plan → Generate → Assets → Assemble → Result.
-
-        Args:
-            request: 콘텐츠 생성 요청.
-
-        Returns:
-            ContentResult (생성된 파일, 인용, 메타데이터 포함).
+        [PR-072] 실시간 비용 추정 추가.
         """
         start = time.time()
         metadata: dict[str, Any] = {"content_type": request.content_type}
+        cost = CostReport()
 
         # Stage 1: Plan
         plan = await self._stage_plan(request)
         metadata["plan_elapsed_ms"] = _elapsed_ms(start)
+        cost.add_llm_cost("gpt-4o", 2000, 1000) # 기획 단계 추정치
 
         # Stage 2: Generate content
         content = await self._stage_generate(plan, request.content_type)
         metadata["generate_elapsed_ms"] = _elapsed_ms(start)
+        # 본문 생성 추정치: 슬라이드당 1.5k 토큰
+        item_count = len(getattr(plan, "slides", getattr(plan, "cards", [])))
+        cost.add_llm_cost("claude-3-5-sonnet", item_count * 1000, item_count * 500)
 
         # Stage 3: Generate assets
         assets = await self._stage_assets(plan)
         metadata["asset_count"] = len(assets)
         metadata["assets_elapsed_ms"] = _elapsed_ms(start)
+        for a in assets:
+            cost.add_asset_cost(a.asset_type, 1)
 
         # Stage 4: Assemble files
         files = self._stage_assemble(
@@ -281,14 +284,7 @@ class ContentStudio:
 
         total_ms = _elapsed_ms(start)
         metadata["total_elapsed_ms"] = total_ms
-        logger.info(
-            "콘텐츠 생성 완료: type=%s, topic=%s, files=%d, elapsed=%.0fms",
-            request.content_type,
-            request.topic,
-            len(files),
-            total_ms,
-        )
-
+        
         return ContentResult(
             content_type=request.content_type,
             topic=request.topic,
@@ -296,6 +292,7 @@ class ContentStudio:
             citations=tuple(citations),
             metadata=tuple(sorted(metadata.items())),
             plan=plan,
+            cost_report=cost.to_dict()
         )
 
     async def plan_only(self, request: ContentRequest) -> ContentPlan:

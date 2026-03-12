@@ -2180,6 +2180,9 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                     <div>
                         <h3>${escapeHtml(info.title)} 생성 완료</h3>
                         <p>${files.length}개 파일 생성 · SKMS 원문 ${citations.length}건 인용</p>
+                        <div style="margin-top: 8px; font-size: 0.8rem; color: #0052A2; background: #E6F4FF; padding: 4px 10px; border-radius: 4px; display: inline-block; font-weight: 600;">
+                            💰 인프라 사용 가치: $${result.cost_report?.total_usd || '0.00'} (약 ₩${(result.cost_report?.total_krw || 0).toLocaleString()})
+                        </div>
                     </div>
                 </div>
                 <div class="result-preview-list">`;
