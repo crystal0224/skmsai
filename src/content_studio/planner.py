@@ -162,27 +162,48 @@ class ContentPlanner:
         num_cards: int,
         options: ContentOptions,
     ) -> CardNewsPlan:
-        """카드뉴스 계획을 생성한다.
+        """카드뉴스 계획을 생성한다 (Multi-Agent 파이프라인).
 
-        카드 수를 min_cards/max_cards로 클램핑.
+        PR-059: Strategist -> Copywriter -> Art Director 3단계 에이전트 협업.
         """
+        import json
+        
         card_cfg = self._config.get("card_news", {})
         min_cards = card_cfg.get("min_cards", 3)
         max_cards = card_cfg.get("max_cards", 10)
 
         clamped_cards = _clamp(num_cards, min_cards, max_cards)
 
-        prompt_template = _load_prompt("content_cardnews.md")
-        prompt = prompt_template.format(
+        # 1단계: 전략가 (Strategist Agent) - 스토리라인 기획
+        strat_prompt_template = _load_prompt("cardnews_strategist.md")
+        strat_prompt = strat_prompt_template.format(
             topic=topic,
             num_cards=clamped_cards,
             style=options.style,
-            language=options.language,
-            edition_filter=options.edition_filter or "전체",
         )
+        strategy_data = await self._call_llm_json(strat_prompt)
+        strategy_json_str = json.dumps(strategy_data, ensure_ascii=False, indent=2)
 
-        data = await self._call_llm_json(prompt)
-        return CardNewsPlan.from_dict(data)
+        # 2단계: 카피라이터 (Copywriter Agent) - 카피 작성
+        copy_prompt_template = _load_prompt("cardnews_copywriter.md")
+        copy_prompt = copy_prompt_template.format(
+            topic=topic,
+            language=options.language,
+            strategy_json=strategy_json_str,
+        )
+        copy_data = await self._call_llm_json(copy_prompt)
+        copy_json_str = json.dumps(copy_data, ensure_ascii=False, indent=2)
+
+        # 3단계: 아트 디렉터 (Art Director Agent) - 시각 기획 및 최종 조립
+        art_prompt_template = _load_prompt("cardnews_art_director.md")
+        art_prompt = art_prompt_template.format(
+            topic=topic,
+            series_title=strategy_data.get("series_title", topic),
+            copy_json=copy_json_str,
+        )
+        final_data = await self._call_llm_json(art_prompt)
+
+        return CardNewsPlan.from_dict(final_data)
 
     # -----------------------------------------------------------------------
     # Workshop
