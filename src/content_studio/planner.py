@@ -342,24 +342,57 @@ class ContentPlanner:
         style: str,
         options: ContentOptions,
     ) -> AudioPlan:
-        """오디오 스크립트 계획을 생성한다.
+        """프리미엄 팟캐스트/오디오 계획을 생성한다 (멀티 소스 지원).
 
-        style에 따라 화자 수를 결정: narration=1, dialogue=2, podcast=3.
+        PR-077: 여러 주제 통합 분석 및 전문가 지식 합성 대본 생성.
         """
-        speaker_count = _audio_speaker_count(style)
+        import json
+        
+        # 1. 주제 분석 (멀티 주제 지원)
+        topics = [t.strip() for t in topic.split(",") if t.strip()]
+        
+        # 2. 화자 규칙 정의
+        speaker_rules = {
+            "narration": "한 명의 호스트([호스트])가 전문 지식을 전달하는 독백",
+            "dialogue": "호스트([호스트])와 전문가([전문가])의 깊이 있는 대담",
+            "podcast": "호스트([호스트]), 교수([교수]), 리더([리더]) 3인의 심층 토론"
+        }
+        
+        # 3. 프리미엄 지능형 프롬프트 (Expert Knowledge 통합)
+        prompt = f"""{self._expert_knowledge}
 
-        prompt_template = _load_prompt("content_audio.md")
-        prompt = prompt_template.format(
-            topic=topic,
-            duration_min=duration_min,
-            style=style,
-            speaker_count=speaker_count,
-            language=options.language,
-            edition_filter=options.edition_filter or "전체",
-        )
+당신은 최고 수준의 경영 전략 팟캐스트 제작자입니다. 
+아래 SKMS 원문 컨텍스트와 주입된 글로벌 경영 이론들을 결합하여 전문적인 대본을 작성하세요.
 
-        data = await self._call_llm_json(prompt)
-        return AudioPlan.from_dict(data)
+## 구성 정보
+- 주제 리스트: {", ".join(topics)}
+- 스타일: {style} ({speaker_rules.get(style, "")})
+- 목표 길이: {duration_min}분
+
+## 대본 작성 규칙
+1. **화자 태그**: 문장 맨 앞에 반드시 [호스트], [전문가], [교수], [리더] 등 화자 이름을 붙이세요.
+2. **지적 수준**: SKMS 철학을 설명할 때 반드시 경영학/심리학 이론을 인용하여 깊이를 더하세요.
+3. **숫자 처리**: 모든 숫자는 한글로 쓰세요. (예: 14차 -> 십사 차)
+4. **JSON 출력**: 아래 스키마를 엄격히 준수하여 응답하세요.
+
+## 출력 JSON 스키마
+{{
+  "title": "에피소드 전체 제목 (모든 주제를 아우르는 매력적인 제목)",
+  "style": "{style}",
+  "total_duration_min": {duration_min},
+  "sections": [
+    {{
+      "speaker": "호스트 | 전문가 | 교수 | 리더",
+      "text": "실제 발화 텍스트 (Ref: quote_id)",
+      "purpose": "섹션의 목적 (오프닝, 인사이트, 마무리 등)"
+    }}
+  ]
+}}
+"""
+        # [PR-077] GPT-4o를 사용하여 고품질 대본 생성
+        audio_data = await self._call_llm_json(prompt)
+        
+        return AudioPlan.from_dict(audio_data)
 
     # -----------------------------------------------------------------------
     # Visualization
