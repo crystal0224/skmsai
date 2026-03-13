@@ -21,6 +21,7 @@
         <div class="logo">skms ai studio</div>
         <div class="nav-links">
             <a href="#hero-section" class="active" data-nav="home">HOME</a>
+            <a href="#" data-nav="showcase" id="nav-showcase">SHOWCASE</a>
             <a href="#" data-nav="editions" id="nav-editions">EDITIONS</a>
             <a href="#" data-nav="search" id="nav-search">SEARCH</a>
             <a href="#" data-nav="dashboard" id="nav-dashboard">DASHBOARD</a>
@@ -146,19 +147,19 @@
                 <button class="card-btn" data-type="visualization">생성하기</button>
                 <a href="#" class="view-sample-link" data-type="visualization">차트 샘플 보기</a>
             </div>
-            <div class="studio-card" data-type="audio">
+            <div class="studio-card" data-type="podcast" id="podcast-card">
                 <div class="card-icon">
                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
                 </div>
                 <div class="card-format">MP3 / MP4</div>
                 <h3>프리미엄 팟캐스트</h3>
-                <p>여러 주제를 쉼표로 구분해 입력하세요. SKMS 원문과 글로벌 리더십 이론이 결합된 고차원 토론 에피소드가 생성됩니다.</p>
+                <p>동영상, 아티클, 텍스트 등 외부 소스와 SKMS 원문을 결합하여 글로벌 리더십 이론 기반의 프리미엄 팟캐스트를 생성합니다.</p>
                 <div class="card-meta">
                     <span class="meta-tag">멀티 소스</span>
                     <span class="meta-tag">전문가 토론</span>
                 </div>
-                <button class="card-btn" data-type="audio">생성하기</button>
-                <a href="#" class="view-sample-link" data-type="audio">샘플 에피소드 듣기</a>
+                <button class="card-btn podcast-open-btn">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="podcast">샘플 에피소드 듣기</a>
             </div>
             <div class="studio-card" data-type="quiz">
                 <div class="card-icon">
@@ -331,8 +332,68 @@
         </div>
     </section>
 
-    <!-- Marquee Section -->
-    <div class="marquee-container">
+    <!-- Showcase Gallery Section (Phase 15) -->
+    <section class="showcase-section hidden" id="showcase-section">
+        <div class="studio-header" style="text-align: center; margin-bottom: 60px;">
+            <p class="studio-label">PREMIUM SHOWCASE</p>
+            <h2 class="studio-title">AI가 설계한<br>최고의 결과물들</h2>
+            <p class="studio-desc">API 호출 없이 즉시 확인 가능한 실제 생성 샘플입니다.<br>전문가 수준의 디자인과 RAG 정밀도를 지금 체험해 보세요.</p>
+        </div>
+
+        <div class="showcase-grid">
+            <!-- Lecture Sample -->
+            <div class="showcase-card">
+                <div class="showcase-thumb" style="background: linear-gradient(135deg, #0052A2 0%, #002D62 100%);">
+                    <span class="thumb-label">PPTX SLIDE</span>
+                    <div class="thumb-content">VWBE & SUPEX</div>
+                </div>
+                <div class="showcase-info">
+                    <h3>[강의] 자발적 의욕의 심리학</h3>
+                    <p>자기결정성 이론과 SKMS VWBE를 결합한 리더십 교육 자료 (12 Slides)</p>
+                    <button class="showcase-btn" onclick="openShowcase('lecture')">체험하기</button>
+                </div>
+            </div>
+
+            <!-- Card News Sample -->
+            <div class="showcase-card">
+                <div class="showcase-thumb" style="background: #F8F9FA; border: 1px solid #EEE;">
+                    <span class="thumb-label" style="color: #0052A2;">IMAGE SERIES</span>
+                    <div class="thumb-content" style="color: #333;">행복의 정의</div>
+                </div>
+                <div class="showcase-info">
+                    <h3>[카드] 이해관계자 행복의 변천</h3>
+                    <p>초판부터 14차까지 행복 개념이 어떻게 진화했는지 보여주는 시각 시리즈</p>
+                    <button class="showcase-btn" onclick="openShowcase('card_news')">체험하기</button>
+                </div>
+            </div>
+
+            <!-- Viz Sample -->
+            <div class="showcase-card">
+                <div class="showcase-thumb" style="background: #FFF;">
+                    <div id="showcase-viz-mini" style="width:100%; height:100%;"></div>
+                    <span class="thumb-label" style="background: rgba(0,82,162,0.1); color: #0052A2;">INTERACTIVE MAP</span>
+                </div>
+                <div class="showcase-info">
+                    <h3>[시각화] 경영요소 관계도</h3>
+                    <p>15개 경영요소 간의 유기적 연결성을 보여주는 인터랙티브 네트워크 맵</p>
+                    <button class="showcase-btn" onclick="openShowcase('viz')">탐색하기</button>
+                </div>
+            </div>
+
+            <!-- Podcast Sample -->
+            <div class="showcase-card">
+                <div class="showcase-thumb" style="background: #000;">
+                    <div class="audio-wave"><span></span><span></span><span></span><span></span></div>
+                    <span class="thumb-label">PREMIUM PODCAST</span>
+                </div>
+                <div class="showcase-info">
+                    <h3>[팟캐스트] SKMS 인사이트</h3>
+                    <p>호스트와 전문가가 들려주는 '패기와 혁신'의 현대적 재해석 (5 Mins)</p>
+                    <button class="showcase-btn" onclick="openShowcase('podcast')">들어보기</button>
+                </div>
+            </div>
+        </div>
+    </section>
         <div class="marquee">
             <span>AI EMPOWERED WORKFLOWS</span>
             <span class="dot">•</span>
@@ -439,7 +500,7 @@
                                     <option value="card_news">카드뉴스 (Card News / PNG)</option>
                                     <option value="workshop">워크숍 자료 (Workshop / HTML)</option>
                                     <option value="visualization">데이터 시각화 (Visualization / SVG)</option>
-                                    <option value="audio">오디오 나레이션 (Audio / MP3)</option>
+                                    <!-- Podcast는 별도 팟캐스트 카드에서 접근 -->
                                     <option value="quiz">퀴즈 (Interactive Quiz / HTML)</option>
                                 </optgroup>
                             </select>
@@ -730,6 +791,124 @@
             </div>
         </div>
     </div>
+    <!-- Podcast Studio Modal -->
+    <div class="studio-modal-overlay" id="podcast-modal-overlay">
+        <div class="studio-modal" style="max-width: 720px;">
+            <div class="studio-modal-header">
+                <div>
+                    <h2 id="podcast-modal-title">프리미엄 팟캐스트 생성</h2>
+                    <p>외부 소스 + SKMS 원문 → 글로벌 리더십 이론 기반 팟캐스트</p>
+                </div>
+                <span class="close-overlay" id="close-podcast-modal">&times;</span>
+            </div>
+            <div class="studio-modal-body">
+                <!-- Podcast Step 1: Input -->
+                <div id="podcast-step-input">
+                    <div class="studio-input-form">
+                        <div class="form-group">
+                            <label>SKMS 연결 주제 (쉼표로 구분)</label>
+                            <input type="text" id="podcast-topics" placeholder="예: SUPEX 추구, VWBE 문화" style="width:100%; padding:10px 14px; border:1px solid #DDD; border-radius:8px; font-size:0.95rem;">
+                        </div>
+
+                        <div style="margin-top: 20px; border-top: 1px solid #EEE; padding-top: 20px;">
+                            <label style="font-weight: 600; margin-bottom: 12px; display: block;">외부 소스 (선택)</label>
+                            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                                <button class="podcast-source-tab active" data-tab="url" style="padding:6px 16px; border:1px solid #0052A2; background:#E8F0FE; color:#0052A2; border-radius:20px; font-size:0.85rem; cursor:pointer; font-weight:500;">아티클 URL</button>
+                                <button class="podcast-source-tab" data-tab="text" style="padding:6px 16px; border:1px solid #DDD; background:#F8F9FA; border-radius:20px; font-size:0.85rem; cursor:pointer;">텍스트 직접 입력</button>
+                            </div>
+                            <div id="podcast-source-url">
+                                <input type="text" id="podcast-url" placeholder="https://..." style="width:100%; padding:10px 14px; border:1px solid #DDD; border-radius:8px; font-size:0.95rem;">
+                            </div>
+                            <div id="podcast-source-text" class="hidden">
+                                <textarea id="podcast-text" rows="4" placeholder="영어 또는 한국어 텍스트를 붙여넣으세요..." style="width:100%; padding:10px 14px; border:1px solid #DDD; border-radius:8px; font-size:0.95rem; resize:vertical;"></textarea>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; display: flex; gap: 20px;">
+                            <div class="form-group" style="flex:1">
+                                <label>스타일</label>
+                                <div class="custom-select">
+                                    <select id="podcast-style">
+                                        <option value="dialogue">대담 (호스트 + 전문가)</option>
+                                        <option value="podcast">토론 (호스트 + 교수 + 리더)</option>
+                                        <option value="narration">독백 (호스트 나레이션)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex:1">
+                                <label>길이: <strong id="podcast-dur-label">8</strong>분</label>
+                                <input type="range" id="podcast-duration" min="3" max="15" value="8" style="width:100%; margin-top: 8px;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>기반 판본 (선택)</label>
+                            <div class="custom-select">
+                                <select id="podcast-edition">
+                                    <option value="">전체 판본 기반 (추천)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="studio-actions" style="margin-top: 30px;">
+                            <button class="studio-generate-btn" id="podcast-generate-btn" style="width:100%;">
+                                팟캐스트 생성 시작
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Podcast Step 2: Progress (대본 생성 중) -->
+                <div id="podcast-step-progress" class="hidden">
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <div class="progress-animation" style="margin-bottom: 20px;">
+                            <div class="pulse-ring"></div>
+                        </div>
+                        <p id="podcast-progress-status" style="font-size:1.1rem; font-weight:600; color:#333;">대본 생성 중...</p>
+                        <p id="podcast-progress-detail" style="font-size:0.85rem; color:#888; margin-top: 8px;">SKMS 원문 검색 및 대본 작성이 진행됩니다. 약 1-2분 소요됩니다.</p>
+                    </div>
+                </div>
+
+                <!-- Podcast Step 3: Script Edit -->
+                <div id="podcast-step-edit" class="hidden">
+                    <div style="padding: 10px 0;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                            <div>
+                                <h3 style="margin:0; font-size:1.05rem;">대본 편집</h3>
+                                <p style="margin:4px 0 0; font-size:0.8rem; color:#888;">내용을 검토하고 수정한 뒤 음성을 생성하세요.</p>
+                            </div>
+                            <button id="podcast-back-to-input" style="padding:6px 14px; border:1px solid #DDD; background:#F8F9FA; border-radius:6px; font-size:0.8rem; cursor:pointer;">주제 수정</button>
+                        </div>
+                        <textarea id="podcast-script-editor" rows="18" style="width:100%; padding:14px; border:1px solid #DDD; border-radius:8px; font-size:0.9rem; line-height:1.8; resize:vertical; font-family:inherit;"></textarea>
+                        <div style="display:flex; gap:10px; margin-top: 16px;">
+                            <button class="studio-generate-btn" id="podcast-finalize-btn" style="flex:1;">
+                                이 대본으로 음성 생성
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Podcast Step 4: Finalizing (TTS 생성 중) -->
+                <div id="podcast-step-finalizing" class="hidden">
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <div class="progress-animation" style="margin-bottom: 20px;">
+                            <div class="pulse-ring"></div>
+                        </div>
+                        <p id="podcast-finalize-status" style="font-size:1.1rem; font-weight:600; color:#333;">음성 및 영상 생성 중...</p>
+                        <p id="podcast-finalize-detail" style="font-size:0.85rem; color:#888; margin-top: 8px;">TTS 음성 생성과 MP4 변환이 진행됩니다. 약 2-3분 소요됩니다.</p>
+                    </div>
+                </div>
+
+                <!-- Podcast Step 5: Result -->
+                <div id="podcast-step-result" class="hidden">
+                    <div id="podcast-result-view" style="padding: 10px 0;">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="toast-container" id="toast"></div>
 
     <script>
@@ -742,7 +921,7 @@
 
         // Content Studio type mapping (value → backend content_type)
         const CONTENT_STUDIO_TYPES = new Set([
-            'lecture', 'card_news', 'workshop', 'visualization', 'audio', 'quiz'
+            'lecture', 'card_news', 'workshop', 'visualization', 'quiz'
         ]);
 
         // Tone labels for prompt construction
@@ -1376,7 +1555,7 @@
             card_news: { title: '카드뉴스', format: 'PNG', desc: '소셜 미디어용 카드뉴스 시리즈를 생성합니다.' },
             workshop: { title: '워크숍 자료', format: 'HTML', desc: '인터랙티브 워크숍 자료를 생성합니다.' },
             visualization: { title: '데이터 시각화', format: 'SVG', desc: 'SKMS 변천 시각화를 생성합니다.' },
-            audio: { title: '오디오 나레이션', format: 'MP3', desc: 'TTS 기반 음성 콘텐츠를 생성합니다.' },
+            podcast: { title: '프리미엄 팟캐스트', format: 'MP3/MP4', desc: '외부 소스 + SKMS 원문 결합 팟캐스트를 생성합니다.' },
             quiz: { title: '인터랙티브 퀴즈', format: 'HTML', desc: 'SKMS 이해도 평가 퀴즈를 생성합니다.' }
         };
 
@@ -1455,7 +1634,7 @@
         document.getElementById('opt-card-count').addEventListener('input', e => {
             document.getElementById('opt-card-count-label').textContent = e.target.value;
         });
-        document.getElementById('opt-audio-duration').addEventListener('input', e => {
+        document.getElementById('opt-audio-duration')?.addEventListener('input', e => {
             document.getElementById('opt-audio-dur-label').textContent = e.target.value;
         });
         document.getElementById('opt-quiz-count').addEventListener('input', e => {
@@ -2350,9 +2529,29 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
 
         // NAVIGATION
         // ===================================================================
+        const mainSections = ['hero-section', 'process-guide', 'founder-section', 'content-studio-section', 'testimonial-section', 'marquee-container'];
+        const showcaseSection = document.getElementById('showcase-section');
+
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', (e) => {
                 const nav = link.dataset.nav;
+                
+                // Reset View
+                if (nav === 'home' || nav === 'showcase') {
+                    const isHome = nav === 'home';
+                    mainSections.forEach(id => {
+                        const el = document.getElementById(id) || document.querySelector('.' + id);
+                        if (el) el.classList.toggle('hidden', !isHome);
+                    });
+                    if (showcaseSection) showcaseSection.classList.toggle('hidden', isHome);
+                    
+                    if (isHome) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+
                 if (nav === 'editions') {
                     e.preventDefault();
                     openEditionsOverlay();
@@ -2362,7 +2561,7 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                 } else if (nav === 'dashboard') {
                     e.preventDefault();
                     openDashboardOverlay();
-                } else if (link.getAttribute('href').startsWith('#')) {
+                } else if (link.getAttribute('href') && link.getAttribute('href').startsWith('#') && nav !== 'home') {
                     // Smooth scroll for anchor links
                     const target = document.querySelector(link.getAttribute('href'));
                     if (target) {
@@ -3160,6 +3359,266 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
             }
         })();
 
+        // ===================================================================
+        // PODCAST STUDIO — Separate pipeline (/api/podcast/*)
+        // ===================================================================
+        (() => {
+            const podcastModal = document.getElementById('podcast-modal-overlay');
+            const closePodcastModal = document.getElementById('close-podcast-modal');
+
+            // Open podcast modal (separate from content studio modal)
+            document.querySelector('.podcast-open-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showPodcastStep('input');
+                podcastModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                document.getElementById('podcast-topics').focus();
+            });
+
+            closePodcastModal?.addEventListener('click', () => {
+                podcastModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+
+            // Source tab switching
+            document.querySelectorAll('.podcast-source-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.podcast-source-tab').forEach(t => {
+                        t.classList.remove('active');
+                        t.style.border = '1px solid #DDD';
+                        t.style.background = '#F8F9FA';
+                        t.style.color = '';
+                        t.style.fontWeight = '';
+                    });
+                    tab.classList.add('active');
+                    tab.style.border = '1px solid #0052A2';
+                    tab.style.background = '#E8F0FE';
+                    tab.style.color = '#0052A2';
+                    tab.style.fontWeight = '500';
+                    const target = tab.dataset.tab;
+                    document.getElementById('podcast-source-url').classList.toggle('hidden', target !== 'url');
+                    document.getElementById('podcast-source-text').classList.toggle('hidden', target !== 'text');
+                });
+            });
+
+            // Duration slider label
+            document.getElementById('podcast-duration')?.addEventListener('input', e => {
+                document.getElementById('podcast-dur-label').textContent = e.target.value;
+            });
+
+            let currentPodcastRequestId = null;
+
+            function showPodcastStep(step) {
+                ['input', 'progress', 'edit', 'finalizing', 'result'].forEach(s => {
+                    const el = document.getElementById('podcast-step-' + s);
+                    if (el) el.classList.toggle('hidden', s !== step);
+                });
+            }
+
+            // Back to input from edit
+            document.getElementById('podcast-back-to-input')?.addEventListener('click', () => {
+                showPodcastStep('input');
+            });
+
+            // Phase 1: 대본 생성
+            document.getElementById('podcast-generate-btn')?.addEventListener('click', async () => {
+                const topics = document.getElementById('podcast-topics').value.trim();
+                if (!topics) { showToast('SKMS 주제를 입력해주세요.', 'warning'); return; }
+
+                const sourceUrl = document.getElementById('podcast-url')?.value.trim() || null;
+                const sourceText = document.getElementById('podcast-text')?.value.trim() || null;
+                const style = document.getElementById('podcast-style').value;
+                const duration = parseInt(document.getElementById('podcast-duration').value, 10);
+                const edition = document.getElementById('podcast-edition')?.value || null;
+
+                showPodcastStep('progress');
+
+                try {
+                    const body = { topics, duration_min: duration, style };
+                    if (sourceUrl) body.source_url = sourceUrl;
+                    if (sourceText) body.source_text = sourceText;
+                    if (edition) body.edition_filter = edition;
+
+                    const resp = await apiCall('/api/podcast/generate', { body });
+                    if (!resp || !resp.request_id) throw new Error('요청 ID를 받지 못했습니다.');
+
+                    currentPodcastRequestId = resp.request_id;
+                    await pollForScript(resp.request_id);
+                } catch (err) {
+                    showPodcastError(err.message);
+                }
+            });
+
+            // Phase 2: 편집된 대본으로 TTS 생성
+            document.getElementById('podcast-finalize-btn')?.addEventListener('click', async () => {
+                const editedScript = document.getElementById('podcast-script-editor').value.trim();
+                if (!editedScript) { showToast('대본이 비어 있습니다.', 'warning'); return; }
+
+                showPodcastStep('finalizing');
+
+                try {
+                    const resp = await apiCall('/api/podcast/finalize/' + currentPodcastRequestId, {
+                        body: { script: editedScript }
+                    });
+                    if (!resp) throw new Error('finalize 요청 실패');
+
+                    await pollForCompletion(currentPodcastRequestId);
+                } catch (err) {
+                    showPodcastError(err.message);
+                }
+            });
+
+            // Poll Phase 1: 대본 생성 대기
+            async function pollForScript(requestId) {
+                const statusEl = document.getElementById('podcast-progress-status');
+                const detailEl = document.getElementById('podcast-progress-detail');
+                for (let i = 0; i < 120; i++) {
+                    await new Promise(r => setTimeout(r, 3000));
+                    try {
+                        const res = await apiCall('/api/podcast/status/' + requestId, { method: 'GET' });
+                        if (res.status === 'running') {
+                            statusEl.textContent = '대본 작성 중...';
+                            const elapsed = ((Date.now() / 1000 - res.created_at) / 60).toFixed(1);
+                            detailEl.textContent = 'SKMS 원문 검색 + 대본 생성 진행 중 (' + elapsed + '분)';
+                        }
+                        if (res.status === 'script_ready') {
+                            document.getElementById('podcast-script-editor').value = res.script;
+                            showPodcastStep('edit');
+                            return;
+                        }
+                        if (res.status === 'failed') throw new Error(res.error || '대본 생성에 실패했습니다.');
+                    } catch (err) {
+                        if (err.message.includes('실패')) throw err;
+                    }
+                }
+                throw new Error('대본 생성 시간이 초과되었습니다.');
+            }
+
+            // Poll Phase 2: TTS/MP4 생성 대기
+            async function pollForCompletion(requestId) {
+                const statusEl = document.getElementById('podcast-finalize-status');
+                const detailEl = document.getElementById('podcast-finalize-detail');
+                for (let i = 0; i < 120; i++) {
+                    await new Promise(r => setTimeout(r, 3000));
+                    try {
+                        const res = await apiCall('/api/podcast/status/' + requestId, { method: 'GET' });
+                        if (res.status === 'finalizing') {
+                            statusEl.textContent = '음성 및 영상 생성 중...';
+                            const elapsed = ((Date.now() / 1000 - res.created_at) / 60).toFixed(1);
+                            detailEl.textContent = 'TTS + MP4 변환 진행 중 (' + elapsed + '분)';
+                        }
+                        if (res.status === 'completed') {
+                            showPodcastResult(res, requestId);
+                            return;
+                        }
+                        if (res.status === 'failed') throw new Error(res.error || '음성 생성에 실패했습니다.');
+                    } catch (err) {
+                        if (err.message.includes('실패')) throw err;
+                    }
+                }
+                throw new Error('음성 생성 시간이 초과되었습니다.');
+            }
+
+            function showPodcastError(message) {
+                showPodcastStep('result');
+                const rv = document.getElementById('podcast-result-view');
+                rv.textContent = '';
+                const errDiv = document.createElement('div');
+                errDiv.className = 'result-error';
+                const p1 = document.createElement('p'); p1.textContent = '생성 실패';
+                const p2 = document.createElement('p'); p2.textContent = message;
+                errDiv.appendChild(p1); errDiv.appendChild(p2);
+                rv.appendChild(errDiv);
+                const retryBtn = document.createElement('button');
+                retryBtn.className = 'studio-new-btn';
+                retryBtn.textContent = '다시 시도';
+                retryBtn.addEventListener('click', () => showPodcastStep('input'));
+                rv.appendChild(retryBtn);
+            }
+
+            function showPodcastResult(status, requestId) {
+                showPodcastStep('result');
+                const rv = document.getElementById('podcast-result-view');
+                rv.textContent = '';
+
+                const files = status.files || [];
+                const mp3 = files.find(f => f.file_type === 'mp3');
+                const mp4 = files.find(f => f.file_type === 'mp4');
+                const scriptFile = files.find(f => f.file_type === 'md');
+                const downloadBase = API_BASE_URL + '/api/podcast/download/' + requestId;
+
+                // Header
+                const header = document.createElement('div');
+                header.style.cssText = 'text-align:center; margin-bottom:20px;';
+                const title = document.createElement('div');
+                title.style.cssText = 'font-size:1.2rem; font-weight:700; color:#0052A2; margin-bottom:5px;';
+                title.textContent = '팟캐스트 생성 완료!';
+                const subtitle = document.createElement('div');
+                subtitle.style.cssText = 'font-size:0.85rem; color:#888;';
+                subtitle.textContent = '주제: ' + status.topics;
+                header.appendChild(title);
+                header.appendChild(subtitle);
+                rv.appendChild(header);
+
+                // Audio player
+                if (mp3) {
+                    const audioWrap = document.createElement('div');
+                    audioWrap.style.cssText = 'margin-bottom:20px; background:#F8F9FA; padding:20px; border-radius:12px;';
+                    const audio = document.createElement('audio');
+                    audio.controls = true;
+                    audio.preload = 'metadata';
+                    audio.style.width = '100%';
+                    audio.src = downloadBase + '/' + mp3.file_name;
+                    audioWrap.appendChild(audio);
+                    rv.appendChild(audioWrap);
+                }
+
+                // Script preview
+                if (status.script) {
+                    const details = document.createElement('details');
+                    details.style.cssText = 'margin-bottom:20px; border:1px solid #EEE; border-radius:8px;';
+                    const summary = document.createElement('summary');
+                    summary.style.cssText = 'padding:12px 16px; cursor:pointer; font-weight:600; font-size:0.9rem; background:#FAFAFA; border-radius:8px;';
+                    summary.textContent = '대본 보기';
+                    const content = document.createElement('div');
+                    content.style.cssText = 'padding:16px; font-size:0.85rem; line-height:1.8; max-height:400px; overflow-y:auto; white-space:pre-wrap;';
+                    content.textContent = status.script;
+                    details.appendChild(summary);
+                    details.appendChild(content);
+                    rv.appendChild(details);
+                }
+
+                // Download buttons
+                const btnWrap = document.createElement('div');
+                btnWrap.style.cssText = 'display:flex; gap:10px; justify-content:center; flex-wrap:wrap;';
+
+                function makeDownloadBtn(fileName, label, bg) {
+                    const a = document.createElement('a');
+                    a.href = downloadBase + '/' + fileName;
+                    a.download = '';
+                    a.className = 'studio-generate-btn';
+                    a.style.cssText = 'text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:10px 20px; font-size:0.9rem;' + (bg ? ' background:' + bg + ';' : '');
+                    a.textContent = label;
+                    return a;
+                }
+
+                if (mp3) btnWrap.appendChild(makeDownloadBtn(mp3.file_name, 'MP3 (' + (mp3.size_bytes / 1024 / 1024).toFixed(1) + 'MB)', ''));
+                if (mp4) btnWrap.appendChild(makeDownloadBtn(mp4.file_name, 'MP4 (' + (mp4.size_bytes / 1024 / 1024).toFixed(1) + 'MB)', '#333'));
+                if (scriptFile) btnWrap.appendChild(makeDownloadBtn(scriptFile.file_name, '대본 다운로드', '#666'));
+                rv.appendChild(btnWrap);
+
+                // New episode button
+                const newWrap = document.createElement('div');
+                newWrap.style.cssText = 'text-align:center; margin-top:20px;';
+                const newBtn = document.createElement('button');
+                newBtn.className = 'studio-new-btn';
+                newBtn.textContent = '새 에피소드 만들기';
+                newBtn.addEventListener('click', () => showPodcastStep('input'));
+                newWrap.appendChild(newBtn);
+                rv.appendChild(newWrap);
+            }
+        })();
+
     </script>
     <!-- [Phase 13] Interactive Tour Elements -->
     <div id="tour-overlay" class="tour-overlay"></div>
@@ -3309,6 +3768,79 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Tour: DOM fully loaded, preparing tour.");
             setTimeout(() => startTour(), 1000);
+        });
+        // [Phase 15] Premium Showcase Mock Engine
+        function openShowcase(type) {
+            const mockResults = {
+                lecture: {
+                    title: "자발적 의욕의 심리학 (VWBE)",
+                    files: [{ file_type: "pptx", file_name: "VWBE_Deep_Dive.pptx" }],
+                    citations: ["q-102", "q-145", "q-289"],
+                    cost_report: { total_usd: 1.25, total_krw: 1650 }
+                },
+                card_news: {
+                    title: "행복의 변천사 (1979-2020)",
+                    files: [
+                        { file_type: "image", file_name: "card_01.png" },
+                        { file_type: "image", file_name: "card_02.png" }
+                    ],
+                    citations: ["q-001", "q-500", "q-1200"],
+                    cost_report: { total_usd: 0.85, total_krw: 1150 }
+                },
+                viz: {
+                    title: "경영요소 유기적 네트워크",
+                    files: [{ file_type: "visualization", file_name: "management_elements.svg" }],
+                    citations: ["q-all"],
+                    cost_report: { total_usd: 0.45, total_krw: 600 }
+                },
+                podcast: {
+                    title: "SKMS 인사이트 에피소드 01",
+                    files: [
+                        { file_type: "audio", file_name: "episode_01.mp3" },
+                        { file_type: "video", file_name: "episode_01.mp4" }
+                    ],
+                    citations: ["q-insight"],
+                    cost_report: { total_usd: 1.50, total_krw: 2000 }
+                }
+            };
+
+            const result = mockResults[type];
+            if (!result) return showToast("샘플 준비 중입니다.");
+
+            // Open Studio Modal and show results directly
+            studioModalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            showStudioStep('result');
+            
+            // Render Mock Result
+            showStudioResult(result, { title: result.title });
+            showToast("실제 AI 생성 결과와 동일한 샘플 데이터입니다.");
+        }
+
+        // Mini Visualization for Showcase Thumb
+        function initShowcaseViz() {
+            const container = document.getElementById('showcase-viz-mini');
+            if (!container || !window.G6) return;
+            
+            const graph = new G6.Graph({
+                container: 'showcase-viz-mini',
+                width: 280,
+                height: 180,
+                modes: { default: [] }, // Disable interaction for thumb
+                defaultNode: { size: 12, style: { fill: '#0052A2', stroke: '#FFF' } },
+                defaultEdge: { style: { stroke: '#E2E2E2', lineWidth: 1 } }
+            });
+
+            const data = {
+                nodes: [{id:'n1'}, {id:'n2'}, {id:'n3'}, {id:'n4'}, {id:'n5'}],
+                edges: [{source:'n1', target:'n2'}, {source:'n2', target:'n3'}, {source:'n3', target:'n4'}, {source:'n4', target:'n1'}, {source:'n5', target:'n3'}]
+            };
+            graph.data(data);
+            graph.render();
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(initShowcaseViz, 2000);
         });
     </script>
 </body>

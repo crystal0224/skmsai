@@ -3249,7 +3249,116 @@ textarea.plan-field-input {
   cursor: pointer;
 }
 
-.tour-progress {
-  font-size: 0.8rem;
-  color: #AAA;
+/* Showcase Section Styles */
+.showcase-section {
+  padding: 100px 5%;
+  background: #FFF;
+}
+
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.showcase-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  cursor: pointer;
+}
+
+.showcase-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  border-color: var(--sk-blue);
+}
+
+.showcase-thumb {
+  height: 180px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.thumb-label {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(255,255,255,0.9);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-black);
+}
+
+.thumb-content {
+  color: white;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.showcase-info {
+  padding: 1.5rem;
+}
+
+.showcase-info h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-black);
+}
+
+.showcase-info p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.showcase-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--bg-light);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--sk-blue);
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.showcase-card:hover .showcase-btn {
+  background: var(--sk-blue);
+  color: white;
+  border-color: var(--sk-blue);
+}
+
+/* Audio Wave Animation for Podcast Thumb */
+.audio-wave {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.audio-wave span {
+  width: 4px;
+  height: 20px;
+  background: var(--sk-blue);
+  border-radius: 2px;
+  animation: wave 1s infinite ease-in-out;
+}
+.audio-wave span:nth-child(2) { animation-delay: 0.2s; }
+.audio-wave span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes wave {
+  0%, 100% { height: 10px; }
+  50% { height: 30px; }
 }
