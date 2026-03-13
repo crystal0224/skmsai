@@ -3209,17 +3209,27 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         let currentStepIdx = 0;
 
         function startTour(force = false) {
+            console.log("Tour: Attempting to start...", { force });
             const urlParams = new URLSearchParams(window.location.search);
             const forceFromUrl = urlParams.get('tour') === 'true';
 
-            if (!force && !forceFromUrl && localStorage.getItem('skms_tour_completed')) return;
+            if (!force && !forceFromUrl && localStorage.getItem('skms_tour_completed')) {
+                console.log("Tour: Already completed, skipping.");
+                return;
+            }
             
-            // Clean URL after starting if forced from URL
             if (forceFromUrl) {
+                console.log("Tour: Forced from URL parameter.");
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
 
-            document.getElementById('tour-overlay').classList.add('active');
+            const overlay = document.getElementById('tour-overlay');
+            if (!overlay) {
+                console.error("Tour: Overlay element not found!");
+                return;
+            }
+
+            overlay.classList.add('active');
             showStep(0);
         }
 
@@ -3228,19 +3238,21 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         if (restartBtn) {
             restartBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                console.log("Tour: Manual restart triggered.");
                 startTour(true);
             });
         }
 
         function showStep(idx) {
+            console.log(`Tour: Showing step ${idx + 1}`);
             const step = tourSteps[idx];
-            const overlay = document.getElementById('tour-overlay');
             const spotlight = document.getElementById('tour-spotlight');
             const card = document.getElementById('tour-card');
             
+            if (!spotlight || !card) return;
+
             currentStepIdx = idx;
             
-            // Text Update
             document.getElementById('tour-title').textContent = step.title;
             document.getElementById('tour-desc').textContent = step.desc;
             document.getElementById('tour-progress').textContent = `${idx + 1} / ${tourSteps.length}`;
@@ -3249,6 +3261,7 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
             if (step.target) {
                 const targetEl = document.getElementById(step.target);
                 if (targetEl) {
+                    console.log(`Tour: Target found - ${step.target}`);
                     targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     
                     setTimeout(() => {
@@ -3259,41 +3272,42 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                         spotlight.style.width = `${rect.width + 20}px`;
                         spotlight.style.height = `${rect.height + 20}px`;
 
-                        // Card Positioning
                         card.style.display = 'flex';
+                        card.style.transform = 'none'; // Reset transform
                         card.style.top = `${rect.bottom + window.scrollY + 20}px`;
                         card.style.left = `${Math.min(window.innerWidth - 300, Math.max(20, rect.left))}px`;
-                    }, 500);
+                    }, 600);
+                } else {
+                    console.warn(`Tour: Target NOT found - ${step.target}, showing in center.`);
+                    showInCenter();
                 }
             } else {
-                // Center positioning for welcome
-                spotlight.style.display = 'none';
-                card.style.display = 'flex';
-                card.style.top = '50%';
-                card.style.left = '50%';
-                card.style.transform = 'translate(-50%, -50%)';
+                showInCenter();
             }
         }
 
+        function showInCenter() {
+            const spotlight = document.getElementById('tour-spotlight');
+            const card = document.getElementById('tour-card');
+            spotlight.style.display = 'none';
+            card.style.display = 'flex';
+            card.style.top = '50%';
+            card.style.left = '50%';
+            card.style.transform = 'translate(-50%, -50%)';
+            card.style.position = 'fixed';
+        }
+
         function endTour() {
+            console.log("Tour: Ending tour.");
             document.getElementById('tour-overlay').classList.remove('active');
             document.getElementById('tour-spotlight').style.display = 'none';
             document.getElementById('tour-card').style.display = 'none';
             localStorage.setItem('skms_tour_completed', 'true');
         }
 
-        document.getElementById('tour-next').addEventListener('click', () => {
-            if (currentStepIdx < tourSteps.length - 1) {
-                showStep(currentStepIdx + 1);
-            } else {
-                endTour();
-            }
-        });
-
-        document.getElementById('tour-skip').addEventListener('click', endTour);
-
-        // Auto-start on load (최종 보정 타이밍)
-        window.addEventListener('load', () => {
+        // 실행 시점 최적화 (DOMContentLoaded + Timeout)
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Tour: DOM fully loaded, preparing tour.");
             setTimeout(() => startTour(), 1000);
         });
     </script>
