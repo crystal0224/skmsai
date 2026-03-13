@@ -8,7 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=20260313_01">
+    <!-- Deployment Version: 2026-03-13 Premium Podcast & Interactive Tour Integrated -->
     <!-- Visualization Libraries (AntV) -->
     <script src="https://unpkg.com/@antv/g6@4.8.24/dist/g6.min.js"></script>
     <script src="https://unpkg.com/@antv/g2@4.2.10/dist/g2.min.js"></script>
@@ -3208,13 +3209,19 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         let currentStepIdx = 0;
 
         function startTour(force = false) {
-            if (!force && localStorage.getItem('skms_tour_completed')) return;
+            const urlParams = new URLSearchParams(window.location.search);
+            const forceFromUrl = urlParams.get('tour') === 'true';
+
+            if (!force && !forceFromUrl && localStorage.getItem('skms_tour_completed')) return;
             
+            // Clean URL after starting if forced from URL
+            if (forceFromUrl) {
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
             document.getElementById('tour-overlay').classList.add('active');
             showStep(0);
         }
-
-        // ... (showStep, endTour 등 기존 함수 유지) ...
 
         // Manual Restart Event
         const restartBtn = document.getElementById('restart-tour');
@@ -3285,9 +3292,9 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
 
         document.getElementById('tour-skip').addEventListener('click', endTour);
 
-        // Auto-start on load
+        // Auto-start on load (최종 보정 타이밍)
         window.addEventListener('load', () => {
-            setTimeout(startTour, 1500);
+            setTimeout(() => startTour(), 1000);
         });
     </script>
 </body>
