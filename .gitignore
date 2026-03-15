@@ -44,7 +44,9 @@ Thumbs.db
 htmlcov/
 
 # Temporary / build artifacts
-*.html
+# *.html (Removed to allow index.html deployment)
+!index.html
+!styles.css
 !docs/**/*.html
 !everline-studio-clone/**/*.html
 
