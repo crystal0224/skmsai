@@ -1,0 +1,10 @@
+[build]
+  publish = "."
+  command = "echo Deployment started"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    cache-control = "max-age=0, no-cache, no-store, must-revalidate"
+    pragma = "no-cache"
+    expires = "0"

@@ -1,0 +1,3847 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKMS AI Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="styles.css?v=FINAL_FORCE_DEPLOY">
+    <!-- Deployment Version: FINAL FORCE DEPLOY (SHOWCASE & TOUR INCLUDED) -->
+    <!-- Visualization Libraries (AntV) -->
+    <script src="https://unpkg.com/@antv/g6@4.8.24/dist/g6.min.js"></script>
+    <script src="https://unpkg.com/@antv/g2@4.2.10/dist/g2.min.js"></script>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">skms ai studio</div>
+        <div class="nav-links">
+            <a href="#hero-section" class="active" data-nav="home">HOME</a>
+            <a href="#" data-nav="showcase" id="nav-showcase">SHOWCASE</a>
+            <a href="#" data-nav="editions" id="nav-editions">EDITIONS</a>
+            <a href="#" data-nav="search" id="nav-search">SEARCH</a>
+            <a href="#" data-nav="dashboard" id="nav-dashboard">DASHBOARD</a>
+            <a href="#content-studio-section" class="nav-cta" id="nav-studio">START STUDIO</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero-section">
+        <div class="hero-content">
+            <p class="hero-label">SKMS AI CONTENT STUDIO</p>
+            <h1 class="hero-title" style="margin-bottom: 20px;">당신의 통찰을<br>전문가급 콘텐츠로.</h1>
+            <p class="hero-sub">주제만 입력하세요. SKMS 원문 기반의 기획안부터<br>PPTX, 카드뉴스, 영상 강의까지 한 번에 완성됩니다.</p>
+            <div style="margin-top: 40px; display: flex; gap: 15px; justify-content: center;">
+                <a href="#content-studio-section" class="cta-button">콘텐츠 제작 시작</a>
+                <a href="#" class="secondary-button" id="btn-view-samples">샘플 결과물 보기</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simple 3-Step Process Guide -->
+    <section class="process-guide">
+        <div class="guide-container">
+            <div class="step">
+                <span class="step-num">01</span>
+                <span class="step-text">주제 및 타겟 입력</span>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <span class="step-num">02</span>
+                <span class="step-text">AI 기획안 직접 수정</span>
+            </div>
+            <div class="step-arrow">→</div>
+            <div class="step">
+                <span class="step-num">03</span>
+                <span class="step-text">영상·문서 즉시 다운로드</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Assistant Section -->
+    <section class="founder-section">
+        <div class="vertical-bar">
+            <span>EMPOWERING MEMBERS&nbsp;&nbsp;&nbsp;&nbsp;EMPOWERING MEMBERS&nbsp;&nbsp;&nbsp;&nbsp;EMPOWERING MEMBERS</span>
+        </div>
+        
+        <div class="founder-content">
+            <div class="founder-image">
+                <img src="assets/ai_assistant_portrait.png" alt="AI Assistant">
+                <div class="image-accent"></div>
+            </div>
+            <div class="founder-text">
+                <h2>Intelligent Companion &<br>Content Creator</h2>
+                <div class="prose">
+                    <p>SK의 경영철학에 대한 깊은 이해와 고도의 생성형 AI 역량을 결합한 SKMS AI STUDIO는 콘텐츠 제작에 대한 새로운 접근 방식을 제시합니다.</p>
+                    <p>단순한 결과물 생성을 넘어, 구성원들이 가치 있게 여기는 의미와 전략적 방향성에 부합하는 지능형 워크스페이스를 제공합니다. 아이데이션부터 문서 작성까지 모든 과정이 의도적으로 조율되어, 당신의 결과물이 SKMS의 핵심 가치와 공명할 수 있도록 돕습니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content Studio Section -->
+    <section class="content-studio-section" id="content-studio-section">
+        <div class="studio-header">
+            <p class="studio-label">CONTENT STUDIO</p>
+            <h2 class="studio-title" id="studio-section-title">AI 콘텐츠<br>제작 파이프라인</h2>
+            <p class="studio-desc">SKMS 원문 기반 RAG 파이프라인이 6종의 콘텐츠를 자동 생성합니다.<br>기획(Plan) → 생성(Generate) → 에셋(Assets) → 조립(Assemble) → 발행(Publish)</p>
+        </div>
+        <div class="studio-grid" id="studio-grid">
+            <div class="studio-card" data-type="lecture">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                </div>
+                <div class="card-format">PPTX</div>
+                <h3>프레젠테이션</h3>
+                <p>SKMS 철학 기반 강의 슬라이드. 3종 테마(기업/교육/세미나), 자동 목차, 발표자 노트 포함.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">슬라이드</span>
+                    <span class="meta-tag">PDF 변환</span>
+                </div>
+                <button class="card-btn" data-type="lecture">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="lecture">전문가용 샘플 보기</a>
+            </div>
+            <div class="studio-card" data-type="card_news">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                </div>
+                <div class="card-format">PNG</div>
+                <h3>카드뉴스</h3>
+                <p>소셜 미디어용 카드 시리즈. 3종 프리셋(daily_skms / deep_read / edition_compare) 자동 생성.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">이미지</span>
+                    <span class="meta-tag">시리즈</span>
+                </div>
+                <button class="card-btn" data-type="card_news">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="card_news">디자인 샘플 보기</a>
+            </div>
+            <div class="studio-card" data-type="workshop">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="card-format">HTML</div>
+                <h3>워크숍 자료</h3>
+                <p>인터랙티브 HTML 워크숍. 토론 프롬프트, 활동 가이드, 타이머 포함 실습형 학습 자료.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">인터랙티브</span>
+                    <span class="meta-tag">실습</span>
+                </div>
+                <button class="card-btn" data-type="workshop">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="workshop">가이드 샘플 보기</a>
+            </div>
+            <div class="studio-card" data-type="visualization">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                </div>
+                <div class="card-format">SVG</div>
+                <h3>데이터 시각화</h3>
+                <p>SKMS 변천 시각화. 타임라인(12개 판본), 네트워크(15개 경영요소), 생키 다이어그램(개념 진화).</p>
+                <div class="card-meta">
+                    <span class="meta-tag">차트</span>
+                    <span class="meta-tag">인포그래픽</span>
+                </div>
+                <button class="card-btn" data-type="visualization">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="visualization">차트 샘플 보기</a>
+            </div>
+            <div class="studio-card" data-type="podcast" id="podcast-card">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+                </div>
+                <div class="card-format">MP3 / MP4</div>
+                <h3>프리미엄 팟캐스트</h3>
+                <p>동영상, 아티클, 텍스트 등 외부 소스와 SKMS 원문을 결합하여 글로벌 리더십 이론 기반의 프리미엄 팟캐스트를 생성합니다.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">멀티 소스</span>
+                    <span class="meta-tag">전문가 토론</span>
+                </div>
+                <button class="card-btn podcast-open-btn">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="podcast">샘플 에피소드 듣기</a>
+            </div>
+            <div class="studio-card" data-type="quiz">
+                <div class="card-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                </div>
+                <div class="card-format">HTML</div>
+                <h3>인터랙티브 퀴즈</h3>
+                <p>SKMS 이해도 평가 퀴즈. 객관식/OX/서술형 문항 자동 생성, 즉시 채점 및 해설 제공.</p>
+                <div class="card-meta">
+                    <span class="meta-tag">평가</span>
+                    <span class="meta-tag">학습</span>
+                </div>
+                <button class="card-btn" data-type="quiz">생성하기</button>
+                <a href="#" class="view-sample-link" data-type="quiz">문제 샘플 풀기</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Content Studio Generation Modal -->
+    <div class="studio-modal-overlay" id="studio-modal-overlay">
+        <div class="studio-modal">
+            <div class="studio-modal-header">
+                <div>
+                    <h2 id="studio-modal-title">콘텐츠 생성</h2>
+                    <p id="studio-modal-subtitle">SKMS 기반 콘텐츠를 생성합니다.</p>
+                </div>
+                <span class="close-overlay" id="close-studio-modal">&times;</span>
+            </div>
+            <div class="studio-modal-body">
+                <!-- Step 1: Input (Phase 10 Simplified) -->
+                <div class="studio-step" id="studio-step-input">
+                    <div class="studio-input-form">
+                        <div class="form-group">
+                            <label>제작할 주제를 입력하세요</label>
+                            <textarea id="studio-topic" rows="4" placeholder="예: VWBE와 SUPEX 추구의 실천적 방안"></textarea>
+                        </div>
+                        
+                        <div id="studio-intelligent-options" style="margin-top: 20px; border-top: 1px solid #EEE; padding-top: 20px;">
+                            <div class="form-row">
+                                <div class="form-group" style="flex:1">
+                                    <label>대상 독자 (Target)</label>
+                                    <div class="custom-select">
+                                        <select id="studio-target-audience">
+                                            <option value="general">일반 구성원</option>
+                                            <option value="new_employee">신입 사원</option>
+                                            <option value="manager" selected>팀장/관리자</option>
+                                            <option value="executive">임원/의사결정자</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="flex:1">
+                                    <label>출력 언어</label>
+                                    <div class="custom-select">
+                                        <select id="studio-language">
+                                            <option value="ko" selected>한국어 (KOR)</option>
+                                            <option value="en">영어 (ENG)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label>기반 판본 (선택)</label>
+                                <div class="custom-select">
+                                    <select id="studio-edition-filter">
+                                        <option value="">전체 판본 기반 (추천)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.8rem; color: #888; margin-top: 15px; font-style: italic; line-height: 1.4;">
+                                * 분량과 시각화 방식은 입력하신 주제의 깊이에 따라 AI 전략가가 제안합니다.<br>
+                                * [기획안 생성] 단계에서 AI의 제안을 직접 수정할 수 있습니다.
+                            </p>
+                        </div>
+
+                        <div class="studio-actions" style="margin-top: 30px;">
+                            <button class="studio-plan-btn" id="studio-plan-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                                기획안 생성 & 확인
+                            </button>
+                            <button class="studio-generate-btn" id="studio-generate-btn">
+                                바로 생성 시작
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Step 2: Plan Preview -->
+                <div class="studio-step hidden" id="studio-step-plan">
+                    <div class="studio-plan-view">
+                        <!-- AI Recommendation Summary -->
+                        <div id="plan-recommendation-bar" style="background: #F0F7FF; border: 1px solid #D0E5FF; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; gap: 25px;">
+                                <div class="rec-item">
+                                    <span style="font-size: 0.8rem; color: #666; display: block; margin-bottom: 4px;">추천 소요 시간</span>
+                                    <input type="number" id="rec-duration" style="width: 50px; font-weight: 700; border: none; background: transparent; color: #0052A2; font-size: 1.1rem;"> <span style="font-weight: 700; color: #0052A2;">분</span>
+                                </div>
+                                <div class="rec-item" id="rec-slides-group">
+                                    <span style="font-size: 0.8rem; color: #666; display: block; margin-bottom: 4px;">추천 슬라이드 수</span>
+                                    <input type="number" id="rec-count" style="width: 50px; font-weight: 700; border: none; background: transparent; color: #0052A2; font-size: 1.1rem;"> <span style="font-weight: 700; color: #0052A2;">장</span>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.85rem; color: #0052A2; background: #FFF; padding: 5px 12px; border-radius: 20px; border: 1px solid #D0E5FF;">
+                                ✨ 주제의 깊이를 분석한 최적의 구성입니다
+                            </div>
+                        </div>
+
+                        <div class="plan-header">
+                            <h3>생성 계획 미리보기</h3>
+                            <div class="plan-header-actions">
+                                <button class="plan-toggle-btn" id="plan-toggle-json" title="JSON 보기">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+                                    JSON
+                                </button>
+                                <button class="plan-reset-btn" id="plan-reset-btn" title="편집 초기화">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                                    편집 초기화
+                                </button>
+                                <button class="studio-back-btn" id="studio-back-to-input">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                                    수정하기
+                                </button>
+                            </div>
+                        </div>
+                        <div class="plan-content" id="studio-plan-content">
+                            <div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">계획 생성 중...</p></div>
+                        </div>
+                        <div class="plan-content hidden" id="studio-plan-json" style="font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; word-break: break-all;"></div>
+                        <button class="studio-generate-btn" id="studio-confirm-generate">이 계획으로 생성하기</button>
+                    </div>
+                </div>
+                <!-- Step 3: Progress -->
+                <div class="studio-step hidden" id="studio-step-progress">
+                    <div class="studio-progress-view">
+                        <div class="progress-animation">
+                            <div class="progress-ring">
+                                <svg width="120" height="120" viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="6"/>
+                                    <circle cx="60" cy="60" r="54" fill="none" stroke="var(--primary-yellow)" stroke-width="6"
+                                            stroke-dasharray="339.292" stroke-dashoffset="339.292" stroke-linecap="round"
+                                            id="progress-circle" style="transition: stroke-dashoffset 0.5s ease"/>
+                                </svg>
+                                <span class="progress-percent" id="progress-percent">0%</span>
+                            </div>
+                        </div>
+                        <div class="progress-stages" id="progress-stages">
+                            <div class="stage" data-stage="planning"><span class="stage-dot"></span> 기획 (Plan)</div>
+                            <div class="stage" data-stage="generating"><span class="stage-dot"></span> 생성 (Generate)</div>
+                            <div class="stage" data-stage="assets"><span class="stage-dot"></span> 에셋 (Assets)</div>
+                            <div class="stage" data-stage="assembling"><span class="stage-dot"></span> 조립 (Assemble)</div>
+                            <div class="stage" data-stage="publishing"><span class="stage-dot"></span> 발행 (Publish)</div>
+                        </div>
+                        <p class="progress-status" id="progress-status">준비 중...</p>
+                    </div>
+                </div>
+                <!-- Step 4: Result -->
+                <div class="studio-step hidden" id="studio-step-result">
+                    <div class="studio-result-view" id="studio-result-view">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial" id="testimonial-section">
+        <h2 class="section-title">What They're Saying</h2>
+        <div class="quote-container">
+            <div class="quote-icon">"</div>
+            <p class="quote">SKMS AI는 단순히 텍스트를 생성하는 것에 그치지 않고, 우리 철학 이면의 본질을 포착해냈습니다. 스튜디오와의 작업은 매끄럽고 영감을 주었으며 기대 이상이었습니다. 우리가 미처 말로 다 표현하기도 전에 전략적 비전을 이해하고 있었습니다.</p>
+            <p class="quote-author">— MEMBER OF SK</p>
+        </div>
+    </section>
+
+    <!-- Showcase Gallery Section (Phase 15) -->
+    <section class="showcase-section hidden" id="showcase-section">
+        <div class="studio-header" style="text-align: center; margin-bottom: 60px;">
+            <p class="studio-label">PREMIUM SHOWCASE</p>
+            <h2 class="studio-title">AI가 설계한<br>최고의 결과물들</h2>
+            <p class="studio-desc">API 호출 없이 즉시 확인 가능한 실제 생성 샘플입니다.<br>전문가 수준의 디자인과 RAG 정밀도를 지금 체험해 보세요.</p>
+        </div>
+
+        <div class="showcase-grid">
+            <!-- Lecture Sample -->
+            <div class="showcase-card">
+                <div class="showcase-thumb" style="background: linear-gradient(135deg, #0052A2 0%, #002D62 100%);">
+                    <span class="thumb-label">PPTX SLIDE</span>
+                    <div class="thumb-content">VWBE & SUPEX</div>
+                </div>
+                <div class="showcase-info">
+                    <h3>[강의] 자발적 의욕의 심리학</h3>
+                    <p>자기결정성 이론과 SKMS VWBE를 결합한 리더십 교육 자료 (12 Slides)</p>
+                    <button class="showcase-btn" onclick="openShowcase('lecture')">체험하기</button>
+                </div>
+            </div>
+
+            <!-- Card News Sample -->
+            <div class="showcase-card">
+                <div class="showcase-thumb" style="background: #F8F9FA; border: 1px solid #EEE;">
+                    <span class="thumb-label" style="color: #0052A2;">IMAGE SERIES</span>
+                    <div class="thumb-content" style="color: #333;">행복의 정의</div>
+                </div>
+                <div class="showcase-info">
+                    <h3>[카드] 이해관계자 행복의 변천</h3>
+                    <p>초판부터 14차까지 행복 개념이 어떻게 진화했는지 보여주는 시각 시리즈</p>
+                    <button class="showcase-btn" onclick="openShowcase('card_news')">체험하기</button>
+                </div>
+            </div>
+
+            <!-- Viz Sample -->
+            <div class="showcase-card">
+                <div class="showcase-thumb" style="background: #FFF;">
+                    <div id="showcase-viz-mini" style="width:100%; height:100%;"></div>
+                    <span class="thumb-label" style="background: rgba(0,82,162,0.1); color: #0052A2;">INTERACTIVE MAP</span>
+                </div>
+                <div class="showcase-info">
+                    <h3>[시각화] 경영요소 관계도</h3>
+                    <p>15개 경영요소 간의 유기적 연결성을 보여주는 인터랙티브 네트워크 맵</p>
+                    <button class="showcase-btn" onclick="openShowcase('viz')">탐색하기</button>
+                </div>
+            </div>
+
+            <!-- Podcast Sample -->
+            <div class="showcase-card">
+                <div class="showcase-thumb" style="background: #000;">
+                    <div class="audio-wave"><span></span><span></span><span></span><span></span></div>
+                    <span class="thumb-label">PREMIUM PODCAST</span>
+                </div>
+                <div class="showcase-info">
+                    <h3>[팟캐스트] SKMS 인사이트</h3>
+                    <p>호스트와 전문가가 들려주는 '패기와 혁신'의 현대적 재해석 (5 Mins)</p>
+                    <button class="showcase-btn" onclick="openShowcase('podcast')">들어보기</button>
+                </div>
+            </div>
+        </div>
+    </section>
+        <div class="marquee">
+            <span>AI EMPOWERED WORKFLOWS</span>
+            <span class="dot">•</span>
+            <span>AI EMPOWERED WORKFLOWS</span>
+            <span class="dot">•</span>
+            <span>AI EMPOWERED WORKFLOWS</span>
+            <span class="dot">•</span>
+            <span>AI EMPOWERED WORKFLOWS</span>
+            <span class="dot">•</span>
+            <span>AI EMPOWERED WORKFLOWS</span>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="contact-oval" id="footer-btn-start">
+            <h2>START YOUR JOURNEY</h2>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-links">
+                <a href="#">가이드라인 (GUIDELINES)</a>
+                <a href="#">자주 묻는 질문 (FAQ)</a>
+                <a href="#">고객 지원 (SUPPORT)</a>
+            </div>
+            <div class="studio-hours">
+                <p>INTERNAL TOOL</p>
+                <p>AVAILABLE 24/7</p>
+                <p style="margin-top: 10px;"><a href="#" id="restart-tour" style="color: var(--sk-blue); text-decoration: underline; font-size: 0.8rem;">온보딩 가이드 다시보기</a></p>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- SKMS RAG Chat Interface -->
+    <div class="chat-widget" id="chat-widget">
+        <div class="chat-btn" id="chat-toggle-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H5.17L4 17.17V4H20V16Z" fill="var(--bg-white)"/>
+                <path d="M7 9H17V11H7V9Z" fill="var(--bg-white)"/>
+                <path d="M7 13H14V15H7V13Z" fill="var(--bg-white)"/>
+            </svg>
+            <span>SKMS QA</span>
+        </div>
+        <div class="chat-window" id="chat-window">
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <span class="status-dot"></span>
+                    <h3>SKMS Assistant</h3>
+                </div>
+                <div class="chat-header-actions" style="display: flex; gap: 10px; align-items: center;">
+                    <span class="expand-chat" id="expand-chat" title="전체화면" style="cursor: pointer; opacity: 0.7; transition: opacity 0.2s;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                    </span>
+                    <span class="close-chat" id="close-chat" style="font-size: 20px; cursor: pointer;">&times;</span>
+                </div>
+            </div>
+            <div class="chat-body" id="chat-body">
+               <div class="message bot-message">
+                   <p>안녕하세요. SKMS에 대해 어떤 점이 궁금하신가요?</p>
+               </div>
+               <!-- Chat Starter Chips -->
+               <div class="chat-starters">
+                   <button class="starter-chip" data-query="행복이란 무엇인가요?">😊 행복의 정의</button>
+                   <button class="starter-chip" data-query="VWBE의 실천 방안을 알려줘">⚙️ VWBE 실천</button>
+                   <button class="starter-chip" data-query="14차 개정판의 핵심 변화는?">📜 개정판 변화</button>
+                   <button class="starter-chip" data-query="SUPEX 추구 방법론 요약">🚀 SUPEX 추구</button>
+               </div>
+            </div>
+
+            <div class="chat-edition-filter">
+                <select id="chat-edition-filter" title="판본 필터">
+                    <option value="">전체 판본</option>
+                </select>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="SKMS에 대해 질문해주세요...">
+                <button id="send-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Content Development Workspace Overlay -->
+    <div class="workspace-overlay" id="workspace-overlay">
+        <div class="workspace-container">
+            <div class="workspace-header">
+                <div>
+                    <h2>새 콘텐츠 작성</h2>
+                    <p>SKMS AI를 활용하여 콘텐츠를 생성합니다.</p>
+                </div>
+                <span class="close-workspace" id="close-workspace">&times;</span>
+            </div>
+            <div class="workspace-body">
+                <div class="workspace-form">
+                    <div class="form-group">
+                        <label>콘텐츠 종류를 선택해주세요</label>
+                        <div class="custom-select">
+                            <select id="content-type">
+                                <optgroup label="콘텐츠 스튜디오">
+                                    <option value="lecture">프레젠테이션 슬라이드 (PPTX)</option>
+                                    <option value="card_news">카드뉴스 (Card News / PNG)</option>
+                                    <option value="workshop">워크숍 자료 (Workshop / HTML)</option>
+                                    <option value="visualization">데이터 시각화 (Visualization / SVG)</option>
+                                    <!-- Podcast는 별도 팟캐스트 카드에서 접근 -->
+                                    <option value="quiz">퀴즈 (Interactive Quiz / HTML)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>원하시는 톤 앤 매너</label>
+                        <div class="custom-select">
+                            <select id="content-tone">
+                                <option value="professional">전문적이고 핵심적인 (Professional & Concise)</option>
+                                <option value="visionary">비전 제시 및 영감을 주는 (Visionary & Inspiring)</option>
+                                <option value="analytical">분석적이고 객관적인 (Analytical & Objective)</option>
+                                <option value="friendly">친근하고 부드러운 (Friendly & Approachable)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>참조할 SKMS 판본 (선택)</label>
+                        <div class="custom-select">
+                            <select id="workspace-edition-filter">
+                                <option value="">전체 판본 참조</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>핵심 목적 및 세부 내용을 입력해주세요</label>
+                        <textarea id="content-prompt" rows="6" placeholder="예: '지속가능한 성장을 위한 Q3 집중 전략'을 SK의 Double Bottom Line 경영철학과 연계하여 설명하는 이메일 초안 작성..."></textarea>
+                    </div>
+                    <button class="generate-btn" id="generate-btn">
+                        <span>SKMS AI로 생성하기</span>
+                    </button>
+                </div>
+                <div class="workspace-results">
+                    <div class="results-header">
+                        <label>생성 결과</label>
+                        <div class="result-actions">
+                            <button class="action-btn" id="btn-copy">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                복사
+                            </button>
+                            <button class="action-btn" id="btn-regenerate">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path></svg>
+                                수정 및 재생성
+                            </button>
+                        </div>
+                    </div>
+                    <div class="result-box" id="result-box">
+                        <div class="empty-state">
+                            <div class="pulse-ring"></div>
+                            <p class="placeholder-text">AI가 생성한 내용이 여기에 표시됩니다</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SKMS Edition Browser Overlay -->
+    <div class="editions-overlay" id="editions-overlay">
+        <div class="editions-container">
+            <div class="editions-header">
+                <div>
+                    <h2>SKMS 판본 탐색기</h2>
+                    <p>초판(1979)부터 14차(2020)까지 SKMS의 변천사를 탐색합니다.</p>
+                </div>
+                <span class="close-overlay" id="close-editions">&times;</span>
+            </div>
+            <div class="editions-body">
+                <div class="editions-sidebar" id="editions-sidebar">
+                    <div class="editions-sidebar-header">
+                        <h3>판본 목록</h3>
+                        <span class="edition-count" id="edition-count"></span>
+                    </div>
+                    <div class="edition-list" id="edition-list">
+                        <p class="loading-text">판본 목록을 불러오는 중...</p>
+                    </div>
+                </div>
+                <div class="editions-content">
+                    <div class="toc-search-bar">
+                        <input type="text" id="toc-search-input" placeholder="목차에서 검색... (예: 인사관리, SUPEX)">
+                        <button id="toc-search-btn">검색</button>
+                    </div>
+                    <div class="toc-tree" id="toc-tree">
+                        <div class="empty-state">
+                            <div class="pulse-ring"></div>
+                            <p class="placeholder-text">왼쪽에서 판본을 선택하면 목차가 표시됩니다</p>
+                        </div>
+                    </div>
+                    <div class="section-text-panel" id="section-text-panel" style="display:none;">
+                        <div class="section-text-header">
+                            <h4 id="section-text-title">원문</h4>
+                            <span class="close-section-text" id="close-section-text">&times;</span>
+                        </div>
+                        <div class="section-text-body" id="section-text-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-container">
+            <div class="search-header">
+                <div>
+                    <h2>SKMS 통합 검색</h2>
+                    <p>하이브리드 검색으로 SKMS 원문에서 관련 구절을 찾습니다.</p>
+                </div>
+                <span class="close-overlay" id="close-search">&times;</span>
+            </div>
+            <div class="search-body">
+                <div class="search-form-area">
+                    <div class="search-input-row">
+                        <input type="text" id="search-query" placeholder="SKMS 키워드를 검색하세요... (예: 인간중심 경영, SUPEX 추구)">
+                        <button id="search-submit-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        </button>
+                    </div>
+                    <div class="search-filters">
+                        <div class="filter-group">
+                            <label>검색 모드</label>
+                            <select id="search-mode">
+                                <option value="hybrid">하이브리드 (추천)</option>
+                                <option value="vector">의미 검색 (Vector)</option>
+                                <option value="bm25">키워드 검색 (BM25)</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>판본 필터</label>
+                            <select id="search-edition-filter">
+                                <option value="">전체 판본</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>인용 유형</label>
+                            <select id="search-type-filter">
+                                <option value="">전체</option>
+                                <option value="definition">정의</option>
+                                <option value="principle">원칙</option>
+                                <option value="narrative">서술</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>결과 수</label>
+                            <select id="search-top-k">
+                                <option value="5">5건</option>
+                                <option value="10" selected>10건</option>
+                                <option value="20">20건</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-results" id="search-results">
+                    <div class="empty-state">
+                        <div class="pulse-ring"></div>
+                        <p class="placeholder-text">검색어를 입력하고 검색 버튼을 클릭하세요</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Overlay -->
+    <div class="dashboard-overlay" id="dashboard-overlay">
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <div>
+                    <h2>SYSTEM DASHBOARD</h2>
+                    <p>서비스 상태 및 실시간 메트릭을 모니터링합니다.</p>
+                </div>
+                <span class="close-overlay" id="close-dashboard">&times;</span>
+            </div>
+            <div class="dashboard-body">
+                <!-- Service Status -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">SERVICE STATUS</h3>
+                    <div class="dashboard-status-grid" id="dashboard-status-grid">
+                        <div class="status-card">
+                            <span class="status-label">Search</span>
+                            <span class="status-badge" id="status-search">--</span>
+                        </div>
+                        <div class="status-card">
+                            <span class="status-label">Generation</span>
+                            <span class="status-badge" id="status-generation">--</span>
+                        </div>
+                        <div class="status-card">
+                            <span class="status-label">TOC</span>
+                            <span class="status-badge" id="status-toc">--</span>
+                        </div>
+                        <div class="status-card">
+                            <span class="status-label">Content Studio</span>
+                            <span class="status-badge" id="status-content-studio">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Summary -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">REQUEST METRICS</h3>
+                    <div class="dashboard-metrics-grid" id="dashboard-metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-value" id="metric-total-requests">--</span>
+                            <span class="metric-label">Total Requests</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value" id="metric-success-rate">--</span>
+                            <span class="metric-label">Success Rate</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value" id="metric-p95-latency">--</span>
+                            <span class="metric-label">p95 Latency (ms)</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value" id="metric-uptime">--</span>
+                            <span class="metric-label">Uptime</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Endpoints -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">TOP ENDPOINTS</h3>
+                    <div class="dashboard-endpoints" id="dashboard-endpoints">
+                        <p class="loading-text">Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Status Distribution -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">STATUS CODE DISTRIBUTION</h3>
+                    <div class="dashboard-status-dist" id="dashboard-status-dist">
+                        <p class="loading-text">Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Quality Status -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">품질 현황 (QUALITY STATUS)</h3>
+                    <div class="dashboard-quality-summary" id="dashboard-quality-summary">
+                        <p class="loading-text">Loading...</p>
+                    </div>
+                    <div class="dashboard-quality-coverage" id="dashboard-quality-coverage" style="margin-top: 1rem;"></div>
+                </div>
+
+                <!-- Health Detail -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">서비스 상세 (HEALTH DETAIL)</h3>
+                    <div class="dashboard-health-detail" id="dashboard-health-detail">
+                        <p class="loading-text">Loading...</p>
+                    </div>
+                </div>
+
+                <!-- Job History (NEW) -->
+                <div class="dashboard-section">
+                    <h3 class="dashboard-section-title">최근 작업 내역 (JOB HISTORY)</h3>
+                    <div class="dashboard-jobs" id="dashboard-jobs-container">
+                        <table class="jobs-table">
+                            <thead>
+                                <tr>
+                                    <th>일시</th>
+                                    <th>유형</th>
+                                    <th>주제</th>
+                                    <th>상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-jobs-list">
+                                <tr><td colspan="4" class="loading-text">Loading history...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fact-Check Modal (Surgery 3) -->
+    <div class="studio-modal-overlay" id="factcheck-modal-overlay" style="z-index: 2000;">
+        <div class="studio-modal" style="max-width: 800px;">
+            <div class="studio-modal-header">
+                <div>
+                    <h2>🔎 근거 원문 검증 (FACT-CHECK)</h2>
+                    <p>생성된 문장의 실제 SKMS 원문 근거를 확인합니다.</p>
+                </div>
+                <span class="close-overlay" id="close-factcheck-modal">&times;</span>
+            </div>
+            <div class="studio-modal-body" id="factcheck-content" style="padding: 30px; background: #F8F9FA; min-height: 300px;">
+                <!-- Content will be injected by JS -->
+            </div>
+        </div>
+    </div>
+    <!-- Podcast Studio Modal -->
+    <div class="studio-modal-overlay" id="podcast-modal-overlay">
+        <div class="studio-modal" style="max-width: 720px;">
+            <div class="studio-modal-header">
+                <div>
+                    <h2 id="podcast-modal-title">프리미엄 팟캐스트 생성</h2>
+                    <p>외부 소스 + SKMS 원문 → 글로벌 리더십 이론 기반 팟캐스트</p>
+                </div>
+                <span class="close-overlay" id="close-podcast-modal">&times;</span>
+            </div>
+            <div class="studio-modal-body">
+                <!-- Podcast Step 1: Input -->
+                <div id="podcast-step-input">
+                    <div class="studio-input-form">
+                        <div class="form-group">
+                            <label>SKMS 연결 주제 (쉼표로 구분)</label>
+                            <input type="text" id="podcast-topics" placeholder="예: SUPEX 추구, VWBE 문화" style="width:100%; padding:10px 14px; border:1px solid #DDD; border-radius:8px; font-size:0.95rem;">
+                        </div>
+
+                        <div style="margin-top: 20px; border-top: 1px solid #EEE; padding-top: 20px;">
+                            <label style="font-weight: 600; margin-bottom: 12px; display: block;">외부 소스 (선택)</label>
+                            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                                <button class="podcast-source-tab active" data-tab="url" style="padding:6px 16px; border:1px solid #0052A2; background:#E8F0FE; color:#0052A2; border-radius:20px; font-size:0.85rem; cursor:pointer; font-weight:500;">아티클 URL</button>
+                                <button class="podcast-source-tab" data-tab="text" style="padding:6px 16px; border:1px solid #DDD; background:#F8F9FA; border-radius:20px; font-size:0.85rem; cursor:pointer;">텍스트 직접 입력</button>
+                            </div>
+                            <div id="podcast-source-url">
+                                <input type="text" id="podcast-url" placeholder="https://..." style="width:100%; padding:10px 14px; border:1px solid #DDD; border-radius:8px; font-size:0.95rem;">
+                            </div>
+                            <div id="podcast-source-text" class="hidden">
+                                <textarea id="podcast-text" rows="4" placeholder="영어 또는 한국어 텍스트를 붙여넣으세요..." style="width:100%; padding:10px 14px; border:1px solid #DDD; border-radius:8px; font-size:0.95rem; resize:vertical;"></textarea>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; display: flex; gap: 20px;">
+                            <div class="form-group" style="flex:1">
+                                <label>스타일</label>
+                                <div class="custom-select">
+                                    <select id="podcast-style">
+                                        <option value="dialogue">대담 (호스트 + 전문가)</option>
+                                        <option value="podcast">토론 (호스트 + 교수 + 리더)</option>
+                                        <option value="narration">독백 (호스트 나레이션)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group" style="flex:1">
+                                <label>길이: <strong id="podcast-dur-label">8</strong>분</label>
+                                <input type="range" id="podcast-duration" min="3" max="15" value="8" style="width:100%; margin-top: 8px;">
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 15px;">
+                            <label>기반 판본 (선택)</label>
+                            <div class="custom-select">
+                                <select id="podcast-edition">
+                                    <option value="">전체 판본 기반 (추천)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="studio-actions" style="margin-top: 30px;">
+                            <button class="studio-generate-btn" id="podcast-generate-btn" style="width:100%;">
+                                팟캐스트 생성 시작
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Podcast Step 2: Progress (대본 생성 중) -->
+                <div id="podcast-step-progress" class="hidden">
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <div class="progress-animation" style="margin-bottom: 20px;">
+                            <div class="pulse-ring"></div>
+                        </div>
+                        <p id="podcast-progress-status" style="font-size:1.1rem; font-weight:600; color:#333;">대본 생성 중...</p>
+                        <p id="podcast-progress-detail" style="font-size:0.85rem; color:#888; margin-top: 8px;">SKMS 원문 검색 및 대본 작성이 진행됩니다. 약 1-2분 소요됩니다.</p>
+                    </div>
+                </div>
+
+                <!-- Podcast Step 3: Script Edit -->
+                <div id="podcast-step-edit" class="hidden">
+                    <div style="padding: 10px 0;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                            <div>
+                                <h3 style="margin:0; font-size:1.05rem;">대본 편집</h3>
+                                <p style="margin:4px 0 0; font-size:0.8rem; color:#888;">내용을 검토하고 수정한 뒤 음성을 생성하세요.</p>
+                            </div>
+                            <button id="podcast-back-to-input" style="padding:6px 14px; border:1px solid #DDD; background:#F8F9FA; border-radius:6px; font-size:0.8rem; cursor:pointer;">주제 수정</button>
+                        </div>
+                        <textarea id="podcast-script-editor" rows="18" style="width:100%; padding:14px; border:1px solid #DDD; border-radius:8px; font-size:0.9rem; line-height:1.8; resize:vertical; font-family:inherit;"></textarea>
+                        <div style="display:flex; gap:10px; margin-top: 16px;">
+                            <button class="studio-generate-btn" id="podcast-finalize-btn" style="flex:1;">
+                                이 대본으로 음성 생성
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Podcast Step 4: Finalizing (TTS 생성 중) -->
+                <div id="podcast-step-finalizing" class="hidden">
+                    <div style="text-align:center; padding: 40px 20px;">
+                        <div class="progress-animation" style="margin-bottom: 20px;">
+                            <div class="pulse-ring"></div>
+                        </div>
+                        <p id="podcast-finalize-status" style="font-size:1.1rem; font-weight:600; color:#333;">음성 및 영상 생성 중...</p>
+                        <p id="podcast-finalize-detail" style="font-size:0.85rem; color:#888; margin-top: 8px;">TTS 음성 생성과 MP4 변환이 진행됩니다. 약 2-3분 소요됩니다.</p>
+                    </div>
+                </div>
+
+                <!-- Podcast Step 5: Result -->
+                <div id="podcast-step-result" class="hidden">
+                    <div id="podcast-result-view" style="padding: 10px 0;">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast"></div>
+
+    <script>
+        // ===================================================================
+        // API CONFIGURATION
+        // ===================================================================
+        const API_BASE_URL = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+            ? 'http://localhost:8000'
+            : 'https://skmsai-api.onrender.com';
+
+        // Content Studio type mapping (value → backend content_type)
+        const CONTENT_STUDIO_TYPES = new Set([
+            'lecture', 'card_news', 'workshop', 'visualization', 'quiz'
+        ]);
+
+        // Tone labels for prompt construction
+        const TONE_LABELS = {
+            professional: '전문적이고 핵심적인 톤으로',
+            visionary: '비전 제시 및 영감을 주는 톤으로',
+            analytical: '분석적이고 객관적인 톤으로',
+            friendly: '친근하고 부드러운 톤으로'
+        };
+
+        // Document type labels for prompt construction
+        const DOC_TYPE_LABELS = {
+            email: '이메일 초안',
+            strategy: '전략 기획서',
+            presentation: '프레젠테이션 대본',
+            meeting: '회의록 요약 및 Action Item',
+            report: '보고서 목차',
+            announcement: '사내 공지사항',
+            press: '보도자료',
+            blog: '블로그/아티클 원고',
+            proposal: '프로젝트 제안서',
+            custom: '문서'
+        };
+
+        // ===================================================================
+        // UTILITY FUNCTIONS
+        // ===================================================================
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function simpleMarkdownToHtml(text) {
+            if (!text) return '';
+            let html = escapeHtml(text);
+            // Headers
+            html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^# (.+)$/gm, '<h2>$1</h2>');
+            // Bold and italic
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            // Inline code
+            html = html.replace(/`(.+?)`/g, '<code>$1</code>');
+            // Blockquotes
+            html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+            // Unordered lists
+            html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+            html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+            // Horizontal rules
+            html = html.replace(/^---$/gm, '<hr>');
+            // Line breaks (but not inside block elements)
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            // Wrap in paragraph if not already structured
+            if (!html.startsWith('<h') && !html.startsWith('<ul') && !html.startsWith('<blockquote')) {
+                html = '<p>' + html + '</p>';
+            }
+            return html;
+        }
+
+        async function apiCall(endpoint, { method = 'POST', body = null } = {}) {
+            const options = {
+                method,
+                headers: { 'Content-Type': 'application/json' }
+            };
+            if (body && method !== 'GET') {
+                options.body = JSON.stringify(body);
+            }
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ detail: response.statusText }));
+                throw new Error(errorData.detail || errorData.error || `서버 오류 (HTTP ${response.status})`);
+            }
+            return response.json();
+        }
+
+        // Toast notification
+        let toastTimeout = null;
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast-container show';
+            if (type !== 'info') toast.classList.add(type);
+            if (toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ===================================================================
+        // TYPEWRITER EFFECT
+        // ===================================================================
+        const typeText = "SKMS AI STUDIO";
+        const typeElement = document.getElementById("typewriter-text");
+        let typeIndex = 0;
+
+        function typeWriter() {
+            if (typeIndex < typeText.length) {
+                typeElement.textContent += typeText.charAt(typeIndex);
+                typeIndex++;
+                setTimeout(typeWriter, 150);
+            }
+        }
+        setTimeout(typeWriter, 500);
+
+        // ===================================================================
+        // HERO MOUSE TRACKING
+        // ===================================================================
+        const heroSection = document.getElementById('hero-section');
+        const revealImage = document.getElementById('reveal-image');
+
+        if (heroSection && revealImage) {
+            heroSection.addEventListener('mousemove', (e) => {
+                const rect = heroSection.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                revealImage.style.setProperty('--x', `${x}px`);
+                revealImage.style.setProperty('--y', `${y}px`);
+            });
+            heroSection.addEventListener('mouseleave', () => {
+                revealImage.style.setProperty('--x', `50%`);
+                revealImage.style.setProperty('--y', `50%`);
+            });
+        }
+
+        // ===================================================================
+        // CHAT WIDGET — UI TOGGLE
+        // ===================================================================
+        const chatToggleBtn = document.getElementById('chat-toggle-btn');
+        const chatWindow = document.getElementById('chat-window');
+        const closeChat = document.getElementById('close-chat');
+
+        chatToggleBtn.addEventListener('click', () => {
+            chatWindow.classList.add('active');
+            chatWindow.style.pointerEvents = 'auto';
+            chatToggleBtn.style.opacity = '0';
+            chatToggleBtn.style.pointerEvents = 'none';
+            document.getElementById('chat-input').focus();
+        });
+
+        closeChat.addEventListener('click', () => {
+            chatWindow.classList.remove('active');
+            chatToggleBtn.style.opacity = '1';
+            chatToggleBtn.style.pointerEvents = 'auto';
+            setTimeout(() => { chatWindow.style.pointerEvents = 'none'; }, 400);
+        });
+
+        // ===================================================================
+        // CHAT WIDGET — API INTEGRATION
+        // ===================================================================
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatBody = document.getElementById('chat-body');
+
+        function createChatMessage(content, isBot) {
+            const div = document.createElement('div');
+            div.className = `message ${isBot ? 'bot-message' : 'user-message'}`;
+            if (isBot) {
+                div.innerHTML = simpleMarkdownToHtml(content);
+            } else {
+                const p = document.createElement('p');
+                p.textContent = content;
+                div.appendChild(p);
+            }
+            return div;
+        }
+
+        function showTypingIndicator() {
+            const indicator = document.createElement('div');
+            indicator.className = 'message bot-message typing-indicator';
+            indicator.id = 'typing-indicator';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            chatBody.appendChild(indicator);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const el = document.getElementById('typing-indicator');
+            if (el) el.remove();
+        }
+
+        let chatBusy = false;
+
+        async function sendChatMessage() {
+            const query = chatInput.value.trim();
+            if (!query || chatBusy) return;
+
+            chatBusy = true;
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
+            // Add user message
+            chatBody.appendChild(createChatMessage(query, false));
+            chatInput.value = '';
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                const chatFilter = document.getElementById('chat-edition-filter');
+                const chatBody_ = {
+                    query: query,
+                    top_k: 5,
+                    include_evidence_check: true,
+                    include_rendered: true
+                };
+                if (chatFilter && chatFilter.value) chatBody_.edition_filter = chatFilter.value;
+                const data = await apiCall('/api/v2/generate', { body: chatBody_ });
+
+                removeTypingIndicator();
+
+                // Use rendered HTML if available, otherwise raw answer
+                const answer = data.answer || '응답을 생성할 수 없습니다.';
+                chatBody.appendChild(createChatMessage(answer, true));
+
+                // Show citation count
+                if (data.citations && data.citations.length > 0) {
+                    const citationEl = document.createElement('div');
+                    citationEl.className = 'message bot-message';
+                    citationEl.style.fontSize = '0.8rem';
+                    citationEl.style.opacity = '0.7';
+                    citationEl.style.padding = '0.5rem 1rem';
+                    citationEl.innerHTML = `<p>📎 ${data.citations.length}건의 SKMS 원문 인용</p>`;
+                    chatBody.appendChild(citationEl);
+                }
+            } catch (error) {
+                removeTypingIndicator();
+                const errorMsg = error.message.includes('Failed to fetch')
+                    ? '백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요. (localhost:8000)'
+                    : `오류가 발생했습니다: ${error.message}`;
+                chatBody.appendChild(createChatMessage(errorMsg, true));
+            } finally {
+                chatBusy = false;
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        }
+
+        sendBtn.addEventListener('click', sendChatMessage);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+
+        // [Phase 9] Chat Starter Chips Handler
+        document.querySelectorAll('.starter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const query = chip.getAttribute('data-query');
+                chatInput.value = query;
+                sendChatMessage();
+                // 칩 컨테이너 숨기기 (한 번 사용 후 공간 확보)
+                chip.parentElement.style.display = 'none';
+            });
+        });
+
+        // ===================================================================
+        // WORKSPACE OVERLAY — UI TOGGLE
+        // ===================================================================
+        const startBtns = [
+            document.getElementById('btn-start-creating'),
+            document.getElementById('footer-btn-start')
+        ];
+        const workspaceOverlay = document.getElementById('workspace-overlay');
+        const closeWorkspace = document.getElementById('close-workspace');
+
+        startBtns.forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    workspaceOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                });
+            }
+        });
+
+        function closeWorkspaceOverlay() {
+            workspaceOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            // Reset busy state so generate button works next time
+            workspaceBusy = false;
+            setWorkspaceLoading(false);
+        }
+
+        closeWorkspace.addEventListener('click', closeWorkspaceOverlay);
+
+        // Close workspace on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (workspaceOverlay.classList.contains('active')) {
+                    closeWorkspaceOverlay();
+                }
+            }
+        });
+
+        // ===================================================================
+        // WORKSPACE — CONTENT GENERATION INTEGRATION
+        // ===================================================================
+        const generateBtn = document.getElementById('generate-btn');
+        const contentTypeSelect = document.getElementById('content-type');
+        const contentToneSelect = document.getElementById('content-tone');
+        const contentPrompt = document.getElementById('content-prompt');
+        const resultBox = document.getElementById('result-box');
+        const btnCopy = document.getElementById('btn-copy');
+        const btnRegenerate = document.getElementById('btn-regenerate');
+
+        let lastGenerateParams = null;
+        let workspaceBusy = false;
+
+        function setWorkspaceLoading(isLoading, studioMode = false) {
+            if (isLoading) {
+                generateBtn.disabled = true;
+                btnCopy.disabled = true;
+                btnRegenerate.disabled = true;
+                generateBtn.innerHTML = '<span class="loading-dots">생성 중<span>.</span><span>.</span><span>.</span></span>';
+                const loadingMsg = studioMode
+                    ? 'AI가 파일을 생성하고 있습니다... (최대 수 분 소요)'
+                    : 'AI가 콘텐츠를 생성하고 있습니다...';
+                resultBox.innerHTML = `
+                    <div class="loading-state">
+                        <div class="pulse-ring"></div>
+                        <p class="placeholder-text">${loadingMsg}</p>
+                        <p class="progress-text" id="progress-text"></p>
+                    </div>`;
+                resultBox.style.justifyContent = 'center';
+                resultBox.style.alignItems = 'center';
+            } else {
+                generateBtn.disabled = false;
+                btnCopy.disabled = false;
+                btnRegenerate.disabled = false;
+                generateBtn.innerHTML = '<span>SKMS AI로 생성하기</span>';
+            }
+        }
+
+        function resetResultBox() {
+            resultBox.innerHTML = `
+                <div class="empty-state">
+                    <div class="pulse-ring"></div>
+                    <p class="placeholder-text">AI가 생성한 내용이 여기에 표시됩니다</p>
+                </div>`;
+            resultBox.style.justifyContent = 'center';
+            resultBox.style.alignItems = 'center';
+        }
+
+        function displayGenerateResult(data) {
+            const answer = data.rendered || data.answer || '';
+            resultBox.innerHTML = `<div class="result-content">${simpleMarkdownToHtml(answer)}</div>`;
+            resultBox.style.justifyContent = 'flex-start';
+            resultBox.style.alignItems = 'flex-start';
+
+            if (data.citations && data.citations.length > 0) {
+                resultBox.querySelector('.result-content').innerHTML += `
+                    <p class="citation-count">📎 SKMS 원문 ${data.citations.length}건 인용</p>`;
+            }
+        }
+
+        function displayContentStudioResult(result) {
+            let html = '<div class="result-content">';
+            html += '<h3>콘텐츠가 생성되었습니다</h3>';
+            if (result.files && result.files.length > 0) {
+                html += '<ul class="file-list">';
+                result.files.forEach(f => {
+                    const sizeKB = (f.size_bytes / 1024).toFixed(1);
+                    html += `<li><span>${escapeHtml(f.file_name)}</span><span class="file-size">${sizeKB} KB</span></li>`;
+                });
+                html += '</ul>';
+                html += '<p style="color: var(--text-muted); font-size: 0.9rem;">파일은 서버의 output/ 디렉토리에 저장되었습니다.</p>';
+            }
+            if (result.citations && result.citations.length > 0) {
+                html += `<p class="citation-count">📎 SKMS 원문 ${result.citations.length}건 인용</p>`;
+            }
+            html += '</div>';
+            resultBox.innerHTML = html;
+            resultBox.style.justifyContent = 'flex-start';
+            resultBox.style.alignItems = 'flex-start';
+        }
+
+        function displayError(message) {
+            resultBox.innerHTML = `
+                <div class="result-error">
+                    <p>오류 발생</p>
+                    <p>${escapeHtml(message)}</p>
+                </div>`;
+            resultBox.style.justifyContent = 'center';
+            resultBox.style.alignItems = 'center';
+        }
+
+        async function pollContentStatus(requestId) {
+            const maxAttempts = 60; // 5 minutes max (5s intervals)
+            let transientErrors = 0;
+            for (let i = 0; i < maxAttempts; i++) {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                let status;
+                try {
+                    status = await apiCall(`/api/content/status/${requestId}`, { method: 'GET' });
+                    transientErrors = 0; // reset on success
+                } catch (fetchErr) {
+                    transientErrors++;
+                    if (transientErrors >= 3) {
+                        throw new Error('서버 연결이 반복적으로 실패했습니다.');
+                    }
+                    continue; // skip this tick, retry next interval
+                }
+
+                // Update progress text
+                const progressEl = document.getElementById('progress-text');
+                if (progressEl) {
+                    const statusLabels = {
+                        pending: '대기 중...',
+                        running: '생성 진행 중...',
+                        completed: '완료!',
+                        failed: '실패'
+                    };
+                    progressEl.textContent = statusLabels[status.status] || status.status;
+                }
+
+                if (status.status === 'completed') return status.result;
+                if (status.status === 'failed') {
+                    throw new Error(status.error || '콘텐츠 생성에 실패했습니다.');
+                }
+            }
+            throw new Error('생성 시간이 초과되었습니다. (5분)');
+        }
+
+        async function generateContent() {
+            if (workspaceBusy) return;
+
+            const typeValue = contentTypeSelect.value;
+            const toneValue = contentToneSelect.value;
+            const prompt = contentPrompt.value.trim();
+
+            if (!prompt) {
+                showToast('핵심 목적 및 세부 내용을 입력해주세요.', 'warning');
+                contentPrompt.focus();
+                return;
+            }
+
+            lastGenerateParams = { typeValue, toneValue, prompt };
+            workspaceBusy = true;
+
+            const isStudioType = CONTENT_STUDIO_TYPES.has(typeValue);
+            setWorkspaceLoading(true, isStudioType);
+
+            const wsEdition = document.getElementById('workspace-edition-filter').value || null;
+
+            try {
+                if (isStudioType) {
+                    // Content Studio → async file generation
+                    const studioOptions = { language: 'ko', style: toneValue };
+                    if (wsEdition) studioOptions.edition_filter = wsEdition;
+                    const asyncResponse = await apiCall('/api/content/generate/async', {
+                        body: {
+                            content_type: typeValue,
+                            topic: prompt,
+                            options: studioOptions
+                        }
+                    });
+                    const result = await pollContentStatus(asyncResponse.request_id);
+                    displayContentStudioResult(result);
+                    showToast('콘텐츠 파일이 생성되었습니다!');
+                } else {
+                    // Document generation → /api/v2/generate
+                    const docLabel = DOC_TYPE_LABELS[typeValue] || '문서';
+                    const toneLabel = TONE_LABELS[toneValue] || '';
+                    const query = `다음 주제에 대해 ${toneLabel} ${docLabel}을(를) 작성해주세요. SKMS 경영철학을 기반으로 작성하되, 실무에서 바로 활용할 수 있는 형태로 구성해주세요.\n\n주제: ${prompt}`;
+
+                    const genBody = {
+                        query: query,
+                        output_type: 'summary',
+                        top_k: 7,
+                        include_evidence_check: true,
+                        include_rendered: true
+                    };
+                    if (wsEdition) genBody.edition_filter = wsEdition;
+                    const data = await apiCall('/api/v2/generate', { body: genBody });
+                    displayGenerateResult(data);
+                    showToast('문서가 생성되었습니다!');
+                }
+            } catch (error) {
+                const errorMsg = error.message.includes('Failed to fetch')
+                    ? '백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.'
+                    : error.message;
+                displayError(errorMsg);
+                showToast('생성 중 오류가 발생했습니다.', 'error');
+            } finally {
+                workspaceBusy = false;
+                setWorkspaceLoading(false);
+            }
+        }
+
+        generateBtn.addEventListener('click', generateContent);
+
+        // Copy button
+        btnCopy.addEventListener('click', async () => {
+            const content = resultBox.querySelector('.result-content');
+            if (!content) {
+                showToast('복사할 내용이 없습니다.', 'warning');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(content.innerText);
+                showToast('클립보드에 복사되었습니다.');
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = content.innerText;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('클립보드에 복사되었습니다.');
+            }
+        });
+
+        // Regenerate button
+        btnRegenerate.addEventListener('click', () => {
+            if (!lastGenerateParams) {
+                showToast('재생성할 이전 요청이 없습니다.', 'warning');
+                return;
+            }
+            contentTypeSelect.value = lastGenerateParams.typeValue;
+            contentToneSelect.value = lastGenerateParams.toneValue;
+            contentPrompt.value = lastGenerateParams.prompt;
+            generateContent();
+        });
+
+        // ===================================================================
+        // AI NEURAL NETWORK CANVAS
+        // ===================================================================
+        const canvas = document.getElementById('ai-network-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 2.5;
+                    this.vy = (Math.random() - 0.5) * 2.5;
+                    this.radius = Math.random() * 2 + 0.5;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < 300; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                const bgGradient = ctx.createRadialGradient(
+                    canvas.width / 2, canvas.height / 2, 0,
+                    canvas.width / 2, canvas.height / 2, canvas.width
+                );
+                bgGradient.addColorStop(0, '#1a1c23');
+                bgGradient.addColorStop(1, '#08090b');
+                ctx.fillStyle = bgGradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < 130) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(240, 228, 43, ${0.35 - dist / 400})`;
+                            ctx.lineWidth = 1.0;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // ===================================================================
+        // CONTENT STUDIO
+        // ===================================================================
+        const studioModalOverlay = document.getElementById('studio-modal-overlay');
+        const closeStudioModal = document.getElementById('close-studio-modal');
+        const studioTopic = document.getElementById('studio-topic');
+        const studioPlanBtn = document.getElementById('studio-plan-btn');
+        const studioGenerateBtn = document.getElementById('studio-generate-btn');
+        const studioConfirmGenerate = document.getElementById('studio-confirm-generate');
+        const studioBackToInput = document.getElementById('studio-back-to-input');
+        const studioEditionFilter = document.getElementById('studio-edition-filter');
+
+        let currentStudioType = null;
+        let studioBusy = false;
+        let originalPlanData = null;  // original plan from API (for reset)
+        let showingPlanJson = false;  // toggle between edit view and JSON view
+
+        const STUDIO_TYPE_INFO = {
+            lecture: { title: '프레젠테이션 슬라이드', format: 'PPTX', desc: 'SKMS 기반 강의 슬라이드를 생성합니다.' },
+            card_news: { title: '카드뉴스', format: 'PNG', desc: '소셜 미디어용 카드뉴스 시리즈를 생성합니다.' },
+            workshop: { title: '워크숍 자료', format: 'HTML', desc: '인터랙티브 워크숍 자료를 생성합니다.' },
+            visualization: { title: '데이터 시각화', format: 'SVG', desc: 'SKMS 변천 시각화를 생성합니다.' },
+            podcast: { title: '프리미엄 팟캐스트', format: 'MP3/MP4', desc: '외부 소스 + SKMS 원문 결합 팟캐스트를 생성합니다.' },
+            quiz: { title: '인터랙티브 퀴즈', format: 'HTML', desc: 'SKMS 이해도 평가 퀴즈를 생성합니다.' }
+        };
+
+        let contentTypesLoaded = false;
+
+        async function loadContentTypes() {
+            if (contentTypesLoaded) return;
+            try {
+                const data = await apiCall('/api/content/types', { method: 'GET' });
+                if (!data || !data.types || data.types.length === 0) return;
+
+                // Update STUDIO_TYPE_INFO from API response
+                for (const typeInfo of data.types) {
+                    const formatLabel = (typeInfo.output_formats && typeInfo.output_formats.length > 0)
+                        ? typeInfo.output_formats[0].toUpperCase()
+                        : '';
+                    STUDIO_TYPE_INFO[typeInfo.type] = {
+                        title: typeInfo.label,
+                        format: formatLabel || (STUDIO_TYPE_INFO[typeInfo.type]?.format || ''),
+                        desc: typeInfo.description
+                    };
+                }
+
+                // Update card descriptions in the grid
+                const studioGrid = document.getElementById('studio-grid');
+                if (studioGrid) {
+                    for (const typeInfo of data.types) {
+                        const card = studioGrid.querySelector(`.studio-card[data-type="${typeInfo.type}"]`);
+                        if (card) {
+                            const descEl = card.querySelector('p');
+                            if (descEl) descEl.textContent = typeInfo.description;
+                            const formatEl = card.querySelector('.card-format');
+                            const fmt = (typeInfo.output_formats && typeInfo.output_formats.length > 0)
+                                ? typeInfo.output_formats[0].toUpperCase()
+                                : '';
+                            if (formatEl && fmt) formatEl.textContent = fmt;
+                        }
+                    }
+                }
+
+                contentTypesLoaded = true;
+                if (IS_DEV) console.log('[Content Studio] Content types loaded from API:', data.total);
+            } catch (err) {
+                // Fallback: keep hardcoded values
+                if (IS_DEV) console.warn('[Content Studio] Failed to load content types, using defaults:', err.message);
+            }
+        }
+
+        // Card button clicks → open modal
+        document.querySelectorAll('.card-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                openStudioModal(type);
+            });
+        });
+
+        function openStudioModal(type) {
+            loadContentTypes(); // load from API (no-op if already loaded)
+            currentStudioType = type;
+            const info = STUDIO_TYPE_INFO[type];
+            document.getElementById('studio-modal-title').textContent = `${info.title} 생성`;
+            document.getElementById('studio-modal-subtitle').textContent = `${info.desc} (${info.format} 출력)`;
+            // Show/hide type-specific options
+            document.querySelectorAll('.type-options').forEach(el => {
+                el.classList.toggle('hidden', el.dataset.for !== type);
+            });
+            // Reset to input step
+            showStudioStep('input');
+            studioTopic.value = '';
+            studioModalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            studioTopic.focus();
+        }
+
+        // Range slider live label updates
+        document.getElementById('opt-card-count').addEventListener('input', e => {
+            document.getElementById('opt-card-count-label').textContent = e.target.value;
+        });
+        document.getElementById('opt-audio-duration')?.addEventListener('input', e => {
+            document.getElementById('opt-audio-dur-label').textContent = e.target.value;
+        });
+        document.getElementById('opt-quiz-count').addEventListener('input', e => {
+            document.getElementById('opt-quiz-count-label').textContent = e.target.value;
+        });
+
+        // Collect type-specific options into ContentOptionsRequest shape
+        function collectTypeOptions() {
+            // [Phase 10] Simplified Common Options
+            const opts = {
+                language: document.getElementById('studio-language')?.value || 'ko',
+                target_audience: document.getElementById('studio-target-audience')?.value || 'general'
+            };
+            
+            const edFilter = document.getElementById('studio-edition-filter')?.value;
+            if (edFilter) opts.edition_filter = edFilter;
+
+            // AI가 제안하거나 사용자가 수정한 분량 정보 수집 (PR-071)
+            const durationInput = document.getElementById('rec-duration');
+            const countInput = document.getElementById('rec-count');
+            
+            if (durationInput && durationInput.value) {
+                opts.duration_min = parseInt(durationInput.value, 10);
+            }
+            if (countInput && countInput.value) {
+                opts.num_items = parseInt(countInput.value, 10);
+            }
+
+            return opts;
+        }
+
+        function closeStudioModalFn() {
+            studioModalOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            studioBusy = false;
+        }
+
+        closeStudioModal.addEventListener('click', closeStudioModalFn);
+
+        function showStudioStep(step) {
+            ['input', 'plan', 'progress', 'result'].forEach(s => {
+                document.getElementById(`studio-step-${s}`).classList.toggle('hidden', s !== step);
+            });
+        }
+
+        studioBackToInput.addEventListener('click', () => showStudioStep('input'));
+
+        // ---------------------------------------------------------------
+        // PLAN EDITOR — Editable outline UI
+        // ---------------------------------------------------------------
+
+        // Detect the plan items key based on content type
+        function getPlanItemsKey(type) {
+            const keyMap = {
+                lecture: 'slides',
+                card_news: 'cards',
+                workshop: 'phases',
+                quiz: 'questions'
+            };
+            return keyMap[type] || null;
+        }
+
+        // Create a default empty item for each type
+        function createDefaultItem(type) {
+            switch (type) {
+                case 'lecture':
+                    return { title: '새 슬라이드', description: '', key_points: [] };
+                case 'card_news':
+                    return { card_number: 1, title: '새 카드', content: '' };
+                case 'workshop':
+                    return { name: '새 활동', duration_min: 10, activities: [] };
+                case 'quiz':
+                    return { question: '새 문항', options: ['A', 'B', 'C', 'D'], correct_answer: 'A', explanation: '' };
+                default:
+                    return {};
+            }
+        }
+
+        // Render a single plan item card (editable)
+        function renderPlanItemCard(item, index, type) {
+            const card = document.createElement('div');
+            card.className = 'plan-item-card';
+            card.draggable = true;
+            card.dataset.index = index;
+
+            // Drag handle
+            const handle = document.createElement('div');
+            handle.className = 'plan-item-handle';
+            handle.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h.01M8 12h.01M8 18h.01M16 6h.01M16 12h.01M16 18h.01"/></svg>';
+            card.appendChild(handle);
+
+            // Content area
+            const content = document.createElement('div');
+            content.className = 'plan-item-content';
+
+            const badge = document.createElement('span');
+            badge.className = 'plan-item-badge';
+
+            switch (type) {
+                case 'lecture':
+                    badge.textContent = `슬라이드 ${index + 1}`;
+                    content.appendChild(badge);
+                    content.appendChild(createField('title', '제목', item.title || ''));
+                    content.appendChild(createField('description', '설명', item.description || '', true));
+                    break;
+                case 'card_news':
+                    badge.textContent = `카드 ${index + 1}`;
+                    content.appendChild(badge);
+                    content.appendChild(createField('title', '제목', item.title || ''));
+                    content.appendChild(createField('content', '내용', item.content || '', true));
+                    break;
+                case 'workshop':
+                    badge.textContent = `페이즈 ${index + 1}`;
+                    content.appendChild(badge);
+                    content.appendChild(createField('name', '활동명', item.name || ''));
+                    content.appendChild(createField('duration_min', '소요시간 (분)', String(item.duration_min || ''), false, 'number'));
+                    break;
+                case 'quiz':
+                    badge.textContent = `문항 ${index + 1}`;
+                    content.appendChild(badge);
+                    content.appendChild(createField('question', '질문', item.question || '', true));
+                    if (item.options && item.options.length > 0) {
+                        const optLabel = document.createElement('label');
+                        optLabel.className = 'plan-field-label';
+                        optLabel.textContent = '선택지';
+                        content.appendChild(optLabel);
+                        item.options.forEach((opt, oi) => {
+                            content.appendChild(createField(`option_${oi}`, ``, opt, false, 'text', `option-${oi}`));
+                        });
+                    }
+                    content.appendChild(createField('correct_answer', '정답', item.correct_answer || ''));
+                    content.appendChild(createField('explanation', '해설', item.explanation || '', true));
+                    break;
+            }
+
+            card.appendChild(content);
+
+            // Delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'plan-item-delete';
+            deleteBtn.title = '삭제';
+            deleteBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+            deleteBtn.addEventListener('click', () => {
+                const currentIndex = Array.from(card.parentElement.children).indexOf(card);
+                removePlanItem(currentIndex);
+            });
+            card.appendChild(deleteBtn);
+
+            // HTML5 Drag events
+            card.addEventListener('dragstart', onDragStart);
+            card.addEventListener('dragover', onDragOver);
+            card.addEventListener('drop', onDrop);
+            card.addEventListener('dragend', onDragEnd);
+
+            return card;
+        }
+
+        // Helper: create an editable field
+        function createField(name, label, value, isTextarea, inputType, extraClass) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'plan-field';
+            if (label) {
+                const lbl = document.createElement('label');
+                lbl.className = 'plan-field-label';
+                lbl.textContent = label;
+                wrapper.appendChild(lbl);
+            }
+            let input;
+            if (isTextarea) {
+                input = document.createElement('textarea');
+                input.rows = 2;
+            } else {
+                input = document.createElement('input');
+                input.type = inputType || 'text';
+            }
+            input.className = 'plan-field-input';
+            if (extraClass) input.classList.add(extraClass);
+            input.name = name;
+            input.value = value;
+            wrapper.appendChild(input);
+            return wrapper;
+        }
+
+        // Render the full editable plan
+        function renderEditablePlan(plan, type) {
+            const container = document.getElementById('studio-plan-content');
+            container.innerHTML = '';
+
+            const itemsKey = getPlanItemsKey(type);
+            const items = itemsKey ? (plan[itemsKey] || []) : null;
+
+            if (!items) {
+                // Unsupported type (visualization, audio) — show raw JSON
+                container.innerHTML = `<pre style="white-space:pre-wrap;font-size:0.85rem;">${escapeHtml(JSON.stringify(plan, null, 2))}</pre>`;
+                document.getElementById('plan-reset-btn').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('plan-reset-btn').classList.remove('hidden');
+
+            const list = document.createElement('div');
+            list.className = 'plan-items-list';
+            list.id = 'plan-items-list';
+            items.forEach((item, i) => {
+                list.appendChild(renderPlanItemCard(item, i, type));
+            });
+            container.appendChild(list);
+
+            // "항목 추가" button
+            const addBtn = document.createElement('button');
+            addBtn.className = 'plan-add-btn';
+            addBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 항목 추가';
+            addBtn.addEventListener('click', () => addPlanItem(type));
+            container.appendChild(addBtn);
+
+            // Update JSON view
+            updatePlanJsonView();
+        }
+
+        // Collect current plan from the DOM inputs (PR-064: Fixed Model Mapping)
+        function collectEditedPlan() {
+            if (!originalPlanData) return null;
+            const type = currentStudioType;
+            const itemsKey = getPlanItemsKey(type); // 'slides', 'cards', 'phases', etc.
+            if (!itemsKey) return originalPlanData;
+
+            const cards = document.querySelectorAll('#plan-items-list .plan-item-card');
+            const items = [];
+            cards.forEach((card, idx) => {
+                const inputs = card.querySelectorAll('.plan-field-input');
+                const item = { index: idx + 1 };
+                
+                switch (type) {
+                    case 'lecture':
+                        item.title = getInputVal(inputs, 'title');
+                        item.governing_message = getInputVal(inputs, 'governing_message') || getInputVal(inputs, 'description');
+                        item.layout = getInputVal(inputs, 'layout') || 'title_content';
+                        // Handle comma-separated key points
+                        const kp = getInputVal(inputs, 'key_points');
+                        item.key_points = kp ? kp.split(',').map(s => s.trim()) : [];
+                        item.rag_query = getInputVal(inputs, 'rag_query') || item.title;
+                        item.speaker_notes = getInputVal(inputs, 'speaker_notes');
+                        break;
+                    case 'card_news':
+                        item.headline = getInputVal(inputs, 'headline') || getInputVal(inputs, 'title');
+                        item.body = getInputVal(inputs, 'body') || getInputVal(inputs, 'content');
+                        item.design_hint = getInputVal(inputs, 'design_hint');
+                        break;
+                    case 'workshop':
+                        item.title = getInputVal(inputs, 'title') || getInputVal(inputs, 'name');
+                        item.phase_type = getInputVal(inputs, 'phase_type') || 'main';
+                        item.content_text = getInputVal(inputs, 'content') || '';
+                        break;
+                    case 'quiz':
+                        item.question_text = getInputVal(inputs, 'question');
+                        item.choices = [];
+                        inputs.forEach(inp => {
+                            if (inp.name.startsWith('option_')) item.choices.push(inp.value);
+                        });
+                        item.correct_answer = parseInt(getInputVal(inputs, 'correct_answer')) || 0;
+                        item.explanation = getInputVal(inputs, 'explanation');
+                        item.difficulty = 'medium';
+                        break;
+                }
+                items.push(item);
+            });
+
+            return { ...originalPlanData, [itemsKey]: items };
+        }
+
+        function getInputVal(inputs, name) {
+            for (const inp of inputs) {
+                if (inp.name === name) return inp.value;
+            }
+            return '';
+        }
+
+        // Add a new plan item
+        function addPlanItem(type) {
+            const list = document.getElementById('plan-items-list');
+            if (!list) return;
+            const newIdx = list.children.length;
+            const newItem = createDefaultItem(type);
+            list.appendChild(renderPlanItemCard(newItem, newIdx, type));
+            updatePlanJsonView();
+            showToast('항목이 추가되었습니다.');
+        }
+
+        // Remove a plan item by index
+        function removePlanItem(index) {
+            const list = document.getElementById('plan-items-list');
+            if (!list) return;
+            if (list.children.length <= 1) {
+                showToast('최소 1개 항목이 필요합니다.', 'warning');
+                return;
+            }
+            list.children[index].remove();
+            // Re-index remaining cards
+            Array.from(list.children).forEach((card, i) => {
+                card.dataset.index = i;
+                const badge = card.querySelector('.plan-item-badge');
+                if (badge) {
+                    const labels = { lecture: '슬라이드', card_news: '카드', workshop: '페이즈', quiz: '문항' };
+                    badge.textContent = `${labels[currentStudioType] || ''} ${i + 1}`;
+                }
+            });
+            updatePlanJsonView();
+            showToast('항목이 삭제되었습니다.');
+        }
+
+        // ---------------------------------------------------------------
+        // DRAG & DROP — HTML5 Drag API
+        // ---------------------------------------------------------------
+        let dragSrcIndex = null;
+
+        function onDragStart(e) {
+            dragSrcIndex = parseInt(this.dataset.index, 10);
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', dragSrcIndex);
+        }
+
+        function onDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const card = e.currentTarget;
+            card.classList.add('drag-over');
+        }
+
+        function onDrop(e) {
+            e.preventDefault();
+            const card = e.currentTarget;
+            card.classList.remove('drag-over');
+            const dropIndex = parseInt(card.dataset.index, 10);
+            if (dragSrcIndex === null || dragSrcIndex === dropIndex) return;
+
+            const list = document.getElementById('plan-items-list');
+            const children = Array.from(list.children);
+            const draggedCard = children[dragSrcIndex];
+
+            // Move DOM node
+            if (dragSrcIndex < dropIndex) {
+                list.insertBefore(draggedCard, children[dropIndex].nextSibling);
+            } else {
+                list.insertBefore(draggedCard, children[dropIndex]);
+            }
+
+            // Re-index
+            Array.from(list.children).forEach((c, i) => {
+                c.dataset.index = i;
+                const badge = c.querySelector('.plan-item-badge');
+                if (badge) {
+                    const labels = { lecture: '슬라이드', card_news: '카드', workshop: '페이즈', quiz: '문항' };
+                    badge.textContent = `${labels[currentStudioType] || ''} ${i + 1}`;
+                }
+            });
+
+            updatePlanJsonView();
+            dragSrcIndex = null;
+        }
+
+        function onDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.plan-item-card').forEach(c => c.classList.remove('drag-over'));
+            dragSrcIndex = null;
+        }
+
+        // ---------------------------------------------------------------
+        // JSON TOGGLE & RESET
+        // ---------------------------------------------------------------
+        function updatePlanJsonView() {
+            const jsonContainer = document.getElementById('studio-plan-json');
+            const plan = collectEditedPlan();
+            if (plan) {
+                jsonContainer.textContent = JSON.stringify(plan, null, 2);
+            }
+        }
+
+        document.getElementById('plan-toggle-json').addEventListener('click', () => {
+            showingPlanJson = !showingPlanJson;
+            const editView = document.getElementById('studio-plan-content');
+            const jsonView = document.getElementById('studio-plan-json');
+            const toggleBtn = document.getElementById('plan-toggle-json');
+
+            editView.classList.toggle('hidden', showingPlanJson);
+            jsonView.classList.toggle('hidden', !showingPlanJson);
+            toggleBtn.textContent = showingPlanJson ? '편집' : 'JSON';
+
+            if (showingPlanJson) {
+                updatePlanJsonView();
+            }
+        });
+
+        document.getElementById('plan-reset-btn').addEventListener('click', () => {
+            if (!originalPlanData) return;
+            renderEditablePlan(originalPlanData, currentStudioType);
+            showingPlanJson = false;
+            document.getElementById('studio-plan-content').classList.remove('hidden');
+            document.getElementById('studio-plan-json').classList.add('hidden');
+            document.getElementById('plan-toggle-json').textContent = 'JSON';
+            showToast('계획이 초기화되었습니다.');
+        });
+
+        // ---------------------------------------------------------------
+        // Plan preview — fetch from API and render editable
+        // ---------------------------------------------------------------
+        studioPlanBtn.addEventListener('click', async () => {
+            const topic = studioTopic.value.trim();
+            if (!topic) { showToast('주제를 입력해주세요.', 'warning'); return; }
+
+            showStudioStep('plan');
+            showingPlanJson = false;
+            document.getElementById('studio-plan-content').classList.remove('hidden');
+            document.getElementById('studio-plan-json').classList.add('hidden');
+            document.getElementById('plan-toggle-json').textContent = 'JSON';
+            document.getElementById('studio-plan-content').innerHTML =
+                '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">계획 생성 중...</p></div>';
+
+            try {
+                const data = await apiCall('/api/content/plan', {
+                    body: {
+                        content_type: currentStudioType,
+                        topic: topic,
+                        options: collectTypeOptions()
+                    }
+                });
+                originalPlanData = data.plan;
+                
+                // [Phase 10] AI 추천 수치 UI 세팅 (PR-071)
+                const durationInput = document.getElementById('rec-duration');
+                const countInput = document.getElementById('rec-count');
+                const countLabel = document.querySelector('#rec-slides-group span:first-child');
+                
+                if (data.plan) {
+                    if (durationInput) durationInput.value = data.plan.recommended_duration || 30;
+                    if (countInput) countInput.value = data.plan.recommended_slides || data.plan.recommended_cards || 5;
+                    
+                    // 유형별 라벨 변경
+                    if (countLabel) {
+                        if (currentStudioType === 'lecture') countLabel.textContent = '추천 슬라이드 수';
+                        else if (currentStudioType === 'card_news') countLabel.textContent = '추천 카드 수';
+                        else if (currentStudioType === 'quiz') countLabel.textContent = '추천 문항 수';
+                    }
+                }
+
+                renderEditablePlan(data.plan, currentStudioType);
+            } catch (err) {
+                document.getElementById('studio-plan-content').innerHTML =
+                    `<div class="result-error"><p>계획 생성 실패</p><p>${escapeHtml(err.message)}</p></div>`;
+            }
+        });
+
+        // Generate (from input step or plan step)
+        async function startStudioGeneration(editedPlan) {
+            const topic = studioTopic.value.trim();
+            if (!topic || studioBusy) return;
+
+            studioBusy = true;
+            updateStudioStep('progress');
+            updateProgressUI(5, 'planning');
+
+            try {
+                const reqBody = {
+                    content_type: currentStudioType,
+                    topic: topic,
+                    options: collectTypeOptions(),
+                    plan_override: editedPlan || null
+                };
+
+                const resp = await apiCall('/api/content/generate/async', {
+                    method: 'POST',
+                    body: JSON.stringify(reqBody)
+                });
+
+                if (resp && resp.request_id) {
+                    pollGenerationStatus(resp.request_id);
+                } else {
+                    throw new Error('요청 ID를 받지 못했습니다.');
+                }
+            } catch (err) {
+                console.error('Generation start failed:', err);
+                showToast('생성 실패: ' + err.message);
+                updateStudioStep('input');
+                studioBusy = false;
+            }
+        }
+
+                // Poll for status with progress animation
+                const result = await pollStudioStatus(asyncRes.request_id);
+                showStudioResult(result, asyncRes.request_id);
+            } catch (err) {
+                const errorMsg = err.message.includes('Failed to fetch')
+                    ? '백엔드 서버에 연결할 수 없습니다.'
+                    : err.message;
+                showStudioStep('result');
+                document.getElementById('studio-result-view').innerHTML =
+                    `<div class="result-error"><p>생성 실패</p><p>${escapeHtml(errorMsg)}</p></div>
+                     <button class="studio-new-btn studio-retry-btn">다시 시도</button>`;
+                document.querySelector('.studio-retry-btn')?.addEventListener('click', () => showStudioStep('input'));
+            } finally {
+                studioBusy = false;
+            }
+        }
+
+        // [Surgery 3] Fact-Check Modal Logic
+        function openFactCheck(details) {
+            const modal = document.getElementById('factcheck-modal-overlay');
+            const content = document.getElementById('factcheck-content');
+            if (!modal || !content) return;
+
+            let html = '<div class="fact-check-list">';
+            details.forEach((d, i) => {
+                html += `
+                    <div style="margin-bottom:25px; padding-bottom:20px; border-bottom:1px solid #DDD;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <span style="background:#0052A2; color:white; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:600;">SOURCE ${i+1}</span>
+                            <span style="color:#666; font-size:12px; font-weight:600;">${escapeHtml(d.edition)} | ${escapeHtml(d.page)}p</span>
+                        </div>
+                        <div style="font-size:13px; color:#0052A2; font-weight:700; margin-bottom:8px;">위계: ${escapeHtml(d.section)}</div>
+                        <div style="background:white; padding:15px; border-radius:4px; border-left:4px solid #0052A2; font-size:14px; line-height:1.7; color:#333; box-shadow:inset 0 2px 4px rgba(0,0,0,0.05);">
+                            ${escapeHtml(d.text)}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        // Close Fact-Check Modal
+        document.getElementById('close-factcheck-modal')?.addEventListener('click', () => {
+            document.getElementById('factcheck-modal-overlay').classList.remove('active');
+        });
+
+        studioGenerateBtn.addEventListener('click', () => startStudioGeneration(null));
+        studioConfirmGenerate.addEventListener('click', () => {
+            const editedPlan = collectEditedPlan();
+            startStudioGeneration(editedPlan);
+        });
+
+        function resetProgress() {
+            const circle = document.getElementById('progress-circle');
+            circle.style.strokeDashoffset = '339.292';
+            document.getElementById('progress-percent').textContent = '0%';
+            document.getElementById('progress-status').textContent = '생성을 시작합니다...';
+            document.querySelectorAll('.stage').forEach(s => {
+                s.classList.remove('active', 'done');
+            });
+        }
+
+        function updateProgress(percent, statusText) {
+            const circle = document.getElementById('progress-circle');
+            const offset = 339.292 * (1 - percent / 100);
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progress-percent').textContent = `${Math.round(percent)}%`;
+            document.getElementById('progress-status').textContent = statusText;
+
+            // Update stage indicators
+            const stages = ['planning', 'generating', 'assets', 'assembling', 'publishing'];
+            const activeIdx = Math.min(Math.floor(percent / 20), stages.length - 1);
+            stages.forEach((s, i) => {
+                const el = document.querySelector(`.stage[data-stage="${s}"]`);
+                el.classList.remove('active', 'done');
+                if (i < activeIdx) el.classList.add('done');
+                else if (i === activeIdx) el.classList.add('active');
+            });
+        }
+
+        async function pollStudioStatus(requestId) {
+            const maxAttempts = 60;
+            let transientErrors = 0;
+            for (let i = 0; i < maxAttempts; i++) {
+                await new Promise(r => setTimeout(r, 3000));
+
+                let status;
+                try {
+                    status = await apiCall(`/api/content/status/${requestId}`, { method: 'GET' });
+                    transientErrors = 0;
+                } catch (err) {
+                    transientErrors++;
+                    if (transientErrors >= 3) throw new Error('서버 연결이 반복적으로 실패했습니다.');
+                    continue;
+                }
+
+                const statusMap = { pending: '대기 중...', running: '생성 진행 중...' };
+                const percent = status.status === 'pending' ? Math.min(10 + i * 2, 30)
+                    : status.status === 'running' ? Math.min(30 + i * 3, 90)
+                    : status.status === 'completed' ? 100 : 0;
+                updateProgress(percent, statusMap[status.status] || status.status);
+
+                if (status.status === 'completed') {
+                    updateProgress(100, '완료!');
+                    await new Promise(r => setTimeout(r, 800)); // brief pause to show 100%
+                    return status.result;
+                }
+                if (status.status === 'failed') {
+                    throw new Error(status.error || '콘텐츠 생성에 실패했습니다.');
+                }
+            }
+            throw new Error('생성 시간이 초과되었습니다.');
+        }
+function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
+    const lowerExt = ext.toLowerCase();
+
+    // [Task 2] 의미론적 시각화 전용 렌더링 영역
+    if (vizData && vizData.data) {
+        const vizId = `viz-${Math.random().toString(36).substr(2, 9)}`;
+        setTimeout(() => renderAntVChart(vizId, vizData), 100);
+        return `
+            <div class="preview-container preview-viz-container" style="background:#F8F9FA; padding:20px;">
+                <div id="${vizId}" style="width:100%; height:400px;"></div>
+                <div style="margin-top:15px; font-size:13px; color:#666; text-align:center;">
+                    <strong>통찰 분석:</strong> ${escapeHtml(vizData.reasoning || '구조적 관계 분석 결과입니다.')}
+                </div>
+            </div>`;
+    }
+...
+
+                return `
+                    <div class="preview-container preview-image-container">
+                        <img class="preview-image" src="${downloadUrl}" alt="${escapeHtml(fileName)}"
+                             onerror="this.parentElement.innerHTML='<div class=\\'preview-fallback\\'>미리보기를 불러올 수 없습니다</div>'" />
+                    </div>`;
+            }
+            if (lowerExt === 'html' || lowerExt === 'htm') {
+                return `
+                    <div class="preview-container preview-iframe-container">
+                        <iframe class="preview-iframe" sandbox="allow-scripts" src="${downloadUrl}"
+                                title="${escapeHtml(fileName)}"></iframe>
+                    </div>`;
+            }
+            if (lowerExt === 'mp3' || lowerExt === 'wav' || lowerExt === 'ogg') {
+                return `
+                    <div class="preview-container preview-audio-container">
+                        <audio class="preview-audio" controls preload="metadata" src="${downloadUrl}">
+                            브라우저가 오디오 재생을 지원하지 않습니다.
+                        </audio>
+                    </div>`;
+            }
+            if (lowerExt === 'mp4' || lowerExt === 'webm') {
+                return `
+                    <div class="preview-container preview-video-container" style="background:black; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                        <video class="preview-video" controls preload="metadata" src="${downloadUrl}" style="max-width:100%; max-height:100%;">
+                            브라우저가 비디오 재생을 지원하지 않습니다.
+                        </video>
+                    </div>`;
+            }
+            // PPTX, PDF, etc. — no inline preview
+            return `
+                <div class="preview-container preview-nopreview">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span>미리보기를 지원하지 않는 파일 형식입니다</span>
+                </div>`;
+        }
+
+        function renderAntVChart(containerId, vizData) {
+            const container = document.getElementById(containerId);
+            if (!container || !vizData || !vizData.data) return;
+
+            const { viz_type, data } = vizData;
+            
+            if (viz_type === 'network' && data.nodes) {
+                // [Accuracy Focus] 계층형 레이아웃으로 관계 명확화
+                const graph = new G6.Graph({
+                    container: containerId,
+                    width: container.scrollWidth,
+                    height: 400,
+                    fitView: true,
+                    layout: {
+                        type: 'dagre',
+                        rankdir: 'LR', // Left to Right
+                        nodesep: 30,
+                        ranksep: 50,
+                    },
+                    defaultNode: {
+                        size: [80, 40],
+                        type: 'rect',
+                        style: { fill: '#F0F7FF', stroke: '#0052A2', lineWidth: 2, radius: 4 },
+                        labelCfg: { style: { fill: '#1A1A2E', fontSize: 12, fontWeight: 600 } }
+                    },
+                    defaultEdge: {
+                        type: 'polyline',
+                        style: { stroke: '#0052A2', lineWidth: 1, endArrow: true, opacity: 0.6 }
+                    }
+                });
+                graph.data(data);
+                graph.render();
+            } else if (viz_type === 'radar' && data.indicators) {
+                // [Structural Focus] G2를 활용한 밸런스 차트
+                const chart = new G2.Chart({
+                    container: containerId,
+                    autoFit: true,
+                    height: 400,
+                });
+                chart.data(data.indicators);
+                chart.coordinate('polar', { radius: 0.8 });
+                chart.axis('name', { line: null, tickLine: null, grid: { line: { style: { lineDash: [3, 3] } } } });
+                chart.axis('value', { grid: { line: { type: 'circle' } } });
+                chart.line().position('name*value').color('#0052A2').size(2);
+                chart.area().position('name*value').color('#0052A2').style({ fillOpacity: 0.2 });
+                chart.point().position('name*value').color('#0052A2').shape('circle').size(4).style({ stroke: '#fff', lineWidth: 1 });
+                chart.render();
+            } else if (viz_type === 'timeline' && data.items) {
+                // [Logit Focus] 리스트 기반의 타임라인 시각화
+                container.innerHTML = `
+                    <div style="display:flex; flex-direction:column; gap:15px; padding:10px; max-height:350px; overflow-y:auto;">
+                        ${data.items.map(item => `
+                            <div style="display:flex; gap:20px; border-left:3px solid #0052A2; padding-left:15px; position:relative;">
+                                <div style="font-weight:800; color:#0052A2; width:60px; font-size:14px;">${item.date}</div>
+                                <div>
+                                    <div style="font-weight:700; font-size:15px; margin-bottom:4px;">${item.label}</div>
+                                    <div style="font-size:13px; color:#666; line-height:1.5;">${item.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`;
+            }
+        }
+            showStudioStep('result');
+            const info = STUDIO_TYPE_INFO[currentStudioType];
+            const files = result.files || [];
+            const citations = result.citations || [];
+
+            let html = `
+                <div class="result-success-banner">
+                    <div class="check-icon">✓</div>
+                    <div>
+                        <h3>${escapeHtml(info.title)} 생성 완료</h3>
+                        <p>${files.length}개 파일 생성 · SKMS 원문 ${citations.length}건 인용</p>
+                        <div style="margin-top: 8px; font-size: 0.8rem; color: #0052A2; background: #E6F4FF; padding: 4px 10px; border-radius: 4px; display: inline-block; font-weight: 600;">
+                            💰 인프라 사용 가치: $${result.cost_report?.total_usd || '0.00'} (약 ₩${(result.cost_report?.total_krw || 0).toLocaleString()})
+                        </div>
+                    </div>
+                </div>
+                <div class="result-preview-list">`;
+
+            files.forEach(f => {
+                const ext = (f.file_name || '').split('.').pop().toUpperCase();
+                const sizeKB = (f.size_bytes / 1024).toFixed(1);
+                const downloadUrl = requestId
+                    ? `${API_BASE_URL}/api/content/download/${encodeURIComponent(requestId)}/${encodeURIComponent(f.file_name)}`
+                    : '#';
+                const preview = buildFilePreview(f.file_name, downloadUrl, ext, result.plan);
+                // [Surgery 3] 팩트체크 데이터 추출 및 버튼 생성
+                let factCheckBtn = '';
+                const itemsKey = getPlanItemsKey(currentStudioType);
+                if (result.plan && result.plan[itemsKey]) {
+                    const details = [];
+                    result.plan[itemsKey].forEach(item => {
+                        if (item.source_details) details.push(...item.source_details);
+                    });
+                    if (details.length > 0) {
+                        const detailsJson = JSON.stringify(details).replace(/'/g, "&apos;");
+                        factCheckBtn = `<button class="fact-check-small-btn" onclick='openFactCheck(${detailsJson})' title="SKMS 근거 원문 확인">🔎 근거 검증</button>`;
+                    }
+                }
+
+                html += `
+                    <div class="result-preview-card">
+                        ${preview}
+                        <div class="preview-card-footer">
+                            <div class="result-file-info">
+                                <div class="file-icon">${escapeHtml(ext)}</div>
+                                <div>
+                                    <div class="file-name">${escapeHtml(f.file_name)}</div>
+                                    <div class="file-size">${sizeKB} KB</div>
+                                </div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                ${factCheckBtn}
+                                <a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+
+            html += `</div>
+
+                <div class="publish-section">
+                    <div class="publish-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                        <span>발행 (Publish)</span>
+                    </div>
+                    <div class="publish-status-local">
+                        <span class="publish-check">&#10003;</span>
+                        <span>로컬 저장 완료</span>
+                    </div>
+                    <div class="publish-buttons">
+                        <button class="publish-btn publish-btn-notion" data-request-id="${escapeHtml(requestId || '')}" data-dest="notion">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16v16H4z"/><path d="M8 8v8M12 8v8M16 8v8"/></svg>
+                            Notion 발행
+                        </button>
+                        <button class="publish-btn publish-btn-gdrive" data-request-id="${escapeHtml(requestId || '')}" data-dest="google_ws">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 19h20L12 2z"/><path d="M12 2l10 17H9"/></svg>
+                            Google Drive 저장
+                        </button>
+                    </div>
+                    <div class="publish-feedback" id="publish-feedback"></div>
+                </div>
+
+                <button class="studio-new-btn studio-new-content-btn">새 콘텐츠 생성하기</button>`;
+
+            document.getElementById('studio-result-view').innerHTML = html;
+
+            // Image lightbox: click to expand
+            document.querySelectorAll('.preview-image').forEach(img => {
+                img.addEventListener('click', () => {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'preview-lightbox';
+                    overlay.innerHTML = `<img src="${img.src}" alt="${img.alt}" />`;
+                    overlay.addEventListener('click', () => overlay.remove());
+                    document.body.appendChild(overlay);
+                });
+            });
+
+            // Publish button handlers
+            document.querySelectorAll('.publish-btn').forEach(btn => {
+                btn.addEventListener('click', () => handlePublish(btn));
+            });
+
+            document.querySelector('.studio-new-content-btn')?.addEventListener('click', () => showStudioStep('input'));
+            showToast(`${info.title}가 생성되었습니다!`);
+        }
+
+        async function handlePublish(btn) {
+            const reqId = btn.dataset.requestId;
+            const dest = btn.dataset.dest;
+            const feedback = document.getElementById('publish-feedback');
+            if (!reqId || !dest) return;
+
+            btn.disabled = true;
+            btn.classList.add('publish-btn-loading');
+            feedback.innerHTML = '<span class="publish-loading">' +
+                (dest === 'notion' ? 'Notion' : 'Google Drive') + '에 발행 중...</span>';
+
+            try {
+                const result = await apiCall(
+                    '/api/content/publish/' + encodeURIComponent(reqId),
+                    { body: { destination: dest } }
+                );
+                const pubResult = (result.results || [])[0];
+                if (pubResult && pubResult.success) {
+                    const urlLink = pubResult.url
+                        ? ' <a href="' + escapeHtml(pubResult.url) + '" target="_blank" rel="noopener">열기</a>'
+                        : '';
+                    feedback.innerHTML = '<span class="publish-success">' +
+                        (dest === 'notion' ? 'Notion' : 'Google Drive') + ' 발행 완료' + urlLink + '</span>';
+                } else {
+                    const errMsg = pubResult ? pubResult.error : '알 수 없는 오류';
+                    feedback.innerHTML = '<span class="publish-error">' + escapeHtml(errMsg || '발행 실패') + '</span>';
+                }
+            } catch (err) {
+                feedback.innerHTML = '<span class="publish-error">' + escapeHtml(err.message || '발행 실패') + '</span>';
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('publish-btn-loading');
+            }
+        }
+
+        // ===================================================================
+        // BACKEND CONNECTION CHECK (on page load)
+        // ===================================================================
+        const IS_DEV = location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.protocol === 'file:';
+
+        // ===================================================================
+        // [Phase 11] Chat Fullscreen Toggle
+        const expandChatBtn = document.getElementById('expand-chat');
+        const chatWindow = document.getElementById('chat-window');
+        let isChatFullscreen = false;
+
+        if (expandChatBtn && chatWindow) {
+            expandChatBtn.addEventListener('click', () => {
+                isChatFullscreen = !isChatFullscreen;
+                chatWindow.classList.toggle('full-screen');
+                
+                // Toggle Icon (Expand vs Shrink)
+                if (isChatFullscreen) {
+                    expandChatBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/></svg>';
+                    expandChatBtn.title = '축소하기';
+                    document.body.style.overflow = 'hidden'; // 화면 고정
+                } else {
+                    expandChatBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
+                    expandChatBtn.title = '전체화면';
+                    document.body.style.overflow = ''; // 고정 해제
+                }
+            });
+        }
+
+        // NAVIGATION
+        // ===================================================================
+        const mainSections = ['hero-section', 'process-guide', 'founder-section', 'content-studio-section', 'testimonial-section', 'marquee-container'];
+        const showcaseSection = document.getElementById('showcase-section');
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                const nav = link.dataset.nav;
+                
+                // Reset View
+                if (nav === 'home' || nav === 'showcase') {
+                    const isHome = nav === 'home';
+                    mainSections.forEach(id => {
+                        const el = document.getElementById(id) || document.querySelector('.' + id);
+                        if (el) el.classList.toggle('hidden', !isHome);
+                    });
+                    if (showcaseSection) showcaseSection.classList.toggle('hidden', isHome);
+                    
+                    if (isHome) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+
+                if (nav === 'editions') {
+                    e.preventDefault();
+                    openEditionsOverlay();
+                } else if (nav === 'search') {
+                    e.preventDefault();
+                    openSearchOverlay();
+                } else if (nav === 'dashboard') {
+                    e.preventDefault();
+                    openDashboardOverlay();
+                } else if (link.getAttribute('href') && link.getAttribute('href').startsWith('#') && nav !== 'home') {
+                    // Smooth scroll for anchor links
+                    const target = document.querySelector(link.getAttribute('href'));
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+                // Update active state
+                document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // ===================================================================
+        // EDITION BROWSER
+        // ===================================================================
+        const editionsOverlay = document.getElementById('editions-overlay');
+        const closeEditions = document.getElementById('close-editions');
+        const editionList = document.getElementById('edition-list');
+        const editionCount = document.getElementById('edition-count');
+        const tocTree = document.getElementById('toc-tree');
+        const tocSearchInput = document.getElementById('toc-search-input');
+        const tocSearchBtn = document.getElementById('toc-search-btn');
+        const sectionTextPanel = document.getElementById('section-text-panel');
+        const sectionTextTitle = document.getElementById('section-text-title');
+        const sectionTextBody = document.getElementById('section-text-body');
+        const closeSectionText = document.getElementById('close-section-text');
+
+        closeSectionText.addEventListener('click', () => {
+            sectionTextPanel.style.display = 'none';
+        });
+
+        async function loadSectionText(editionId, line, title) {
+            const panel = document.getElementById('section-text-panel');
+            const body = document.getElementById('section-text-body');
+            const titleEl = document.getElementById('section-text-title');
+            
+            if (!panel || !body) return;
+
+            panel.style.display = 'block';
+            titleEl.textContent = title;
+            body.innerHTML = '<p class="loading-text">원문을 DB에서 불러오는 중...</p>';
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            try {
+                // [Phase 11] 제목 정보를 함께 보내어 검색 정합성 확보 (PR-074)
+                const params = new URLSearchParams({ 
+                    edition_id: editionId, 
+                    line: line,
+                    title: title 
+                });
+                const data = await apiCall(`/api/section-text?${params}`, { method: 'GET' });
+                
+                if (data.text) {
+                    body.innerHTML = `<pre class="section-raw-text" style="white-space: pre-wrap; font-family: inherit; line-height: 1.8; color: #333; font-size: 0.95rem;">${escapeHtml(data.text)}</pre>`;
+                } else {
+                    body.innerHTML = '<p class="empty-text">해당 섹션의 본문 데이터를 찾을 수 없습니다.</p>';
+                }
+            } catch (err) {
+                body.innerHTML = `<p class="error-text">원문 로드 실패: ${escapeHtml(err.message)}</p>`;
+            }
+        }
+
+        let editionsCache = null; // cache edition list
+        let selectedEditionId = null;
+
+        function openEditionsOverlay() {
+            editionsOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if (!editionsCache) loadEditions();
+        }
+
+        closeEditions.addEventListener('click', () => {
+            editionsOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        async function loadEditions() {
+            const listEl = document.getElementById('edition-list');
+            if (!listEl) return;
+            
+            listEl.innerHTML = '<p class="loading-text">판본 정보를 불러오는 중...</p>';
+            
+            try {
+                const data = await apiCall('/api/editions', { method: 'GET' });
+                editionsCache = data.editions || [];
+                if (editionCount) editionCount.textContent = `${editionsCache.length}개`;
+                
+                if (editionsCache.length === 0) {
+                    listEl.innerHTML = '<p class="empty-text">로드된 판본이 없습니다.</p>';
+                    return;
+                }
+
+                renderEditionList(editionsCache);
+                populateEditionFilters(editionsCache);
+            } catch (err) {
+                console.error('Failed to load editions:', err);
+                listEl.innerHTML = `<p class="loading-text" style="color: #E4002B;">오류: ${escapeHtml(err.message)}</p>`;
+            }
+        }
+
+        function renderEditionList(editions) {
+            const listEl = document.getElementById('edition-list');
+            if (!listEl) return;
+
+            listEl.innerHTML = editions.map(ed => `
+                <div class="edition-item${ed.edition_id === selectedEditionId ? ' active' : ''}"
+                     data-id="${escapeHtml(ed.edition_id)}">
+                    <div class="edition-label">${escapeHtml(ed.label)}</div>
+                    <div class="edition-meta">${ed.year}년 · ${ed.section_count}개 섹션</div>
+                </div>
+            `).join('');
+
+            // 이벤트 리스너 재등록
+            listEl.querySelectorAll('.edition-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const eid = item.getAttribute('data-id');
+                    selectEdition(eid);
+                });
+            });
+        }
+
+        async function selectEdition(editionId) {
+            selectedEditionId = editionId;
+            // Update UI
+            editionList.querySelectorAll('.edition-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.editionId === editionId);
+            });
+            // Load TOC
+            tocTree.innerHTML = '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">목차를 불러오는 중...</p></div>';
+            try {
+                const data = await apiCall(`/api/toc/${encodeURIComponent(editionId)}`, { method: 'GET' });
+                renderTocTree(data.sections || []);
+            } catch (err) {
+                tocTree.innerHTML = `<div class="result-error"><p>목차를 불러올 수 없습니다</p><p>${escapeHtml(err.message)}</p></div>`;
+            }
+        }
+
+        function renderTocTree(sections, depth = 0) {
+            if (depth === 0) tocTree.innerHTML = '';
+            const container = depth === 0 ? tocTree : document.createElement('div');
+            if (depth > 0) {
+                container.className = 'toc-children expanded'; // 기본적으로 모두 펼침
+            }
+
+            sections.forEach(section => {
+                const node = document.createElement('div');
+                node.className = `toc-node depth-${depth}`;
+
+                const hasChildren = section.children && section.children.length > 0;
+                const header = document.createElement('div');
+                header.className = 'toc-node-header';
+                header.style.paddingLeft = `${depth * 1.2 + 1}rem`;
+                header.style.cursor = 'pointer';
+
+                // 위계에 따른 폰트 스타일 차별화
+                const fontSize = depth === 0 ? '1.05rem' : '0.95rem';
+                const fontWeight = depth === 0 ? '700' : (depth === 1 ? '600' : '400');
+                const color = depth === 0 ? '#000' : '#444';
+
+                header.innerHTML = `
+                    <span class="toc-bullet">${depth === 0 ? '■' : '·'}</span>
+                    <span class="toc-title" style="font-size: ${fontSize}; font-weight: ${fontWeight}; color: ${color}; flex: 1;">
+                        ${escapeHtml(section.title)}
+                    </span>
+                    <span class="toc-line-tag">L${section.line}</span>
+                `;
+
+                node.appendChild(header);
+
+                // 제목 클릭 시 본문 로드
+                header.addEventListener('click', (e) => {
+                    // 하위 메뉴 토글 기능은 유지하되 본문 로드를 우선함
+                    if (hasChildren && e.target.classList.contains('toc-bullet')) {
+                        const childCont = node.querySelector('.toc-children');
+                        childCont.classList.toggle('expanded');
+                    } else {
+                        if (selectedEditionId) {
+                            loadSectionText(selectedEditionId, section.line, section.title);
+                        }
+                    }
+                });
+
+                if (hasChildren) {
+                    const childContainer = renderTocTree(section.children, depth + 1);
+                    node.appendChild(childContainer);
+                }
+
+                container.appendChild(node);
+            });
+
+            if (depth === 0 && sections.length === 0) {
+                tocTree.innerHTML = '<div class="empty-state"><p class="placeholder-text">목차 데이터가 없습니다</p></div>';
+            }
+
+            return container;
+        }
+
+        // TOC search
+        async function searchToc() {
+            const query = tocSearchInput.value.trim();
+            if (!query) return;
+
+            tocTree.innerHTML = '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">검색 중...</p></div>';
+            try {
+                const params = new URLSearchParams({ q: query });
+                if (selectedEditionId) params.append('edition_id', selectedEditionId);
+                const data = await apiCall(`/api/toc?${params}`, { method: 'GET' });
+                renderTocSearchResults(data.results || [], data.total);
+            } catch (err) {
+                tocTree.innerHTML = `<div class="result-error"><p>검색 실패</p><p>${escapeHtml(err.message)}</p></div>`;
+            }
+        }
+
+        function renderTocSearchResults(results, total) {
+            if (results.length === 0) {
+                tocTree.innerHTML = '<div class="empty-state"><p class="placeholder-text">검색 결과가 없습니다</p></div>';
+                return;
+            }
+            let html = `<p class="search-result-count">${total}건의 결과</p><div class="toc-search-results">`;
+            results.forEach(r => {
+                const pathStr = (r.path || []).join(' > ');
+                html += `
+                    <div class="toc-search-result" data-edition="${escapeHtml(r.edition_id)}">
+                        <div class="result-path">${escapeHtml(pathStr)}</div>
+                        <div class="result-title">${escapeHtml(r.title)}</div>
+                        <span class="result-edition">${escapeHtml(r.edition_id)}</span>
+                    </div>`;
+            });
+            html += '</div>';
+            tocTree.innerHTML = html;
+
+            // Click to load that edition's TOC
+            tocTree.querySelectorAll('.toc-search-result').forEach(item => {
+                item.addEventListener('click', () => {
+                    const editionId = item.dataset.edition;
+                    selectEdition(editionId);
+                    tocSearchInput.value = '';
+                });
+            });
+        }
+
+        tocSearchBtn.addEventListener('click', searchToc);
+        tocSearchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') searchToc();
+        });
+
+        // ===================================================================
+        // SEARCH OVERLAY
+        // ===================================================================
+        const searchOverlay = document.getElementById('search-overlay');
+        const closeSearch = document.getElementById('close-search');
+        const searchQuery = document.getElementById('search-query');
+        const searchSubmitBtn = document.getElementById('search-submit-btn');
+        const searchResults = document.getElementById('search-results');
+        const searchMode = document.getElementById('search-mode');
+        const searchEditionFilter = document.getElementById('search-edition-filter');
+        const searchTypeFilter = document.getElementById('search-type-filter');
+        const searchTopK = document.getElementById('search-top-k');
+
+        let searchBusy = false;
+
+        function openSearchOverlay() {
+            searchOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            searchQuery.focus();
+            if (!editionsCache) loadEditions(); // ensure edition filters are populated
+        }
+
+        closeSearch.addEventListener('click', () => {
+            searchOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        async function performSearch() {
+            const query = searchQuery.value.trim();
+            if (!query || searchBusy) return;
+
+            searchBusy = true;
+            searchSubmitBtn.disabled = true;
+            searchResults.innerHTML = '<div class="loading-state"><div class="pulse-ring"></div><p class="placeholder-text">검색 중...</p></div>';
+
+            try {
+                const body = {
+                    query: query,
+                    mode: searchMode.value,
+                    top_k: parseInt(searchTopK.value),
+                    include_evidence_check: true,
+                    include_comparison: false
+                };
+                if (searchEditionFilter.value) body.edition_filter = searchEditionFilter.value;
+                if (searchTypeFilter.value) body.type_filter = [searchTypeFilter.value];
+
+                const data = await apiCall('/api/v2/search', { body });
+                renderSearchResults(data);
+            } catch (err) {
+                const errorMsg = err.message.includes('Failed to fetch')
+                    ? '백엔드 서버에 연결할 수 없습니다.'
+                    : err.message;
+                searchResults.innerHTML = `<div class="result-error"><p>검색 실패</p><p>${escapeHtml(errorMsg)}</p></div>`;
+            } finally {
+                searchBusy = false;
+                searchSubmitBtn.disabled = false;
+            }
+        }
+
+        function renderSearchResults(data) {
+            const hits = data.hits || [];
+            if (hits.length === 0) {
+                searchResults.innerHTML = '<div class="empty-state"><p class="placeholder-text">검색 결과가 없습니다. 다른 키워드로 시도해보세요.</p></div>';
+                return;
+            }
+
+            let html = `<p class="search-result-count">${data.total}건의 검색 결과 (${data.mode} 모드)</p>`;
+
+            // Evidence check summary if available
+            if (data.evidence_check) {
+                const ec = data.evidence_check;
+                html += `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    근거 커버리지: ${(ec.coverage_score * 100).toFixed(0)}%
+                    ${ec.passed ? ' ✓' : ' ⚠'}
+                </p>`;
+            }
+
+            hits.forEach((hit, idx) => {
+                const score = (hit.score * 100).toFixed(1);
+                const typeLabels = { definition: '정의', principle: '원칙', narrative: '서술' };
+                const typeLabel = typeLabels[hit.quote_type] || hit.quote_type || '';
+                const pathStr = (hit.section_path || []).join(' > ');
+
+                html += `
+                    <div class="search-result-item">
+                        <div class="search-result-meta">
+                            <span class="badge badge-edition">${escapeHtml(hit.edition_id)} (${hit.year})</span>
+                            ${typeLabel ? `<span class="badge badge-type">${typeLabel}</span>` : ''}
+                            <span class="badge badge-score">${score}%</span>
+                            <span class="badge badge-source">${hit.source || data.mode}</span>
+                        </div>
+                        <div class="search-result-text">${escapeHtml(hit.text)}</div>
+                        ${pathStr ? `<div class="search-result-path">${escapeHtml(pathStr)}</div>` : ''}
+                    </div>`;
+            });
+
+            searchResults.innerHTML = html;
+        }
+
+        searchSubmitBtn.addEventListener('click', performSearch);
+        searchQuery.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // ===================================================================
+        // EDITION FILTER — POPULATE DROPDOWNS
+        // ===================================================================
+        function populateEditionFilters(editions) {
+            const selectors = [
+                document.getElementById('chat-edition-filter'),
+                document.getElementById('workspace-edition-filter'),
+                document.getElementById('search-edition-filter'),
+                document.getElementById('studio-edition-filter')
+            ];
+            selectors.forEach(select => {
+                if (!select) return;
+                // Keep the first "전체" option, clear rest
+                while (select.options.length > 1) select.remove(1);
+                editions.forEach(ed => {
+                    const option = document.createElement('option');
+                    option.value = ed.edition_id;
+                    option.textContent = `${ed.label} (${ed.year})`;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        // ===================================================================
+        // WIRE EDITION FILTERS INTO CHAT & WORKSPACE
+        // ===================================================================
+        // Patch: read chat edition filter when sending messages
+        const chatEditionFilter = document.getElementById('chat-edition-filter');
+        const workspaceEditionFilter = document.getElementById('workspace-edition-filter');
+
+        // Override sendChatMessage to include edition filter
+        const _originalSendChat = sendChatMessage;
+        // We re-define to pass edition_filter (cleaner than monkey-patching)
+        // The edition filter is already in the DOM; we'll read it inside the
+        // existing sendChatMessage. To do this cleanly, we modify the apiCall body.
+        // Actually, let's just update the existing function reference via the closure.
+        // The existing sendChatMessage already reads chatInput. We need to also
+        // read chatEditionFilter.value and pass it as edition_filter.
+
+        // Since sendChatMessage is already defined as a named function and used by
+        // event listeners, the cleanest approach is to wrap the body construction
+        // in the existing code. But since we can't redefine an existing const function,
+        // we'll add a global getter that the existing code already supports.
+        // Let's use a simpler approach: store it as a module-level getter.
+
+        // Close Escape key handler for all overlays
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (studioModalOverlay.classList.contains('active') && !studioBusy) {
+                    closeStudioModalFn();
+                }
+                if (editionsOverlay.classList.contains('active')) {
+                    editionsOverlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+                if (searchOverlay.classList.contains('active')) {
+                    searchOverlay.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+                if (dashboardOverlay.classList.contains('active')) {
+                    closeDashboardOverlay();
+                }
+            }
+        });
+
+        // ===================================================================
+        // DASHBOARD OVERLAY
+        // ===================================================================
+        const dashboardOverlay = document.getElementById('dashboard-overlay');
+        const closeDashboard = document.getElementById('close-dashboard');
+        let dashboardRefreshTimer = null;
+
+        function openDashboardOverlay() {
+            dashboardOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            loadDashboardData();
+            dashboardRefreshTimer = setInterval(loadDashboardData, 30000);
+        }
+
+        function closeDashboardOverlay() {
+            dashboardOverlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            if (dashboardRefreshTimer) {
+                clearInterval(dashboardRefreshTimer);
+                dashboardRefreshTimer = null;
+            }
+        }
+
+        closeDashboard.addEventListener('click', closeDashboardOverlay);
+
+        async function loadDashboardData() {
+            try {
+                const [health, metrics, stats, qualitySummary, qualityCoverage, healthDetail, jobsData] = await Promise.all([
+                    apiCall('/api/health', { method: 'GET' }),
+                    apiCall('/api/dashboard/metrics', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/dashboard/stats', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/quality/summary', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/quality/coverage', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/dashboard/health-detail', { method: 'GET' }).catch(() => null),
+                    apiCall('/api/content/jobs', { method: 'GET' }).catch(() => null),
+                ]);
+                renderServiceStatus(health);
+                if (metrics) renderMetrics(metrics);
+                if (stats) renderStats(stats);
+                renderQualityStatus(qualitySummary, qualityCoverage);
+                renderHealthDetail(healthDetail);
+                if (jobsData) renderJobHistory(jobsData.jobs);
+            } catch (err) {
+                if (IS_DEV) console.warn('[Dashboard] Failed to load data:', err.message);
+                renderServiceStatus(null);
+                renderQualityStatus(null, null);
+                renderHealthDetail(null);
+            }
+        }
+
+        function renderJobHistory(jobs) {
+            const listEl = document.getElementById('dashboard-jobs-list');
+            if (!listEl) return;
+
+            if (!jobs || jobs.length === 0) {
+                listEl.innerHTML = '<tr><td colspan="4" class="empty-text">작업 내역이 없습니다.</td></tr>';
+                return;
+            }
+
+            listEl.innerHTML = jobs.map(job => {
+                const date = new Date(job.created_at * 1000).toLocaleString('ko-KR', { 
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                });
+                const statusClass = `status-text-${job.status}`;
+                return `
+                    <tr class="job-row" onclick="handleJobRowClick('${job.request_id}', '${job.status}')">
+                        <td>${date}</td>
+                        <td><span class="badge-type">${job.content_type.toUpperCase()}</span></td>
+                        <td class="job-topic">${escapeHtml(job.topic)}</td>
+                        <td><span class="job-status ${statusClass}">${job.status.toUpperCase()}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function handleJobRowClick(requestId, status) {
+            if (status !== 'completed') {
+                showToast(`작업이 ${status} 상태입니다.`);
+                return;
+            }
+            try {
+                const statusData = await apiCall(`/api/content/status/${requestId}`, { method: 'GET' });
+                if (statusData && statusData.result) {
+                    // Open studio modal and show result
+                    studioModalOverlay.classList.add('active');
+                    showStudioResult(requestId, statusData.result);
+                }
+            } catch (err) {
+                showToast('상세 정보를 불러올 수 없습니다.');
+            }
+        }
+
+        function renderServiceStatus(health) {
+            const components = health?.components || {};
+            const csAvailable = health?.content_studio?.available || false;
+
+            const statusMap = {
+                'status-search': components.search_service,
+                'status-generation': components.generation_service,
+                'status-toc': components.toc_service,
+                'status-content-studio': csAvailable,
+            };
+
+            for (const [id, available] of Object.entries(statusMap)) {
+                const el = document.getElementById(id);
+                if (!el) continue;
+                if (available === undefined || available === null) {
+                    el.textContent = 'N/A';
+                    el.className = 'status-badge status-na';
+                } else if (available) {
+                    el.textContent = 'ON';
+                    el.className = 'status-badge status-on';
+                } else {
+                    el.textContent = 'OFF';
+                    el.className = 'status-badge status-off';
+                }
+            }
+        }
+
+        function renderMetrics(metrics) {
+            const totalEl = document.getElementById('metric-total-requests');
+            const rateEl = document.getElementById('metric-success-rate');
+            const latencyEl = document.getElementById('metric-p95-latency');
+            const uptimeEl = document.getElementById('metric-uptime');
+
+            if (totalEl) totalEl.textContent = metrics.total_requests.toLocaleString();
+
+            if (rateEl) {
+                const rate = metrics.total_requests > 0
+                    ? ((metrics.success_count / metrics.total_requests) * 100).toFixed(1)
+                    : '0.0';
+                rateEl.textContent = rate + '%';
+            }
+
+            if (latencyEl) {
+                latencyEl.textContent = metrics.latency.p95.toFixed(0);
+            }
+
+            if (uptimeEl) {
+                const hrs = Math.floor(metrics.uptime_seconds / 3600);
+                const mins = Math.floor((metrics.uptime_seconds % 3600) / 60);
+                uptimeEl.textContent = hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+            }
+        }
+
+        function renderStats(stats) {
+            // Top Endpoints bar chart
+            const endpointsEl = document.getElementById('dashboard-endpoints');
+            const topEndpoints = stats.top_endpoints || [];
+
+            if (topEndpoints.length === 0) {
+                endpointsEl.innerHTML = '<p class="loading-text">No endpoint data yet.</p>';
+            } else {
+                const maxCount = Math.max(...topEndpoints.map(e => e.count), 1);
+                endpointsEl.innerHTML = topEndpoints.map(ep => {
+                    const pct = Math.round((ep.count / maxCount) * 100);
+                    const label = ep.endpoint.length > 30
+                        ? '...' + ep.endpoint.slice(-27)
+                        : ep.endpoint;
+                    return `
+                        <div class="endpoint-bar-row">
+                            <span class="endpoint-name">${escapeHtml(label)}</span>
+                            <div class="endpoint-bar-track">
+                                <div class="endpoint-bar-fill" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="endpoint-count">${ep.count}</span>
+                        </div>`;
+                }).join('');
+            }
+
+            // Status code distribution
+            const distEl = document.getElementById('dashboard-status-dist');
+            const distribution = stats.status_code_distribution || [];
+
+            if (distribution.length === 0) {
+                distEl.innerHTML = '<p class="loading-text">No status data yet.</p>';
+            } else {
+                distEl.innerHTML = distribution.map(item => {
+                    let colorClass = 'status-code-other';
+                    const code = item.status_code;
+                    if (code >= 200 && code < 300) colorClass = 'status-code-2xx';
+                    else if (code >= 400 && code < 500) colorClass = 'status-code-4xx';
+                    else if (code >= 500) colorClass = 'status-code-5xx';
+                    return `<span class="status-code-badge ${colorClass}">${code}: ${item.count}</span>`;
+                }).join('');
+            }
+        }
+
+        // ===================================================================
+        // QUALITY STATUS + HEALTH DETAIL RENDERERS
+        // ===================================================================
+        function renderQualityStatus(summary, coverage) {
+            const summaryEl = document.getElementById('dashboard-quality-summary');
+            const coverageEl = document.getElementById('dashboard-quality-coverage');
+
+            if (!summary || summary.status === 'no_results') {
+                if (summaryEl) {
+                    const qCount = summary ? summary.golden_questions : 0;
+                    summaryEl.innerHTML = `
+                        <div class="quality-notice">
+                            <p>평가 결과가 아직 없습니다. Golden QA 셋: ${qCount}건</p>
+                        </div>`;
+                }
+                if (coverageEl) coverageEl.innerHTML = '';
+                return;
+            }
+
+            if (summaryEl) {
+                const gradeClass = summary.gate_passed ? 'quality-pass' : 'quality-fail';
+                summaryEl.innerHTML = `
+                    <div class="dashboard-metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-value ${gradeClass}">${escapeHtml(summary.overall_grade)}</span>
+                            <span class="metric-label">전체 등급</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">${(summary.pass_rate * 100).toFixed(1)}%</span>
+                            <span class="metric-label">합격률 (${summary.passed}/${summary.evaluated})</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">${(summary.coverage_score * 100).toFixed(0)}%</span>
+                            <span class="metric-label">커버리지</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value ${summary.gate_passed ? 'quality-pass' : 'quality-fail'}">${summary.gate_passed ? 'PASS' : 'FAIL'}</span>
+                            <span class="metric-label">품질 게이트</span>
+                        </div>
+                    </div>`;
+            }
+
+            if (coverageEl && coverage && coverage.editions) {
+                const editions = coverage.editions;
+                if (editions.length === 0) {
+                    coverageEl.innerHTML = '';
+                    return;
+                }
+                const maxCount = Math.max(...editions.map(e => e.question_count), 1);
+                coverageEl.innerHTML = `
+                    <h4 class="coverage-subtitle">판본별 커버리지 (총 ${coverage.total_questions}건)</h4>
+                    <div class="coverage-bars">
+                        ${editions.map(ed => {
+                            const pct = Math.round((ed.question_count / maxCount) * 100);
+                            return `
+                                <div class="endpoint-bar-row">
+                                    <span class="endpoint-name">${escapeHtml(ed.edition)}</span>
+                                    <div class="endpoint-bar-track">
+                                        <div class="endpoint-bar-fill" style="width: ${pct}%"></div>
+                                    </div>
+                                    <span class="endpoint-count">${ed.question_count}</span>
+                                </div>`;
+                        }).join('')}
+                    </div>`;
+            }
+        }
+
+        function renderHealthDetail(detail) {
+            const el = document.getElementById('dashboard-health-detail');
+            if (!el) return;
+
+            if (!detail) {
+                el.innerHTML = '<p class="loading-text">서비스 상세 정보를 불러올 수 없습니다.</p>';
+                return;
+            }
+
+            const components = detail.components || {};
+            const componentEntries = Object.entries(components);
+            const metricsSummary = detail.metrics_summary || {};
+
+            el.innerHTML = `
+                <div class="health-detail-grid">
+                    <div class="health-info-card">
+                        <span class="health-info-label">서비스 상태</span>
+                        <span class="health-info-value status-badge ${detail.status === 'ok' ? 'status-on' : 'status-off'}">${escapeHtml(detail.status || 'N/A')}</span>
+                    </div>
+                    <div class="health-info-card">
+                        <span class="health-info-label">버전</span>
+                        <span class="health-info-value">${escapeHtml(detail.version || 'N/A')}</span>
+                    </div>
+                    <div class="health-info-card">
+                        <span class="health-info-label">총 요청 수</span>
+                        <span class="health-info-value">${(metricsSummary.total_requests || 0).toLocaleString()}</span>
+                    </div>
+                    <div class="health-info-card">
+                        <span class="health-info-label">가동 시간</span>
+                        <span class="health-info-value">${formatUptime(metricsSummary.uptime_seconds || 0)}</span>
+                    </div>
+                </div>
+                <div class="health-components">
+                    <h4 class="coverage-subtitle">컴포넌트 상태</h4>
+                    <div class="dashboard-status-grid" style="margin-top: 0.5rem;">
+                        ${componentEntries.map(([name, info]) => {
+                            const available = info.available;
+                            const displayName = name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                            return `
+                                <div class="status-card">
+                                    <span class="status-label">${escapeHtml(displayName)}</span>
+                                    <span class="status-badge ${available ? 'status-on' : 'status-off'}">${available ? 'ON' : 'OFF'}</span>
+                                </div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+        }
+
+        function formatUptime(seconds) {
+            if (!seconds || seconds <= 0) return '0m';
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            if (hrs > 24) {
+                const days = Math.floor(hrs / 24);
+                const remHrs = hrs % 24;
+                return `${days}d ${remHrs}h`;
+            }
+            return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;
+        }
+
+        // ===================================================================
+        // CONTENT STUDIO EVENT LISTENERS (Phase 8 Refined)
+        // ===================================================================
+        
+        // "시작하기" 버튼 스크롤
+        document.getElementById('btn-start-creating')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('content-studio-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // "샘플 결과물 보기" 버튼
+        document.getElementById('btn-view-samples')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.open('https://skmsai-api.onrender.com/api/content/samples', '_blank');
+        });
+
+        // 카드 생성 버튼 클릭
+        document.querySelectorAll('.card-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentStudioType = btn.getAttribute('data-type');
+                openStudioModal(currentStudioType);
+            });
+        });
+
+        // 샘플 보기 링크 클릭
+        document.querySelectorAll('.view-sample-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const type = link.getAttribute('data-type');
+                const filenames = {
+                    lecture: "lecture.pptx",
+                    card_news: "card_news.html",
+                    workshop: "workshop.html",
+                    visualization: "viz.html",
+                    audio: "audio.mp3",
+                    quiz: "quiz.html"
+                };
+                if (filenames[type]) {
+                    const downloadUrl = `${API_BASE_URL}/api/content/sample/${filenames[type]}`;
+                    window.open(downloadUrl, '_blank');
+                } else {
+                    showToast('샘플을 준비 중입니다.');
+                }
+            });
+        });
+
+        // ===================================================================
+        // BACKEND CONNECTION CHECK + INIT (on page load)
+        // ===================================================================
+        (async function init() {
+            try {
+                const data = await apiCall('/api/health', { method: 'GET' });
+                if (IS_DEV) {
+                    console.log('[SKMS AI Studio] Backend connected. Content Studio:',
+                        data.content_studio?.available ? 'available' : 'unavailable');
+                }
+                // Pre-load editions for filters and content types
+                if (!editionsCache) loadEditions();
+                loadContentTypes();
+            } catch (err) {
+                if (IS_DEV) {
+                    console.warn('[SKMS AI Studio] Backend not reachable. Start with: python -m uvicorn server.app:app --reload --port 8000');
+                }
+            }
+        })();
+
+        // ===================================================================
+        // PODCAST STUDIO — Separate pipeline (/api/podcast/*)
+        // ===================================================================
+        (() => {
+            const podcastModal = document.getElementById('podcast-modal-overlay');
+            const closePodcastModal = document.getElementById('close-podcast-modal');
+
+            // Open podcast modal (separate from content studio modal)
+            document.querySelector('.podcast-open-btn')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showPodcastStep('input');
+                podcastModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                document.getElementById('podcast-topics').focus();
+            });
+
+            closePodcastModal?.addEventListener('click', () => {
+                podcastModal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            });
+
+            // Source tab switching
+            document.querySelectorAll('.podcast-source-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.podcast-source-tab').forEach(t => {
+                        t.classList.remove('active');
+                        t.style.border = '1px solid #DDD';
+                        t.style.background = '#F8F9FA';
+                        t.style.color = '';
+                        t.style.fontWeight = '';
+                    });
+                    tab.classList.add('active');
+                    tab.style.border = '1px solid #0052A2';
+                    tab.style.background = '#E8F0FE';
+                    tab.style.color = '#0052A2';
+                    tab.style.fontWeight = '500';
+                    const target = tab.dataset.tab;
+                    document.getElementById('podcast-source-url').classList.toggle('hidden', target !== 'url');
+                    document.getElementById('podcast-source-text').classList.toggle('hidden', target !== 'text');
+                });
+            });
+
+            // Duration slider label
+            document.getElementById('podcast-duration')?.addEventListener('input', e => {
+                document.getElementById('podcast-dur-label').textContent = e.target.value;
+            });
+
+            let currentPodcastRequestId = null;
+
+            function showPodcastStep(step) {
+                ['input', 'progress', 'edit', 'finalizing', 'result'].forEach(s => {
+                    const el = document.getElementById('podcast-step-' + s);
+                    if (el) el.classList.toggle('hidden', s !== step);
+                });
+            }
+
+            // Back to input from edit
+            document.getElementById('podcast-back-to-input')?.addEventListener('click', () => {
+                showPodcastStep('input');
+            });
+
+            // Phase 1: 대본 생성
+            document.getElementById('podcast-generate-btn')?.addEventListener('click', async () => {
+                const topics = document.getElementById('podcast-topics').value.trim();
+                if (!topics) { showToast('SKMS 주제를 입력해주세요.', 'warning'); return; }
+
+                const sourceUrl = document.getElementById('podcast-url')?.value.trim() || null;
+                const sourceText = document.getElementById('podcast-text')?.value.trim() || null;
+                const style = document.getElementById('podcast-style').value;
+                const duration = parseInt(document.getElementById('podcast-duration').value, 10);
+                const edition = document.getElementById('podcast-edition')?.value || null;
+
+                showPodcastStep('progress');
+
+                try {
+                    const body = { topics, duration_min: duration, style };
+                    if (sourceUrl) body.source_url = sourceUrl;
+                    if (sourceText) body.source_text = sourceText;
+                    if (edition) body.edition_filter = edition;
+
+                    const resp = await apiCall('/api/podcast/generate', { body });
+                    if (!resp || !resp.request_id) throw new Error('요청 ID를 받지 못했습니다.');
+
+                    currentPodcastRequestId = resp.request_id;
+                    await pollForScript(resp.request_id);
+                } catch (err) {
+                    showPodcastError(err.message);
+                }
+            });
+
+            // Phase 2: 편집된 대본으로 TTS 생성
+            document.getElementById('podcast-finalize-btn')?.addEventListener('click', async () => {
+                const editedScript = document.getElementById('podcast-script-editor').value.trim();
+                if (!editedScript) { showToast('대본이 비어 있습니다.', 'warning'); return; }
+
+                showPodcastStep('finalizing');
+
+                try {
+                    const resp = await apiCall('/api/podcast/finalize/' + currentPodcastRequestId, {
+                        body: { script: editedScript }
+                    });
+                    if (!resp) throw new Error('finalize 요청 실패');
+
+                    await pollForCompletion(currentPodcastRequestId);
+                } catch (err) {
+                    showPodcastError(err.message);
+                }
+            });
+
+            // Poll Phase 1: 대본 생성 대기
+            async function pollForScript(requestId) {
+                const statusEl = document.getElementById('podcast-progress-status');
+                const detailEl = document.getElementById('podcast-progress-detail');
+                for (let i = 0; i < 120; i++) {
+                    await new Promise(r => setTimeout(r, 3000));
+                    try {
+                        const res = await apiCall('/api/podcast/status/' + requestId, { method: 'GET' });
+                        if (res.status === 'running') {
+                            statusEl.textContent = '대본 작성 중...';
+                            const elapsed = ((Date.now() / 1000 - res.created_at) / 60).toFixed(1);
+                            detailEl.textContent = 'SKMS 원문 검색 + 대본 생성 진행 중 (' + elapsed + '분)';
+                        }
+                        if (res.status === 'script_ready') {
+                            document.getElementById('podcast-script-editor').value = res.script;
+                            showPodcastStep('edit');
+                            return;
+                        }
+                        if (res.status === 'failed') throw new Error(res.error || '대본 생성에 실패했습니다.');
+                    } catch (err) {
+                        if (err.message.includes('실패')) throw err;
+                    }
+                }
+                throw new Error('대본 생성 시간이 초과되었습니다.');
+            }
+
+            // Poll Phase 2: TTS/MP4 생성 대기
+            async function pollForCompletion(requestId) {
+                const statusEl = document.getElementById('podcast-finalize-status');
+                const detailEl = document.getElementById('podcast-finalize-detail');
+                for (let i = 0; i < 120; i++) {
+                    await new Promise(r => setTimeout(r, 3000));
+                    try {
+                        const res = await apiCall('/api/podcast/status/' + requestId, { method: 'GET' });
+                        if (res.status === 'finalizing') {
+                            statusEl.textContent = '음성 및 영상 생성 중...';
+                            const elapsed = ((Date.now() / 1000 - res.created_at) / 60).toFixed(1);
+                            detailEl.textContent = 'TTS + MP4 변환 진행 중 (' + elapsed + '분)';
+                        }
+                        if (res.status === 'completed') {
+                            showPodcastResult(res, requestId);
+                            return;
+                        }
+                        if (res.status === 'failed') throw new Error(res.error || '음성 생성에 실패했습니다.');
+                    } catch (err) {
+                        if (err.message.includes('실패')) throw err;
+                    }
+                }
+                throw new Error('음성 생성 시간이 초과되었습니다.');
+            }
+
+            function showPodcastError(message) {
+                showPodcastStep('result');
+                const rv = document.getElementById('podcast-result-view');
+                rv.textContent = '';
+                const errDiv = document.createElement('div');
+                errDiv.className = 'result-error';
+                const p1 = document.createElement('p'); p1.textContent = '생성 실패';
+                const p2 = document.createElement('p'); p2.textContent = message;
+                errDiv.appendChild(p1); errDiv.appendChild(p2);
+                rv.appendChild(errDiv);
+                const retryBtn = document.createElement('button');
+                retryBtn.className = 'studio-new-btn';
+                retryBtn.textContent = '다시 시도';
+                retryBtn.addEventListener('click', () => showPodcastStep('input'));
+                rv.appendChild(retryBtn);
+            }
+
+            function showPodcastResult(status, requestId) {
+                showPodcastStep('result');
+                const rv = document.getElementById('podcast-result-view');
+                rv.textContent = '';
+
+                const files = status.files || [];
+                const mp3 = files.find(f => f.file_type === 'mp3');
+                const mp4 = files.find(f => f.file_type === 'mp4');
+                const scriptFile = files.find(f => f.file_type === 'md');
+                const downloadBase = API_BASE_URL + '/api/podcast/download/' + requestId;
+
+                // Header
+                const header = document.createElement('div');
+                header.style.cssText = 'text-align:center; margin-bottom:20px;';
+                const title = document.createElement('div');
+                title.style.cssText = 'font-size:1.2rem; font-weight:700; color:#0052A2; margin-bottom:5px;';
+                title.textContent = '팟캐스트 생성 완료!';
+                const subtitle = document.createElement('div');
+                subtitle.style.cssText = 'font-size:0.85rem; color:#888;';
+                subtitle.textContent = '주제: ' + status.topics;
+                header.appendChild(title);
+                header.appendChild(subtitle);
+                rv.appendChild(header);
+
+                // Audio player
+                if (mp3) {
+                    const audioWrap = document.createElement('div');
+                    audioWrap.style.cssText = 'margin-bottom:20px; background:#F8F9FA; padding:20px; border-radius:12px;';
+                    const audio = document.createElement('audio');
+                    audio.controls = true;
+                    audio.preload = 'metadata';
+                    audio.style.width = '100%';
+                    audio.src = downloadBase + '/' + mp3.file_name;
+                    audioWrap.appendChild(audio);
+                    rv.appendChild(audioWrap);
+                }
+
+                // Script preview
+                if (status.script) {
+                    const details = document.createElement('details');
+                    details.style.cssText = 'margin-bottom:20px; border:1px solid #EEE; border-radius:8px;';
+                    const summary = document.createElement('summary');
+                    summary.style.cssText = 'padding:12px 16px; cursor:pointer; font-weight:600; font-size:0.9rem; background:#FAFAFA; border-radius:8px;';
+                    summary.textContent = '대본 보기';
+                    const content = document.createElement('div');
+                    content.style.cssText = 'padding:16px; font-size:0.85rem; line-height:1.8; max-height:400px; overflow-y:auto; white-space:pre-wrap;';
+                    content.textContent = status.script;
+                    details.appendChild(summary);
+                    details.appendChild(content);
+                    rv.appendChild(details);
+                }
+
+                // Download buttons
+                const btnWrap = document.createElement('div');
+                btnWrap.style.cssText = 'display:flex; gap:10px; justify-content:center; flex-wrap:wrap;';
+
+                function makeDownloadBtn(fileName, label, bg) {
+                    const a = document.createElement('a');
+                    a.href = downloadBase + '/' + fileName;
+                    a.download = '';
+                    a.className = 'studio-generate-btn';
+                    a.style.cssText = 'text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:10px 20px; font-size:0.9rem;' + (bg ? ' background:' + bg + ';' : '');
+                    a.textContent = label;
+                    return a;
+                }
+
+                if (mp3) btnWrap.appendChild(makeDownloadBtn(mp3.file_name, 'MP3 (' + (mp3.size_bytes / 1024 / 1024).toFixed(1) + 'MB)', ''));
+                if (mp4) btnWrap.appendChild(makeDownloadBtn(mp4.file_name, 'MP4 (' + (mp4.size_bytes / 1024 / 1024).toFixed(1) + 'MB)', '#333'));
+                if (scriptFile) btnWrap.appendChild(makeDownloadBtn(scriptFile.file_name, '대본 다운로드', '#666'));
+                rv.appendChild(btnWrap);
+
+                // New episode button
+                const newWrap = document.createElement('div');
+                newWrap.style.cssText = 'text-align:center; margin-top:20px;';
+                const newBtn = document.createElement('button');
+                newBtn.className = 'studio-new-btn';
+                newBtn.textContent = '새 에피소드 만들기';
+                newBtn.addEventListener('click', () => showPodcastStep('input'));
+                newWrap.appendChild(newBtn);
+                rv.appendChild(newWrap);
+            }
+        })();
+
+    </script>
+    <!-- [Phase 13] Interactive Tour Elements -->
+    <div id="tour-overlay" class="tour-overlay"></div>
+    <div id="tour-spotlight" class="tour-spotlight" style="display:none"></div>
+    <div id="tour-card" class="tour-card" style="display:none">
+        <h4 id="tour-title">안내 제목</h4>
+        <p id="tour-desc">상세 설명입니다.</p>
+        <div class="tour-actions">
+            <span class="tour-progress" id="tour-progress">1 / 5</span>
+            <div>
+                <button class="tour-btn-skip" id="tour-skip">건너뛰기</button>
+                <button class="tour-btn-next" id="tour-next">다음</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tour Engine Logic
+        const tourSteps = [
+            {
+                title: "환영합니다! 👋",
+                desc: "SKMS AI Studio에 오신 것을 환영합니다. SK의 경영철학을 가장 쉽고 깊이 있게 탐색하고 활용할 수 있는 공간입니다.",
+                target: null // Screen Center
+            },
+            {
+                title: "역대 판본 탐색 📚",
+                desc: "1979년 초판부터 현재의 14차 개정판까지, SKMS의 모든 역사와 원문을 이 메뉴에서 자유롭게 열람하실 수 있습니다.",
+                target: "nav-editions"
+            },
+            {
+                title: "지능형 검색 🔍",
+                desc: "궁금한 키워드를 입력해 보세요. RAG 기술이 수많은 원문 데이터 중 당신에게 가장 필요한 답변을 즉시 찾아줍니다.",
+                target: "nav-search"
+            },
+            {
+                title: "컨텐츠 스튜디오 🎨",
+                desc: "주제만 입력하세요. AI 전문가 팀이 SKMS를 기반으로 강의자료, 카드뉴스, 영상 등 고품질 콘텐츠를 1분 만에 제작해 드립니다.",
+                target: "studio-section-title"
+            },
+            {
+                title: "24/7 AI 비서 🤖",
+                desc: "작업 중 궁금한 점이 있다면 언제든 물어보세요. SKMS에 특화된 전용 AI가 실시간으로 답변해 드립니다.",
+                target: "chat-toggle-btn"
+            }
+        ];
+
+        let currentStepIdx = 0;
+
+        function startTour(force = false) {
+            console.log("Tour: Attempting to start...", { force });
+            const urlParams = new URLSearchParams(window.location.search);
+            const forceFromUrl = urlParams.get('tour') === 'true';
+
+            if (!force && !forceFromUrl && localStorage.getItem('skms_tour_completed')) {
+                console.log("Tour: Already completed, skipping.");
+                return;
+            }
+            
+            if (forceFromUrl) {
+                console.log("Tour: Forced from URL parameter.");
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            const overlay = document.getElementById('tour-overlay');
+            if (!overlay) {
+                console.error("Tour: Overlay element not found!");
+                return;
+            }
+
+            overlay.classList.add('active');
+            showStep(0);
+        }
+
+        // Manual Restart Event
+        const restartBtn = document.getElementById('restart-tour');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log("Tour: Manual restart triggered.");
+                startTour(true);
+            });
+        }
+
+        function showStep(idx) {
+            console.log(`Tour: Showing step ${idx + 1}`);
+            const step = tourSteps[idx];
+            const spotlight = document.getElementById('tour-spotlight');
+            const card = document.getElementById('tour-card');
+            
+            if (!spotlight || !card) return;
+
+            currentStepIdx = idx;
+            
+            document.getElementById('tour-title').textContent = step.title;
+            document.getElementById('tour-desc').textContent = step.desc;
+            document.getElementById('tour-progress').textContent = `${idx + 1} / ${tourSteps.length}`;
+            document.getElementById('tour-next').textContent = (idx === tourSteps.length - 1) ? '시작하기' : '다음';
+
+            if (step.target) {
+                const targetEl = document.getElementById(step.target);
+                if (targetEl) {
+                    console.log(`Tour: Target found - ${step.target}`);
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    setTimeout(() => {
+                        const rect = targetEl.getBoundingClientRect();
+                        spotlight.style.display = 'block';
+                        spotlight.style.top = `${rect.top + window.scrollY - 10}px`;
+                        spotlight.style.left = `${rect.left - 10}px`;
+                        spotlight.style.width = `${rect.width + 20}px`;
+                        spotlight.style.height = `${rect.height + 20}px`;
+
+                        card.style.display = 'flex';
+                        card.style.transform = 'none'; // Reset transform
+                        card.style.top = `${rect.bottom + window.scrollY + 20}px`;
+                        card.style.left = `${Math.min(window.innerWidth - 300, Math.max(20, rect.left))}px`;
+                    }, 600);
+                } else {
+                    console.warn(`Tour: Target NOT found - ${step.target}, showing in center.`);
+                    showInCenter();
+                }
+            } else {
+                showInCenter();
+            }
+        }
+
+        function showInCenter() {
+            const spotlight = document.getElementById('tour-spotlight');
+            const card = document.getElementById('tour-card');
+            spotlight.style.display = 'none';
+            card.style.display = 'flex';
+            card.style.top = '50%';
+            card.style.left = '50%';
+            card.style.transform = 'translate(-50%, -50%)';
+            card.style.position = 'fixed';
+        }
+
+        function endTour() {
+            console.log("Tour: Ending tour.");
+            document.getElementById('tour-overlay').classList.remove('active');
+            document.getElementById('tour-spotlight').style.display = 'none';
+            document.getElementById('tour-card').style.display = 'none';
+            localStorage.setItem('skms_tour_completed', 'true');
+        }
+
+        // 실행 시점 최적화 (DOMContentLoaded + Timeout)
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("Tour: DOM fully loaded, preparing tour.");
+            setTimeout(() => startTour(), 1000);
+        });
+        // [Phase 15] Premium Showcase Mock Engine
+        function openShowcase(type) {
+            const mockResults = {
+                lecture: {
+                    title: "자발적 의욕의 심리학 (VWBE)",
+                    files: [{ file_type: "pptx", file_name: "VWBE_Deep_Dive.pptx" }],
+                    citations: ["q-102", "q-145", "q-289"],
+                    cost_report: { total_usd: 1.25, total_krw: 1650 }
+                },
+                card_news: {
+                    title: "행복의 변천사 (1979-2020)",
+                    files: [
+                        { file_type: "image", file_name: "card_01.png" },
+                        { file_type: "image", file_name: "card_02.png" }
+                    ],
+                    citations: ["q-001", "q-500", "q-1200"],
+                    cost_report: { total_usd: 0.85, total_krw: 1150 }
+                },
+                viz: {
+                    title: "경영요소 유기적 네트워크",
+                    files: [{ file_type: "visualization", file_name: "management_elements.svg" }],
+                    citations: ["q-all"],
+                    cost_report: { total_usd: 0.45, total_krw: 600 }
+                },
+                podcast: {
+                    title: "SKMS 인사이트 에피소드 01",
+                    files: [
+                        { file_type: "audio", file_name: "episode_01.mp3" },
+                        { file_type: "video", file_name: "episode_01.mp4" }
+                    ],
+                    citations: ["q-insight"],
+                    cost_report: { total_usd: 1.50, total_krw: 2000 }
+                }
+            };
+
+            const result = mockResults[type];
+            if (!result) return showToast("샘플 준비 중입니다.");
+
+            // Open Studio Modal and show results directly
+            studioModalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            showStudioStep('result');
+            
+            // Render Mock Result
+            showStudioResult(result, { title: result.title });
+            showToast("실제 AI 생성 결과와 동일한 샘플 데이터입니다.");
+        }
+
+        // Mini Visualization for Showcase Thumb
+        function initShowcaseViz() {
+            const container = document.getElementById('showcase-viz-mini');
+            if (!container || !window.G6) return;
+            
+            const graph = new G6.Graph({
+                container: 'showcase-viz-mini',
+                width: 280,
+                height: 180,
+                modes: { default: [] }, // Disable interaction for thumb
+                defaultNode: { size: 12, style: { fill: '#0052A2', stroke: '#FFF' } },
+                defaultEdge: { style: { stroke: '#E2E2E2', lineWidth: 1 } }
+            });
+
+            const data = {
+                nodes: [{id:'n1'}, {id:'n2'}, {id:'n3'}, {id:'n4'}, {id:'n5'}],
+                edges: [{source:'n1', target:'n2'}, {source:'n2', target:'n3'}, {source:'n3', target:'n4'}, {source:'n4', target:'n1'}, {source:'n5', target:'n3'}]
+            };
+            graph.data(data);
+            graph.render();
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(initShowcaseViz, 2000);
+        });
+    </script>
+</body>
+</html>
