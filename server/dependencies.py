@@ -53,7 +53,17 @@ class AppState:
 
         # VectorStore (Chroma or Pinecone — provider 기반 팩토리)
         vector_config = retrieval.get("vector", {})
-        vector_store = create_vector_store(vector_config, index_dir)
+        try:
+            vector_store = create_vector_store(vector_config, index_dir)
+        except Exception as e:
+            from scripts.lib.vector_store import VectorStore
+
+            logger.error(
+                "벡터 스토어 초기화 실패, 벡터 검색 비활성화: %s",
+                e,
+                exc_info=True,
+            )
+            vector_store = VectorStore(None)
 
         # BM25Index
         bm25_path = Path(
