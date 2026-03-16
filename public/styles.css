@@ -196,7 +196,7 @@ a {
 .hero-content-minimal {
   max-width: none;
   width: 100%;
-  padding-top: 3.5rem;
+  padding-top: 2.4rem;
 }
 
 .hero-title-shell {
@@ -258,7 +258,7 @@ a {
 }
 
 .hero-title {
-  font-size: clamp(4.4rem, 10vw, 7.6rem);
+  font-size: clamp(7rem, 18vw, 13rem);
   letter-spacing: -0.06em;
   margin: 0 0 1.25rem;
   color: var(--text-black);
@@ -272,9 +272,9 @@ a {
   width: fit-content;
   max-width: 100%;
   display: inline-block;
-  font-size: clamp(4.8rem, 10vw, 8rem);
+  font-size: clamp(7.4rem, 19vw, 14rem);
   letter-spacing: -0.07em;
-  line-height: 0.92;
+  line-height: 0.88;
   white-space: nowrap;
   text-wrap: balance;
   position: relative;
@@ -3224,14 +3224,14 @@ textarea.plan-field-input {
     padding-top: 7rem;
   }
   .hero-content-minimal {
-    padding-top: 4.5rem;
+    padding-top: 3rem;
   }
   .hero-title-shell {
     padding: 0;
   }
-  .hero-title { font-size: 15vw; }
+  .hero-title { font-size: clamp(6rem, 18vw, 10rem); }
   .hero-title-simple {
-    font-size: clamp(4rem, 12vw, 6.6rem);
+    font-size: clamp(5.8rem, 17vw, 9.6rem);
   }
   .hero-sub {
     font-size: 1.05rem;
@@ -3273,11 +3273,11 @@ textarea.plan-field-input {
 
 @media (max-width: 640px) {
   .hero-content-minimal {
-    padding-top: 4rem;
+    padding-top: 3.2rem;
   }
   .hero-title-simple {
-    font-size: clamp(3.2rem, 17vw, 4.8rem);
-    line-height: 0.92;
+    font-size: clamp(4.8rem, 23vw, 7rem);
+    line-height: 0.9;
     white-space: normal;
   }
   .hero-title-live {
