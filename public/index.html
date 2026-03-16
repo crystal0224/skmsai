@@ -1023,13 +1023,14 @@
         let typeIndex = 0;
 
         function typeWriter() {
+            if (!typeElement) return;
             if (typeIndex < typeText.length) {
                 typeElement.textContent += typeText.charAt(typeIndex);
                 typeIndex++;
                 setTimeout(typeWriter, 150);
             }
         }
-        setTimeout(typeWriter, 500);
+        if (typeElement) setTimeout(typeWriter, 500);
 
         // ===================================================================
         // HERO MOUSE TRACKING
@@ -1606,7 +1607,7 @@
         }
 
         // Card button clicks → open modal
-        document.querySelectorAll('.card-btn').forEach(btn => {
+        document.querySelectorAll('.card-btn[data-type]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const type = btn.dataset.type;
                 openStudioModal(type);
@@ -1632,14 +1633,16 @@
         }
 
         // Range slider live label updates
-        document.getElementById('opt-card-count').addEventListener('input', e => {
-            document.getElementById('opt-card-count-label').textContent = e.target.value;
+        document.getElementById('opt-card-count')?.addEventListener('input', e => {
+            const label = document.getElementById('opt-card-count-label');
+            if (label) label.textContent = e.target.value;
         });
         document.getElementById('opt-audio-duration')?.addEventListener('input', e => {
             document.getElementById('opt-audio-dur-label').textContent = e.target.value;
         });
-        document.getElementById('opt-quiz-count').addEventListener('input', e => {
-            document.getElementById('opt-quiz-count-label').textContent = e.target.value;
+        document.getElementById('opt-quiz-count')?.addEventListener('input', e => {
+            const label = document.getElementById('opt-quiz-count-label');
+            if (label) label.textContent = e.target.value;
         });
 
         // Collect type-specific options into ContentOptionsRequest shape
@@ -2123,9 +2126,10 @@
             }
         }
 
-                // Poll for status with progress animation
-                const result = await pollStudioStatus(asyncRes.request_id);
-                showStudioResult(result, asyncRes.request_id);
+        async function pollGenerationStatus(requestId) {
+            try {
+                const result = await pollStudioStatus(requestId);
+                showStudioResult(result, requestId);
             } catch (err) {
                 const errorMsg = err.message.includes('Failed to fetch')
                     ? '백엔드 서버에 연결할 수 없습니다.'
@@ -2239,23 +2243,23 @@
             }
             throw new Error('생성 시간이 초과되었습니다.');
         }
-function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
-    const lowerExt = ext.toLowerCase();
+        function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
+            const lowerExt = ext.toLowerCase();
 
-    // [Task 2] 의미론적 시각화 전용 렌더링 영역
-    if (vizData && vizData.data) {
-        const vizId = `viz-${Math.random().toString(36).substr(2, 9)}`;
-        setTimeout(() => renderAntVChart(vizId, vizData), 100);
-        return `
-            <div class="preview-container preview-viz-container" style="background:#F8F9FA; padding:20px;">
-                <div id="${vizId}" style="width:100%; height:400px;"></div>
-                <div style="margin-top:15px; font-size:13px; color:#666; text-align:center;">
-                    <strong>통찰 분석:</strong> ${escapeHtml(vizData.reasoning || '구조적 관계 분석 결과입니다.')}
-                </div>
-            </div>`;
-    }
-...
+            // [Task 2] 의미론적 시각화 전용 렌더링 영역
+            if (vizData && vizData.data) {
+                const vizId = `viz-${Math.random().toString(36).substr(2, 9)}`;
+                setTimeout(() => renderAntVChart(vizId, vizData), 100);
+                return `
+                    <div class="preview-container preview-viz-container" style="background:#F8F9FA; padding:20px;">
+                        <div id="${vizId}" style="width:100%; height:400px;"></div>
+                        <div style="margin-top:15px; font-size:13px; color:#666; text-align:center;">
+                            <strong>통찰 분석:</strong> ${escapeHtml(vizData.reasoning || '구조적 관계 분석 결과입니다.')}
+                        </div>
+                    </div>`;
+            }
 
+            if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(lowerExt)) {
                 return `
                     <div class="preview-container preview-image-container">
                         <img class="preview-image" src="${downloadUrl}" alt="${escapeHtml(fileName)}"
@@ -2285,6 +2289,7 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                         </video>
                     </div>`;
             }
+
             // PPTX, PDF, etc. — no inline preview
             return `
                 <div class="preview-container preview-nopreview">
@@ -2356,8 +2361,16 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                     </div>`;
             }
         }
+
+        function showStudioResult(result, requestMeta = null) {
+            const requestId = typeof requestMeta === 'string' ? requestMeta : null;
+            const resolvedType = result?.content_type || currentStudioType;
+            const fallbackTitle = (requestMeta && typeof requestMeta === 'object' && requestMeta.title)
+                ? requestMeta.title
+                : (result?.title || '콘텐츠');
+            const info = STUDIO_TYPE_INFO[resolvedType] || { title: fallbackTitle };
+
             showStudioStep('result');
-            const info = STUDIO_TYPE_INFO[currentStudioType];
             const files = result.files || [];
             const citations = result.citations || [];
 
@@ -2507,13 +2520,13 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         // ===================================================================
         // [Phase 11] Chat Fullscreen Toggle
         const expandChatBtn = document.getElementById('expand-chat');
-        const chatWindow = document.getElementById('chat-window');
+        const chatWindowFullscreen = document.getElementById('chat-window');
         let isChatFullscreen = false;
 
-        if (expandChatBtn && chatWindow) {
+        if (expandChatBtn && chatWindowFullscreen) {
             expandChatBtn.addEventListener('click', () => {
                 isChatFullscreen = !isChatFullscreen;
-                chatWindow.classList.toggle('full-screen');
+                chatWindowFullscreen.classList.toggle('full-screen');
                 
                 // Toggle Icon (Expand vs Shrink)
                 if (isChatFullscreen) {
@@ -2562,7 +2575,7 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                 } else if (nav === 'dashboard') {
                     e.preventDefault();
                     openDashboardOverlay();
-                } else if (link.getAttribute('href') && link.getAttribute('href').startsWith('#') && nav !== 'home') {
+                } else if (link.getAttribute('href') && link.getAttribute('href').startsWith('#') && link.getAttribute('href') !== '#' && nav !== 'home') {
                     // Smooth scroll for anchor links
                     const target = document.querySelector(link.getAttribute('href'));
                     if (target) {
@@ -3064,7 +3077,7 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
                 if (statusData && statusData.result) {
                     // Open studio modal and show result
                     studioModalOverlay.classList.add('active');
-                    showStudioResult(requestId, statusData.result);
+                    showStudioResult(statusData.result, requestId);
                 }
             } catch (err) {
                 showToast('상세 정보를 불러올 수 없습니다.');
@@ -3308,14 +3321,6 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
         document.getElementById('btn-view-samples')?.addEventListener('click', (e) => {
             e.preventDefault();
             window.open('https://skmsai-api.onrender.com/api/content/samples', '_blank');
-        });
-
-        // 카드 생성 버튼 클릭
-        document.querySelectorAll('.card-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                currentStudioType = btn.getAttribute('data-type');
-                openStudioModal(currentStudioType);
-            });
         });
 
         // 샘플 보기 링크 클릭
@@ -3811,7 +3816,7 @@ function buildFilePreview(fileName, downloadUrl, ext, vizData = null) {
             // Open Studio Modal and show results directly
             studioModalOverlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            showStudioStep('result');
+            currentStudioType = type === 'viz' ? 'visualization' : type;
             
             // Render Mock Result
             showStudioResult(result, { title: result.title });
