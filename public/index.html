@@ -3770,6 +3770,21 @@
             localStorage.setItem('skms_tour_completed', 'true');
         }
 
+        const tourNextBtn = document.getElementById('tour-next');
+        const tourSkipBtn = document.getElementById('tour-skip');
+
+        tourNextBtn?.addEventListener('click', () => {
+            if (currentStepIdx >= tourSteps.length - 1) {
+                endTour();
+                return;
+            }
+            showStep(currentStepIdx + 1);
+        });
+
+        tourSkipBtn?.addEventListener('click', () => {
+            endTour();
+        });
+
         // 실행 시점 최적화 (DOMContentLoaded + Timeout)
         document.addEventListener('DOMContentLoaded', () => {
             console.log("Tour: DOM fully loaded, preparing tour.");
