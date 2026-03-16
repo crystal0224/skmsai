@@ -40,7 +40,13 @@
             <div class="mysterious-overlay"></div>
         </div>
         <div class="hero-content hero-content-minimal">
-            <h1 class="hero-title hero-title-simple">SKMS AI STUDIO</h1>
+            <div class="hero-title-shell">
+                <h1 class="hero-title hero-title-simple" data-title="SKMS AI STUDIO" aria-label="SKMS AI STUDIO">
+                    <span class="hero-title-live">
+                        <span id="typewriter-text"></span><span id="typewriter-cursor" class="blink" aria-hidden="true">|</span>
+                    </span>
+                </h1>
+            </div>
         </div>
     </section>
 
@@ -1031,7 +1037,10 @@
                 setTimeout(typeWriter, 150);
             }
         }
-        if (typeElement) setTimeout(typeWriter, 500);
+        if (typeElement) {
+            typeElement.textContent = "";
+            setTimeout(typeWriter, 300);
+        }
 
         // ===================================================================
         // HERO MOUSE TRACKING
