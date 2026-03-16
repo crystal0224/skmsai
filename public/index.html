@@ -2562,6 +2562,7 @@
                 
                 // Reset View
                 if (nav === 'home' || nav === 'showcase') {
+                    e.preventDefault();
                     const isHome = nav === 'home';
                     mainSections.forEach(id => {
                         const el = document.getElementById(id) || document.querySelector('.' + id);
@@ -2569,11 +2570,7 @@
                     });
                     if (showcaseSection) showcaseSection.classList.toggle('hidden', isHome);
                     
-                    if (isHome) {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    } else {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
 
                 if (nav === 'editions') {

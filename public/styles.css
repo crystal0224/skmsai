@@ -63,6 +63,10 @@ a {
   transition: var(--transition-smooth);
 }
 
+.hidden {
+  display: none !important;
+}
+
 /* Navigation */
 .navbar {
   position: fixed;
