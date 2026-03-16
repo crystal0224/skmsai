@@ -2372,6 +2372,50 @@
             }
         }
 
+        async function downloadStudioFile(url, filename, trigger = null) {
+            if (!url) {
+                showToast('다운로드할 파일이 없습니다.');
+                return;
+            }
+
+            if (trigger) {
+                trigger.disabled = true;
+                trigger.classList.add('disabled');
+            }
+
+            try {
+                const response = await fetch(url, { credentials: 'same-origin' });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+                anchor.href = objectUrl;
+                anchor.download = filename || 'download';
+                document.body.appendChild(anchor);
+                anchor.click();
+                anchor.remove();
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+                showToast('파일 다운로드를 시작했습니다.');
+            } catch (error) {
+                console.error('Download failed:', error);
+                showToast('다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+            } finally {
+                if (trigger) {
+                    trigger.disabled = false;
+                    trigger.classList.remove('disabled');
+                }
+            }
+        }
+
+        function handleStudioDownloadClick(button) {
+            const url = button?.dataset?.downloadUrl;
+            const filename = button?.dataset?.fileName;
+            downloadStudioFile(url, filename, button);
+        }
+
         function showStudioResult(result, requestMeta = null) {
             const requestId = typeof requestMeta === 'string' ? requestMeta : null;
             const resolvedType = result?.content_type || currentStudioType;
@@ -2437,9 +2481,9 @@
                             <div style="display:flex; align-items:center; gap:8px;">
                                 ${factCheckBtn}
                                 ${downloadUrl
-                                    ? `<a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
+                                    ? `<button class="file-download-btn" type="button" data-download-url="${escapeHtml(downloadUrl)}" data-file-name="${escapeHtml(f.file_name)}" onclick="handleStudioDownloadClick(this)" title="다운로드">
                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                       </a>`
+                                       </button>`
                                     : `<button class="file-download-btn disabled" type="button" title="다운로드 불가" disabled>
                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                        </button>`}

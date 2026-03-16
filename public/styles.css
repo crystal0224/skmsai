@@ -2239,9 +2239,11 @@ textarea.plan-field-input {
   justify-content: center;
   width: 36px;
   height: 36px;
+  border: none;
   border-radius: 8px;
   background: var(--primary-yellow);
   color: var(--text-black);
+  cursor: pointer;
   text-decoration: none;
   transition: all 0.2s;
   flex-shrink: 0;
