@@ -32,11 +32,20 @@
 
     <!-- Hero Section -->
     <section class="hero" id="hero-section">
+        <div class="hero-orb hero-orb-left" aria-hidden="true"></div>
+        <div class="hero-orb hero-orb-right" aria-hidden="true"></div>
+        <div class="hero-orb hero-orb-bottom" aria-hidden="true"></div>
+        <div class="hero-image-reveal" id="reveal-image" aria-hidden="true">
+            <canvas id="ai-network-canvas"></canvas>
+            <div class="mysterious-overlay"></div>
+        </div>
         <div class="hero-content">
-            <p class="hero-label">SKMS AI CONTENT STUDIO</p>
-            <h1 class="hero-title" style="margin-bottom: 20px;">당신의 통찰을<br>전문가급 콘텐츠로.</h1>
+            <p class="hero-label">
+                <span id="typewriter-text"></span><span id="typewriter-cursor" class="blink">|</span>
+            </p>
+            <h1 class="hero-title">당신의 통찰을<br><span class="hero-title-accent">전문가급 콘텐츠</span>로.</h1>
             <p class="hero-sub">주제만 입력하세요. SKMS 원문 기반의 기획안부터<br>PPTX, 카드뉴스, 영상 강의까지 한 번에 완성됩니다.</p>
-            <div style="margin-top: 40px; display: flex; gap: 15px; justify-content: center;">
+            <div class="hero-actions">
                 <a href="#content-studio-section" class="cta-button">콘텐츠 제작 시작</a>
                 <a href="#" class="secondary-button" id="btn-view-samples">샘플 결과물 보기</a>
             </div>
@@ -1047,8 +1056,8 @@
                 revealImage.style.setProperty('--y', `${y}px`);
             });
             heroSection.addEventListener('mouseleave', () => {
-                revealImage.style.setProperty('--x', `50%`);
-                revealImage.style.setProperty('--y', `50%`);
+                revealImage.style.setProperty('--x', `78%`);
+                revealImage.style.setProperty('--y', `68%`);
             });
         }
 
