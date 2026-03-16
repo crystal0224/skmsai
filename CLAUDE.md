@@ -91,7 +91,8 @@ prompts/             # Edition-aware + content generation prompt templates
 config/              # content_studio.yaml, pptx_themes.yaml, nano_banana_style.yaml
 data/                # SKMSraw.txt, edition metadata YAML
 docs/                # Design documents, MCP setup guide, content studio guide
-everline-studio-clone/  # Frontend UI (vanilla HTML/CSS/JS, Phase 4.5)
+public/              # Frontend source of truth (vanilla HTML/CSS/JS, Netlify publish dir)
+everline-studio-clone/  # Legacy frontend snapshot (do not edit for production)
 ```
 
 ### Architecture Summary
@@ -101,7 +102,7 @@ everline-studio-clone/  # Frontend UI (vanilla HTML/CSS/JS, Phase 4.5)
 - **Generation**: QueryRouter → prompt template → LLM → OutputRenderer (5 types)
 - **Content Studio**: 5-stage pipeline (Plan → Generate → Assets → Assemble → Publish), 6 content types, Protocol-based MCP adapters, PlanCache (SHA256, 24h TTL)
 - **API**: FastAPI with closure-based DI (AppState pattern), async content generation, file download, publish endpoint
-- **Frontend**: Vanilla HTML/CSS/JS SPA (everline-studio-clone/) — 6종 콘텐츠 생성, 미리보기, 플랜 편집, 대시보드, 발행
+- **Frontend**: Vanilla HTML/CSS/JS SPA (`public/`) — 6종 콘텐츠 생성, 미리보기, 플랜 편집, 대시보드, 발행
 - **Testing**: pytest, 95%+ coverage, `FastAPI_with_mock_state()` helper, ~70 test files + Playwright E2E 15 cases
 
 ### Running the Project
@@ -113,8 +114,11 @@ pip install -r requirements.txt
 python -m pytest tests/ -v
 
 # Start API server
-python -m uvicorn src.api.main:app --reload
+python -m uvicorn server.app:app --reload
+
+# Start static frontend
+cd public && python -m http.server 5500
 
 # Start Streamlit UI
-streamlit run src/ui/app.py
+streamlit run ui/streamlit_app.py
 ```

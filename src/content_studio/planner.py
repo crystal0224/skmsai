@@ -144,34 +144,67 @@ class ContentPlanner:
 
         # 1단계: 전략가 (Strategist) - 내러티브 및 분량 설계 (전문가 지식 주입)
         strat_prompt_template = _load_prompt("lecture_strategist.md")
-        full_strat_prompt = f"{self._expert_knowledge}\n\n{strat_prompt_template.format(
-            topic=topic,
-            duration_min=duration_min or 30,
-            slide_count=target_slide_count or 10,
-            target_audience=options.target_audience,
-        )}"
+        full_strat_prompt = (
+            f"{self._expert_knowledge}\n\n"
+            + strat_prompt_template.format(
+                topic=topic,
+                duration_min=duration_min or 30,
+                slide_count=target_slide_count or 10,
+                target_audience=options.target_audience,
+            )
+        )
         strategy_data = await self._call_llm_json(full_strat_prompt)
-        
+
         # AI 추천 분량 적용
         actual_duration = duration_min or strategy_data.get("recommended_duration", 30)
         actual_slides = strategy_data.get("recommended_slides", target_slide_count)
-        
+
         strategy_json_str = json.dumps(strategy_data, ensure_ascii=False, indent=2)
 
         # 2단계: 카피라이터 (Copywriter) - 맥킨지식 텍스트 작성 (전문가 지식 주입)
         copy_prompt_template = _load_prompt("lecture_copywriter.md")
-        full_copy_prompt = f"{self._expert_knowledge}\n\n{copy_prompt_template.format(
-            topic=topic,
-            strategy_json=strategy_json_str,
-            target_audience=options.target_audience,
-        )}"
+        full_copy_prompt = (
+            f"{self._expert_knowledge}\n\n"
+            + copy_prompt_template.format(
+                topic=topic,
+                strategy_json=strategy_json_str,
+                target_audience=options.target_audience,
+            )
+        )
         copy_data = await self._call_llm_json(full_copy_prompt)
-        
+
         # [Task 3] 내용 과다 슬라이드 실질적 분할 및 재정렬
         copy_data["slides"] = self._split_overflow_slides(copy_data.get("slides", []))
 
         copy_json_str = json.dumps(copy_data, ensure_ascii=False, indent=2)
-...
+
+        # 3단계: 아트 디렉터 (Art Director) - 시각화 및 레이아웃 확정
+        art_prompt_template = _load_prompt("lecture_art_director.md")
+        art_prompt = art_prompt_template.format(
+            topic=topic,
+            copy_json=copy_json_str,
+            target_audience=options.target_audience,
+        )
+        art_data = await self._call_llm_json(art_prompt)
+
+        # 4단계: 수석 에디터 (Quality Reviewer) - 최종 검수 및 퀄리티 정제
+        review_prompt_template = _load_prompt("quality_reviewer.md")
+        review_prompt = review_prompt_template.format(
+            topic=topic,
+            final_plan_json=json.dumps(art_data, ensure_ascii=False, indent=2),
+            target_audience=options.target_audience,
+        )
+        final_data = await self._call_llm_json(review_prompt)
+
+        # 최종 데이터 모델 조립
+        if "learning_objectives" not in final_data and "learning_objectives" in copy_data:
+            final_data["learning_objectives"] = copy_data["learning_objectives"]
+
+        final_data["duration_min"] = actual_duration
+        if "recommended_slides" not in final_data:
+            final_data["recommended_slides"] = actual_slides
+        return LecturePlan.from_dict(final_data)
+
     def _split_overflow_slides(self, slides: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """내용이 너무 많은 슬라이드를 논리적으로 분할한다."""
         new_slides = []
@@ -183,49 +216,24 @@ class ContentPlanner:
                 s1["key_points"] = points[:3]
                 s1["design_hint"] = "내용 분할 - 도입부 강조"
                 new_slides.append(s1)
-                
+
                 # 2번 슬라이드: 뒤쪽 포인트
                 s2 = slide.copy()
                 s2["title"] = f"{slide['title']} (계속)"
                 s2["key_points"] = points[3:]
-                s2["governing_message"] = f"앞선 내용에 이어, {s2['governing_message']}"
+                if s2.get("governing_message"):
+                    s2["governing_message"] = (
+                        f"앞선 내용에 이어, {s2['governing_message']}"
+                    )
                 s2["design_hint"] = "내용 분할 - 결론부 강조"
                 new_slides.append(s2)
             else:
                 new_slides.append(slide)
-        
+
         # 인덱스 재정렬
         for i, s in enumerate(new_slides):
             s["index"] = i + 1
         return new_slides
-
-        # 3단계: 아트 디렉터 (Art Director) - 시각화 및 레이아웃 확정
-        # [병목 해소] 디자인 지시는 비교적 가벼운 작업이므로 빠른 모델 권장
-        art_prompt_template = _load_prompt("lecture_art_director.md")
-        art_prompt = art_prompt_template.format(
-            topic=topic,
-            copy_json=copy_json_str,
-            target_audience=options.target_audience,
-        )
-        # LLMClient가 모델명을 지원한다고 가정 (미지원 시 기본 모델 유지)
-        art_data = await self._llm.generate(art_prompt, model="gpt-4o-mini", json_mode=True)
-
-        # 4단계: 수석 에디터 (Quality Reviewer) - 최종 검수 및 퀄리티 정제
-        # [병목 해소] 검수 작업도 빠른 모델로 처리
-        review_prompt_template = _load_prompt("quality_reviewer.md")
-        review_prompt = review_prompt_template.format(
-            topic=topic,
-            final_plan_json=json.dumps(art_data, ensure_ascii=False, indent=2),
-            target_audience=options.target_audience,
-        )
-        final_data = await self._llm.generate(review_prompt, model="gpt-4o-mini", json_mode=True)
-
-        # 최종 데이터 모델 조립
-        if "learning_objectives" not in final_data and "learning_objectives" in copy_data:
-            final_data["learning_objectives"] = copy_data["learning_objectives"]
-        
-        final_data["duration_min"] = duration_min
-        return LecturePlan.from_dict(final_data)
 
     # -----------------------------------------------------------------------
     # Card News
@@ -251,27 +259,33 @@ class ContentPlanner:
 
         # 1단계: 전략가 (Strategist Agent) - 스토리라인 및 수량 기획 (전문가 지식 주입)
         strat_prompt_template = _load_prompt("cardnews_strategist.md")
-        full_strat_prompt = f"{self._expert_knowledge}\n\n{strat_prompt_template.format(
-            topic=topic,
-            num_cards=num_cards or 5,
-            style=options.style,
-            target_audience=options.target_audience,
-        )}"
+        full_strat_prompt = (
+            f"{self._expert_knowledge}\n\n"
+            + strat_prompt_template.format(
+                topic=topic,
+                num_cards=num_cards or 5,
+                style=options.style,
+                target_audience=options.target_audience,
+            )
+        )
         strategy_data = await self._call_llm_json(full_strat_prompt)
-        
+
         # AI 추천 수량 적용
         actual_cards = num_cards or strategy_data.get("recommended_cards", 5)
-        
+
         strategy_json_str = json.dumps(strategy_data, ensure_ascii=False, indent=2)
 
         # 2단계: 카피라이터 (Copywriter Agent) - 카피 작성 (전문가 지식 주입)
         copy_prompt_template = _load_prompt("cardnews_copywriter.md")
-        full_copy_prompt = f"{self._expert_knowledge}\n\n{copy_prompt_template.format(
-            topic=topic,
-            language=options.language,
-            strategy_json=strategy_json_str,
-            target_audience=options.target_audience,
-        )}"
+        full_copy_prompt = (
+            f"{self._expert_knowledge}\n\n"
+            + copy_prompt_template.format(
+                topic=topic,
+                language=options.language,
+                strategy_json=strategy_json_str,
+                target_audience=options.target_audience,
+            )
+        )
         copy_data = await self._call_llm_json(full_copy_prompt)
         copy_json_str = json.dumps(copy_data, ensure_ascii=False, indent=2)
 
@@ -293,6 +307,9 @@ class ContentPlanner:
             target_audience=options.target_audience,
         )
         final_data = await self._call_llm_json(review_prompt)
+
+        if "recommended_cards" not in final_data:
+            final_data["recommended_cards"] = actual_cards
 
         return CardNewsPlan.from_dict(final_data)
 
@@ -416,8 +433,8 @@ class ContentPlanner:
             topic=topic,
         )
         
-        # 데이터 추출 (gpt-4o-mini 사용하여 빠른 처리)
-        viz_data = await self._llm.generate(prompt, model="gpt-4o-mini", json_mode=True)
+        # 데이터 추출
+        viz_data = await self._call_llm_json(prompt)
         
         # 최종 모델로 변환
         return VisualizationPlan(

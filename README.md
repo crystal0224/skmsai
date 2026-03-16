@@ -4,6 +4,24 @@ SK경영관리체계(SKMS) 원문 텍스트(초판 1979 ~ 14차 개정판 2020, 
 
 ---
 
+## 웹 배포 기준
+
+- 정적 프론트엔드 source of truth: `public/`
+- Netlify publish 디렉터리: `public/`
+- API 백엔드 배포: Render (`server/`, `Dockerfile`, `render.yaml`)
+- 루트 `index.html`, `styles.css`는 레거시 진입점이며 `public/`로 안내만 한다.
+- `everline-studio-clone/`는 과거 스냅샷이다. 새 UI 수정은 `public/index.html`, `public/styles.css`에서만 진행한다.
+- 프론트를 다른 도메인으로 배포하면 Render의 `ALLOWED_ORIGINS`도 함께 갱신해야 한다.
+
+로컬에서 정적 프론트를 확인할 때는 저장소 루트가 아니라 `public/`을 서빙한다.
+
+```bash
+cd public
+python -m http.server 5500
+```
+
+---
+
 ## 디렉토리 구조
 
 ```
@@ -24,6 +42,7 @@ skmsai/
 │   ├── router.md                # 질의 유형 분류 (4가지)
 │   ├── answer.md                # 인용 기반 응답 생성
 │   └── content_gen.md           # 5가지 출력 유형별 콘텐츠 생성
+├── public/                      # 정적 프론트엔드 source of truth (Netlify publish dir)
 ├── guardrails/
 │   ├── conflict_rules.yaml      # 시간적 충돌 감지 규칙
 │   └── quality_rules.yaml       # 품질 플래그, 응답 검증 규칙
@@ -38,6 +57,8 @@ skmsai/
 │   ├── 05_eval_run.py           # Step 5: 품질 평가
 │   └── 06_healthcheck.py        # Step 6: 파이프라인 자동 점검
 ├── indexes/                     # 생성 산출물: chroma/, bm25_index.pkl, meta.json
+├── render.yaml                  # Render API 배포 설정
+├── netlify.toml                 # Netlify 프론트 배포 설정
 ├── requirements.txt
 └── README.md
 ```

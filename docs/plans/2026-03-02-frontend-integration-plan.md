@@ -1,6 +1,9 @@
 # SKMS AI Studio 프론트엔드 통합 — 세부 실행 계획
 
 > 작성일: 2026-03-02 | 상태: Phase 4.5 진입
+>
+> 2026-03-16 업데이트: 현재 운영 프론트 source of truth는 `public/`이다.
+> 이 문서의 프론트 파일 경로는 모두 `public/index.html`, `public/styles.css` 기준으로 해석한다.
 
 ## 현재 완료 상태
 
@@ -50,7 +53,7 @@
 - [x] `collectTypeOptions()` 함수로 API 요청에 포함
 - [x] 백엔드 수정: audio style, viz_type을 opts.style에서 읽도록 변경
 
-**수정 파일:** `everline-studio-clone/index.html`, `styles.css`, `scripts/lib/content_studio/__init__.py`
+**수정 파일:** `public/index.html`, `public/styles.css`, `scripts/lib/content_studio/__init__.py`
 
 ---
 
@@ -67,8 +70,8 @@
 
 **수정 파일:**
 - `server/routes/content.py` — 다운로드 라우트 + `_guess_media_type` 유틸
-- `everline-studio-clone/index.html` — 결과 화면 다운로드 버튼
-- `everline-studio-clone/styles.css` — `.file-download-btn` 스타일
+- `public/index.html` — 결과 화면 다운로드 버튼
+- `public/styles.css` — `.file-download-btn` 스타일
 - `tests/test_content_studio/test_download_api.py` — 14개 테스트
 
 ---
@@ -86,7 +89,7 @@
 - [ ] PPTX/PDF: 첫 페이지 썸네일 + 다운로드 버튼
 - [ ] 각 파일에 다운로드 버튼 연결 (STEP 2 엔드포인트 사용)
 
-**수정 파일:** `everline-studio-clone/index.html`, `styles.css`
+**수정 파일:** `public/index.html`, `public/styles.css`
 
 ---
 
@@ -121,7 +124,7 @@ Content Studio의 6개 MCP 어댑터가 모두 mock/fallback으로만 동작 중
 - [ ] 항목 추가/삭제 버튼
 - [ ] 수정된 plan을 `/api/content/generate`에 전달
 
-**수정 파일:** `everline-studio-clone/index.html`, `styles.css`
+**수정 파일:** `public/index.html`, `public/styles.css`
 
 ---
 
@@ -161,7 +164,7 @@ Content Studio의 6개 MCP 어댑터가 모두 mock/fallback으로만 동작 중
 **수정 파일:**
 - `scripts/lib/content_studio/adapters/notion.py`
 - `scripts/lib/content_studio/adapters/google_ws.py`
-- `everline-studio-clone/index.html` (결과 화면에 발행 버튼)
+- `public/index.html` (결과 화면에 발행 버튼)
 
 ---
 

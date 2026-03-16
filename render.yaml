@@ -9,5 +9,6 @@ services:
         sync: false
       - key: ANTHROPIC_API_KEY
         sync: false
+      # Keep this in sync with the deployed frontend origin(s).
       - key: ALLOWED_ORIGINS
         value: https://skmsai.netlify.app

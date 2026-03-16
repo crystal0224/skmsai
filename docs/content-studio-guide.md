@@ -36,7 +36,7 @@ ContentPlanner → ContentGenerator → AssetGenerator → FileAssembler → Pub
 
 ```bash
 # 서버 시작
-python -m uvicorn src.api.main:app --reload
+python -m uvicorn server.app:app --reload
 ```
 
 #### GET /api/content/types — 지원 유형 목록

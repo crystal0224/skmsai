@@ -310,115 +310,37 @@ class FileAssembler:
                     self._fill_placeholder(placeholders[1], key_points[mid:], "", font_name, text_color, Pt, RGBColor)
                 elif placeholders:
                     self._fill_placeholder(placeholders[0], key_points, body_text, font_name, text_color, Pt, RGBColor)
-...
-
-    def _add_fixed_title_and_governing(
-        self,
-        slide: Any,
-        prs: Any,
-        title: str,
-        governing: str,
-        font_name: str,
-        title_color: tuple[int, int, int] | None,
-        text_color: tuple[int, int, int] | None,
-        Pt: Any,
-        Inches: Any,
-        RGBColor: Any
-    ) -> None:
-        """모든 슬라이드에서 제목과 거버닝 메시지를 장식 없이 고정된 위치와 크기로 렌더링한다."""
-        # 1. 제목 (Title) - 24pt Bold (Blue 강조)
-        title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.4), prs.slide_width - Inches(1.0), Inches(0.6))
-        tf = title_box.text_frame
-        tf.word_wrap = True
-        p = tf.paragraphs[0]
-        p.text = title
-        p.font.size = Pt(FONT_SIZE_TITLE)
-        p.font.bold = True
-        p.font.name = font_name
-        p.font.color.rgb = RGBColor(0, 82, 162) # #0052A2 (SK Blue)
-
-        # 2. 거버닝 메시지 (Governing Message) - 18pt (Dark Gray)
-        if governing:
-            # 장식 요소 제거: 시각적 피로도를 줄이기 위해 여백으로만 구분
-            gov_box = slide.shapes.add_textbox(Inches(0.5), Inches(1.05), prs.slide_width - Inches(1.0), Inches(0.5))
-            tf_gov = gov_box.text_frame
-            tf_gov.word_wrap = True
-            p_gov = tf_gov.paragraphs[0]
-            p_gov.text = governing
-            p_gov.font.size = Pt(FONT_SIZE_GOVERNING)
-            p_gov.font.name = font_name
-            p_gov.font.color.rgb = RGBColor(26, 26, 46) # #1A1A2E (Dark Gray)
-
-            if layout_name in ("comparison", "two_content") and len(placeholders) >= 2:
-                # 데이터를 반으로 나눔
-                mid = (len(key_points) + 1) // 2
-                left_points = key_points[:mid]
-                right_points = key_points[mid:]
-                
-                # 왼쪽 placeholder
-                self._fill_placeholder(placeholders[0], left_points, "", font_name, text_color, Pt, RGBColor)
-                # 오른쪽 placeholder
-                self._fill_placeholder(placeholders[1], right_points, "", font_name, text_color, Pt, RGBColor)
-            elif placeholders:
-                # 기본 단일 placeholder
-                self._fill_placeholder(placeholders[0], key_points, body_text, font_name, text_color, Pt, RGBColor)
 
             # [Task 4] 핵심 개념 아이콘 추가 (PR-062: Icon System)
             self._add_concept_icon(slide, slide_content.title, Inches, RGBColor)
 
             # 이미지 삽입
-...
-    def _add_concept_icon(self, slide: Any, title: str, Inches: Any, RGBColor: Any) -> None:
-        """제목 키워드를 분석하여 상징적인 아이콘(도형)을 추가한다."""
-        from pptx.enum.shapes import MSO_SHAPE
-        
-        # 키워드별 도형 매핑 (미니멀 전문 디자인용)
-        icon_map = {
-            "행복": MSO_SHAPE.HEART,
-            "인간": MSO_SHAPE.SMILEY_FACE,
-            "VWBE": MSO_SHAPE.GEAR,
-            "SUPEX": MSO_SHAPE.STAR_5_POINT,
-            "이해관계자": MSO_SHAPE.FLOWCHART_CONNECTOR,
-            "경영": MSO_SHAPE.CHART_UP,
-            "원칙": MSO_SHAPE.SEAL_4,
-            "조직": MSO_SHAPE.HEXAGON,
-            "구성원": MSO_SHAPE.OVAL
-        }
-        
-        target_shape = None
-        for kw, shape_type in icon_map.items():
-            if kw in title:
-                target_shape = shape_type
-                break
-        
-        if target_shape:
-            # 우측 상단에 작고 세련되게 배치 (Inches(9.2), Inches(0.4))
-            icon_size = Inches(0.3)
-            shape = slide.shapes.add_shape(target_shape, slide.parent.slide_width - Inches(0.8), Inches(0.45), icon_size, icon_size)
-            shape.fill.solid()
-            # 은은한 라이트 블루 계열로 브랜드 강조
-            shape.fill.fore_color.rgb = RGBColor(0, 82, 162) # SK Blue
-            shape.line.visible = False
-            shape.shadow.inherit = False # 그림자 제거로 미니멀 유지
-            asset = asset_map.get(slide_content.index)
+            slide_index = getattr(slide_content, "index", None)
+            asset = asset_map.get(slide_index) if slide_index is not None else None
             if asset and os.path.exists(asset.file_path):
                 try:
                     # 레이아웃에 맞춰 이미지 위치 조정
-                    left = Inches(7.0) if layout_name == "title_content_image" else Inches(1.0)
+                    left = (
+                        Inches(7.0)
+                        if layout_name == "title_content_image"
+                        else Inches(1.0)
+                    )
                     top = Inches(1.5)
                     width = Inches(3.0)
                     slide.shapes.add_picture(asset.file_path, left, top, width=width)
                 except Exception as e:
-                    logger.warning(f"이미지 삽입 실패 (slide {slide_content.index}): {e}")
+                    logger.warning(f"이미지 삽입 실패 (slide {slide_index}): {e}")
 
             # 발표자 노트 및 상세 출처 (PR-063: Deep Grounding)
             speaker_notes = getattr(slide_content, "speaker_notes", "")
             source_info = ""
             if hasattr(slide_content, "source_details") and slide_content.source_details:
-                source_info = "\n\n" + "-"*30 + "\n📜 근거 원문 상세:\n"
+                source_info = "\n\n" + "-" * 30 + "\n📜 근거 원문 상세:\n"
                 for detail in slide_content.source_details:
-                    source_info += f"• [{detail['edition']}] {detail['page']}p: {detail['text']}\n"
-            
+                    source_info += (
+                        f"• [{detail['edition']}] {detail['page']}p: {detail['text']}\n"
+                    )
+
             full_notes = speaker_notes + source_info
             if full_notes:
                 notes_slide = slide.notes_slide
@@ -473,6 +395,90 @@ class FileAssembler:
             file_name=out_path.name,
             size_bytes=size,
         )
+
+    def _add_fixed_title_and_governing(
+        self,
+        slide: Any,
+        prs: Any,
+        title: str,
+        governing: str,
+        font_name: str,
+        title_color: tuple[int, int, int] | None,
+        text_color: tuple[int, int, int] | None,
+        Pt: Any,
+        Inches: Any,
+        RGBColor: Any
+    ) -> None:
+        """모든 슬라이드에서 제목과 거버닝 메시지를 장식 없이 고정된 위치와 크기로 렌더링한다."""
+        # 1. 제목 (Title) - 24pt Bold (Blue 강조)
+        title_box = slide.shapes.add_textbox(
+            Inches(0.5), Inches(0.4), prs.slide_width - Inches(1.0), Inches(0.6)
+        )
+        tf = title_box.text_frame
+        tf.word_wrap = True
+        p = tf.paragraphs[0]
+        p.text = title
+        p.font.size = Pt(FONT_SIZE_TITLE)
+        p.font.bold = True
+        p.font.name = font_name
+        p.font.color.rgb = (
+            RGBColor(*title_color) if title_color else RGBColor(0, 82, 162)
+        )
+
+        # 2. 거버닝 메시지 (Governing Message) - 18pt (Dark Gray)
+        if governing:
+            # 장식 요소 제거: 시각적 피로도를 줄이기 위해 여백으로만 구분
+            gov_box = slide.shapes.add_textbox(
+                Inches(0.5), Inches(1.05), prs.slide_width - Inches(1.0), Inches(0.5)
+            )
+            tf_gov = gov_box.text_frame
+            tf_gov.word_wrap = True
+            p_gov = tf_gov.paragraphs[0]
+            p_gov.text = governing
+            p_gov.font.size = Pt(FONT_SIZE_GOVERNING)
+            p_gov.font.name = font_name
+            p_gov.font.color.rgb = (
+                RGBColor(*text_color) if text_color else RGBColor(26, 26, 46)
+            )
+
+    def _add_concept_icon(self, slide: Any, title: str, Inches: Any, RGBColor: Any) -> None:
+        """제목 키워드를 분석하여 상징적인 아이콘(도형)을 추가한다."""
+        from pptx.enum.shapes import MSO_SHAPE
+        
+        # 키워드별 도형 매핑 (미니멀 전문 디자인용)
+        icon_map = {
+            "행복": MSO_SHAPE.HEART,
+            "인간": MSO_SHAPE.SMILEY_FACE,
+            "VWBE": MSO_SHAPE.GEAR,
+            "SUPEX": MSO_SHAPE.STAR_5_POINT,
+            "이해관계자": MSO_SHAPE.FLOWCHART_CONNECTOR,
+            "경영": MSO_SHAPE.CHART_UP,
+            "원칙": MSO_SHAPE.SEAL_4,
+            "조직": MSO_SHAPE.HEXAGON,
+            "구성원": MSO_SHAPE.OVAL
+        }
+        
+        target_shape = None
+        for kw, shape_type in icon_map.items():
+            if kw in title:
+                target_shape = shape_type
+                break
+        
+        if target_shape:
+            # 우측 상단에 작고 세련되게 배치 (Inches(9.2), Inches(0.4))
+            icon_size = Inches(0.3)
+            shape = slide.shapes.add_shape(
+                target_shape,
+                slide.parent.slide_width - Inches(0.8),
+                Inches(0.45),
+                icon_size,
+                icon_size,
+            )
+            shape.fill.solid()
+            # 은은한 라이트 블루 계열로 브랜드 강조
+            shape.fill.fore_color.rgb = RGBColor(0, 82, 162)  # SK Blue
+            shape.line.visible = False
+            shape.shadow.inherit = False  # 그림자 제거로 미니멀 유지
 
     @staticmethod
     def _parse_hex_color(hex_str: str) -> tuple[int, int, int] | None:

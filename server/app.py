@@ -28,6 +28,7 @@ from server.routes.generate import create_generate_router
 from server.routes.quality import create_quality_router
 from server.routes.generate_v2 import create_generate_v2_router
 from server.routes.health import create_health_router
+from server.routes.podcast import create_podcast_router
 from server.routes.search import create_search_router
 from server.routes.search_v2 import create_search_v2_router
 from server.routes.toc import create_toc_router
@@ -126,7 +127,11 @@ def _load_content_studio_llm_config(
             raw = yaml.safe_load(f) or {}
 
         generation = raw.get("generation", {}) if isinstance(raw, dict) else {}
-        model = str(generation.get("content_studio_model", generation.get("model", default_model)))
+        model = str(
+            generation.get(
+                "content_studio_model", generation.get("model", default_model)
+            )
+        )
         requested = int(generation.get("content_studio_max_tokens", default_max_tokens))
         cap = int(generation.get("content_studio_max_tokens_cap", default_cap))
         if cap < 1:
@@ -259,9 +264,13 @@ def create_app() -> FastAPI:
                         detail="요청이 너무 많습니다. 잠시 후 다시 시도하세요.",
                     ).model_dump(),
                     headers={
-                        "Retry-After": str(max(1, int(rate_result.retry_after_seconds))),
+                        "Retry-After": str(
+                            max(1, int(rate_result.retry_after_seconds))
+                        ),
                         "X-RateLimit-Remaining": "0",
-                        "X-RateLimit-Limit": str(_rate_limiter.config.requests_per_minute),
+                        "X-RateLimit-Limit": str(
+                            _rate_limiter.config.requests_per_minute
+                        ),
                     },
                 )
                 logger.warning(
@@ -335,6 +344,9 @@ def create_app() -> FastAPI:
 
     # Routes — Content Studio
     app.include_router(create_content_router(_state))
+
+    # Routes — Podcast Studio
+    app.include_router(create_podcast_router())
 
     return app
 

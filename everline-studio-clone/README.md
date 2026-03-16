@@ -1,5 +1,8 @@
 # SKMS AI Studio (Frontend Clone)
 
+> 레거시 스냅샷입니다. 현재 운영 및 배포 기준 프론트엔드는 `/Users/crystal/skmsai/public` 입니다.
+> 새 UI 수정, 검증, 배포는 `public/index.html`, `public/styles.css`, `netlify.toml` 기준으로 진행합니다.
+
 이 프로젝트는 SKMS(SK Management System) 기반의 지능형 콘텐츠 제작 스튜디오 프로토타입 프론트엔드입니다. 사용자가 SKMS 경영철학과 부합하는 강의 슬라이드, 카드뉴스, 워크숍 자료 등을 손쉽게 생성할 수 있도록 돕는 "Intelligent Companion" 컨셉의 워크스페이스를 구현했습니다.
 
 ## 주요 기능 및 UI/UX 디자인 업데이트 내역

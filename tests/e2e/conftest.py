@@ -21,15 +21,13 @@ class _QuietHandler(http.server.SimpleHTTPRequestHandler):
 
 @pytest.fixture(scope="session")
 def frontend_server():
-    """Start an HTTP server for everline-studio-clone/ on port 5500.
+    """Start an HTTP server for public/ on port 5500.
 
     Yields the base URL. Server shuts down after the test session.
     """
     import os
 
-    directory = os.path.join(
-        os.path.dirname(__file__), "..", "..", "everline-studio-clone"
-    )
+    directory = os.path.join(os.path.dirname(__file__), "..", "..", "public")
     directory = os.path.abspath(directory)
 
     handler = lambda *args, **kwargs: _QuietHandler(

@@ -1,5 +1,7 @@
 [build]
-  publish = "."
+  # Static frontend source of truth.
+  publish = "public"
+  # Assets are committed; no build step required.
   command = "echo Deployment started"
 
 [[headers]]
