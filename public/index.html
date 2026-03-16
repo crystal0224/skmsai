@@ -39,16 +39,8 @@
             <canvas id="ai-network-canvas"></canvas>
             <div class="mysterious-overlay"></div>
         </div>
-        <div class="hero-content">
-            <p class="hero-label">
-                <span id="typewriter-text"></span><span id="typewriter-cursor" class="blink">|</span>
-            </p>
-            <h1 class="hero-title">당신의 통찰을<br><span class="hero-title-accent">전문가급 콘텐츠</span>로.</h1>
-            <p class="hero-sub">주제만 입력하세요. SKMS 원문 기반의 기획안부터<br>PPTX, 카드뉴스, 영상 강의까지 한 번에 완성됩니다.</p>
-            <div class="hero-actions">
-                <a href="#content-studio-section" class="cta-button">콘텐츠 제작 시작</a>
-                <a href="#" class="secondary-button" id="btn-view-samples">샘플 결과물 보기</a>
-            </div>
+        <div class="hero-content hero-content-minimal">
+            <h1 class="hero-title hero-title-simple">SKMS AI STUDIO</h1>
         </div>
     </section>
 
@@ -3320,18 +3312,6 @@
         // CONTENT STUDIO EVENT LISTENERS (Phase 8 Refined)
         // ===================================================================
         
-        // "시작하기" 버튼 스크롤
-        document.getElementById('btn-start-creating')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.getElementById('content-studio-section').scrollIntoView({ behavior: 'smooth' });
-        });
-
-        // "샘플 결과물 보기" 버튼
-        document.getElementById('btn-view-samples')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.open('https://skmsai-api.onrender.com/api/content/samples', '_blank');
-        });
-
         // 샘플 보기 링크 클릭
         document.querySelectorAll('.view-sample-link').forEach(link => {
             link.addEventListener('click', (e) => {
@@ -3343,10 +3323,11 @@
                     workshop: "workshop.html",
                     visualization: "viz.html",
                     audio: "audio.mp3",
+                    podcast: "audio.mp3",
                     quiz: "quiz.html"
                 };
                 if (filenames[type]) {
-                    const downloadUrl = `${API_BASE_URL}/api/content/sample/${filenames[type]}`;
+                    const downloadUrl = `/sample/${filenames[type]}`;
                     window.open(downloadUrl, '_blank');
                 } else {
                     showToast('샘플을 준비 중입니다.');

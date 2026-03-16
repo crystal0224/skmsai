@@ -189,6 +189,12 @@ a {
   padding-top: 6rem;
 }
 
+.hero-content-minimal {
+  max-width: none;
+  width: 100%;
+  padding-top: 3.5rem;
+}
+
 .hero-orb {
   position: absolute;
   border-radius: 50%;
@@ -248,6 +254,16 @@ a {
   line-height: 0.95;
   text-shadow: none;
   -webkit-text-stroke: 0;
+}
+
+.hero-title-simple {
+  margin: 0 auto;
+  width: fit-content;
+  max-width: 100%;
+  font-size: clamp(4.8rem, 10vw, 8rem);
+  letter-spacing: -0.07em;
+  line-height: 0.92;
+  white-space: nowrap;
 }
 
 .hero-title-accent {
@@ -3147,7 +3163,13 @@ textarea.plan-field-input {
   .hero-content {
     padding-top: 7rem;
   }
+  .hero-content-minimal {
+    padding-top: 4.5rem;
+  }
   .hero-title { font-size: 15vw; }
+  .hero-title-simple {
+    font-size: clamp(4rem, 12vw, 6.6rem);
+  }
   .hero-sub {
     font-size: 1.05rem;
   }
@@ -3187,6 +3209,14 @@ textarea.plan-field-input {
 }
 
 @media (max-width: 640px) {
+  .hero-content-minimal {
+    padding-top: 4rem;
+  }
+  .hero-title-simple {
+    font-size: clamp(3.2rem, 17vw, 4.8rem);
+    line-height: 0.92;
+    white-space: normal;
+  }
   .hero-label {
     padding: 0.55rem 1rem;
     font-size: 0.72rem;
