@@ -110,6 +110,24 @@ class PodcastJob:
 _jobs: dict[str, PodcastJob] = {}
 
 
+def _has_multipart_support() -> bool:
+    """python-multipart 설치 여부를 확인한다."""
+    try:
+        import python_multipart  # type: ignore  # noqa: F401
+
+        return True
+    except ImportError:
+        try:
+            import multipart  # type: ignore  # noqa: F401
+
+            return True
+        except ImportError:
+            return False
+
+
+_MULTIPART_AVAILABLE = _has_multipart_support()
+
+
 # ---------------------------------------------------------------------------
 # Router
 # ---------------------------------------------------------------------------
@@ -210,50 +228,61 @@ def create_podcast_router() -> APIRouter:
 
         return {"request_id": request_id, "status": "finalizing"}
 
-    @router.post("/transcribe", response_model=TranscribeResponse)
-    async def transcribe_video(file: UploadFile = File(...)):
-        """동영상 파일을 업로드하여 트랜스크립트를 추출한다."""
-        if not PODCAST_SCRIPTS.exists():
-            raise HTTPException(status_code=503, detail="Podcast 플러그인을 찾을 수 없습니다.")
+    if _MULTIPART_AVAILABLE:
 
-        suffix = Path(file.filename or "video.mp4").suffix
-        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp_video:
-            content = await file.read()
-            tmp_video.write(content)
-            tmp_video_path = tmp_video.name
+        @router.post("/transcribe", response_model=TranscribeResponse)
+        async def transcribe_video(file: UploadFile = File(...)):
+            """동영상 파일을 업로드하여 트랜스크립트를 추출한다."""
+            if not PODCAST_SCRIPTS.exists():
+                raise HTTPException(status_code=503, detail="Podcast 플러그인을 찾을 수 없습니다.")
 
-        with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as tmp_out:
-            tmp_out_path = tmp_out.name
+            suffix = Path(file.filename or "video.mp4").suffix
+            with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp_video:
+                content = await file.read()
+                tmp_video.write(content)
+                tmp_video_path = tmp_video.name
 
-        try:
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(PODCAST_SCRIPTS / "transcribe_video.py"),
-                    "--input",
-                    tmp_video_path,
-                    "--output",
-                    tmp_out_path,
-                ],
-                capture_output=True,
-                text=True,
-                timeout=600,
-            )
-            if result.returncode != 0:
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"트랜스크립션 실패: {result.stderr[-300:]}",
+            with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as tmp_out:
+                tmp_out_path = tmp_out.name
+
+            try:
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(PODCAST_SCRIPTS / "transcribe_video.py"),
+                        "--input",
+                        tmp_video_path,
+                        "--output",
+                        tmp_out_path,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=600,
                 )
+                if result.returncode != 0:
+                    raise HTTPException(
+                        status_code=500,
+                        detail=f"트랜스크립션 실패: {result.stderr[-300:]}",
+                    )
 
-            transcript = Path(tmp_out_path).read_text(encoding="utf-8")
-            return TranscribeResponse(
-                transcript=transcript,
-                word_count=len(transcript.split()),
+                transcript = Path(tmp_out_path).read_text(encoding="utf-8")
+                return TranscribeResponse(
+                    transcript=transcript,
+                    word_count=len(transcript.split()),
+                )
+            finally:
+                os.unlink(tmp_video_path)
+                if os.path.exists(tmp_out_path):
+                    os.unlink(tmp_out_path)
+    else:
+
+        @router.post("/transcribe")
+        async def transcribe_video_unavailable():
+            """multipart 의존성이 없을 때 업로드 엔드포인트를 우아하게 비활성화한다."""
+            raise HTTPException(
+                status_code=503,
+                detail="파일 업로드 기능이 비활성화되었습니다. python-multipart를 설치한 뒤 다시 배포하세요.",
             )
-        finally:
-            os.unlink(tmp_video_path)
-            if os.path.exists(tmp_out_path):
-                os.unlink(tmp_out_path)
 
     return router
 
