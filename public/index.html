@@ -2399,10 +2399,15 @@
 
             files.forEach(f => {
                 const ext = (f.file_name || '').split('.').pop().toUpperCase();
-                const sizeKB = (f.size_bytes / 1024).toFixed(1);
-                const downloadUrl = requestId
-                    ? `${API_BASE_URL}/api/content/download/${encodeURIComponent(requestId)}/${encodeURIComponent(f.file_name)}`
-                    : '#';
+                const sizeBytes = Number(f.size_bytes);
+                const sizeLabel = Number.isFinite(sizeBytes) && sizeBytes > 0
+                    ? `${(sizeBytes / 1024).toFixed(1)} KB`
+                    : '샘플 파일';
+                const downloadUrl = f.download_url || (
+                    requestId
+                        ? `${API_BASE_URL}/api/content/download/${encodeURIComponent(requestId)}/${encodeURIComponent(f.file_name)}`
+                        : ''
+                );
                 const preview = buildFilePreview(f.file_name, downloadUrl, ext, result.plan);
                 // [Surgery 3] 팩트체크 데이터 추출 및 버튼 생성
                 let factCheckBtn = '';
@@ -2426,14 +2431,18 @@
                                 <div class="file-icon">${escapeHtml(ext)}</div>
                                 <div>
                                     <div class="file-name">${escapeHtml(f.file_name)}</div>
-                                    <div class="file-size">${sizeKB} KB</div>
+                                    <div class="file-size">${sizeLabel}</div>
                                 </div>
                             </div>
                             <div style="display:flex; align-items:center; gap:8px;">
                                 ${factCheckBtn}
-                                <a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                </a>
+                                ${downloadUrl
+                                    ? `<a class="file-download-btn" href="${downloadUrl}" download="${escapeHtml(f.file_name)}" title="다운로드">
+                                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                       </a>`
+                                    : `<button class="file-download-btn disabled" type="button" title="다운로드 불가" disabled>
+                                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                       </button>`}
                             </div>
                         </div>
                     </div>`;
@@ -3791,30 +3800,28 @@
             const mockResults = {
                 lecture: {
                     title: "자발적 의욕의 심리학 (VWBE)",
-                    files: [{ file_type: "pptx", file_name: "VWBE_Deep_Dive.pptx" }],
+                    files: [{ file_type: "pptx", file_name: "VWBE_Deep_Dive.pptx", download_url: "/sample/lecture.pptx", size_bytes: 7186 }],
                     citations: ["q-102", "q-145", "q-289"],
                     cost_report: { total_usd: 1.25, total_krw: 1650 }
                 },
                 card_news: {
                     title: "행복의 변천사 (1979-2020)",
                     files: [
-                        { file_type: "image", file_name: "card_01.png" },
-                        { file_type: "image", file_name: "card_02.png" }
+                        { file_type: "html", file_name: "Stakeholder_Happiness_Cards.html", download_url: "/sample/card_news.html", size_bytes: 3914 }
                     ],
                     citations: ["q-001", "q-500", "q-1200"],
                     cost_report: { total_usd: 0.85, total_krw: 1150 }
                 },
                 viz: {
                     title: "경영요소 유기적 네트워크",
-                    files: [{ file_type: "visualization", file_name: "management_elements.svg" }],
+                    files: [{ file_type: "html", file_name: "Management_Elements_Map.html", download_url: "/sample/viz.html", size_bytes: 5094 }],
                     citations: ["q-all"],
                     cost_report: { total_usd: 0.45, total_krw: 600 }
                 },
                 podcast: {
                     title: "SKMS 인사이트 에피소드 01",
                     files: [
-                        { file_type: "audio", file_name: "episode_01.mp3" },
-                        { file_type: "video", file_name: "episode_01.mp4" }
+                        { file_type: "audio", file_name: "SKMS_Insight_Episode_01.mp3", download_url: "/sample/audio.mp3", size_bytes: 16764 }
                     ],
                     citations: ["q-insight"],
                     cost_report: { total_usd: 1.50, total_krw: 2000 }

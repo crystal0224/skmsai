@@ -2251,6 +2251,14 @@ textarea.plan-field-input {
   color: var(--primary-yellow);
   transform: translateY(-1px);
 }
+.file-download-btn.disabled,
+.file-download-btn:disabled {
+  background: #dcdfe8;
+  color: #7f8798;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
+}
 .studio-new-btn {
   width: 100%;
   padding: 1rem;
