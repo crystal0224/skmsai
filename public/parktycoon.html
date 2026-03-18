@@ -2017,15 +2017,206 @@ function showReport() {
   quote.textContent = '"\uACBD\uC601\uC758 \uAD81\uADF9\uC801 \uBAA9\uC801\uC740 \uC774\uD574\uAD00\uACC4\uC790\uC758 \uD589\uBCF5 \uADF9\uB300\uD654\uC774\uB2E4"\n\u2014 SKMS 14\uCC28 \uAC1C\uC815\uD310';
   card.appendChild(quote);
 
+  // Share buttons row
+  var shareRow = document.createElement('div');
+  shareRow.style.cssText = 'display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;';
+
+  // Save as image button
+  var saveBtn = document.createElement('button');
+  saveBtn.className = 'report-btn';
+  saveBtn.style.cssText = 'background:var(--blue);flex:1;min-width:120px;';
+  saveBtn.textContent = '\uD83D\uDCF7 \uC774\uBBF8\uC9C0 \uC800\uC7A5';
+  saveBtn.addEventListener('click', function() { captureReport(card); });
+  shareRow.appendChild(saveBtn);
+
+  // Share Twitter/X
+  var twitBtn = document.createElement('button');
+  twitBtn.className = 'report-btn';
+  twitBtn.style.cssText = 'background:#1DA1F2;flex:1;min-width:100px;';
+  twitBtn.textContent = '\uD835\uDD4F \uACF5\uC720';
+  twitBtn.addEventListener('click', function() { shareTwitter(style, alignment); });
+  shareRow.appendChild(twitBtn);
+
+  // Share LinkedIn
+  var liBtn = document.createElement('button');
+  liBtn.className = 'report-btn';
+  liBtn.style.cssText = 'background:#0A66C2;flex:1;min-width:100px;';
+  liBtn.textContent = 'in \uACF5\uC720';
+  liBtn.addEventListener('click', function() { shareLinkedIn(style, alignment); });
+  shareRow.appendChild(liBtn);
+
+  // Copy text
+  var copyBtn = document.createElement('button');
+  copyBtn.className = 'report-btn';
+  copyBtn.style.cssText = 'background:rgba(255,255,255,0.15);flex:1;min-width:100px;';
+  copyBtn.textContent = '\uD83D\uDCCB \uD14D\uC2A4\uD2B8 \uBCF5\uC0AC';
+  copyBtn.addEventListener('click', function() { copyReportText(style, alignment); });
+  shareRow.appendChild(copyBtn);
+
+  card.appendChild(shareRow);
+
   // Try again button
   var btn = document.createElement('button');
   btn.className = 'report-btn';
+  btn.style.cssText = 'margin-top:8px;background:var(--accent);color:#1a1a2e;width:100%;';
   btn.textContent = '\uB2E4\uC2DC \uB3C4\uC804';
   btn.addEventListener('click', function() { location.reload(); });
   card.appendChild(btn);
 
   overlay.appendChild(card);
   overlay.classList.add('show');
+}
+
+// ============================================================
+// SHARE & SAVE FUNCTIONS
+// ============================================================
+function getReportText(style, alignment) {
+  var won = G.gameWon ? '\uD83C\uDFC6 \uC2B9\uB9AC!' : '\uD83D\uDCC9 \uD328\uBC30';
+  var text = won + ' SKMS Company Builder\n\n'
+    + '\uACBD\uC601 \uC2A4\uD0C0\uC77C: ' + style + '\n'
+    + 'SKMS \uC815\uD569\uC131: ' + alignment + '%\n'
+    + '\uBCC4\uC810: ' + G.rating.toFixed(1) + '\u2B50 | '
+    + G.gDay + '\uC77C \uC18C\uC694\n\n'
+    + '\uD83D\uDC65 \uACE0\uAC1D ' + Math.round(G.custSat)
+    + ' | \uD83D\uDC9A \uAD6C\uC131\uC6D0 ' + Math.round(G.empHap)
+    + ' | \uD83C\uDF0D \uC0AC\uD68C ' + Math.round(G.socVal) + '\n'
+    + '\uD83D\uDD25 \uC5D0\uC774\uC2A4 ' + G.totalAceTransitions + '\uBA85 \uC804\uD658'
+    + ' | \uD83D\uDC4B \uD1B4\uC0AC ' + G.totalQuits + '\uBA85\n\n'
+    + '#SKMSCompanyBuilder #SKMS\uACBD\uC601\uCCB4\uACC4';
+  return text;
+}
+
+function shareTwitter(style, alignment) {
+  var text = getReportText(style, alignment);
+  var url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text);
+  window.open(url, '_blank', 'width=600,height=400');
+}
+
+function shareLinkedIn(style, alignment) {
+  var text = getReportText(style, alignment);
+  var url = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent('https://skmsai.netlify.app/parktycoon.html')
+    + '&summary=' + encodeURIComponent(text);
+  window.open(url, '_blank', 'width=600,height=500');
+}
+
+function copyReportText(style, alignment) {
+  var text = getReportText(style, alignment);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('\uD074\uB9BD\uBCF4\uB4DC\uC5D0 \uBCF5\uC0AC\uB418\uC5C8\uC2B5\uB2C8\uB2E4!', 'success');
+    });
+  } else {
+    // Fallback for older browsers
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;left:-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('\uD074\uB9BD\uBCF4\uB4DC\uC5D0 \uBCF5\uC0AC\uB418\uC5C8\uC2B5\uB2C8\uB2E4!', 'success');
+  }
+}
+
+function captureReport(cardEl) {
+  // Use canvas to render the report card as an image
+  var rect = cardEl.getBoundingClientRect();
+  var c = document.createElement('canvas');
+  var scale = 2; // Retina
+  c.width = rect.width * scale;
+  c.height = rect.height * scale;
+  var cx = c.getContext('2d');
+  cx.scale(scale, scale);
+
+  // Draw background
+  cx.fillStyle = '#1a1a2e';
+  cx.roundRect(0, 0, rect.width, rect.height, 16);
+  cx.fill();
+
+  // Draw text content
+  cx.fillStyle = '#e8e8f0';
+  cx.font = 'bold 22px system-ui';
+  cx.textAlign = 'center';
+  var won = G.gameWon;
+  cx.fillText(won ? '\uD83C\uDFC6 \uACBD\uC601 \uC131\uC801\uD45C' : '\uD83D\uDCC9 \uACBD\uC601 \uC131\uC801\uD45C', rect.width/2, 36);
+
+  cx.font = '14px system-ui';
+  cx.fillStyle = won ? '#4ADE80' : '#F87171';
+  cx.fillText(won ? '\uCD95\uD558\uD569\uB2C8\uB2E4! \uD68C\uC0AC\uB97C \uC0B4\uB838\uC2B5\uB2C8\uB2E4.' : '\uC548\uD0C0\uAE5D\uC9C0\uB9CC \uD68C\uC0AC\uAC00 \uBB34\uB108\uC84C\uC2B5\uB2C8\uB2E4.', rect.width/2, 56);
+
+  var y = 84;
+  cx.font = 'bold 13px system-ui';
+  cx.fillStyle = '#FFB830';
+  cx.textAlign = 'left';
+  cx.fillText('\uACBD\uC601 \uC2A4\uD0C0\uC77C', 20, y);
+  cx.fillStyle = '#e8e8f0';
+  cx.textAlign = 'right';
+  cx.fillText(getManagementStyle(), rect.width - 20, y);
+
+  y += 22;
+  cx.textAlign = 'left'; cx.fillStyle = '#FFB830';
+  cx.fillText('SKMS \uC815\uD569\uC131', 20, y);
+  cx.fillStyle = '#e8e8f0'; cx.textAlign = 'right';
+  cx.fillText(calcSKMSAlignment() + '%', rect.width - 20, y);
+
+  y += 22;
+  cx.textAlign = 'left'; cx.fillStyle = '#FFB830';
+  cx.fillText('\uBCC4\uC810', 20, y);
+  cx.fillStyle = '#FBBF24'; cx.textAlign = 'right';
+  cx.fillText(G.rating.toFixed(1) + ' \u2B50', rect.width - 20, y);
+
+  // Stakeholder bars
+  y += 30;
+  cx.textAlign = 'left'; cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830';
+  cx.fillText('\uC774\uD574\uAD00\uACC4\uC790 \uADE0\uD615', 20, y);
+  y += 18;
+  var metrics = [
+    {label:'\uACE0\uAC1D \uB9CC\uC871', val:Math.round(G.custSat), color:'#42A5F5'},
+    {label:'\uAD6C\uC131\uC6D0 \uD589\uBCF5', val:Math.round(G.empHap), color:'#66BB6A'},
+    {label:'\uC0AC\uD68C\uC801 \uAC00\uCE58', val:Math.round(G.socVal), color:'#26A69A'}
+  ];
+  for (var mi = 0; mi < metrics.length; mi++) {
+    var m = metrics[mi];
+    cx.font = '12px system-ui'; cx.fillStyle = '#aaa'; cx.textAlign = 'left';
+    cx.fillText(m.label, 20, y);
+    // Bar bg
+    cx.fillStyle = 'rgba(255,255,255,0.08)';
+    cx.fillRect(110, y - 10, rect.width - 170, 12);
+    // Bar fill
+    cx.fillStyle = m.color;
+    cx.fillRect(110, y - 10, (rect.width - 170) * m.val / 100, 12);
+    // Value
+    cx.fillStyle = '#e8e8f0'; cx.textAlign = 'right'; cx.font = 'bold 12px system-ui';
+    cx.fillText(m.val, rect.width - 20, y);
+    y += 20;
+  }
+
+  // Employee stats
+  y += 10;
+  cx.textAlign = 'left'; cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830';
+  cx.fillText('\uAD6C\uC131\uC6D0 \uBCC0\uD654', 20, y);
+  y += 18;
+  cx.font = '12px system-ui'; cx.fillStyle = '#e8e8f0';
+  cx.fillText('\uD83D\uDD25 \uC5D0\uC774\uC2A4 \uC804\uD658 ' + G.totalAceTransitions + '\uBA85  |  \uD83D\uDC4B \uD1B4\uC0AC ' + G.totalQuits + '\uBA85  |  \u2B50 \uB9AC\uB354 ' + G.totalLeaderPromotions + '\uBA85', 20, y);
+
+  // SKMS Quote
+  y += 30;
+  cx.font = 'italic 11px system-ui'; cx.fillStyle = 'rgba(255,255,255,0.5)'; cx.textAlign = 'center';
+  cx.fillText('"\uACBD\uC601\uC758 \uAD81\uADF9\uC801 \uBAA9\uC801\uC740 \uC774\uD574\uAD00\uACC4\uC790\uC758 \uD589\uBCF5 \uADF9\uB300\uD654\uC774\uB2E4"', rect.width/2, y);
+  y += 16;
+  cx.fillText('\u2014 SKMS 14\uCC28 \uAC1C\uC815\uD310', rect.width/2, y);
+
+  // Watermark
+  y += 24;
+  cx.font = '10px system-ui'; cx.fillStyle = 'rgba(255,255,255,0.25)';
+  cx.fillText('skmsai.netlify.app/parktycoon.html', rect.width/2, y);
+
+  // Download
+  var link = document.createElement('a');
+  link.download = 'SKMS-CompanyBuilder-Report.png';
+  link.href = c.toDataURL('image/png');
+  link.click();
+  showToast('\uC774\uBBF8\uC9C0\uAC00 \uC800\uC7A5\uB418\uC5C8\uC2B5\uB2C8\uB2E4!', 'success');
 }
 
 function addReportRow(parent, label, value) {
