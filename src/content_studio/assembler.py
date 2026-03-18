@@ -891,32 +891,43 @@ class FileAssembler:
 
         phase_html = ""
         for phase in phases:
-            phase_html += f"""
-            <div style="margin-bottom:40px; padding:30px; border-left:4px solid #0052A2; background:#F8F9FA;">
-                <div style="color:#0052A2; font-weight:800; font-size:14px; margin-bottom:10px; letter-spacing:1px;">{phase.phase_type.upper()} PHASE</div>
-                <h2 style="margin:0 0 15px; font-size:24px; color:#1A1A2E;">{phase.title}</h2>
-                <div style="font-size:16px; line-height:1.8; color:#444;">{phase.content_text.replace(chr(10), '<br>')}</div>
-            </div>
-            """
+            phase_html += (
+                '<div class="phase-block">'
+                f'<div class="phase-label">{phase.phase_type.upper()} PHASE</div>'
+                f'<h2 class="phase-title">{phase.title}</h2>'
+                f'<div class="phase-content">{phase.content_text.replace(chr(10), "<br>")}</div>'
+                "</div>\n"
+            )
 
         html = f"""<!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="utf-8">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+{PRETENDARD_CSS}
 <style>
-    body{{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif; background:#FFFFFF; color:#1A1A2E; margin:0; padding:60px; line-height:1.6;}}
-    header{{border-bottom:2px solid #EEE; margin-bottom:50px; padding-bottom:30px;}}
-    h1{{color:#0052A2; font-size:36px; margin:0 0 10px; font-weight:800;}}
-    .meta{{color:#666; font-size:16px;}}
-    footer{{margin-top:100px; color:#AAA; font-size:12px; letter-spacing:1px; border-top:1px solid #EEE; padding-top:20px;}}
+{_design_tokens()}
+{_base_reset()}
+{_responsive_wrapper()}
+header{{border-bottom:2px solid var(--c-border);margin-bottom:40px;padding-bottom:24px}}
+h1{{color:var(--c-primary);font-size:clamp(28px,5vw,36px);margin:0 0 8px;font-weight:800}}
+.meta{{color:var(--c-text-muted);font-size:16px}}
+.phase-block{{margin-bottom:32px;padding:24px;border-left:4px solid var(--c-primary);
+  background:var(--c-surface);border-radius:0 var(--radius-md) var(--radius-md) 0}}
+.phase-label{{color:var(--c-primary);font-weight:800;font-size:13px;margin-bottom:8px;letter-spacing:1px}}
+.phase-title{{margin:0 0 12px;font-size:22px;color:var(--c-text)}}
+.phase-content{{font-size:16px;line-height:1.8;color:var(--c-text-muted)}}
+footer{{margin-top:80px;color:var(--c-text-muted);font-size:12px;letter-spacing:1px;
+  border-top:1px solid var(--c-border);padding-top:16px}}
 </style>
 </head>
 <body>
-    <header>
-        <h1>{topic}</h1>
-        <div class="meta">SKMS 워크숍 진행자 가이드</div>
-    </header>
-    {phase_html}
-    <footer>SKMS CONTENT STUDIO</footer>
+<div class="content-wrap">
+  <header>
+    <h1>{topic}</h1>
+    <div class="meta">SKMS 워크숍 진행자 가이드</div>
+  </header>
+  {phase_html}
+  <footer>SKMS CONTENT STUDIO</footer>
+</div>
 </body></html>"""
 
         out_path = self._output_path("workshop", topic, "html")
@@ -952,30 +963,42 @@ class FileAssembler:
 
         script_html = ""
         for sec in sections:
-            script_html += f"""
-            <div style="margin-bottom:30px; display:flex; gap:20px;">
-                <div style="width:100px; flex-shrink:0; font-weight:800; color:#0052A2; text-align:right; font-size:14px; padding-top:5px;">{sec.speaker}</div>
-                <div style="background:#F8F9FA; padding:20px; border-radius:4px; flex:1; font-size:16px; line-height:1.7; color:#333;">{sec.text.replace(chr(10), '<br>')}</div>
-            </div>
-            """
+            script_html += (
+                '<div class="script-line">'
+                f'<div class="speaker">{sec.speaker}</div>'
+                f'<div class="dialogue">{sec.text.replace(chr(10), "<br>")}</div>'
+                "</div>\n"
+            )
 
         html = f"""<!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="utf-8">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+{PRETENDARD_CSS}
 <style>
-    body{{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif; background:#FFFFFF; color:#1A1A2E; margin:0; padding:60px; line-height:1.6;}}
-    header{{border-bottom:2px solid #EEE; margin-bottom:50px; padding-bottom:30px;}}
-    h1{{color:#0052A2; font-size:36px; margin:0 0 10px; font-weight:800;}}
-    footer{{margin-top:100px; color:#AAA; font-size:12px; letter-spacing:1px; border-top:1px solid #EEE; padding-top:20px;}}
+{_design_tokens()}
+{_base_reset()}
+{_responsive_wrapper()}
+header{{border-bottom:2px solid var(--c-border);margin-bottom:40px;padding-bottom:24px}}
+h1{{color:var(--c-primary);font-size:clamp(28px,5vw,36px);margin:0 0 8px;font-weight:800}}
+.subtitle{{color:var(--c-text-muted);font-size:16px}}
+.script-line{{margin-bottom:24px;display:flex;gap:20px}}
+.speaker{{width:100px;flex-shrink:0;font-weight:800;color:var(--c-primary);
+  text-align:right;font-size:14px;padding-top:5px}}
+.dialogue{{background:var(--c-surface);padding:20px;border-radius:var(--radius-md);
+  flex:1;font-size:16px;line-height:1.7;color:var(--c-text)}}
+footer{{margin-top:80px;color:var(--c-text-muted);font-size:12px;letter-spacing:1px;
+  border-top:1px solid var(--c-border);padding-top:16px}}
 </style>
 </head>
 <body>
-    <header>
-        <h1>{topic}</h1>
-        <div style="color:#666; font-size:16px;">오디오 교육 대본</div>
-    </header>
-    <div style="max-width:800px;">{script_html}</div>
-    <footer>SKMS CONTENT STUDIO</footer>
+<div class="content-wrap">
+  <header>
+    <h1>{topic}</h1>
+    <div class="subtitle">오디오 교육 대본</div>
+  </header>
+  {script_html}
+  <footer>SKMS CONTENT STUDIO</footer>
+</div>
 </body></html>"""
 
         out_path = self._output_path("audio", topic, "html")
@@ -1382,11 +1405,13 @@ def _build_quiz_html(plan: Any, topic: str) -> str:
 
 
 def _build_visualization_html(plan: Any, topic: str) -> str:
-    """VisualizationPlan → HTML 타임라인."""
+    """VisualizationPlan → HTML 타임라인 (디자인 토큰 + 핵심 이벤트 강조)."""
     import html as html_mod
 
     title = getattr(plan, "title", topic) or topic
     description = getattr(plan, "data_description", "") or ""
+
+    highlight_years = {"1979", "1989", "2020"}
 
     editions = [
         ("1979", "초판", "SK경영체계의 출발점"),
@@ -1405,8 +1430,9 @@ def _build_visualization_html(plan: Any, topic: str) -> str:
 
     items = ""
     for year, name, desc in editions:
+        hl = " highlight" if year in highlight_years else ""
         items += (
-            f'<div class="tl-item">'
+            f'<div class="tl-item{hl}">'
             f'<div class="tl-year">{year}</div>'
             f'<div class="tl-dot"></div>'
             f'<div class="tl-card">'
@@ -1423,25 +1449,39 @@ def _build_visualization_html(plan: Any, topic: str) -> str:
         '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
         f"<title>{title_escaped}</title>\n"
         "<style>\n"
-        "body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#FFFFFF;margin:0;padding:40px;color:#1A1A2E}\n"
-        "h1{text-align:left;color:#0052A2;margin:0 0 10px;font-size:32px;font-weight:800}\n"
-        ".subtitle{text-align:left;color:#666;margin-bottom:50px;font-size:16px;border-left:4px solid #0052A2;padding-left:15px}\n"
-        ".timeline{position:relative;max-width:800px;margin:0;padding:20px 0}\n"
-        ".timeline::before{content:'';position:absolute;left:100px;top:0;bottom:0;width:2px;"
-        "background:#EEE}\n"
-        ".tl-item{display:flex;align-items:flex-start;margin-bottom:40px;position:relative}\n"
-        ".tl-year{width:80px;text-align:right;font-weight:800;color:#0052A2;font-size:18px;flex-shrink:0;padding-top:10px}\n"
-        ".tl-dot{width:12px;height:12px;border-radius:50%;background:#FFFFFF;border:3px solid #0052A2;"
-        "margin:15px 20px 0;flex-shrink:0;z-index:1}\n"
-        ".tl-card{background:#F8F9FA;border-radius:0;padding:20px 25px;flex:1;border-left:2px solid #0052A2}\n"
-        ".tl-name{font-weight:700;font-size:18px;color:#1A1A2E}\n"
-        ".tl-desc{font-size:15px;color:#444;margin-top:8px;line-height:1.6}\n"
-        "footer{text-align:left;margin-top:80px;color:#AAA;font-size:12px;letter-spacing:1px}\n"
+        f"{_design_tokens()}\n"
+        f"{_base_reset()}\n"
+        f"{_responsive_wrapper()}\n"
+        "h1{text-align:left;color:var(--c-primary);margin:0 0 10px;font-size:clamp(24px,5vw,32px);font-weight:800}\n"
+        ".subtitle{text-align:left;color:var(--c-text-muted);margin-bottom:40px;font-size:16px;"
+        "border-left:4px solid var(--c-primary);padding-left:15px}\n"
+        ".timeline{position:relative;max-width:800px;padding:20px 0}\n"
+        ".timeline::before{content:'';position:absolute;left:clamp(60px,10vw,100px);top:0;bottom:0;"
+        "width:2px;background:var(--c-border)}\n"
+        ".tl-item{display:flex;align-items:flex-start;margin-bottom:32px;position:relative}\n"
+        ".tl-year{width:clamp(50px,8vw,80px);text-align:right;font-weight:800;color:var(--c-text-muted);"
+        "font-size:16px;flex-shrink:0;padding-top:10px}\n"
+        ".tl-dot{width:12px;height:12px;border-radius:50%;background:var(--c-bg);"
+        "border:3px solid var(--c-text-muted);margin:13px 16px 0;flex-shrink:0;z-index:1;"
+        "transition:all var(--transition)}\n"
+        ".tl-card{background:var(--c-surface);border-radius:var(--radius-md);padding:16px 20px;"
+        "flex:1;border-left:2px solid var(--c-border);transition:all var(--transition)}\n"
+        ".tl-name{font-weight:700;font-size:17px;color:var(--c-text)}\n"
+        ".tl-desc{font-size:15px;color:var(--c-text-muted);margin-top:6px;line-height:1.6}\n"
+        "/* 핵심 이벤트 강조 */\n"
+        ".highlight .tl-year{color:var(--c-primary);font-size:18px}\n"
+        ".highlight .tl-dot{width:16px;height:16px;border-color:var(--c-primary);"
+        "background:var(--c-primary-light);margin:11px 14px 0}\n"
+        ".highlight .tl-card{background:var(--c-primary-light);border-left-color:var(--c-primary)}\n"
+        ".highlight .tl-name{color:var(--c-primary)}\n"
+        "footer{text-align:left;margin-top:60px;color:var(--c-text-muted);font-size:12px;letter-spacing:1px}\n"
         "</style>\n"
         "</head>\n<body>\n"
+        '<div class="content-wrap">\n'
         f"<h1>{title_escaped}</h1>\n"
         f'<div class="subtitle">{desc_escaped}</div>\n'
         f'<div class="timeline">\n{items}</div>\n'
         "<footer>SKMS Content Studio</footer>\n"
+        "</div>\n"
         "</body></html>"
     )

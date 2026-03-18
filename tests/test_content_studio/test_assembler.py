@@ -369,6 +369,45 @@ class TestAssembleWorkshop:
         assert "도입" in text
         assert "본론" in text
 
+    def test_workshop_uses_design_tokens(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockWorkshopContent(
+            phases=(
+                MockPhaseContent(phase_type="intro", title="도입", content_text="환영"),
+            ),
+        )
+        result = asm.assemble_workshop(content, topic="토큰워크숍")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_workshop_responsive_padding(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockWorkshopContent(
+            phases=(
+                MockPhaseContent(phase_type="intro", title="도입", content_text="환영"),
+            ),
+        )
+        result = asm.assemble_workshop(content, topic="반응형워크숍")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "content-wrap" in html
+        assert "padding:60px" not in html
+
+    def test_workshop_wcag_colors(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockWorkshopContent(
+            phases=(
+                MockPhaseContent(phase_type="intro", title="도입", content_text="환영"),
+            ),
+        )
+        result = asm.assemble_workshop(content, topic="WCAG워크숍")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "color:#AAA" not in html
+        assert "color:#666" not in html
+
 
 # ---------------------------------------------------------------------------
 # Audio Assembly
@@ -391,6 +430,27 @@ class TestAssembleAudio:
         assert result.size_bytes > 0
         text = Path(result.file_path).read_text(encoding="utf-8")
         assert "narrator" in text
+
+    def test_audio_uses_design_tokens(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockAudioContent(
+            sections=(MockSectionContent(index=1, speaker="narrator", text="안녕하세요"),),
+        )
+        result = asm.assemble_audio(content, topic="토큰오디오")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_audio_wcag_colors(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockAudioContent(
+            sections=(MockSectionContent(index=1, speaker="narrator", text="테스트"),),
+        )
+        result = asm.assemble_audio(content, topic="WCAG오디오")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "color:#AAA" not in html
 
 
 # ---------------------------------------------------------------------------
@@ -423,6 +483,28 @@ class TestAssembleVisualization:
 
         assert result.file_type == "svg"
         assert result.size_bytes > 0
+
+    def test_viz_uses_design_tokens(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        result = asm.assemble_visualization(None, topic="토큰시각화")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_viz_wcag_colors(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        result = asm.assemble_visualization(None, topic="WCAG시각화")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "color:#AAA" not in html
+
+    def test_viz_highlight_key_events(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        result = asm.assemble_visualization(None, topic="핵심이벤트")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "highlight" in html
 
 
 # ---------------------------------------------------------------------------
