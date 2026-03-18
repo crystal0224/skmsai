@@ -526,9 +526,69 @@ function tone(f, d, t, v) {
   o.connect(g); g.connect(G.audioCtx.destination);
   o.start(); o.stop(G.audioCtx.currentTime + d);
 }
-function sfxPlace() { tone(523, 0.1, 'sine', 0.1); tone(659, 0.1, 'sine', 0.07); }
-function sfxErr() { tone(200, 0.2, 'sawtooth', 0.05); }
-function sfxDel() { tone(330, 0.15, 'triangle', 0.06); }
+// --- SFX Library ---
+function sfxPlace() { tone(523, 0.08, 'sine', 0.1); setTimeout(function(){tone(659, 0.1, 'sine', 0.08);}, 60); setTimeout(function(){tone(784, 0.12, 'sine', 0.06);}, 120); }
+function sfxErr() { tone(200, 0.15, 'sawtooth', 0.04); setTimeout(function(){tone(160, 0.2, 'sawtooth', 0.03);}, 80); }
+function sfxDel() { tone(440, 0.08, 'triangle', 0.06); setTimeout(function(){tone(330, 0.15, 'triangle', 0.04);}, 60); }
+function sfxEvent() { tone(880, 0.06, 'sine', 0.08); setTimeout(function(){tone(1100, 0.06, 'sine', 0.06);}, 80); setTimeout(function(){tone(880, 0.1, 'sine', 0.05);}, 160); }
+function sfxMeeting() { tone(392, 0.15, 'sine', 0.06); setTimeout(function(){tone(494, 0.15, 'sine', 0.05);}, 100); }
+function sfxPolicy() { tone(523, 0.08, 'sine', 0.08); setTimeout(function(){tone(659, 0.08, 'sine', 0.07);}, 80); setTimeout(function(){tone(784, 0.08, 'sine', 0.06);}, 160); setTimeout(function(){tone(1047, 0.2, 'sine', 0.08);}, 240); }
+function sfxMoney() { tone(1047, 0.06, 'sine', 0.07); setTimeout(function(){tone(1319, 0.08, 'sine', 0.05);}, 50); }
+function sfxLevelUp() { var ns=[523,659,784,1047]; ns.forEach(function(n,i){setTimeout(function(){tone(n,0.12,'sine',0.07);},i*80);}); }
+function sfxSad() { tone(392, 0.2, 'sine', 0.06); setTimeout(function(){tone(330, 0.2, 'sine', 0.05);}, 150); setTimeout(function(){tone(262, 0.4, 'sine', 0.04);}, 300); }
+function sfxQuit() { tone(330, 0.15, 'triangle', 0.05); setTimeout(function(){tone(262, 0.2, 'triangle', 0.04);}, 120); setTimeout(function(){tone(196, 0.3, 'triangle', 0.03);}, 240); }
+function sfxWin() { var ns=[523,659,784,1047,1319]; ns.forEach(function(n,i){setTimeout(function(){tone(n,0.15,'sine',0.09-i*0.01);},i*100);}); }
+function sfxLose() { var ns=[330,294,262,220,196]; ns.forEach(function(n,i){setTimeout(function(){tone(n,0.25,'sine',0.06);},i*200);}); }
+function sfxClick() { tone(800, 0.03, 'sine', 0.04); }
+
+// --- BGM System (procedural ambient) ---
+var bgmActive = false, bgmTimer = null;
+function startBGM() {
+  if (!G.audioCtx || bgmActive) return;
+  bgmActive = true;
+  // Warm corporate ambient — chord progression: Cmaj7, Fmaj7, Am7, G
+  var chords = [
+    [261, 329, 392, 494],  // Cmaj7
+    [349, 440, 523, 659],  // Fmaj7
+    [220, 261, 329, 392],  // Am7
+    [196, 247, 294, 392],  // G
+  ];
+  var ci = 0, ni = 0;
+  function playNote() {
+    if (!bgmActive) return;
+    var chord = chords[ci];
+    var note = chord[ni % chord.length];
+    // Gentle arpeggio
+    if (G.audioCtx) {
+      var o = G.audioCtx.createOscillator();
+      var g = G.audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = note;
+      g.gain.setValueAtTime(0.018, G.audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, G.audioCtx.currentTime + 1.2);
+      o.connect(g);
+      g.connect(G.audioCtx.destination);
+      o.start();
+      o.stop(G.audioCtx.currentTime + 1.2);
+      // Soft pad layer (octave below, quieter)
+      var o2 = G.audioCtx.createOscillator();
+      var g2 = G.audioCtx.createGain();
+      o2.type = 'sine';
+      o2.frequency.value = note / 2;
+      g2.gain.setValueAtTime(0.008, G.audioCtx.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.001, G.audioCtx.currentTime + 2.0);
+      o2.connect(g2);
+      g2.connect(G.audioCtx.destination);
+      o2.start();
+      o2.stop(G.audioCtx.currentTime + 2.0);
+    }
+    ni++;
+    if (ni >= chord.length) { ni = 0; ci = (ci + 1) % chords.length; }
+    bgmTimer = setTimeout(playNote, 450 + Math.random() * 100);
+  }
+  playNote();
+}
+function stopBGM() { bgmActive = false; if (bgmTimer) clearTimeout(bgmTimer); }
 
 // ============================================================
 // CANVAS SETUP
@@ -1112,6 +1172,7 @@ function updateWorkers() {
       w.quitting = true;
       w.bubble = SPEECH.quitting[0];
       w.bubbleTimer = 120;
+      sfxQuit();
       G.totalQuits++;
     }
 
@@ -1150,8 +1211,9 @@ function attemptTransition(w) {
     if (Math.random() < chance) {
       w.type = 'ace';
       w.will = 70; w.capability = 70; w.happiness = 60;
-      w.bubble = SPEECH.transition_cynic_ace[0]; // reuse "let's do this" line
+      w.bubble = SPEECH.transition_cynic_ace[0];
       w.bubbleTimer = 120;
+      sfxLevelUp();
       G.totalAceTransitions++;
     }
   }
@@ -1162,6 +1224,7 @@ function attemptTransition(w) {
       w.will = 65; w.capability = 65; w.happiness = 55;
       w.bubble = SPEECH.transition_cynic_ace[0];
       w.bubbleTimer = 120;
+      sfxLevelUp();
       G.totalCynicRecoveries++;
       G.totalAceTransitions++;
     }
@@ -1173,6 +1236,7 @@ function attemptTransition(w) {
       w.will -= 20; w.happiness -= 20;
       w.bubble = SPEECH.transition_ace_cynic[0];
       w.bubbleTimer = 120;
+      sfxSad();
     }
   }
   // Rookie -> Disengaged (neglect, if no academy and no OJT)
@@ -1228,6 +1292,7 @@ function updatePolicies() {
     if (G.activatingPolicies[pid] <= 0) {
       delete G.activatingPolicies[pid];
       G.activePolicies[pid] = true;
+      sfxPolicy();
       showToast(POLICIES.find(function(p){return p.id===pid;}).nameKo + ' \uD65C\uC131\uD654!', 'success');
       renderPolicyPanel();
     }
@@ -1401,7 +1466,7 @@ function buildBuildPanel() {
       }
 
       b.addEventListener('click', function() {
-        initAudio();
+        initAudio(); startBGM(); sfxClick();
         var btns = bp.querySelectorAll('.build-btn');
         for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
         if (G.selTool === toolType) {
@@ -1542,6 +1607,7 @@ function getPrereqText(pol) {
 // ============================================================
 function openMeeting(worker) {
   if (G.selTool) return; // don't open if building
+  sfxMeeting();
   G.meetingWorker = worker;
   var panel = document.getElementById('meeting-panel');
   while (panel.firstChild) panel.removeChild(panel.firstChild);
@@ -1611,6 +1677,7 @@ function openMeeting(worker) {
       effect.textContent = choice.effect;
       btn.appendChild(effect);
       btn.addEventListener('click', function() {
+        sfxClick();
         choice.apply(worker, G);
         closeMeeting();
         showToast(choice.toast || '\uBA74\uB2F4 \uC644\uB8CC', 'success');
@@ -1748,6 +1815,7 @@ function triggerRandomEvent() {
 }
 
 function showEventModal(evt) {
+  sfxEvent();
   var overlay = document.getElementById('event-overlay');
   while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
 
@@ -1871,6 +1939,8 @@ function closeEvent() {
 // REPORT CARD
 // ============================================================
 function showReport() {
+  stopBGM();
+  if (G.gameWon) sfxWin(); else sfxLose();
   var overlay = document.getElementById('report-overlay');
   while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
 
