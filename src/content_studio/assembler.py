@@ -823,38 +823,50 @@ class FileAssembler:
                 )
                 body_html = card.body.replace("\n", "<br>")
 
-                # 디자인 시스템 고정: 화이트 배경 + 블루 강조
-                bg_style = "#FFFFFF"
-                accent_color = "#0052A2"  # SK Blue
-                text_color = "#1A1A2E"  # Dark Gray
-                border_color = "rgba(0, 82, 162, 0.2)"
-
                 # 인용 블록
                 quote_html = ""
                 source_quote = getattr(card, "source_quote", "")
                 source_edition = getattr(card, "source_edition", "")
                 if source_quote:
                     quote_html = (
-                        f'<blockquote style="border-left:4px solid {accent_color};'
-                        f"padding-left:20px;margin-top:30px;font-style:italic;"
-                        f'font-size:20px;color:#4A4A4A;line-height:1.6;background:#F8F9FA;padding-top:15px;padding-bottom:15px;">'
+                        '<blockquote style="border-left:4px solid var(--c-primary);'
+                        "padding-left:20px;margin-top:30px;font-style:italic;"
+                        'font-size:20px;color:var(--c-text-muted);line-height:1.6;background:var(--c-surface);padding-top:15px;padding-bottom:15px;">'
                         f"「{source_quote}」"
-                        f'<span style="display:block;font-size:14px;margin-top:10px;color:{accent_color};font-weight:600;">'
+                        '<span style="display:block;font-size:14px;margin-top:10px;color:var(--c-primary);font-weight:600;">'
                         f"— {source_edition}</span>"
-                        f"</blockquote>"
+                        "</blockquote>"
                     )
 
-                card_num = f'<div style="position:absolute;top:40px;right:60px;font-size:16px;color:#999;font-weight:600;">{card.index} / {len(cards)}</div>'
+                card_num = f'<div style="position:absolute;top:40px;right:60px;font-size:16px;color:var(--c-text-muted);font-weight:600;">{card.index} / {len(cards)}</div>'
                 html = f"""<!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">{PRETENDARD_CSS}</head>
-<body style="margin:0;width:1080px;height:1080px;background:{bg_style};color:{text_color};font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;display:flex;flex-direction:column;justify-content:center;padding:100px;box-sizing:border-box;position:relative;border:20px solid {accent_color};">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">{PRETENDARD_CSS}
+<style>
+{_design_tokens()}
+{_base_reset()}
+{_card_fixed_styles()}
+.card-canvas {{
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-stack);
+  display: flex; flex-direction: column; justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+  border-top: 4px solid var(--c-primary);
+  border-radius: var(--radius-md);
+}}
+</style>
+</head>
+<body style="margin:0;background:var(--c-bg-warm);padding:20px;display:flex;justify-content:center;">
+<div class="card-canvas">
 {card_num}
-<div style="width:80px;height:4px;background:{accent_color};margin-bottom:30px;"></div>
-<h1 style="font-size:52px;margin:0 0 30px;line-height:1.2;font-weight:800;color:{accent_color}; letter-spacing:-1px;">{card.headline}</h1>
-<p style="font-size:28px;line-height:1.7;margin:0 0 20px;color:#333;font-weight:400;">{body_html}</p>
+<div style="width:60px;height:3px;background:var(--c-primary);margin-bottom:24px;border-radius:2px;"></div>
+<h1 style="font-size:clamp(32px,5vw,52px);margin:0 0 24px;line-height:1.15;font-weight:800;color:var(--c-primary);letter-spacing:-0.03em;">{card.headline}</h1>
+<p style="font-size:clamp(18px,3vw,28px);line-height:1.7;margin:0 0 20px;color:var(--c-text);font-weight:400;">{body_html}</p>
 {quote_html}
-<div style="position:absolute;bottom:60px;left:100px;font-size:14px;color:#AAA;letter-spacing:2px;font-weight:600;">SKMS CONTENT STUDIO</div>
+<div style="position:absolute;bottom:40px;left:clamp(40px,8vw,100px);font-size:13px;color:var(--c-text-muted);letter-spacing:2px;font-weight:600;">SKMS CONTENT STUDIO</div>
+</div>
 </body></html>"""
                 out_path.write_text(html, encoding="utf-8")
                 results.append(

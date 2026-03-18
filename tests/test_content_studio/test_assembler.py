@@ -315,6 +315,36 @@ class TestAssembleCardNews:
         assert results[0].file_type == "png"
         assert results[1].file_type == "html"
 
+    def test_card_uses_design_tokens(self, tmp_path):
+        """카드뉴스 HTML이 디자인 토큰 CSS 변수를 포함해야 한다."""
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = _make_card_news_content(1)
+        results = asm.assemble_card_news(content, topic="토큰테스트")
+        html = Path(results[0].file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_card_responsive_not_fixed_1080(self, tmp_path):
+        """기본 렌더링은 반응형, 고정 1080px가 아니어야 한다."""
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = _make_card_news_content(1)
+        results = asm.assemble_card_news(content, topic="반응형테스트")
+        html = Path(results[0].file_path).read_text(encoding="utf-8")
+        assert "width:1080px;height:1080px" not in html
+        assert "card-canvas" in html
+
+    def test_card_wcag_no_bad_colors(self, tmp_path):
+        """WCAG AA 미충족 색상이 없어야 한다."""
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = _make_card_news_content(1)
+        results = asm.assemble_card_news(content, topic="WCAG테스트")
+        html = Path(results[0].file_path).read_text(encoding="utf-8")
+        assert "color:#AAA" not in html
+        assert "color:#999" not in html
+
 
 # ---------------------------------------------------------------------------
 # Workshop Assembly
