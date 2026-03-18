@@ -157,6 +157,25 @@ canvas{display:block;cursor:default}
 .report-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--accent);color:#1a1a2e;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:inherit}
 .report-btn:hover{opacity:0.85}
 
+/* Onboarding overlay */
+.onboard-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:60;display:flex;align-items:center;justify-content:center;opacity:0;animation:fadeIn .4s ease-out forwards}
+@keyframes fadeIn{to{opacity:1}}
+.onboard-card{background:linear-gradient(175deg,#1a2440 0%,#121a30 100%);border:1px solid rgba(255,184,48,0.2);border-radius:16px;width:560px;max-width:94vw;max-height:88vh;overflow-y:auto;padding:32px 28px;color:#e8e8f0;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+.onboard-title{font-size:28px;font-weight:800;text-align:center;margin-bottom:4px}
+.onboard-title .accent{color:var(--accent)}
+.onboard-sub{text-align:center;font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:24px}
+.onboard-scenario{background:rgba(255,70,70,0.08);border:1px solid rgba(255,70,70,0.15);border-radius:10px;padding:14px 16px;margin-bottom:20px;font-size:13px;line-height:1.6}
+.onboard-scenario .warn{color:#F87171;font-weight:700;font-size:12px;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;display:block}
+.onboard-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.onboard-step{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.04)}
+.onboard-step .num{width:28px;height:28px;border-radius:50%;background:var(--accent);color:#1a1a2e;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.onboard-step .body{font-size:12.5px;line-height:1.55}
+.onboard-step .body strong{color:var(--accent)}
+.onboard-controls{background:rgba(255,255,255,0.03);border-radius:10px;padding:12px 14px;margin-bottom:20px;font-size:11.5px;color:rgba(255,255,255,0.5);line-height:1.7}
+.onboard-controls span{color:rgba(255,255,255,0.8);font-weight:600}
+.onboard-start{display:block;width:100%;padding:14px;border:none;border-radius:12px;background:var(--accent);color:#1a1a2e;font-weight:800;font-size:16px;cursor:pointer;font-family:inherit;transition:transform .15s,opacity .15s;letter-spacing:-0.3px}
+.onboard-start:hover{transform:scale(1.02);opacity:0.9}
+
 /* Scrollbar */
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -177,6 +196,7 @@ canvas{display:block;cursor:default}
   <div class="event-overlay" id="event-overlay"></div>
   <div class="meeting-overlay" id="strat-overlay"></div>
   <div class="report-overlay" id="report-overlay"></div>
+  <div class="onboard-overlay" id="onboard-overlay"></div>
 </div>
 <script>
 "use strict";
@@ -2797,6 +2817,109 @@ function gameLoop(ts) {
 // ============================================================
 // INITIALIZATION
 // ============================================================
+function showOnboarding() {
+  G.gSpeed = 0; // Pause until player starts
+  var overlay = document.getElementById('onboard-overlay');
+  while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+
+  var card = document.createElement('div');
+  card.className = 'onboard-card';
+
+  // Title
+  var title = document.createElement('div');
+  title.className = 'onboard-title';
+  var t1 = document.createTextNode('SKMS ');
+  var acc = document.createElement('span');
+  acc.className = 'accent';
+  acc.textContent = 'Company Builder';
+  title.appendChild(t1);
+  title.appendChild(acc);
+  card.appendChild(title);
+
+  var sub = document.createElement('div');
+  sub.className = 'onboard-sub';
+  sub.textContent = 'SK\uACBD\uC601\uCCB4\uACC4\uB97C \uCCB4\uD5D8\uD558\uB294 \uACBD\uC601 \uC2DC\uBBAC\uB808\uC774\uC158';
+  card.appendChild(sub);
+
+  // Scenario briefing
+  var scenario = document.createElement('div');
+  scenario.className = 'onboard-scenario';
+  var warn = document.createElement('span');
+  warn.className = 'warn';
+  warn.textContent = '\u26A0 \uC2DC\uB098\uB9AC\uC624: \uC704\uAE30\uC758 \uD68C\uC0AC';
+  scenario.appendChild(warn);
+  scenario.appendChild(document.createTextNode('\uB2F9\uC2E0\uC740 \uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 \uC0C8 CEO\uB85C \uBD80\uC784\uD588\uC2B5\uB2C8\uB2E4. \uAD6C\uC131\uC6D0 12\uBA85 \uC911 \uC5D0\uC774\uC2A4\uB294 0\uBA85, \uC790\uAE08\uC740 $15,000\uBFD0. \uBCC4\uC810 3.0\uC744 30\uC77C \uC720\uC9C0\uD558\uBA74 \uC2B9\uB9AC\uD569\uB2C8\uB2E4.'));
+  card.appendChild(scenario);
+
+  // Steps
+  var steps = document.createElement('div');
+  steps.className = 'onboard-steps';
+
+  var stepData = [
+    { n: '1', text: '\uD558\uB2E8 \uD234\uBC14\uC5D0\uC11C \uBD80\uC11C/\uC2DC\uC124\uC744 \uC120\uD0DD\uD558\uACE0 \uADF8\uB9AC\uB4DC\uC5D0 \uBC30\uCE58\uD558\uC138\uC694. \uBCF5\uB3C4\uB85C \uC5F0\uACB0\uD574\uC57C \uC791\uB3D9\uD569\uB2C8\uB2E4.', strong: 'HR\uBD80\uC11C\uC640 \uAD6C\uB0B4\uC2DD\uB2F9' },
+    { n: '2', text: '\uAD6C\uC131\uC6D0\uC744 \uD074\uB9AD\uD558\uBA74 1:1 \uBA74\uB2F4\uC744 \uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uBB38\uC81C\uB97C \uD30C\uC545\uD558\uACE0 \uC801\uC808\uD55C \uC870\uCE58\uB97C \uCDE8\uD558\uC138\uC694.', strong: '\uBA74\uB2F4\uC73C\uB85C \uB0B4\uBA74\uC744 \uD30C\uC545' },
+    { n: '3', text: '\uC624\uB978\uCABD \uC815\uCC45 \uD328\uB110\uC5D0\uC11C SKMS \uACBD\uC601 \uC81C\uB3C4\uB97C \uD65C\uC131\uD654\uD558\uC138\uC694. \uC815\uCC45\uC774 \uAD6C\uC131\uC6D0\uC758 \uBCC0\uD654\uB97C \uB9CC\uB4ED\uB2C8\uB2E4.', strong: 'SUPEX, VWBE \uB4F1 9\uAC1C \uC815\uCC45' },
+    { n: '4', text: '\uB274\uC2A4 \uC774\uBCA4\uD2B8\uAC00 \uBC1C\uC0DD\uD558\uBA74 \uC120\uD0DD\uC9C0\uB97C \uACE8\uB77C\uC57C \uD569\uB2C8\uB2E4. 15\uCD08 \uC548\uC5D0 \uACB0\uC815\uD558\uC138\uC694!', strong: '\uC120\uD0DD\uC758 \uACB0\uACFC\uB294 \uC9C0\uC5F0\uB418\uC5B4 \uB098\uD0C0\uB0A9\uB2C8\uB2E4' },
+    { n: '5', text: '30\uC77C\uB9C8\uB2E4 \uACBD\uC601\uC804\uB7B5\uD68C\uC758\uAC00 \uC5F4\uB824 \uD604\uD669\uC744 \uC810\uAC80\uD569\uB2C8\uB2E4. \uC9C4\uB2E8\uACFC \uC81C\uC548\uC744 \uCC38\uACE0\uD558\uC138\uC694.', strong: '\uBD84\uAE30\uBCC4 \uC131\uACFC \uB9AC\uBDF0' }
+  ];
+
+  for (var i = 0; i < stepData.length; i++) {
+    var s = stepData[i];
+    var row = document.createElement('div');
+    row.className = 'onboard-step';
+    var num = document.createElement('div');
+    num.className = 'num';
+    num.textContent = s.n;
+    row.appendChild(num);
+    var body = document.createElement('div');
+    body.className = 'body';
+    var strong = document.createElement('strong');
+    strong.textContent = s.strong;
+    body.appendChild(strong);
+    body.appendChild(document.createTextNode(' \u2014 ' + s.text));
+    row.appendChild(body);
+    steps.appendChild(row);
+  }
+  card.appendChild(steps);
+
+  // Controls
+  var controls = document.createElement('div');
+  controls.className = 'onboard-controls';
+  var cLines = [
+    ['\uB4DC\uB798\uADF8', ' \uCE74\uBA54\uB77C \uC774\uB3D9'],
+    ['\uC2A4\uD06C\uB864', ' \uD655\uB300/\uCD95\uC18C'],
+    ['\uC88C\uD074\uB9AD', ' \uAC74\uBB3C \uBC30\uCE58 / \uC9C1\uC6D0 \uBA74\uB2F4'],
+    ['\uC6B0\uD074\uB9AD', ' \uAC74\uBB3C \uC815\uBCF4'],
+    ['Ctrl+Z', ' \uC2E4\uD589\uCDE8\uC18C']
+  ];
+  for (var c = 0; c < cLines.length; c++) {
+    var sp = document.createElement('span');
+    sp.textContent = cLines[c][0];
+    controls.appendChild(sp);
+    controls.appendChild(document.createTextNode(cLines[c][1]));
+    if (c < cLines.length - 1) controls.appendChild(document.createTextNode('  \u00B7  '));
+  }
+  card.appendChild(controls);
+
+  // Start button
+  var startBtn = document.createElement('button');
+  startBtn.className = 'onboard-start';
+  startBtn.textContent = '\u{1F3AC} \uACBD\uC601 \uC2DC\uC791!';
+  startBtn.addEventListener('click', function() {
+    initAudio();
+    startBGM();
+    sfxPlace();
+    overlay.removeChild(card);
+    overlay.remove();
+    G.gSpeed = 1;
+    document.getElementById('btn-speed').textContent = '1x';
+    showTutorial();
+  });
+  card.appendChild(startBtn);
+
+  overlay.appendChild(card);
+}
+
 function init() {
   setupCrisisScenario();
   buildTopBar();
@@ -2804,7 +2927,7 @@ function init() {
   buildPolicyToggle();
   renderPolicyPanel();
   centerCamera();
-  showTutorial();
+  showOnboarding();
   updateHUD();
   requestAnimationFrame(gameLoop);
 }
