@@ -1283,7 +1283,7 @@ class FileAssembler:
 
 
 def _build_quiz_html(plan: Any, topic: str) -> str:
-    """QuizPlan → 인터랙티브 퀴즈 HTML."""
+    """QuizPlan → 인터랙티브 퀴즈 HTML (디자인 토큰 + 접근성)."""
     questions = getattr(plan, "questions", ())
     if not questions:
         return f"<html><body><h1>{topic}</h1><p>퀴즈 문항이 없습니다.</p></body></html>"
@@ -1297,7 +1297,8 @@ def _build_quiz_html(plan: Any, topic: str) -> str:
             escaped = html_mod.escape(choice)
             choices_html += (
                 f'<button class="choice" data-q="{q.index}" data-c="{ci}" '
-                f'onclick="checkAnswer(this,{q.index},{q.correct_answer})">'
+                f'onclick="checkAnswer(this,{q.index},{q.correct_answer})" '
+                f'aria-label="선택지 {chr(65 + ci)}: {escaped}">'
                 f'<span class="label">{chr(65 + ci)}</span> {escaped}</button>\n'
             )
         explanation_escaped = html_mod.escape(q.explanation)
@@ -1307,7 +1308,7 @@ def _build_quiz_html(plan: Any, topic: str) -> str:
             f'<div class="question" id="q{q.index}">'
             f'<div class="q-num">Q{q.index}</div>'
             f'<div class="q-text">{html_mod.escape(q.question_text)}</div>'
-            f'<div class="choices">{choices_html}</div>'
+            f'<div class="choices" role="group" aria-label="질문 {q.index} 선택지">{choices_html}</div>'
             f'<div class="explanation" id="exp{q.index}" style="display:none;">'
             f"{explanation_escaped}{source_html}</div>"
             f"</div>"
@@ -1322,42 +1323,55 @@ def _build_quiz_html(plan: Any, topic: str) -> str:
         '<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
         f"<title>{title_escaped}</title>\n"
         "<style>\n"
-        "body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#FFFFFF;margin:0;padding:40px;color:#1A1A2E;line-height:1.6}\n"
-        "h1{text-align:left;color:#0052A2;margin:0 0 40px;font-size:32px;font-weight:800;border-bottom:3px solid #0052A2;padding-bottom:15px}\n"
-        ".question{background:white;border-radius:0;padding:30px 0;margin-bottom:30px;border-bottom:1px solid #EEE}\n"
-        ".q-num{color:#0052A2;font-weight:800;font-size:16px;margin-bottom:10px;letter-spacing:1px}\n"
+        f"{_design_tokens()}\n"
+        f"{_base_reset()}\n"
+        f"{_responsive_wrapper()}\n"
+        "h1{text-align:left;color:var(--c-primary);margin:0 0 40px;font-size:32px;font-weight:800;"
+        "border-bottom:3px solid var(--c-primary);padding-bottom:15px}\n"
+        ".progress{text-align:right;color:var(--c-text-muted);font-size:14px;font-weight:600;margin-bottom:20px}\n"
+        ".question{padding:30px 0;margin-bottom:30px;border-bottom:1px solid var(--c-border)}\n"
+        ".q-num{color:var(--c-primary);font-weight:800;font-size:16px;margin-bottom:10px;letter-spacing:1px}\n"
         ".q-text{font-size:20px;font-weight:600;margin-bottom:20px}\n"
         ".choices{display:flex;flex-direction:column;gap:12px}\n"
-        ".choice{border:1px solid #DDD;border-radius:4px;padding:15px 20px;background:white;cursor:pointer;"
-        "text-align:left;font-size:16px;transition:all 0.2s;color:#444}\n"
-        ".choice:hover{border-color:#0052A2;background:#F0F7FF;color:#0052A2}\n"
-        ".choice .label{display:inline-block;width:24px;height:24px;border-radius:2px;background:#F0F0F0;"
-        "text-align:center;line-height:24px;font-weight:700;margin-right:12px;font-size:13px}\n"
-        ".choice.correct{border-color:#28a745;background:#f8fff9;color:#28a745}"
-        ".choice.correct .label{background:#28a745;color:white}\n"
-        ".choice.wrong{border-color:#dc3545;background:#fff8f8;color:#dc3545}"
-        ".choice.wrong .label{background:#dc3545;color:white}\n"
+        ".choice{border:1px solid var(--c-border);border-radius:var(--radius-md);padding:15px 20px;"
+        "background:var(--c-bg);cursor:pointer;text-align:left;font-size:16px;"
+        "transition:all var(--transition);color:var(--c-text);font-family:var(--font-stack)}\n"
+        ".choice:hover{border-color:var(--c-primary);background:var(--c-primary-light);color:var(--c-primary)}\n"
+        ".choice:focus{outline:none;box-shadow:0 0 0 3px var(--c-primary-light);border-color:var(--c-primary)}\n"
+        ".choice .label{display:inline-block;width:24px;height:24px;border-radius:var(--radius-sm);"
+        "background:var(--c-surface);text-align:center;line-height:24px;font-weight:700;"
+        "margin-right:12px;font-size:13px}\n"
+        ".choice.correct{border-color:var(--c-correct);background:var(--c-correct-bg);color:var(--c-correct)}"
+        ".choice.correct .label{background:var(--c-correct);color:white}\n"
+        ".choice.wrong{border-color:var(--c-wrong);background:var(--c-wrong-bg);color:var(--c-wrong)}"
+        ".choice.wrong .label{background:var(--c-wrong);color:white}\n"
         ".choice.disabled{pointer-events:none;opacity:0.7}\n"
-        ".explanation{margin-top:20px;padding:20px;background:#F8F9FA;border-left:5px solid #0052A2;"
-        "font-size:15px;color:#555}\n"
-        ".source{margin-top:10px;font-size:13px;color:#0052A2;font-weight:600}\n"
-        ".score{text-align:center;font-size:24px;font-weight:800;color:#0052A2;margin-top:50px;padding:30px;background:#F0F7FF;border-radius:8px}\n"
-        "footer{text-align:left;margin-top:60px;color:#AAA;font-size:12px;letter-spacing:1px}\n"
+        ".explanation{margin-top:20px;padding:20px;background:var(--c-surface);border-left:5px solid var(--c-primary);"
+        "font-size:15px;color:var(--c-text-muted);border-radius:0 var(--radius-sm) var(--radius-sm) 0}\n"
+        ".source{margin-top:10px;font-size:13px;color:var(--c-primary);font-weight:600}\n"
+        ".score{text-align:center;font-size:24px;font-weight:800;color:var(--c-primary);"
+        "margin-top:50px;padding:30px;background:var(--c-primary-light);border-radius:var(--radius-md)}\n"
+        "footer{text-align:left;margin-top:60px;color:var(--c-text-muted);font-size:12px;letter-spacing:1px}\n"
         "</style>\n"
         "</head>\n<body>\n"
+        '<div class="content-wrap">\n'
         f"<h1>{title_escaped}</h1>\n"
+        f'<div class="progress" aria-live="polite">0 / {n} 완료</div>\n'
         f"{questions_joined}\n"
-        '<div class="score" id="score"></div>\n'
+        '<div class="score" id="score" role="status"></div>\n'
         "<footer>SKMS Content Studio</footer>\n"
+        "</div>\n"
         "<script>\n"
         f"let answered=0,correct=0,total={n};\n"
         "function checkAnswer(btn,qIdx,correctIdx){\n"
         "  let btns=document.querySelectorAll('.choice[data-q=\"'+qIdx+'\"]');\n"
-        "  btns.forEach(b=>{b.classList.add('disabled');"
+        "  btns.forEach(function(b){b.classList.add('disabled');"
+        "b.setAttribute('aria-disabled','true');"
         "if(parseInt(b.dataset.c)===correctIdx)b.classList.add('correct')});\n"
         "  if(parseInt(btn.dataset.c)!==correctIdx)btn.classList.add('wrong');\n"
         "  else correct++;\n"
         "  answered++;\n"
+        "  document.querySelector('.progress').textContent=answered+' / '+total+' 완료';\n"
         "  document.getElementById('exp'+qIdx).style.display='block';\n"
         "  if(answered===total)document.getElementById('score').textContent="
         "'결과: '+total+'문제 중 '+correct+'개 정답 ('+Math.round(correct/total*100)+'%)';\n"

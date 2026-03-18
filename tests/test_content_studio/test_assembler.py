@@ -666,3 +666,77 @@ class TestOutputPathSecurity:
         asm = FileAssembler(AssemblerConfig(output_dir=str(tmp_path / "out")))
         path = asm._output_path("unknown_type", "test", "html")
         assert "unknown_type" in str(path)
+
+
+# ---------------------------------------------------------------------------
+# Quiz Assembly
+# ---------------------------------------------------------------------------
+
+
+class TestAssembleQuiz:
+    def _make_quiz_content(self, n=2):
+        """퀴즈 콘텐츠 mock."""
+        from types import SimpleNamespace
+
+        questions = tuple(
+            SimpleNamespace(
+                index=i + 1,
+                question_text=f"질문 {i+1}",
+                choices=(f"선택지A-{i+1}", f"선택지B-{i+1}", f"선택지C-{i+1}"),
+                correct_answer=0,
+                explanation=f"설명 {i+1}",
+                source_quote=f"출처 {i+1}" if i == 0 else "",
+            )
+            for i in range(n)
+        )
+        return SimpleNamespace(questions=questions)
+
+    def test_quiz_html_output(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(3)
+        result = asm.assemble_quiz(content, topic="퀴즈테스트")
+        assert result.file_type == "html"
+        assert result.size_bytes > 0
+
+    def test_quiz_uses_design_tokens(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(2)
+        result = asm.assemble_quiz(content, topic="토큰퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_quiz_wcag_colors(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(2)
+        result = asm.assemble_quiz(content, topic="WCAG퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "#28a745" not in html
+        assert "#dc3545" not in html
+
+    def test_quiz_focus_ring(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(2)
+        result = asm.assemble_quiz(content, topic="포커스퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":focus" in html
+
+    def test_quiz_aria_disabled(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(2)
+        result = asm.assemble_quiz(content, topic="접근성퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "aria-disabled" in html
+
+    def test_quiz_progress_indicator(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(3)
+        result = asm.assemble_quiz(content, topic="프로그레스퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "progress" in html.lower()
