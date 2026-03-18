@@ -116,6 +116,31 @@ canvas{display:block;cursor:default}
 .event-choice .req{color:#D32F2F;font-weight:600}
 .event-tag{display:inline-block;font-size:9px;font-weight:700;background:#EFEBE9;color:#5D4037;padding:2px 8px;border-radius:4px;margin-bottom:10px;letter-spacing:0.5px}
 
+/* Strategy meeting */
+.meeting-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:42;display:none;align-items:center;justify-content:center}
+.meeting-overlay.show{display:flex}
+.strat-card{background:linear-gradient(180deg,#1e2a4a 0%,#15203a 100%);color:#e8e8f0;border-radius:14px;width:520px;max-width:92vw;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,0.6);border:1px solid rgba(100,160,255,0.15);max-height:85vh;overflow-y:auto}
+.strat-title{font-size:18px;font-weight:800;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.strat-subtitle{font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.strat-section{margin-bottom:18px}
+.strat-section h4{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.strat-metric{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px}
+.strat-metric .label{min-width:90px;color:rgba(255,255,255,0.6)}
+.strat-metric .bar{flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden}
+.strat-metric .bar-fill{height:100%;border-radius:4px;transition:width 0.6s ease-out}
+.strat-metric .val{min-width:35px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.strat-trend{font-size:11px;margin-left:4px}
+.strat-trend.up{color:#4ADE80}
+.strat-trend.down{color:#F87171}
+.strat-trend.flat{color:rgba(255,255,255,0.3)}
+.strat-insight{background:rgba(255,184,48,0.08);border:1px solid rgba(255,184,48,0.15);border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.6;color:rgba(255,255,255,0.8);margin-bottom:10px}
+.strat-insight strong{color:var(--accent)}
+.strat-agenda{display:flex;flex-direction:column;gap:6px}
+.strat-agenda-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,255,255,0.04);border-radius:8px;font-size:12px}
+.strat-agenda-item .emoji{font-size:16px}
+.strat-close{display:block;width:100%;margin-top:16px;padding:12px;border:none;border-radius:10px;background:var(--accent);color:#1a1a2e;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:opacity 0.15s}
+.strat-close:hover{opacity:0.85}
+
 /* Report card */
 .report-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:50;display:none;align-items:center;justify-content:center;overflow-y:auto;padding:20px}
 .report-overlay.show{display:flex}
@@ -150,6 +175,7 @@ canvas{display:block;cursor:default}
   <div class="policy-panel" id="policy-panel"></div>
   <div class="meeting-panel" id="meeting-panel"></div>
   <div class="event-overlay" id="event-overlay"></div>
+  <div class="meeting-overlay" id="strat-overlay"></div>
   <div class="report-overlay" id="report-overlay"></div>
 </div>
 <script>
@@ -350,7 +376,8 @@ function createInitialState() {
     // Win/lose
     winDays: 0, gameOver: false, gameWon: false,
     // Stats
-    ignoreCount: 0, pressureCount: 0,
+    ignoreCount: 0, pressureCount: 0, stratShownThisQ: false,
+    prevCust: 25, prevEmp: 18, prevSoc: 10, prevMoney: 15000, prevWorkerCount: 12,
     totalAceTransitions: 0, totalCynicRecoveries: 0, totalQuits: 0, totalLeaderPromotions: 0,
     choiceLog: [],
     // Buffs
@@ -1062,6 +1089,13 @@ function dayTick() {
       showToast('\uD601\uC2E0 \uD22C\uC790 \uD6A8\uACFC \uBC1C\uC0DD! \uACE0\uAC1D\uB9CC\uC871 +', 'success');
     }
   }
+
+  // Quarterly strategy meeting (every 30 days)
+  if (G.gDay > 1 && G.gDay % 30 === 0 && !G.stratShownThisQ) {
+    G.stratShownThisQ = true;
+    setTimeout(function() { showStrategyMeeting(); }, 500);
+  }
+  if (G.gDay % 30 === 1) G.stratShownThisQ = false;
 
   // Update HUD after economy
   updateHUD();
@@ -1933,6 +1967,214 @@ function closeEvent() {
   G.eventActive = false;
   G.currentEvent = null;
   document.getElementById('event-overlay').classList.remove('show');
+}
+
+// ============================================================
+// QUARTERLY STRATEGY MEETING
+// ============================================================
+function showStrategyMeeting() {
+  if (G.gameOver) return;
+  sfxMeeting();
+  G.gSpeed = 0; // Pause game during meeting
+
+  var overlay = document.getElementById('strat-overlay');
+  while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+
+  var card = document.createElement('div');
+  card.className = 'strat-card';
+
+  var quarter = Math.ceil(G.gDay / 30);
+  var alive = G.workers.filter(function(w) { return !w.quitting; });
+
+  // Title
+  var title = document.createElement('div');
+  title.className = 'strat-title';
+  title.textContent = '\uD83D\uDCCB Q' + quarter + ' \uACBD\uC601\uC804\uB7B5\uD68C\uC758';
+  card.appendChild(title);
+
+  var sub = document.createElement('div');
+  sub.className = 'strat-subtitle';
+  sub.textContent = 'Day ' + G.gDay + ' \u2014 \uBD84\uAE30 \uACBD\uC601 \uC131\uACFC \uB9AC\uBDF0';
+  card.appendChild(sub);
+
+  // Section 1: Stakeholder metrics with trends
+  var sec1 = document.createElement('div');
+  sec1.className = 'strat-section';
+  var h1 = document.createElement('h4');
+  h1.textContent = '\uC774\uD574\uAD00\uACC4\uC790 \uC9C0\uD45C';
+  sec1.appendChild(h1);
+
+  var metrics = [
+    { label: '\uACE0\uAC1D \uB9CC\uC871', val: Math.round(G.custSat), prev: G.prevCust, color: '#42A5F5' },
+    { label: '\uAD6C\uC131\uC6D0 \uD589\uBCF5', val: Math.round(G.empHap), prev: G.prevEmp, color: '#66BB6A' },
+    { label: '\uC0AC\uD68C\uC801 \uAC00\uCE58', val: Math.round(G.socVal), prev: G.prevSoc, color: '#26A69A' }
+  ];
+
+  for (var i = 0; i < metrics.length; i++) {
+    var m = metrics[i];
+    var row = document.createElement('div');
+    row.className = 'strat-metric';
+
+    var lbl = document.createElement('span');
+    lbl.className = 'label';
+    lbl.textContent = m.label;
+    row.appendChild(lbl);
+
+    var bar = document.createElement('div');
+    bar.className = 'bar';
+    var fill = document.createElement('div');
+    fill.className = 'bar-fill';
+    fill.style.width = m.val + '%';
+    fill.style.background = m.color;
+    bar.appendChild(fill);
+    row.appendChild(bar);
+
+    var val = document.createElement('span');
+    val.className = 'val';
+    val.textContent = m.val;
+    row.appendChild(val);
+
+    var diff = m.val - m.prev;
+    var trend = document.createElement('span');
+    trend.className = 'strat-trend ' + (diff > 2 ? 'up' : diff < -2 ? 'down' : 'flat');
+    trend.textContent = diff > 0 ? '\u25B2+' + diff : diff < 0 ? '\u25BC' + diff : '\u25AC 0';
+    row.appendChild(trend);
+
+    sec1.appendChild(row);
+  }
+  card.appendChild(sec1);
+
+  // Section 2: Company status
+  var sec2 = document.createElement('div');
+  sec2.className = 'strat-section';
+  var h2 = document.createElement('h4');
+  h2.textContent = '\uD68C\uC0AC \uD604\uD669';
+  sec2.appendChild(h2);
+
+  var moneyDiff = G.money - G.prevMoney;
+  var workerDiff = alive.length - G.prevWorkerCount;
+  var polCount = Object.keys(G.activePolicies).length;
+
+  var stats = [
+    { emoji: '\uD83D\uDCB0', text: '\uC790\uAE08: $' + G.money.toLocaleString() + (moneyDiff >= 0 ? ' (\u25B2+$' + moneyDiff.toLocaleString() + ')' : ' (\u25BC$' + moneyDiff.toLocaleString() + ')') },
+    { emoji: '\uD83D\uDC65', text: '\uAD6C\uC131\uC6D0: ' + alive.length + '\uBA85' + (workerDiff >= 0 ? ' (+' + workerDiff + ')' : ' (' + workerDiff + ')') },
+    { emoji: '\u2B50', text: '\uBCC4\uC810: ' + G.rating.toFixed(1) + ' / 5.0' },
+    { emoji: '\uD83D\uDCDC', text: 'SKMS \uC815\uCC45: ' + polCount + '/9 \uD65C\uC131\uD654' }
+  ];
+
+  // Type breakdown
+  var tc = { ace: 0, rookie: 0, cynic: 0, disengaged: 0, leader: 0 };
+  for (var j = 0; j < alive.length; j++) tc[alive[j].type] = (tc[alive[j].type] || 0) + 1;
+  stats.push({ emoji: '\uD83D\uDD25', text: '\uC5D0\uC774\uC2A4 ' + (tc.ace||0) + ' / \uC2E0\uC785 ' + (tc.rookie||0) + ' / \uB0C9\uC18C ' + (tc.cynic||0) + ' / \uBB34\uAE30\uB825 ' + (tc.disengaged||0) + ' / \uB9AC\uB354 ' + (tc.leader||0) });
+
+  for (var k = 0; k < stats.length; k++) {
+    var item = document.createElement('div');
+    item.className = 'strat-agenda-item';
+    var em = document.createElement('span');
+    em.className = 'emoji';
+    em.textContent = stats[k].emoji;
+    item.appendChild(em);
+    var tx = document.createElement('span');
+    tx.textContent = stats[k].text;
+    item.appendChild(tx);
+    sec2.appendChild(item);
+  }
+  card.appendChild(sec2);
+
+  // Section 3: AI Insights (context-sensitive advice)
+  var sec3 = document.createElement('div');
+  sec3.className = 'strat-section';
+  var h3 = document.createElement('h4');
+  h3.textContent = '\uACBD\uC601 \uC9C4\uB2E8 & \uC81C\uC548';
+  sec3.appendChild(h3);
+
+  var insights = [];
+
+  if (G.empHap < 30) insights.push({ text: '\uAD6C\uC131\uC6D0 \uD589\uBCF5\uC774 \uC704\uD5D8 \uC218\uC900\uC785\uB2C8\uB2E4. <strong>\uBCF5\uC9C0\uC2DC\uC124 \uAC74\uC124</strong>\uACFC <strong>VWBE \uBB38\uD654 \uB3C4\uC785</strong>\uC744 \uAC80\uD1A0\uD558\uC138\uC694. \uBC29\uCE58\uD558\uBA74 \uB300\uB7C9 \uD1B4\uC0AC\uAC00 \uBC1C\uC0DD\uD569\uB2C8\uB2E4.', priority: 'high' });
+  else if (G.empHap < 50) insights.push({ text: '\uAD6C\uC131\uC6D0 \uD589\uBCF5\uC774 \uBCF4\uD1B5 \uC218\uC900\uC785\uB2C8\uB2E4. <strong>\uAD6C\uB0B4\uC2DD\uB2F9</strong>\uC774\uB098 <strong>\uC6F0\uB2C8\uC2A4 \uC13C\uD130</strong>\uB97C \uCD94\uAC00\uD558\uBA74 \uAC1C\uC120\uB429\uB2C8\uB2E4.', priority: 'med' });
+
+  if (G.custSat < 30) insights.push({ text: '\uACE0\uAC1D \uB9CC\uC871\uC774 \uB9E4\uC6B0 \uB0AE\uC2B5\uB2C8\uB2E4. <strong>\uB9C8\uCF00\uD305 \uBD80\uC11C</strong>\uC640 <strong>\uC0DD\uC0B0\uBD80\uC11C</strong>\uC5D0 \uC5D0\uC774\uC2A4 \uC9C1\uC6D0\uC744 \uBC30\uCE58\uD558\uC138\uC694.', priority: 'high' });
+
+  if (G.socVal < 20) insights.push({ text: '\uC0AC\uD68C\uC801 \uAC00\uCE58\uAC00 \uC704\uD5D8 \uC218\uC900\uC785\uB2C8\uB2E4. <strong>\uC0AC\uD68C\uACF5\uD5CC \uBD80\uC11C</strong>\uB97C \uC124\uB9BD\uD558\uACE0 <strong>\uC0AC\uD68C\uC801 \uAC00\uCE58 \uACBD\uC601</strong> \uC815\uCC45\uC744 \uD65C\uC131\uD654\uD558\uC138\uC694.', priority: 'high' });
+
+  if (tc.disengaged > 3) insights.push({ text: '\uBB34\uAE30\uB825 \uAD6C\uC131\uC6D0\uC774 ' + tc.disengaged + '\uBA85\uC73C\uB85C \uB9CE\uC2B5\uB2C8\uB2E4. <strong>\uAD50\uC721\uC6D0</strong>\uACFC <strong>O.J.T \uC815\uCC45</strong>\uC744 \uD1B5\uD574 \uC5ED\uB7C9\uC744 \uD0A4\uC6CC\uC8FC\uC138\uC694.', priority: 'med' });
+
+  if (tc.cynic > 2 && !policyActive('vwbe')) insights.push({ text: '\uB0C9\uC18C\uD30C \uC9C1\uC6D0\uC774 ' + tc.cynic + '\uBA85\uC785\uB2C8\uB2E4. <strong>VWBE \uBB38\uD654</strong>\uB97C \uD65C\uC131\uD654\uD558\uBA74 \uC5D0\uC774\uC2A4\uB85C \uC804\uD658\uB420 \uC218 \uC788\uC2B5\uB2C8\uB2E4.', priority: 'med' });
+
+  if (polCount === 0) insights.push({ text: 'SKMS \uC815\uCC45\uC774 \uD558\uB098\uB3C4 \uD65C\uC131\uD654\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. <strong>\uC131\uACFC \uBCF4\uC0C1 \uCCB4\uACC4</strong>($500)\uBD80\uD130 \uC2DC\uC791\uD574\uBCF4\uC138\uC694.', priority: 'high' });
+  else if (polCount >= 3 && !policyActive('supex')) insights.push({ text: '\uC815\uCC45 \uAE30\uBC18\uC774 \uAC16\uCDB0\uC84C\uC2B5\uB2C8\uB2E4. <strong>SUPEX \uCD94\uAD6C</strong>\uB97C \uD65C\uC131\uD654\uD558\uBA74 \uC131\uACFC \uCC9C\uC7A5\uC744 \uB3CC\uD30C\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4.', priority: 'med' });
+
+  if (moneyDiff < -2000) insights.push({ text: '\uC790\uAE08\uC774 \uBE60\uB974\uAC8C \uC904\uACE0 \uC788\uC2B5\uB2C8\uB2E4. \uBD88\uD544\uC694\uD55C \uC9C0\uCD9C\uC744 \uC904\uC774\uACE0 <strong>\uC0DD\uC0B0 \uBD80\uC11C</strong>\uC5D0 \uC9D1\uC911\uD558\uC138\uC694.', priority: 'high' });
+
+  if (G.rating >= 2.5) insights.push({ text: '\uD68C\uC0AC\uAC00 \uC548\uC815\uB418\uACE0 \uC788\uC2B5\uB2C8\uB2E4! \uBCC4\uC810 3.0\uC744 30\uC77C \uC720\uC9C0\uD558\uBA74 \uC2B9\uB9AC\uD569\uB2C8\uB2E4. \uADE0\uD615 \uC7A1\uD78C \uC131\uC7A5\uC744 \uC774\uC5B4\uAC00\uC138\uC694.', priority: 'low' });
+
+  if (insights.length === 0) insights.push({ text: '\uC804\uBC18\uC801\uC73C\uB85C \uC591\uD638\uD569\uB2C8\uB2E4. \uD604\uC7AC \uC804\uB7B5\uC744 \uC720\uC9C0\uD558\uBA74\uC11C \uBD80\uC871\uD55C \uC9C0\uD45C\uC5D0 \uC9D1\uC911\uD558\uC138\uC694.', priority: 'low' });
+
+  for (var n = 0; n < insights.length; n++) {
+    var ins = document.createElement('div');
+    ins.className = 'strat-insight';
+    // Use safe DOM for the text with <strong> tags
+    var parts = insights[n].text.split(/<\/?strong>/);
+    for (var p = 0; p < parts.length; p++) {
+      if (p % 2 === 0) {
+        ins.appendChild(document.createTextNode(parts[p]));
+      } else {
+        var strong = document.createElement('strong');
+        strong.textContent = parts[p];
+        ins.appendChild(strong);
+      }
+    }
+    card.appendChild(ins);
+  }
+
+  // Section 4: Next quarter agenda
+  var sec4 = document.createElement('div');
+  sec4.className = 'strat-section';
+  var h4el = document.createElement('h4');
+  h4el.textContent = '\uB2E4\uC74C \uBD84\uAE30 \uC548\uAC74';
+  sec4.appendChild(h4el);
+
+  var agenda = [];
+  var lowest = Math.min(G.custSat, G.empHap, G.socVal);
+  if (lowest === G.custSat) agenda.push('\uD83D\uDCC8 \uACE0\uAC1D \uB9CC\uC871\uB3C4 \uAC1C\uC120 \uC9D1\uC911');
+  else if (lowest === G.empHap) agenda.push('\uD83D\uDC9A \uAD6C\uC131\uC6D0 \uD589\uBCF5 \uD68C\uBCF5 \uC6B0\uC120');
+  else agenda.push('\uD83C\uDF0D \uC0AC\uD68C\uC801 \uAC00\uCE58 \uAC15\uD654');
+
+  if (tc.disengaged > tc.ace) agenda.push('\uD83D\uDD25 \uBB34\uAE30\uB825 \uAD6C\uC131\uC6D0 \uD65C\uC131\uD654 \uD504\uB85C\uADF8\uB7A8');
+  if (polCount < 5) agenda.push('\uD83D\uDCDC SKMS \uC815\uCC45 \uCD94\uAC00 \uB3C4\uC785 \uAC80\uD1A0');
+  if (G.money < 5000) agenda.push('\uD83D\uDCB0 \uC7AC\uBB34 \uAC74\uC804\uC131 \uD655\uBCF4');
+
+  var agendaDiv = document.createElement('div');
+  agendaDiv.className = 'strat-agenda';
+  for (var a = 0; a < agenda.length; a++) {
+    var ag = document.createElement('div');
+    ag.className = 'strat-agenda-item';
+    ag.textContent = agenda[a];
+    agendaDiv.appendChild(ag);
+  }
+  sec4.appendChild(agendaDiv);
+  card.appendChild(sec4);
+
+  // Close button
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'strat-close';
+  closeBtn.textContent = '\uD68C\uC758 \uC885\uB8CC \u2014 \uACBD\uC601 \uC7AC\uAC1C';
+  closeBtn.addEventListener('click', function() {
+    overlay.classList.remove('show');
+    G.gSpeed = 1;
+    // Save current values for next quarter comparison
+    G.prevCust = Math.round(G.custSat);
+    G.prevEmp = Math.round(G.empHap);
+    G.prevSoc = Math.round(G.socVal);
+    G.prevMoney = G.money;
+    G.prevWorkerCount = alive.length;
+    sfxClick();
+    document.getElementById('btn-speed').textContent = '1x';
+  });
+  card.appendChild(closeBtn);
+
+  overlay.appendChild(card);
+  overlay.classList.add('show');
 }
 
 // ============================================================
