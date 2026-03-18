@@ -66,6 +66,70 @@ PRETENDARD_CSS = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orion
 
 
 # ---------------------------------------------------------------------------
+# 공통 디자인 토큰 (CSS Custom Properties)
+# ---------------------------------------------------------------------------
+
+
+def _design_tokens() -> str:
+    """모든 콘텐츠 타입이 공유하는 CSS 변수 — 따뜻한 뉴트럴 팔레트."""
+    return (
+        ":root {\n"
+        "  --c-primary: #0052A2;\n"
+        "  --c-primary-light: #EBF2FA;\n"
+        "  --c-accent: #E4002B;\n"
+        "  --c-text: #1F2937;\n"
+        "  --c-text-muted: #6B7280;\n"
+        "  --c-text-subtle: #9CA3AF;\n"
+        "  --c-bg: #FFFFFF;\n"
+        "  --c-bg-warm: #FAFAF8;\n"
+        "  --c-surface: #F3F4F6;\n"
+        "  --c-border: rgba(107,114,128,0.15);\n"
+        "  --c-correct: #166534;\n"
+        "  --c-correct-bg: #F0FDF4;\n"
+        "  --c-wrong: #991B1B;\n"
+        "  --c-wrong-bg: #FEF2F2;\n"
+        "  --radius-sm: 4px;\n"
+        "  --radius-md: 10px;\n"
+        "  --radius-lg: 18px;\n"
+        "  --font-stack: 'Pretendard','Apple SD Gothic Neo',sans-serif;\n"
+        "  --transition: 0.2s ease-out;\n"
+        "}"
+    )
+
+
+def _base_reset() -> str:
+    """공통 리셋 + 기본 타이포그래피."""
+    return (
+        "*, *::before, *::after { box-sizing: border-box; }\n"
+        "body { margin:0; font-family:var(--font-stack); "
+        "color:var(--c-text); background:var(--c-bg); line-height:1.6; "
+        "-webkit-font-smoothing:antialiased; }\n"
+        "h1,h2,h3 { line-height:1.15; letter-spacing:-0.03em; }\n"
+    )
+
+
+def _responsive_wrapper() -> str:
+    """반응형 콘텐츠 래퍼 — 미리보기와 다운로드 겸용."""
+    return (
+        ".content-wrap { max-width:920px; width:100%; margin:0 auto; "
+        "padding:clamp(20px,4vw,60px); }\n"
+    )
+
+
+def _card_fixed_styles() -> str:
+    """카드뉴스 이중 전략 — 기본 반응형, print/download 시 1080px 고정."""
+    return (
+        ".card-canvas { max-width:1080px; width:100%; min-height:auto; "
+        "aspect-ratio:1/1; padding:clamp(40px,8vw,100px); "
+        "position:relative; }\n"
+        "@media print, (min-resolution:300dpi) {\n"
+        "  .card-canvas { width:1080px; height:1080px; "
+        "max-width:none; aspect-ratio:auto; padding:100px; }\n"
+        "}\n"
+    )
+
+
+# ---------------------------------------------------------------------------
 # FileAssembler
 # ---------------------------------------------------------------------------
 
@@ -216,7 +280,7 @@ class FileAssembler:
         text_color = self._parse_hex_color(theme.text) if theme else None
         font_name = theme.font if theme else self._config.font_name
         # [폰트 고도화] 리눅스 서버(Docker) 환경이면 설치된 NanumGothic 강제 적용
-        if os.name != 'nt':
+        if os.name != "nt":
             font_name = "NanumGothic"
 
         # 에셋 인덱스 매핑
@@ -267,7 +331,7 @@ class FileAssembler:
             # 레이아웃 및 도식화 판단 (PR-061: Semantic Diagrams)
             layout_name = select_layout(slide_content)
             hint = (getattr(slide_content, "design_hint", "") or "").lower()
-            
+
             # 도식화 트리거 조건
             is_process = any(x in hint for x in ["프로세스", "단계", "process", "flow"])
             is_matrix = any(x in hint for x in ["매트릭스", "4분면", "matrix", "quadrant"])
@@ -278,7 +342,7 @@ class FileAssembler:
 
             # 제목 및 거버닝 메시지 고정 렌더링 (PR-057: Fixed Header/Governing Message)
             self._add_fixed_title_and_governing(
-                slide, 
+                slide,
                 prs,
                 slide_content.title,
                 getattr(slide_content, "governing_message", ""),
@@ -287,29 +351,66 @@ class FileAssembler:
                 text_color,
                 Pt,
                 Inches,
-                RGBColor
+                RGBColor,
             )
 
-            key_points = slide_content.key_points if hasattr(slide_content, "key_points") else ()
+            key_points = (
+                slide_content.key_points if hasattr(slide_content, "key_points") else ()
+            )
             body_text = getattr(slide_content, "body_text", "")
 
             # [Task 2] 도식화 엔진 실행 또는 일반 텍스트 배치
             if is_process and 3 <= len(key_points) <= 5:
-                self._draw_process_diagram(slide, key_points, font_name, Pt, Inches, RGBColor)
+                self._draw_process_diagram(
+                    slide, key_points, font_name, Pt, Inches, RGBColor
+                )
             elif is_matrix and len(key_points) == 4:
-                self._draw_matrix_diagram(slide, key_points, font_name, Pt, Inches, RGBColor)
+                self._draw_matrix_diagram(
+                    slide, key_points, font_name, Pt, Inches, RGBColor
+                )
             else:
                 # 기존 텍스트 배치 로직
                 placeholders = sorted(
-                    [s for s in slide.placeholders if s.placeholder_format.idx in (1, 2)],
-                    key=lambda x: x.placeholder_format.idx
+                    [
+                        s
+                        for s in slide.placeholders
+                        if s.placeholder_format.idx in (1, 2)
+                    ],
+                    key=lambda x: x.placeholder_format.idx,
                 )
-                if layout_name in ("comparison", "two_content") and len(placeholders) >= 2:
+                if (
+                    layout_name in ("comparison", "two_content")
+                    and len(placeholders) >= 2
+                ):
                     mid = (len(key_points) + 1) // 2
-                    self._fill_placeholder(placeholders[0], key_points[:mid], "", font_name, text_color, Pt, RGBColor)
-                    self._fill_placeholder(placeholders[1], key_points[mid:], "", font_name, text_color, Pt, RGBColor)
+                    self._fill_placeholder(
+                        placeholders[0],
+                        key_points[:mid],
+                        "",
+                        font_name,
+                        text_color,
+                        Pt,
+                        RGBColor,
+                    )
+                    self._fill_placeholder(
+                        placeholders[1],
+                        key_points[mid:],
+                        "",
+                        font_name,
+                        text_color,
+                        Pt,
+                        RGBColor,
+                    )
                 elif placeholders:
-                    self._fill_placeholder(placeholders[0], key_points, body_text, font_name, text_color, Pt, RGBColor)
+                    self._fill_placeholder(
+                        placeholders[0],
+                        key_points,
+                        body_text,
+                        font_name,
+                        text_color,
+                        Pt,
+                        RGBColor,
+                    )
 
             # [Task 4] 핵심 개념 아이콘 추가 (PR-062: Icon System)
             self._add_concept_icon(slide, slide_content.title, Inches, RGBColor)
@@ -334,7 +435,10 @@ class FileAssembler:
             # 발표자 노트 및 상세 출처 (PR-063: Deep Grounding)
             speaker_notes = getattr(slide_content, "speaker_notes", "")
             source_info = ""
-            if hasattr(slide_content, "source_details") and slide_content.source_details:
+            if (
+                hasattr(slide_content, "source_details")
+                and slide_content.source_details
+            ):
                 source_info = "\n\n" + "-" * 30 + "\n📜 근거 원문 상세:\n"
                 for detail in slide_content.source_details:
                     source_info += (
@@ -407,7 +511,7 @@ class FileAssembler:
         text_color: tuple[int, int, int] | None,
         Pt: Any,
         Inches: Any,
-        RGBColor: Any
+        RGBColor: Any,
     ) -> None:
         """모든 슬라이드에서 제목과 거버닝 메시지를 장식 없이 고정된 위치와 크기로 렌더링한다."""
         # 1. 제목 (Title) - 24pt Bold (Blue 강조)
@@ -441,10 +545,12 @@ class FileAssembler:
                 RGBColor(*text_color) if text_color else RGBColor(26, 26, 46)
             )
 
-    def _add_concept_icon(self, slide: Any, title: str, Inches: Any, RGBColor: Any) -> None:
+    def _add_concept_icon(
+        self, slide: Any, title: str, Inches: Any, RGBColor: Any
+    ) -> None:
         """제목 키워드를 분석하여 상징적인 아이콘(도형)을 추가한다."""
         from pptx.enum.shapes import MSO_SHAPE
-        
+
         # 키워드별 도형 매핑 (미니멀 전문 디자인용)
         icon_map = {
             "행복": MSO_SHAPE.HEART,
@@ -455,15 +561,15 @@ class FileAssembler:
             "경영": MSO_SHAPE.CHART_UP,
             "원칙": MSO_SHAPE.SEAL_4,
             "조직": MSO_SHAPE.HEXAGON,
-            "구성원": MSO_SHAPE.OVAL
+            "구성원": MSO_SHAPE.OVAL,
         }
-        
+
         target_shape = None
         for kw, shape_type in icon_map.items():
             if kw in title:
                 target_shape = shape_type
                 break
-        
+
         if target_shape:
             # 우측 상단에 작고 세련되게 배치 (Inches(9.2), Inches(0.4))
             icon_size = Inches(0.3)
@@ -543,12 +649,21 @@ class FileAssembler:
             size_bytes=len(text.encode("utf-8")),
         )
 
-    def _fill_placeholder(self, shape: Any, key_points: tuple[str, ...], body_text: str, font_name: str, text_color: tuple[int, int, int] | None, Pt: Any, RGBColor: Any) -> None:
+    def _fill_placeholder(
+        self,
+        shape: Any,
+        key_points: tuple[str, ...],
+        body_text: str,
+        font_name: str,
+        text_color: tuple[int, int, int] | None,
+        Pt: Any,
+        RGBColor: Any,
+    ) -> None:
         """Placeholder 텍스트 프레임을 장식 없이 체계적인 위계로 채운다."""
         tf = shape.text_frame
         tf.clear()
         tf.word_wrap = True
-        
+
         # 1. 핵심 포인트 (Key Points) - 16pt Bold (Blue 강조)
         for i, point in enumerate(key_points):
             p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
@@ -557,7 +672,7 @@ class FileAssembler:
             p.font.bold = True
             p.font.name = font_name
             # 포인트 텍스트도 블루 계열로 통일하여 시각적 흐름 유지
-            p.font.color.rgb = RGBColor(0, 82, 162) # #0052A2
+            p.font.color.rgb = RGBColor(0, 82, 162)  # #0052A2
             p.space_after = Pt(8)
 
         # 2. 본문 텍스트 (Body Text) - 14pt (Dark Gray)
@@ -567,10 +682,18 @@ class FileAssembler:
             p.font.size = Pt(FONT_SIZE_BODY)
             p.font.bold = False
             p.font.name = font_name
-            p.font.color.rgb = RGBColor(26, 26, 46) # #1A1A2E
-            p.space_before = Pt(12) # 정보 덩어리 사이의 충분한 여백
+            p.font.color.rgb = RGBColor(26, 26, 46)  # #1A1A2E
+            p.space_before = Pt(12)  # 정보 덩어리 사이의 충분한 여백
 
-    def _draw_process_diagram(self, slide: Any, points: tuple[str, ...], font_name: str, Pt: Any, Inches: Any, RGBColor: Any) -> None:
+    def _draw_process_diagram(
+        self,
+        slide: Any,
+        points: tuple[str, ...],
+        font_name: str,
+        Pt: Any,
+        Inches: Any,
+        RGBColor: Any,
+    ) -> None:
         """단계별 화살표 프로세스 도식을 그린다."""
         n = min(len(points), 5)
         margin_x = Inches(0.5)
@@ -582,13 +705,15 @@ class FileAssembler:
         for i in range(n):
             left = margin_x + (i * (box_width + Inches(0.2)))
             # 화살표 오각형 (Pentagon)
-            shape = slide.shapes.add_shape(MSO_SHAPE.PENTAGON, left, top, box_width, box_height)
+            shape = slide.shapes.add_shape(
+                MSO_SHAPE.PENTAGON, left, top, box_width, box_height
+            )
             shape.fill.solid()
             # 그라데이션 블루: 1단계(연함) -> n단계(진함)
             blue_val = 200 - (i * 30)
             shape.fill.fore_color.rgb = RGBColor(0, 82, max(blue_val, 100))
             shape.line.visible = False
-            
+
             tf = shape.text_frame
             tf.word_wrap = True
             p = tf.paragraphs[0]
@@ -597,7 +722,7 @@ class FileAssembler:
             p.font.size = Pt(12)
             p.font.bold = True
             p.font.color.rgb = RGBColor(255, 255, 255)
-            
+
             p2 = tf.add_paragraph()
             p2.alignment = PP_ALIGN.CENTER
             p2.text = points[i]
@@ -605,7 +730,15 @@ class FileAssembler:
             p2.font.bold = False
             p2.font.color.rgb = RGBColor(255, 255, 255)
 
-    def _draw_matrix_diagram(self, slide: Any, points: tuple[str, ...], font_name: str, Pt: Any, Inches: Any, RGBColor: Any) -> None:
+    def _draw_matrix_diagram(
+        self,
+        slide: Any,
+        points: tuple[str, ...],
+        font_name: str,
+        Pt: Any,
+        Inches: Any,
+        RGBColor: Any,
+    ) -> None:
         """2x2 매트릭스 도식을 그린다."""
         margin_left = (slide.parent.slide_width - Inches(6.0)) / 2
         top = Inches(2.0)
@@ -613,21 +746,25 @@ class FileAssembler:
         gap = Inches(0.15)
 
         coords = [
-            (margin_left, top), (margin_left + box_size + gap, top),
-            (margin_left, top + box_size + gap), (margin_left + box_size + gap, top + box_size + gap)
+            (margin_left, top),
+            (margin_left + box_size + gap, top),
+            (margin_left, top + box_size + gap),
+            (margin_left + box_size + gap, top + box_size + gap),
         ]
-        
+
         # 4개 영역 색상 분화
         colors = [(0, 82, 162), (40, 110, 180), (80, 140, 200), (120, 170, 220)]
 
         for i in range(min(len(points), 4)):
             left, t = coords[i]
-            shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, left, t, box_size, box_size)
+            shape = slide.shapes.add_shape(
+                MSO_SHAPE.RECTANGLE, left, t, box_size, box_size
+            )
             shape.fill.solid()
             shape.fill.fore_color.rgb = RGBColor(*colors[i])
             shape.line.color.rgb = RGBColor(255, 255, 255)
             shape.line.width = Pt(2)
-            
+
             tf = shape.text_frame
             tf.word_wrap = True
             p = tf.paragraphs[0]
@@ -685,11 +822,11 @@ class FileAssembler:
                     "card_news", f"{topic}-{card.index}", "html"
                 )
                 body_html = card.body.replace("\n", "<br>")
-                
+
                 # 디자인 시스템 고정: 화이트 배경 + 블루 강조
                 bg_style = "#FFFFFF"
-                accent_color = "#0052A2" # SK Blue
-                text_color = "#1A1A2E"   # Dark Gray
+                accent_color = "#0052A2"  # SK Blue
+                text_color = "#1A1A2E"  # Dark Gray
                 border_color = "rgba(0, 82, 162, 0.2)"
 
                 # 인용 블록
@@ -706,7 +843,7 @@ class FileAssembler:
                         f"— {source_edition}</span>"
                         f"</blockquote>"
                     )
-                
+
                 card_num = f'<div style="position:absolute;top:40px;right:60px;font-size:16px;color:#999;font-weight:600;">{card.index} / {len(cards)}</div>'
                 html = f"""<!DOCTYPE html>
 <html lang="ko">
@@ -739,7 +876,7 @@ class FileAssembler:
     ) -> GeneratedFile:
         """워크숍 가이드 HTML (미니멀 디자인 시스템)."""
         phases = content.phases if hasattr(content, "phases") else ()
-        
+
         phase_html = ""
         for phase in phases:
             phase_html += f"""
@@ -800,7 +937,7 @@ class FileAssembler:
 
         # 스크립트 텍스트 fallback
         sections = content.sections if hasattr(content, "sections") else ()
-        
+
         script_html = ""
         for sec in sections:
             script_html += f"""
@@ -878,22 +1015,26 @@ class FileAssembler:
         import json
 
         # 1. 에셋 분류 및 정렬
-        image_assets = sorted([a for a in assets if a.asset_type == "image"], 
-                             key=lambda x: dict(x.metadata or {}).get("slide_index", 0))
-        audio_assets = sorted([a for a in assets if a.asset_type == "audio"],
-                             key=lambda x: dict(x.metadata or {}).get("slide_index", 0))
+        image_assets = sorted(
+            [a for a in assets if a.asset_type == "image"],
+            key=lambda x: dict(x.metadata or {}).get("slide_index", 0),
+        )
+        audio_assets = sorted(
+            [a for a in assets if a.asset_type == "audio"],
+            key=lambda x: dict(x.metadata or {}).get("slide_index", 0),
+        )
 
         if not image_assets or not audio_assets:
             logger.warning("영상 생성을 위한 에셋(이미지/오디오)이 부족합니다.")
             return None
 
         out_path = self._output_path("lectures", f"{topic}-video", "mp4")
-        
+
         # 2. 작업 시작
         with tempfile.TemporaryDirectory() as tmp_dir:
             # A. 개별 슬라이드 영상 조각 생성 (이미지 + 오디오 + 자막)
             slide_clips = []
-            
+
             # 발표자 노트 가져오기 (자막용)
             slides_data = content.slides if hasattr(content, "slides") else []
             notes_map = {s.index: s.speaker_notes for s in slides_data}
@@ -902,36 +1043,64 @@ class FileAssembler:
                 img_path = os.path.abspath(img.file_path)
                 # 매칭되는 오디오 찾기
                 slide_idx = dict(img.metadata or {}).get("slide_index")
-                audio = next((a for a in audio_assets if dict(a.metadata or {}).get("slide_index") == slide_idx), None)
-                
-                if not audio: continue
-                
+                audio = next(
+                    (
+                        a
+                        for a in audio_assets
+                        if dict(a.metadata or {}).get("slide_index") == slide_idx
+                    ),
+                    None,
+                )
+
+                if not audio:
+                    continue
+
                 audio_path = os.path.abspath(audio.file_path)
                 duration = self._get_audio_duration(audio_path)
-                
+
                 # 자막 텍스트 (발표자 노트)
                 raw_note = notes_map.get(slide_idx, "")
                 subtitle = self._sanitize_subtitle(raw_note)
-                
+
                 clip_path = Path(tmp_dir) / f"slide_{i:03d}.mp4"
-                
+
                 # FFmpeg: 이미지 + 오디오 + 자막 합성
                 # 가독성 높은 자막 디자인: 하단 중앙, 반투명 배경, 나눔고딕
                 drawtext_filter = (
-                    f"drawtext=text='{subtitle}':fontcolor=white:fontsize=24:"
-                    f"box=1:boxcolor=black@0.5:boxborderw=10:x=(w-text_w)/2:y=h-80"
-                ) if subtitle else "nullsrc" # 자막 없으면 빈 필터
+                    (
+                        f"drawtext=text='{subtitle}':fontcolor=white:fontsize=24:"
+                        f"box=1:boxcolor=black@0.5:boxborderw=10:x=(w-text_w)/2:y=h-80"
+                    )
+                    if subtitle
+                    else "nullsrc"
+                )  # 자막 없으면 빈 필터
 
                 cmd = [
-                    "ffmpeg", "-y", "-loop", "1", "-i", img_path, "-i", audio_path,
-                    "-vf", f"scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,format=yuv420p,{drawtext_filter}",
-                    "-c:v", "libx264", "-t", str(duration), "-c:a", "aac", "-b:a", "192k",
-                    str(clip_path)
+                    "ffmpeg",
+                    "-y",
+                    "-loop",
+                    "1",
+                    "-i",
+                    img_path,
+                    "-i",
+                    audio_path,
+                    "-vf",
+                    f"scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,format=yuv420p,{drawtext_filter}",
+                    "-c:v",
+                    "libx264",
+                    "-t",
+                    str(duration),
+                    "-c:a",
+                    "aac",
+                    "-b:a",
+                    "192k",
+                    str(clip_path),
                 ]
                 subprocess.run(cmd, check=True, capture_output=True)
                 slide_clips.append(clip_path)
 
-            if not slide_clips: return None
+            if not slide_clips:
+                return None
 
             # B. 모든 조각 합치기
             concat_file = Path(tmp_dir) / "clips.txt"
@@ -942,26 +1111,55 @@ class FileAssembler:
             try:
                 # 최종 영상 병합 (BGM 레이어 추가 및 오디오 더킹)
                 bgm_path = os.path.join("config", "bgm_corporate.mp3")
-                
+
                 if os.path.exists(bgm_path):
                     # 전문 믹싱: 나레이션(0) + BGM(1) 합성
                     # amix 필터로 믹싱하되 BGM 볼륨을 낮게(0.1) 조정
                     cmd = [
-                        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file),
-                        "-i", bgm_path,
-                        "-filter_complex", 
-                        "[1:a]volume=0.1,adelay=1000|1000[bgm];" # BGM 1초 지연 및 볼륨 10%
+                        "ffmpeg",
+                        "-y",
+                        "-f",
+                        "concat",
+                        "-safe",
+                        "0",
+                        "-i",
+                        str(concat_file),
+                        "-i",
+                        bgm_path,
+                        "-filter_complex",
+                        "[1:a]volume=0.1,adelay=1000|1000[bgm];"  # BGM 1초 지연 및 볼륨 10%
                         "[0:a][bgm]amix=inputs=2:duration=first:dropout_transition=2[aout]",
-                        "-map", "0:v", "-map", "[aout]",
-                        "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
-                        str(out_path)
+                        "-map",
+                        "0:v",
+                        "-map",
+                        "[aout]",
+                        "-c:v",
+                        "copy",
+                        "-c:a",
+                        "aac",
+                        "-b:a",
+                        "192k",
+                        str(out_path),
                     ]
                 else:
                     # BGM 없을 시 기존 방식대로 병합
-                    subprocess.run([
-                        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file),
-                        "-c", "copy", str(out_path)
-                    ], check=True, capture_output=True)
+                    subprocess.run(
+                        [
+                            "ffmpeg",
+                            "-y",
+                            "-f",
+                            "concat",
+                            "-safe",
+                            "0",
+                            "-i",
+                            str(concat_file),
+                            "-c",
+                            "copy",
+                            str(out_path),
+                        ],
+                        check=True,
+                        capture_output=True,
+                    )
                     return GeneratedFile(
                         file_type="mp4",
                         file_path=str(out_path),
@@ -985,24 +1183,32 @@ class FileAssembler:
         """ffprobe를 사용하여 오디오 파일의 길이를 초 단위로 반환한다."""
         import subprocess
         import json
+
         try:
             cmd = [
-                "ffprobe", "-v", "quiet", "-print_format", "json",
-                "-show_format", "-show_streams", file_path
+                "ffprobe",
+                "-v",
+                "quiet",
+                "-print_format",
+                "json",
+                "-show_format",
+                "-show_streams",
+                file_path,
             ]
             result = subprocess.run(cmd, capture_output=True, text=True)
             data = json.loads(result.stdout)
             return float(data["format"]["duration"])
         except Exception:
-            return 5.0 # Fallback
+            return 5.0  # Fallback
 
     def _sanitize_subtitle(self, text: str) -> str:
         """자막 텍스트를 ffmpeg 필터에 안전하게 정제한다 (작은따옴표 탈출 등)."""
-        if not text: return ""
+        if not text:
+            return ""
         # 출처 정보 등은 자막에서 제외하고 핵심 본문만 (첫 2문장 정도)
-        lines = text.split("\n")[0] # 첫 줄만 사용하거나 적절히 자름
+        lines = text.split("\n")[0]  # 첫 줄만 사용하거나 적절히 자름
         safe = lines.replace("'", "").replace(":", "\\:").replace('"', "")
-        return safe[:100] # 너무 길면 자름
+        return safe[:100]  # 너무 길면 자름
 
     # ----- Visualization (SVG/PNG passthrough) -----
 
