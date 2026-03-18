@@ -17,10 +17,12 @@
   --emp:#66BB6A;
   --soc:#26A69A;
 }
-html,body{width:100%;height:100%;overflow:hidden;background:#1a1a2e;font-family:system-ui,-apple-system,sans-serif;color:#e8e8f0}
+html,body{width:100%;height:100%;overflow:hidden;background:#1a1a2e;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#e8e8f0}
 canvas{display:block;cursor:default}
 #ui{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
 #ui>*{pointer-events:auto}
+
+/* Top bar */
 .topbar{display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--hud-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--hud-border);flex-wrap:wrap}
 .topbar .logo{font-weight:800;font-size:16px;color:var(--accent);letter-spacing:-0.5px;white-space:nowrap}
 .topbar .logo small{font-size:10px;color:rgba(255,255,255,0.4);font-weight:500;margin-left:4px}
@@ -34,10 +36,13 @@ canvas{display:block;cursor:default}
 .topbar .time-display{margin-left:auto;display:flex;align-items:center;gap:8px}
 .topbar .day{font-size:11px;color:rgba(255,255,255,0.5)}
 .topbar .clock{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
-.speed-btn{background:rgba(255,255,255,0.08);border:1px solid var(--hud-border);color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;cursor:pointer;font-weight:600}
+.speed-btn{background:rgba(255,255,255,0.08);border:1px solid var(--hud-border);color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;cursor:pointer;font-weight:600;transition:all .15s}
 .speed-btn:hover,.speed-btn.active{background:var(--accent);color:#1a1a2e;border-color:var(--accent)}
-.back-btn{background:none;border:1px solid var(--hud-border);color:rgba(255,255,255,0.5);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;text-decoration:none;font-weight:500}
+
+.back-btn{background:none;border:1px solid var(--hud-border);color:rgba(255,255,255,0.5);border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;text-decoration:none;font-weight:500;transition:all .15s}
 .back-btn:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
+
+/* Build panel */
 .build-panel{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:5px;padding:8px 12px;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-radius:16px;z-index:20;overflow-x:auto;max-width:96vw}
 .build-btn{width:60px;height:62px;border:2px solid transparent;border-radius:10px;background:rgba(255,255,255,0.05);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.15s ease-out;position:relative;color:#e8e8f0;font-family:inherit}
 .build-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);transform:translateY(-2px)}
@@ -45,421 +50,2263 @@ canvas{display:block;cursor:default}
 .build-btn .icon{font-size:22px}
 .build-btn .label{font-size:8px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;color:rgba(255,255,255,0.5)}
 .build-btn .cost{position:absolute;top:-7px;right:-3px;font-size:9px;font-weight:700;background:var(--green);color:#111;padding:1px 5px;border-radius:5px}
-.info-panel{position:fixed;right:16px;top:65px;width:220px;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-radius:12px;padding:14px;display:none;font-size:11px}
-.info-panel.show{display:block}
-.info-panel h3{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--accent)}
-.info-panel .row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
-.info-panel .row .k{color:rgba(255,255,255,0.5)}
-.info-panel .row .v{font-weight:600;font-variant-numeric:tabular-nums}
+
+/* Minimap */
 .minimap{position:fixed;bottom:20px;right:16px;width:140px;height:105px;background:rgba(18,18,30,0.9);border:1px solid var(--hud-border);border-radius:8px;overflow:hidden}
 .minimap canvas{width:100%;height:100%}
+
+/* Toast */
 .toast{position:fixed;top:55px;left:50%;transform:translateX(-50%) translateY(-20px);padding:8px 20px;border-radius:8px;font-size:12px;font-weight:600;opacity:0;transition:all 0.3s ease-out;z-index:100;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.warn{background:#F59E0B;color:#1a1a2e}
 .toast.info{background:var(--blue);color:#fff}
 .toast.success{background:var(--green);color:#1a1a2e}
-.tutorial{position:fixed;bottom:105px;left:50%;transform:translateX(-50%);background:rgba(18,18,30,0.95);border:1px solid var(--accent);border-radius:10px;padding:12px 20px;font-size:12px;max-width:360px;text-align:center;line-height:1.5;z-index:50}
+
+/* Tutorial */
+.tutorial{position:fixed;bottom:105px;left:50%;transform:translateX(-50%);background:rgba(18,18,30,0.95);border:1px solid var(--accent);border-radius:10px;padding:12px 20px;font-size:12px;max-width:400px;text-align:center;line-height:1.5;z-index:50;display:none}
+.tutorial.show{display:block}
 .tutorial .step{color:var(--accent);font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
-.tutorial .dismiss{margin-top:6px;font-size:10px;color:rgba(255,255,255,0.4);cursor:pointer}
+.tutorial .dismiss{margin-top:6px;font-size:10px;color:rgba(255,255,255,0.4);cursor:pointer;transition:color .15s}
 .tutorial .dismiss:hover{color:#fff}
+
+/* Policy panel */
+.policy-toggle{position:fixed;right:16px;top:65px;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-radius:8px;padding:6px 12px;font-size:11px;color:var(--accent);cursor:pointer;font-weight:700;z-index:25;transition:all .15s}
+.policy-toggle:hover{background:rgba(255,184,48,0.15)}
+.policy-panel{position:fixed;right:16px;top:100px;width:260px;max-height:calc(100vh - 230px);overflow-y:auto;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-radius:12px;padding:14px;z-index:24;transform:translateX(300px);transition:transform .3s ease;font-size:11px}
+.policy-panel.open{transform:translateX(0)}
+.policy-panel h3{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--accent)}
+.pol-item{padding:8px;margin-bottom:6px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);transition:all .2s;cursor:pointer}
+.pol-item:hover{background:rgba(255,255,255,0.08)}
+.pol-item.active{border-color:var(--accent);background:rgba(255,184,48,0.1);box-shadow:0 0 10px rgba(255,184,48,0.15)}
+.pol-item.locked{opacity:0.5;cursor:not-allowed}
+.pol-item.activating{border-color:#60A5FA;background:rgba(96,165,250,0.1)}
+.pol-name{font-weight:700;font-size:12px;margin-bottom:2px}
+.pol-cost{font-size:10px;color:rgba(255,255,255,0.4)}
+.pol-req{font-size:9px;color:#F87171;margin-top:2px}
+.pol-desc{font-size:9px;color:rgba(255,255,255,0.5);margin-top:2px}
+.pol-progress{height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:4px;overflow:hidden}
+.pol-progress-bar{height:100%;background:var(--blue);border-radius:2px;transition:width .3s}
+
+/* Meeting panel */
+.meeting-panel{position:fixed;right:0;top:0;width:320px;height:100%;background:var(--hud-bg);backdrop-filter:blur(16px);border-left:1px solid var(--hud-border);z-index:30;transform:translateX(340px);transition:transform .3s ease;padding:24px 20px;overflow-y:auto}
+.meeting-panel.open{transform:translateX(0)}
+.meeting-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,0.08);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.meeting-close:hover{background:rgba(255,255,255,0.2)}
+.meeting-portrait{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:20px auto 10px;font-size:28px;border:3px solid var(--accent)}
+.meeting-name{text-align:center;font-weight:700;font-size:15px;margin-bottom:2px}
+.meeting-type{text-align:center;font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:16px;text-transform:capitalize}
+.meeting-stats{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.meeting-stat{text-align:center;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.05);font-size:10px}
+.meeting-stat .v{font-weight:700;font-size:13px;display:block}
+.meeting-choice{width:100%;padding:10px 14px;margin-bottom:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#e8e8f0;cursor:pointer;text-align:left;font-size:11px;line-height:1.4;transition:all .15s;font-family:inherit}
+.meeting-choice:hover{background:rgba(255,184,48,0.12);border-color:var(--accent)}
+.meeting-choice .effect{display:block;font-size:9px;color:rgba(255,255,255,0.4);margin-top:2px}
+
+/* Event modal */
+.event-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:40;display:none;align-items:center;justify-content:center}
+.event-overlay.show{display:flex}
+.event-card{background:#FFFEF5;color:#1a1a2e;border-radius:12px;width:420px;max-width:90vw;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:2px solid #E8E0D0;position:relative}
+.event-headline{font-size:18px;font-weight:800;margin-bottom:8px;line-height:1.3;color:#2C1810}
+.event-desc{font-size:13px;color:#5C4A3A;margin-bottom:16px;line-height:1.5}
+.event-timer{position:absolute;top:12px;right:16px;font-size:12px;font-weight:700;color:#D32F2F}
+.event-choice{width:100%;padding:10px 14px;margin-bottom:6px;border-radius:8px;border:1px solid #D7CCC8;background:#FFF;color:#2C1810;cursor:pointer;text-align:left;font-size:12px;line-height:1.4;transition:all .15s;font-family:inherit}
+.event-choice:hover{background:#FFF3E0;border-color:#FFB830}
+.event-choice:disabled{opacity:0.4;cursor:not-allowed}
+.event-choice .preview{display:block;font-size:10px;color:#8D6E63;margin-top:2px}
+.event-choice .req{color:#D32F2F;font-weight:600}
+.event-tag{display:inline-block;font-size:9px;font-weight:700;background:#EFEBE9;color:#5D4037;padding:2px 8px;border-radius:4px;margin-bottom:10px;letter-spacing:0.5px}
+
+/* Report card */
+.report-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:50;display:none;align-items:center;justify-content:center;overflow-y:auto;padding:20px}
+.report-overlay.show{display:flex}
+.report-card{background:var(--hud-bg);backdrop-filter:blur(16px);border:1px solid var(--hud-border);border-radius:16px;width:480px;max-width:95vw;padding:32px 28px;color:#e8e8f0}
+.report-title{font-size:22px;font-weight:800;color:var(--accent);text-align:center;margin-bottom:6px}
+.report-subtitle{font-size:12px;text-align:center;color:rgba(255,255,255,0.5);margin-bottom:20px}
+.report-section{margin-bottom:16px}
+.report-section h4{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px}
+.report-bar{height:8px;border-radius:4px;background:rgba(255,255,255,0.08);flex:1;margin:0 10px;overflow:hidden}
+.report-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+.report-check{font-size:12px;padding:3px 0}
+.report-quote{font-style:italic;text-align:center;padding:16px;color:rgba(255,255,255,0.6);font-size:12px;line-height:1.6;border:1px solid rgba(255,255,255,0.06);border-radius:8px;margin-bottom:16px}
+.report-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--accent);color:#1a1a2e;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:inherit}
+.report-btn:hover{opacity:0.85}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
 <div id="ui">
-  <div class="topbar">
-    <a href="/index.html" class="back-btn">&larr; SKMS</a>
-    <div class="logo">SKMS Company Builder<small>Sim</small></div>
-    <div class="stat money"><span>$</span><span class="val" id="hud-money">50,000</span></div>
-    <div class="stat"><span>&#x1F464;</span><span class="val" id="hud-workers">0</span></div>
-    <div class="stat rating"><span>&#x2B50;</span><span class="val" id="hud-rating">1.0</span></div>
-    <div class="stat"><span>&#x1F465;</span><span class="val cust" id="hud-cust">50</span></div>
-    <div class="stat"><span>&#x1F49A;</span><span class="val emp" id="hud-emp">50</span></div>
-    <div class="stat"><span>&#x1F30D;</span><span class="val soc" id="hud-soc">50</span></div>
-    <div class="time-display">
-      <span class="day" id="hud-day">Day 1</span>
-      <span class="clock" id="hud-clock">08:00</span>
-      <button class="speed-btn active" id="btn-speed" title="Speed">1x</button>
-    </div>
-  </div>
+  <div class="topbar" id="topbar"></div>
   <div class="build-panel" id="build-panel"></div>
-  <div class="info-panel" id="info-panel"><h3 id="info-title">Info</h3><div id="info-body"></div></div>
   <div class="minimap"><canvas id="minimap" width="140" height="105"></canvas></div>
   <div class="toast" id="toast"></div>
-  <div class="tutorial" id="tutorial">
-    <div class="step">Step 1/3</div>
-    <div class="msg">Welcome! Click Corridor below, then lay paths from HQ to connect departments.</div>
-    <div class="dismiss" id="tut-dismiss">Got it &rarr;</div>
-  </div>
+  <div class="tutorial" id="tutorial"></div>
+  <div class="policy-toggle" id="policy-toggle"></div>
+  <div class="policy-panel" id="policy-panel"></div>
+  <div class="meeting-panel" id="meeting-panel"></div>
+  <div class="event-overlay" id="event-overlay"></div>
+  <div class="report-overlay" id="report-overlay"></div>
 </div>
 <script>
 "use strict";
-const TW=64,TH=32,GRID=40;
-// === BUILDING DEFS (SKMS Company) ===
-const DEFS={
-  corridor: {cost:50,  rev:0,  upkeep:0, sz:1,col:'#D7CCC8',exc:0,lbl:'Corridor',emoji:'\u{1F6E4}',cat:'infra'},
-  production:{cost:1500,rev:30, upkeep:8, sz:2,col:'#FFB74D',exc:0,lbl:'Production',emoji:'\u{1F3ED}',cat:'dept'},
-  rnd:       {cost:2500,rev:15, upkeep:12,sz:2,col:'#7E57C2',exc:0,lbl:'R&D',emoji:'\u{1F52C}',cat:'dept'},
-  planning:  {cost:1200,rev:5,  upkeep:6, sz:2,col:'#42A5F5',exc:0,lbl:'Planning',emoji:'\u{1F4CA}',cat:'dept'},
-  hr:        {cost:1000,rev:0,  upkeep:5, sz:2,col:'#66BB6A',exc:0,lbl:'HR',emoji:'\u{1F465}',cat:'dept'},
-  marketing: {cost:1800,rev:20, upkeep:10,sz:2,col:'#EF5350',exc:0,lbl:'Marketing',emoji:'\u{1F4E2}',cat:'dept'},
-  social:    {cost:2000,rev:0,  upkeep:8, sz:2,col:'#26A69A',exc:0,lbl:'Social Impact',emoji:'\u{1F91D}',cat:'dept'},
-  cafeteria: {cost:600, rev:0,  upkeep:3, sz:1,col:'#FFF3E0',exc:0,lbl:'Cafeteria',emoji:'\u{1F37D}',cat:'facility'},
-  wellness:  {cost:800, rev:0,  upkeep:4, sz:1,col:'#E8F5E9',exc:0,lbl:'Wellness',emoji:'\u{1F3CB}',cat:'facility'},
-  academy:   {cost:1500,rev:0,  upkeep:6, sz:2,col:'#FFF9C4',exc:0,lbl:'Academy',emoji:'\u{1F4DA}',cat:'facility'},
-  tree:      {cost:80,  rev:0,  upkeep:0, sz:1,col:'#8BC34A',exc:0,lbl:'Tree',emoji:'\u{1F333}',cat:'deco'},
+
+// ============================================================
+// CONSTANTS
+// ============================================================
+const TW = 64, TH = 32, GRID = 40;
+const TICK_MS = 1000 / 60;
+
+// ============================================================
+// BUILDING DEFINITIONS
+// ============================================================
+const DEFS = {
+  corridor:   {cost:50,   rev:0,  upkeep:0,  sz:1, col:'#D7CCC8', lbl:'Corridor',     emoji:'\u{1F6E4}', cat:'infra', height:4},
+  production: {cost:1500,  rev:30, upkeep:8,  sz:2, col:'#FFB74D', lbl:'Production',    emoji:'\u{1F3ED}', cat:'dept',  height:36, metric:'cust', metricAmt:0.03},
+  rnd:        {cost:2500,  rev:15, upkeep:12, sz:2, col:'#7E57C2', lbl:'R&D',           emoji:'\u{1F52C}', cat:'dept',  height:40, metric:'cust', metricAmt:0.04},
+  planning:   {cost:1200,  rev:5,  upkeep:6,  sz:2, col:'#42A5F5', lbl:'Planning',      emoji:'\u{1F4CA}', cat:'dept',  height:34, metric:'cust', metricAmt:0.02},
+  hr:         {cost:1000,  rev:0,  upkeep:5,  sz:2, col:'#66BB6A', lbl:'HR',            emoji:'\u{1F465}', cat:'dept',  height:32, metric:'emp',  metricAmt:0.05},
+  marketing:  {cost:1800,  rev:20, upkeep:10, sz:2, col:'#EF5350', lbl:'Marketing',     emoji:'\u{1F4E2}', cat:'dept',  height:36, metric:'cust', metricAmt:0.05},
+  social:     {cost:2000,  rev:0,  upkeep:8,  sz:2, col:'#26A69A', lbl:'Social Impact', emoji:'\u{1F91D}', cat:'dept',  height:34, metric:'soc',  metricAmt:0.06},
+  cafeteria:  {cost:600,   rev:0,  upkeep:3,  sz:1, col:'#FFF3E0', lbl:'Cafeteria',     emoji:'\u{1F37D}', cat:'facility', height:18, metric:'emp', metricAmt:0.03},
+  wellness:   {cost:800,   rev:0,  upkeep:4,  sz:1, col:'#E8F5E9', lbl:'Wellness',      emoji:'\u{1F3CB}', cat:'facility', height:20, metric:'emp', metricAmt:0.04},
+  academy:    {cost:1500,  rev:0,  upkeep:6,  sz:2, col:'#FFF9C4', lbl:'Academy',       emoji:'\u{1F4DA}', cat:'facility', height:28, metric:'emp', metricAmt:0.03},
+  tree:       {cost:80,    rev:0,  upkeep:0,  sz:1, col:'#8BC34A', lbl:'Tree',          emoji:'\u{1F333}', cat:'deco',  height:0}
 };
-// === STATE ===
-let money=50000,grid=Array.from({length:GRID},()=>Array(GRID).fill(null));
-let workers=[],bldgs=[],selTool=null;
-let camX=0,camY=0,zm=1,drag=false,ds={x:0,y:0},cs={x:0,y:0};
-let gTime=480,gDay=1,gSpeed=1,tickA=0;
-let custSat=50,empHap=50,socVal=50,rating=1;
-let weather='clear',wTimer=0;
-let undo=[],redo=[],wID=0,tutStep=0;
-let totRev=0,totExp=0,mX=0,mY=0;
-const HQ={x:Math.floor(GRID/2),y:Math.floor(GRID/2)};
-grid[HQ.y][HQ.x]={type:'hq'};
-// Pre-lay corridors from HQ
-for(let i=1;i<=4;i++){
-  grid[HQ.y][HQ.x+i]={type:'corridor'};bldgs.push({type:'corridor',gx:HQ.x+i,gy:HQ.y});
-  grid[HQ.y][HQ.x-i]={type:'corridor'};bldgs.push({type:'corridor',gx:HQ.x-i,gy:HQ.y});
-  grid[HQ.y+i][HQ.x]={type:'corridor'};bldgs.push({type:'corridor',gx:HQ.x,gy:HQ.y+i});
-  grid[HQ.y-i][HQ.x]={type:'corridor'};bldgs.push({type:'corridor',gx:HQ.x,gy:HQ.y-i});
+
+// ============================================================
+// EMPLOYEE TYPE CONFIG
+// ============================================================
+const EMP_TYPES = {
+  ace:        {color:'#FF7043', speed:2.0, saturation:1.0, size:1.0,  revMult:1.5, emoji:'\u{1F525}'},
+  rookie:     {color:'#66BB6A', speed:1.2, saturation:0.9, size:0.9,  revMult:0.5, emoji:'\u{1F331}'},
+  cynic:      {color:'#78909C', speed:0.8, saturation:0.6, size:0.9,  revMult:1.0, emoji:'\u{1F612}'},
+  disengaged: {color:'#BDBDBD', speed:0.4, saturation:0.3, size:0.9,  revMult:0.2, emoji:'\u{1F634}'},
+  leader:     {color:'#FFD54F', speed:1.5, saturation:1.0, size:1.3,  revMult:1.2, emoji:'\u{2B50}'}
+};
+
+// ============================================================
+// POLICY DEFINITIONS
+// ============================================================
+const POLICIES = [
+  {id:'rewards',    name:'Performance Rewards',    nameKo:'\uC131\uACFC \uBCF4\uC0C1 \uCCB4\uACC4',   cost:500,  time:10, prereqs:[], desc:'Revenue per employee +10%', empBonus:3, custBonus:2, socBonus:0},
+  {id:'ojt',        name:'O.J.T',                  nameKo:'O.J.T \uD604\uC7A5\uAD50\uC721',             cost:800,  time:15, prereqs:[], desc:'Rookie growth speed 2x', empBonus:4, custBonus:0, socBonus:0},
+  {id:'horizontal', name:'Horizontal Communication',nameKo:'\uC218\uD3C9\uC801 \uC18C\uD1B5',          cost:600,  time:10, prereqs:[], desc:'Employee happiness +5/tick', empBonus:5, custBonus:0, socBonus:1},
+  {id:'coordination',name:'Coordination',           nameKo:'\uCF54\uB514\uB124\uC774\uC158',            cost:1000, time:20, prereqs:['planning'], desc:'Department synergy +15%', empBonus:2, custBonus:3, socBonus:1},
+  {id:'supex',      name:'SUPEX Pursuit',           nameKo:'SUPEX \uCD94\uAD6C',                        cost:2000, time:25, prereqs:['rnd'], desc:'Customer satisfaction +8/tick', empBonus:0, custBonus:8, socBonus:2},
+  {id:'vwbe',       name:'VWBE Culture',            nameKo:'VWBE \uBB38\uD654',                         cost:1500, time:20, prereqs:['hr','wellness'], desc:'Cynic recovery enabled, emp+6', empBonus:6, custBonus:0, socBonus:3},
+  {id:'socialval',  name:'Social Value Mgmt',       nameKo:'\uC0AC\uD68C\uC801 \uAC00\uCE58 \uACBD\uC601', cost:1200, time:15, prereqs:['social'], desc:'Social value +10/tick', empBonus:0, custBonus:2, socBonus:10},
+  {id:'ethics',     name:'Ethics Management',       nameKo:'\uC724\uB9AC \uACBD\uC601',                 cost:1000, time:15, prereqs:[], desc:'Prevents negative events, soc+4', empBonus:1, custBonus:1, socBonus:4},
+  {id:'skmanship',  name:'SK-Manship',              nameKo:'SK-Manship',                                 cost:3000, time:30, prereqs:['supex','vwbe'], desc:'All metrics +5/tick, ultimate culture', empBonus:5, custBonus:5, socBonus:5}
+];
+
+// ============================================================
+// SPEECH BUBBLE LINES
+// ============================================================
+const SPEECH = {
+  disengaged_no_welfare:    ["\uB9E4\uC77C \uB611\uAC19\uC740 \uD558\uB8E8...","\uC758\uBBF8\uAC00 \uC5C6\uB2E4","\uC9D1\uC5D0 \uAC00\uACE0 \uC2F6\uB2E4..."],
+  disengaged_academy:       ["\uAD50\uC721\uC774\uB77C\uB3C4 \uBC1B\uC744 \uC218 \uC788\uC73C\uBA74 \uC88B\uACA0\uB294\uB370"],
+  cynic_no_vwbe:            ["\uC5F4\uC2EC\uD788 \uD574\uBD24\uC790 \uB2EC\uB77C\uC9C0\uB294 \uAC74 \uC5C6\uC5B4","\uB610 \uBCC0\uD558\uB294 \uAC70\uB77C\uACE0?"],
+  cynic_vwbe:               ["\uBD84\uC704\uAE30\uAC00 \uC880 \uB2EC\uB77C\uC84C\uB098?","\uB098\uB3C4 \uD574\uBCFC\uAE4C"],
+  rookie_no_ojt:            ["\uD63C\uC790 \uBC30\uC6B0\uB824\uB2C8 \uB9C9\uB9C9\uD558\uB2E4","\uBB50\uBD80\uD130 \uD574\uC57C \uD560\uC9C0..."],
+  rookie_ojt:               ["\uC120\uBC30\uAC00 \uC54C\uB824\uC8FC\uB2C8 \uD655\uC2E4\uD788 \uB2E4\uB974\uB2E4!"],
+  ace_good:                 ["\uC774 \uD68C\uC0AC \uC624\uAE38 \uC798\uD588\uC5B4","\uC624\uB298\uB3C4 \uC5F4\uC815\uC801\uC73C\uB85C!"],
+  ace_scout:                ["\uC2A4\uCE74\uC6B0\uD2B8 \uC81C\uC758 \uC654\uB294\uB370... \uACE0\uBBFC\uB41C\uB2E4"],
+  leader_good:              ["\uC6B0\uB9AC \uD300\uC774 \uC131\uC7A5\uD558\uB294 \uAC8C \uBCF4\uC5EC\uC11C \uC88B\uB2E4"],
+  leader_overwhelmed:       ["\uAD00\uB9AC\uD560 \uAC8C \uB108\uBB34 \uB9CE\uC544..."],
+  after_welfare:            ["\uAD6C\uB0B4\uC2DD\uB2F9 \uC0DD\uACBC\uB2E4!","\uC18C\uC18C\uD558\uC9C0\uB9CC \uAE30\uBD84 \uC88B\uB124"],
+  transition_cynic_ace:     ["\uB2E4\uC2DC \uD55C\uBC88 \uC81C\uB300\uB85C \uD574\uBCFC\uAE4C!"],
+  transition_ace_cynic:     ["...\uB354 \uC774\uC0C1 \uC758\uBBF8 \uC5C6\uB294 \uAC83 \uAC19\uB2E4"],
+  quitting:                 ["\uC5EC\uAE30\uAE4C\uC9C0\uC778 \uAC83 \uAC19\uC2B5\uB2C8\uB2E4. \uC548\uB155\uD788 \uACC4\uC138\uC694."]
+};
+
+// ============================================================
+// EVENT DEFINITIONS
+// ============================================================
+const EVENTS = [
+  {
+    id:'talent_scout', headline:'\uD575\uC2EC \uC778\uC7AC \uC2A4\uCE74\uC6B0\uD2B8 \uC81C\uC758',
+    desc:'\uACBD\uC7C1\uC0AC\uC5D0\uC11C \uC5D0\uC774\uC2A4 \uC9C1\uC6D0\uC5D0\uAC8C \uC2A4\uCE74\uC6B0\uD2B8 \uC81C\uC758\uAC00 \uC654\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uC5F0\uBD09 \uC778\uC0C1\uC73C\uB85C \uBC29\uC5B4', preview:'\uD68C\uC0AC\uB3C8 -$2000, \uC9C1\uC6D0\uD589\uBCF5 +10', apply:function(G){G.money-=2000;G.empHap=Math.min(100,G.empHap+10);}},
+      {text:'\uBCF4\uB0B4\uC8FC\uAE30', preview:'\uC9C1\uC6D0\uD589\uBCF5 -15, \uC5D0\uC774\uC2A4 1\uBA85 \uD1B4\uC0AC', apply:function(G){G.empHap=Math.max(0,G.empHap-15);removeOneByType(G,'ace');}},
+      {text:'\uC131\uC7A5 \uACBD\uB85C \uC81C\uC2DC (VWBE \uD544\uC694)', preview:'\uC9C1\uC6D0\uD589\uBCF5 +5, \uBB34\uB8CC', reqPolicy:'vwbe', apply:function(G){G.empHap=Math.min(100,G.empHap+5);}}
+    ]
+  },
+  {
+    id:'quality_issue', headline:'\uC5B8\uB860 \uD488\uC9C8 \uC774\uC288 \uBCF4\uB3C4',
+    desc:'\uC81C\uD488 \uD488\uC9C8 \uBB38\uC81C\uAC00 \uC5B8\uB860\uC5D0 \uBCF4\uB3C4\uB418\uC5C8\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'PR \uB300\uC751', preview:'\uD68C\uC0AC\uB3C8 -$1000, \uACE0\uAC1D\uB9CC\uC871 -5', apply:function(G){G.money-=1000;G.custSat=Math.max(0,G.custSat-5);}},
+      {text:'\uC804\uB7C9 \uB9AC\uCF5C', preview:'\uD68C\uC0AC\uB3C8 -$3000, \uACE0\uAC1D\uB9CC\uC871 +10', apply:function(G){G.money-=3000;G.custSat=Math.min(100,G.custSat+10);}},
+      {text:'\uBB34\uC2DC', preview:'\uACE0\uAC1D\uB9CC\uC871 -20', apply:function(G){G.custSat=Math.max(0,G.custSat-20);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'burnout', headline:'\uAD6C\uC131\uC6D0 \uBC88\uC544\uC6C3 \uACBD\uACE0',
+    desc:'\uC9C1\uC6D0\uB4E4\uC758 \uBC88\uC544\uC6C3 \uC9D5\uD6C4\uAC00 \uBCF4\uC785\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uAC15\uC81C \uD734\uAC00', preview:'\uC218\uC775 -30% 3\uC77C\uAC04', apply:function(G){G.revPenalty=0.7;G.revPenaltyDays=3;}},
+      {text:'\uBB34\uC2DC', preview:'\uC9C1\uC6D0\uD589\uBCF5 -20, 2\uBA85 \uD1B4\uC0AC', apply:function(G){G.empHap=Math.max(0,G.empHap-20);quitRandom(G,2);G.ignoreCount++;}},
+      {text:'\uC790\uB3D9 \uC644\uD654 (VWBE+Wellness)', preview:'\uC9C1\uC6D0\uD589\uBCF5 -5', reqPolicy:'vwbe', reqBuilding:'wellness', apply:function(G){G.empHap=Math.max(0,G.empHap-5);}}
+    ]
+  },
+  {
+    id:'gov_audit', headline:'\uC815\uBD80 \uC0AC\uD68C \uAC10\uC0AC',
+    desc:'\uC815\uBD80\uC5D0\uC11C \uC0AC\uD68C\uC801 \uCC45\uC784 \uAC10\uC0AC\uB97C \uC2E4\uC2DC\uD569\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uD1B5\uACFC (\uC0AC\uD68C\uAC00\uCE58 >60)', preview:'\uC0AC\uD68C\uAC00\uCE58 +10', condition:function(G){return G.socVal>60;}, apply:function(G){G.socVal=Math.min(100,G.socVal+10);}},
+      {text:'\uAE09\uD788 \uC900\uBE44', preview:'\uD68C\uC0AC\uB3C8 -$2000, \uC0AC\uD68C\uAC00\uCE58 +5', apply:function(G){G.money-=2000;G.socVal=Math.min(100,G.socVal+5);}},
+      {text:'\uBD88\uD569\uACA9 (\uC0AC\uD68C\uAC00\uCE58 <30)', preview:'\uC0AC\uD68C\uAC00\uCE58 -15, \uACE0\uAC1D -10', condition:function(G){return G.socVal<30;}, apply:function(G){G.socVal=Math.max(0,G.socVal-15);G.custSat=Math.max(0,G.custSat-10);}}
+    ]
+  },
+  {
+    id:'price_war', headline:'\uACBD\uC7C1\uC0AC \uAC00\uACA9 \uC778\uD558',
+    desc:'\uACBD\uC7C1\uC0AC\uAC00 \uACF5\uACA9\uC801 \uAC00\uACA9 \uC778\uD558\uB97C \uC2DC\uC791\uD588\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uAC00\uACA9 \uB9DE\uCD94\uAE30', preview:'\uC218\uC775 -20%', apply:function(G){G.revPenalty=0.8;G.revPenaltyDays=5;}},
+      {text:'\uCC28\uBCC4\uD654 (SUPEX+R&D)', preview:'\uACE0\uAC1D\uB9CC\uC871 +10', reqPolicy:'supex', reqBuilding:'rnd', apply:function(G){G.custSat=Math.min(100,G.custSat+10);}},
+      {text:'\uAD00\uB9DD', preview:'\uACE0\uAC1D\uB9CC\uC871 -15', apply:function(G){G.custSat=Math.max(0,G.custSat-15);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'training_complaint', headline:'\uC2E0\uC785 \uAD50\uC721 \uBD80\uC7AC \uBBFC\uC6D0',
+    desc:'\uC2E0\uC785 \uC9C1\uC6D0\uB4E4\uC774 \uAD50\uC721 \uBD80\uC7AC\uB97C \uD638\uC18C\uD569\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uD2B8\uB808\uC774\uB108 \uACE0\uC6A9', preview:'\uD68C\uC0AC\uB3C8 -$1500, \uB8E8\uD0A4 \uC131\uC7A5 2\uBC30', apply:function(G){G.money-=1500;G.rookieGrowthBuff=2;G.rookieGrowthDays=10;}},
+      {text:'\uC120\uBC30 \uBC30\uCE58 (\uC5D0\uC774\uC2A4 \uD544\uC694)', preview:'\uB8E8\uD0A4 \uC131\uC7A5 2\uBC30', condition:function(G){return G.workers.some(function(w){return w.type==='ace';});}, apply:function(G){G.rookieGrowthBuff=2;G.rookieGrowthDays=10;}},
+      {text:'\uBB34\uC2DC', preview:'\uB8E8\uD0A4 2\uBA85 \u2192 \uBC29\uAD00\uC790', apply:function(G){convertRandom(G,'rookie','disengaged',2);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'community_service', headline:'\uC9C0\uC5ED \uC0AC\uD68C \uBD09\uC0AC \uC694\uCCAD',
+    desc:'\uC9C0\uC5ED \uCEE4\uBBA4\uB2C8\uD2F0\uC5D0\uC11C \uBD09\uC0AC \uD65C\uB3D9\uC744 \uC694\uCCAD\uD588\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uCC38\uC5EC', preview:'\uD68C\uC0AC\uB3C8 -$500, \uC0AC\uD68C\uAC00\uCE58 +15, \uC9C1\uC6D0\uD589\uBCF5 +5', apply:function(G){G.money-=500;G.socVal=Math.min(100,G.socVal+15);G.empHap=Math.min(100,G.empHap+5);}},
+      {text:'\uAE30\uBD80\uB9CC', preview:'\uD68C\uC0AC\uB3C8 -$1000, \uC0AC\uD68C\uAC00\uCE58 +8', apply:function(G){G.money-=1000;G.socVal=Math.min(100,G.socVal+8);}},
+      {text:'\uAC70\uC808', preview:'\uC0AC\uD68C\uAC00\uCE58 -10', apply:function(G){G.socVal=Math.max(0,G.socVal-10);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'labor_conflict', headline:'\uB178\uC0AC \uAC08\uB4F1 \uC870\uC9D0',
+    desc:'\uC9C1\uC6D0\uB4E4 \uC0AC\uC774\uC5D0\uC11C \uBD88\uB9CC\uC774 \uCEE4\uC9C0\uACE0 \uC788\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uB300\uD654 (\uC218\uD3C9\uC801 \uC18C\uD1B5 \uD544\uC694)', preview:'\uC9C1\uC6D0\uD589\uBCF5 +10', reqPolicy:'horizontal', apply:function(G){G.empHap=Math.min(100,G.empHap+10);}},
+      {text:'\uC591\uBCF4', preview:'\uD68C\uC0AC\uB3C8 -$2000, \uC9C1\uC6D0\uD589\uBCF5 +5', apply:function(G){G.money-=2000;G.empHap=Math.min(100,G.empHap+5);}},
+      {text:'\uC5B5\uC555', preview:'\uC9C1\uC6D0\uD589\uBCF5 -25, 3\uBA85 \uC2DC\uB2C8\uD06C\uD654', apply:function(G){G.empHap=Math.max(0,G.empHap-25);convertRandom(G,'ace','cynic',1);convertRandom(G,'rookie','cynic',2);G.pressureCount++;}}
+    ]
+  },
+  {
+    id:'innovation', headline:'\uD601\uC2E0 \uD504\uB85C\uC81D\uD2B8 \uAE30\uD68C',
+    desc:'\uC0C8\uB85C\uC6B4 \uD601\uC2E0 \uD504\uB85C\uC81D\uD2B8\uC5D0 \uCC38\uC5EC\uD560 \uAE30\uD68C\uAC00 \uC788\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uD22C\uC790', preview:'\uD68C\uC0AC\uB3C8 -$3000, \uACE0\uAC1D\uB9CC\uC871 +20 (\uC9C0\uC5F0)', apply:function(G){G.money-=3000;G.delayedCust=20;G.delayedCustDays=5;}},
+      {text:'\uD328\uC2A4', preview:'\uBCC0\uD654 \uC5C6\uC74C', apply:function(G){}},
+      {text:'\uBE60\uB978 \uCD94\uC9C4 (SUPEX)', preview:'\uD68C\uC0AC\uB3C8 -$1500, \uACE0\uAC1D\uB9CC\uC871 +15', reqPolicy:'supex', apply:function(G){G.money-=1500;G.custSat=Math.min(100,G.custSat+15);}}
+    ]
+  },
+  {
+    id:'certification', headline:'\uC6B0\uC218 \uAE30\uC5C5 \uC778\uC99D \uAE30\uD68C',
+    desc:'\uC6B0\uC218 \uAE30\uC5C5 \uC778\uC99D\uC744 \uBC1B\uC744 \uC218 \uC788\uB294 \uAE30\uD68C\uC785\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uC2E0\uCCAD (\uBAA8\uB4E0 \uC9C0\uD45C >50)', preview:'\uBCC4\uC810 +0.5', condition:function(G){return G.custSat>50&&G.empHap>50&&G.socVal>50;}, apply:function(G){G.ratingBonus+=0.5;}},
+      {text:'\uAC74\uB108\uB6F0\uAE30', preview:'\uBCC0\uD654 \uC5C6\uC74C', apply:function(G){}},
+      {text:'\uBD80\uC801\uACA9 (\uC9C0\uD45C <30 \uC788\uC74C)', preview:'\uAC70\uBD80\uB428', condition:function(G){return G.custSat<30||G.empHap<30||G.socVal<30;}, apply:function(G){}}
+    ]
+  }
+];
+
+// ============================================================
+// GAME STATE
+// ============================================================
+var G = createInitialState();
+
+function createInitialState() {
+  var state = {
+    money: 15000,
+    grid: [],
+    workers: [],
+    bldgs: [],
+    selTool: null,
+    camX: 0, camY: 0, zm: 1,
+    drag: false, dragStart: {x:0,y:0}, camStart: {x:0,y:0},
+    gTime: 480, gDay: 1, gSpeed: 1, tickAccum: 0,
+    custSat: 25, empHap: 18, socVal: 10,
+    rating: 1.2, ratingBonus: 0,
+    undoStack: [], redoStack: [],
+    workerID: 0,
+    mouseGX: -1, mouseGY: -1, mouseX: 0, mouseY: 0,
+    // Policies
+    activePolicies: {},
+    activatingPolicies: {},
+    // Meeting
+    meetingWorker: null,
+    // Events
+    eventTimer: 0, eventActive: false, eventCountdown: 0, currentEvent: null, usedEvents: [],
+    // Win/lose
+    winDays: 0, gameOver: false, gameWon: false,
+    // Stats
+    ignoreCount: 0, pressureCount: 0,
+    totalAceTransitions: 0, totalCynicRecoveries: 0, totalQuits: 0, totalLeaderPromotions: 0,
+    choiceLog: [],
+    // Buffs
+    revPenalty: 1, revPenaltyDays: 0,
+    rookieGrowthBuff: 1, rookieGrowthDays: 0,
+    delayedCust: 0, delayedCustDays: 0,
+    // Tutorial
+    tutStep: 0, tutDone: false,
+    // Policy panel
+    policyOpen: false,
+    // Day/night
+    dayNightPhase: 0,
+    // Spawn timer
+    spawnTimer: 0,
+    // Welfare built flag (for speech)
+    welfareJustBuilt: false, welfareTimer: 0,
+    // Audio
+    audioCtx: null, bgmStarted: false
+  };
+  // Init grid
+  state.grid = [];
+  for (var y = 0; y < GRID; y++) {
+    state.grid[y] = [];
+    for (var x = 0; x < GRID; x++) {
+      state.grid[y][x] = null;
+    }
+  }
+  return state;
 }
 
-// === BUILD PANEL ===
-const bp=document.getElementById('build-panel');
-const toolTypes=[...Object.keys(DEFS),'bulldoze'];
-toolTypes.forEach(t=>{
-  const b=document.createElement('button');
-  b.className='build-btn';b.dataset.type=t;
-  const ico=document.createElement('span');ico.className='icon';
-  ico.textContent=t==='bulldoze'?'\u{1F5D1}':(DEFS[t]?.emoji||'');
-  const lbl=document.createElement('span');lbl.className='label';
-  lbl.textContent=t==='bulldoze'?'Delete':(DEFS[t]?.lbl||t);
-  b.appendChild(ico);b.appendChild(lbl);
-  if(DEFS[t]){const c=document.createElement('span');c.className='cost';c.textContent='$'+DEFS[t].cost;b.appendChild(c);}
-  b.addEventListener('click',()=>{initAudio();startBGM();
-    document.querySelectorAll('.build-btn').forEach(x=>x.classList.remove('active'));
-    if(selTool===t){selTool=null;canvas.style.cursor='default';}
-    else{selTool=t;b.classList.add('active');canvas.style.cursor='crosshair';}
-  });
-  bp.appendChild(b);
-});
-
-// === CANVAS ===
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
-const mmC=document.getElementById('minimap'),mmX=mmC.getContext('2d');
-function resize(){canvas.width=innerWidth;canvas.height=innerHeight;
-  if(!camX&&!camY){const e=toScr(HQ.x,HQ.y);camX=canvas.width/2-e.x;camY=canvas.height/2-e.y;}}
-addEventListener('resize',resize);resize();
-
-function toScr(gx,gy){return{x:(gx-gy)*TW/2,y:(gx+gy)*TH/2};}
-function toGrd(sx,sy){const wx=(sx-camX)/zm,wy=(sy-camY)/zm;return{x:Math.floor(wx/TW+wy/TH),y:Math.floor(wy/TH-wx/TW)};}
-function inB(x,y){return x>=0&&y>=0&&x<GRID&&y<GRID;}
-
-// === AUDIO ===
-let aC;
-function initAudio(){if(!aC)aC=new(window.AudioContext||window.webkitAudioContext)();}
-function tone(f,d,t='square',v=0.08){if(!aC)return;const o=aC.createOscillator(),g=aC.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,aC.currentTime);g.gain.exponentialRampToValueAtTime(0.001,aC.currentTime+d);o.connect(g);g.connect(aC.destination);o.start();o.stop(aC.currentTime+d);}
-function sfxPlace(){tone(523,0.1,'sine',0.12);tone(659,0.1,'sine',0.08);}
-function sfxErr(){tone(200,0.2,'sawtooth',0.06);}
-function sfxMoney(){tone(880,0.08,'sine',0.1);tone(1100,0.12,'sine',0.08);}
-function sfxDel(){tone(330,0.15,'triangle',0.08);}
-let bgm=false;
-function startBGM(){if(!aC||bgm)return;bgm=true;const n=[392,440,494,523,494,440,392,330];let i=0;(function p(){if(!bgm)return;tone(n[i%n.length],0.4,'sine',0.02);i++;setTimeout(p,500);})();}
-
-// === RENDERING ===
-function dayL(){const h=gTime/60;if(h<6)return 0.15;if(h<8)return 0.15+(h-6)/2*0.55;if(h<17)return 0.7+Math.sin((h-8)/9*Math.PI)*0.3;if(h<20)return 0.7-(h-17)/3*0.55;return 0.15;}
-function skyCol(){const d=dayL();return`rgb(${140*d+60|0},${180*d+70|0},${220*d+30|0})`;}
-
-function drawTile(gx,gy){
-  const s=toScr(gx,gy),sx=s.x*zm+camX,sy=s.y*zm+camY,tw=TW*zm,th=TH*zm;
-  ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+tw/2,sy+th/2);ctx.lineTo(sx,sy+th);ctx.lineTo(sx-tw/2,sy+th/2);ctx.closePath();
-  const d=dayL();
-  // Warm pastel grass
-  ctx.fillStyle=`rgb(${120*d+50|0},${190*d+40|0},${90*d+30|0})`;ctx.fill();
-  ctx.strokeStyle=`rgba(0,0,0,${0.03+(1-d)*0.06})`;ctx.lineWidth=0.5;ctx.stroke();
+// ============================================================
+// SCENARIO: CRISIS COMPANY SETUP
+// ============================================================
+function setupCrisisScenario() {
+  var cx = Math.floor(GRID / 2), cy = Math.floor(GRID / 2);
+  // HQ at center
+  G.grid[cy][cx] = {type:'hq'};
+  // Corridors: a cross pattern
+  for (var i = 1; i <= 5; i++) {
+    placeCell(cx + i, cy, 'corridor');
+    placeCell(cx - i, cy, 'corridor');
+    placeCell(cx, cy + i, 'corridor');
+    placeCell(cx, cy - i, 'corridor');
+  }
+  // Production at right
+  placeCell(cx + 6, cy, 'production');
+  // Marketing at left
+  placeCell(cx - 6, cy, 'marketing');
+  // Employees: 6 disengaged, 4 cynic, 2 rookie
+  var types = [];
+  for (var i = 0; i < 6; i++) types.push('disengaged');
+  for (var i = 0; i < 4; i++) types.push('cynic');
+  for (var i = 0; i < 2; i++) types.push('rookie');
+  for (var i = 0; i < types.length; i++) {
+    spawnWorker(types[i], cx, cy);
+  }
 }
 
-function drawBldg(gx,gy,cell){
-  const s=toScr(gx,gy),sx=s.x*zm+camX,sy=s.y*zm+camY,tw=TW*zm,th=TH*zm;
-  const def=DEFS[cell.type];const d=dayL();
+function placeCell(x, y, type) {
+  if (x < 0 || y < 0 || x >= GRID || y >= GRID) return;
+  G.grid[y][x] = {type: type};
+  G.bldgs.push({type: type, gx: x, gy: y});
+}
 
-  if(cell.type==='hq'){
-    const bh=40*zm;
-    // HQ building — gold/warm
-    ctx.beginPath();ctx.moveTo(sx,sy-bh);ctx.lineTo(sx+tw/2,sy+th/2-bh);ctx.lineTo(sx,sy+th-bh);ctx.lineTo(sx-tw/2,sy+th/2-bh);ctx.closePath();
-    ctx.fillStyle=`rgb(${255*d|0},${200*d|0},${100*d|0})`;ctx.fill();ctx.strokeStyle='rgba(0,0,0,0.2)';ctx.lineWidth=2*zm;ctx.stroke();
-    ctx.beginPath();ctx.moveTo(sx,sy+th-bh);ctx.lineTo(sx+tw/2,sy+th/2-bh);ctx.lineTo(sx+tw/2,sy+th/2);ctx.lineTo(sx,sy+th);ctx.closePath();
-    ctx.fillStyle=`rgb(${200*d|0},${150*d|0},${60*d|0})`;ctx.fill();ctx.stroke();
-    ctx.beginPath();ctx.moveTo(sx,sy+th-bh);ctx.lineTo(sx-tw/2,sy+th/2-bh);ctx.lineTo(sx-tw/2,sy+th/2);ctx.lineTo(sx,sy+th);ctx.closePath();
-    ctx.fillStyle=`rgb(${230*d|0},${175*d|0},${80*d|0})`;ctx.fill();ctx.stroke();
-    ctx.font=`bold ${Math.max(9,10*zm)}px system-ui`;ctx.textAlign='center';ctx.fillStyle=`rgba(255,255,255,${d})`;
-    ctx.fillText('COMPANY HQ',sx,sy-bh+8*zm);
-    ctx.font=`${Math.max(16,22*zm)}px serif`;ctx.fillText('\u{1F3E2}',sx,sy-bh-4*zm);
+function spawnWorker(type, nearX, nearY) {
+  G.workerID++;
+  var w = {
+    id: G.workerID,
+    type: type,
+    x: nearX + (Math.random() - 0.5) * 2,
+    y: nearY + (Math.random() - 0.5) * 2,
+    targetX: nearX, targetY: nearY,
+    will: 30 + Math.random() * 30,
+    capability: 20 + Math.random() * 40,
+    happiness: 20 + Math.random() * 30,
+    path: [],
+    pathIdx: 0,
+    state: 'idle',
+    stateTimer: 0,
+    bubble: null,
+    bubbleTimer: 0,
+    speechCooldown: Math.random() * 200,
+    quitTimer: 0,
+    quitting: false,
+    fadeOut: 1,
+    preventQuitDays: 0,
+    transitionCooldown: 0
+  };
+  if (type === 'ace') { w.will = 70; w.capability = 75; w.happiness = 60; }
+  if (type === 'leader') { w.will = 80; w.capability = 80; w.happiness = 65; }
+  G.workers.push(w);
+  return w;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function toScr(gx, gy) {
+  return {x: (gx - gy) * TW / 2, y: (gx + gy) * TH / 2};
+}
+function toGrd(sx, sy) {
+  var wx = (sx - G.camX) / G.zm, wy = (sy - G.camY) / G.zm;
+  return {x: Math.floor(wx / TW + wy / TH), y: Math.floor(wy / TH - wx / TW)};
+}
+function inBounds(x, y) { return x >= 0 && y >= 0 && x < GRID && y < GRID; }
+function hasBuilding(type) {
+  return G.bldgs.some(function(b) { return b.type === type; });
+}
+function countBuilding(type) {
+  return G.bldgs.filter(function(b) { return b.type === type; }).length;
+}
+function policyActive(id) { return !!G.activePolicies[id]; }
+
+function removeOneByType(state, type) {
+  for (var i = state.workers.length - 1; i >= 0; i--) {
+    if (state.workers[i].type === type && !state.workers[i].quitting) {
+      state.workers[i].quitting = true;
+      state.workers[i].bubble = SPEECH.quitting[0];
+      state.workers[i].bubbleTimer = 120;
+      state.totalQuits++;
+      return;
+    }
+  }
+}
+
+function quitRandom(state, count) {
+  var alive = state.workers.filter(function(w) { return !w.quitting; });
+  for (var i = 0; i < count && i < alive.length; i++) {
+    var idx = Math.floor(Math.random() * alive.length);
+    alive[idx].quitting = true;
+    alive[idx].bubble = SPEECH.quitting[0];
+    alive[idx].bubbleTimer = 120;
+    state.totalQuits++;
+    alive.splice(idx, 1);
+  }
+}
+
+function convertRandom(state, fromType, toType, count) {
+  var matching = state.workers.filter(function(w) { return w.type === fromType && !w.quitting; });
+  for (var i = 0; i < count && i < matching.length; i++) {
+    matching[i].type = toType;
+    if (toType === 'cynic') {
+      matching[i].will = Math.max(20, matching[i].will - 20);
+      matching[i].happiness = Math.max(10, matching[i].happiness - 15);
+    }
+  }
+}
+
+function clamp(lo, hi, v) { return Math.max(lo, Math.min(hi, v)); }
+
+function showToast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + (type || 'info');
+  clearTimeout(el._tid);
+  el._tid = setTimeout(function() { el.className = 'toast'; }, 2500);
+}
+
+// ============================================================
+// AUDIO
+// ============================================================
+function initAudio() {
+  if (!G.audioCtx) {
+    G.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+function tone(f, d, t, v) {
+  if (!G.audioCtx) return;
+  var o = G.audioCtx.createOscillator(), g = G.audioCtx.createGain();
+  o.type = t || 'square'; o.frequency.value = f;
+  g.gain.setValueAtTime(v || 0.06, G.audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, G.audioCtx.currentTime + d);
+  o.connect(g); g.connect(G.audioCtx.destination);
+  o.start(); o.stop(G.audioCtx.currentTime + d);
+}
+function sfxPlace() { tone(523, 0.1, 'sine', 0.1); tone(659, 0.1, 'sine', 0.07); }
+function sfxErr() { tone(200, 0.2, 'sawtooth', 0.05); }
+function sfxDel() { tone(330, 0.15, 'triangle', 0.06); }
+
+// ============================================================
+// CANVAS SETUP
+// ============================================================
+var canvas = document.getElementById('game');
+var ctx = canvas.getContext('2d');
+var mmC = document.getElementById('minimap');
+var mmX = mmC.getContext('2d');
+
+function resize() {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+}
+addEventListener('resize', resize);
+resize();
+
+// Center camera on HQ
+function centerCamera() {
+  var hx = Math.floor(GRID / 2), hy = Math.floor(GRID / 2);
+  var s = toScr(hx, hy);
+  G.camX = canvas.width / 2 - s.x * G.zm;
+  G.camY = canvas.height / 2 - s.y * G.zm;
+}
+
+// ============================================================
+// BFS PATHFINDING
+// ============================================================
+function bfsPath(sx, sy, tx, ty) {
+  var s_gx = Math.round(sx), s_gy = Math.round(sy);
+  var t_gx = Math.round(tx), t_gy = Math.round(ty);
+  if (s_gx === t_gx && s_gy === t_gy) return [];
+  if (!inBounds(t_gx, t_gy)) return [];
+
+  var visited = {};
+  var queue = [{x: s_gx, y: s_gy, path: []}];
+  visited[s_gx + ',' + s_gy] = true;
+  var dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+
+  while (queue.length > 0) {
+    var cur = queue.shift();
+    for (var d = 0; d < 4; d++) {
+      var nx = cur.x + dirs[d][0], ny = cur.y + dirs[d][1];
+      if (!inBounds(nx, ny)) continue;
+      var key = nx + ',' + ny;
+      if (visited[key]) continue;
+      var cell = G.grid[ny][nx];
+      if (!cell) continue; // can only walk on placed tiles
+      visited[key] = true;
+      var newPath = cur.path.concat([{x: nx, y: ny}]);
+      if (nx === t_gx && ny === t_gy) return newPath;
+      queue.push({x: nx, y: ny, path: newPath});
+    }
+  }
+  return []; // no path
+}
+
+// ============================================================
+// RENDERING
+// ============================================================
+function dayLight() {
+  var h = G.gTime / 60;
+  if (h < 6) return 0.2;
+  if (h < 8) return 0.2 + (h - 6) / 2 * 0.5;
+  if (h < 17) return 0.7 + Math.sin((h - 8) / 9 * Math.PI) * 0.3;
+  if (h < 20) return 0.7 - (h - 17) / 3 * 0.5;
+  return 0.2;
+}
+
+function drawTile(gx, gy) {
+  var s = toScr(gx, gy);
+  var sx = s.x * G.zm + G.camX, sy = s.y * G.zm + G.camY;
+  var tw = TW * G.zm, th = TH * G.zm;
+  // Check if on screen
+  if (sx + tw < 0 || sx - tw > canvas.width || sy + th < -50 || sy - 50 > canvas.height) return;
+  ctx.beginPath();
+  ctx.moveTo(sx, sy);
+  ctx.lineTo(sx + tw / 2, sy + th / 2);
+  ctx.lineTo(sx, sy + th);
+  ctx.lineTo(sx - tw / 2, sy + th / 2);
+  ctx.closePath();
+  var d = dayLight();
+  var gr = 120 * d + 50 | 0, gg = 190 * d + 40 | 0, gb = 90 * d + 30 | 0;
+  ctx.fillStyle = 'rgb(' + gr + ',' + gg + ',' + gb + ')';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,' + (0.03 + (1 - d) * 0.06) + ')';
+  ctx.lineWidth = 0.5;
+  ctx.stroke();
+}
+
+function drawBuilding(gx, gy, cell) {
+  var s = toScr(gx, gy);
+  var sx = s.x * G.zm + G.camX, sy = s.y * G.zm + G.camY;
+  var tw = TW * G.zm, th = TH * G.zm;
+  var d = dayLight();
+
+  if (cell.type === 'hq') {
+    var bh = 42 * G.zm;
+    // Top face
+    ctx.beginPath();
+    ctx.moveTo(sx, sy - bh); ctx.lineTo(sx + tw / 2, sy + th / 2 - bh);
+    ctx.lineTo(sx, sy + th - bh); ctx.lineTo(sx - tw / 2, sy + th / 2 - bh);
+    ctx.closePath();
+    ctx.fillStyle = 'rgb(' + (255 * d | 0) + ',' + (200 * d | 0) + ',' + (100 * d | 0) + ')';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 2 * G.zm; ctx.stroke();
+    // Right face
+    ctx.beginPath();
+    ctx.moveTo(sx, sy + th - bh); ctx.lineTo(sx + tw / 2, sy + th / 2 - bh);
+    ctx.lineTo(sx + tw / 2, sy + th / 2); ctx.lineTo(sx, sy + th);
+    ctx.closePath();
+    ctx.fillStyle = 'rgb(' + (160 * d | 0) + ',' + (120 * d | 0) + ',' + (50 * d | 0) + ')';
+    ctx.fill(); ctx.stroke();
+    // Left face
+    ctx.beginPath();
+    ctx.moveTo(sx, sy + th - bh); ctx.lineTo(sx - tw / 2, sy + th / 2 - bh);
+    ctx.lineTo(sx - tw / 2, sy + th / 2); ctx.lineTo(sx, sy + th);
+    ctx.closePath();
+    ctx.fillStyle = 'rgb(' + (200 * d | 0) + ',' + (155 * d | 0) + ',' + (65 * d | 0) + ')';
+    ctx.fill(); ctx.stroke();
+    // Label
+    ctx.font = 'bold ' + Math.max(9, 10 * G.zm) + 'px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,255,255,' + d + ')';
+    ctx.fillText('COMPANY HQ', sx, sy - bh + 10 * G.zm);
+    ctx.font = Math.max(16, 22 * G.zm) + 'px serif';
+    ctx.fillText('\u{1F3E2}', sx, sy - bh - 2 * G.zm);
     return;
   }
 
-  if(cell.type==='corridor'){
-    ctx.beginPath();ctx.moveTo(sx,sy+2*zm);ctx.lineTo(sx+tw/2-4*zm,sy+th/2);ctx.lineTo(sx,sy+th-2*zm);ctx.lineTo(sx-tw/2+4*zm,sy+th/2);ctx.closePath();
-    const pc=200*d+50|0;ctx.fillStyle=`rgb(${pc},${pc-8},${pc-16})`;ctx.fill();ctx.strokeStyle='rgba(0,0,0,0.1)';ctx.lineWidth=1;ctx.stroke();return;
+  if (cell.type === 'corridor') {
+    var ch = 4 * G.zm;
+    // Flat raised tile
+    ctx.beginPath();
+    ctx.moveTo(sx, sy - ch); ctx.lineTo(sx + tw / 2 - 4 * G.zm, sy + th / 2 - ch);
+    ctx.lineTo(sx, sy + th - ch - 2 * G.zm); ctx.lineTo(sx - tw / 2 + 4 * G.zm, sy + th / 2 - ch);
+    ctx.closePath();
+    var pc = 200 * d + 50 | 0;
+    ctx.fillStyle = 'rgb(' + pc + ',' + (pc - 8) + ',' + (pc - 16) + ')';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.lineWidth = 1; ctx.stroke();
+    return;
   }
 
-  if(cell.type==='tree'){
-    ctx.fillStyle=`rgb(${100*d+30|0},${70*d+20|0},${40*d+10|0})`;ctx.fillRect(sx-3*zm,sy-10*zm,6*zm,14*zm);
-    ctx.beginPath();ctx.arc(sx,sy-18*zm,12*zm,0,Math.PI*2);ctx.fillStyle=`rgb(${60*d+30|0},${190*d+30|0},${70*d+20|0})`;ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,0.15)';ctx.lineWidth=1.5*zm;ctx.stroke();return;
+  if (cell.type === 'tree') {
+    // Trunk
+    ctx.fillStyle = 'rgb(' + (100 * d + 30 | 0) + ',' + (70 * d + 20 | 0) + ',' + (40 * d + 10 | 0) + ')';
+    ctx.fillRect(sx - 3 * G.zm, sy - 10 * G.zm, 6 * G.zm, 14 * G.zm);
+    // Canopy
+    ctx.beginPath();
+    ctx.arc(sx, sy - 18 * G.zm, 12 * G.zm, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgb(' + (60 * d + 30 | 0) + ',' + (190 * d + 30 | 0) + ',' + (70 * d + 20 | 0) + ')';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)'; ctx.lineWidth = 1.5 * G.zm; ctx.stroke();
+    return;
   }
 
-  if(!def)return;
-  const bh=(def.sz*14+10)*zm;
-  const r=parseInt(def.col.slice(1,3),16),g=parseInt(def.col.slice(3,5),16),b=parseInt(def.col.slice(5,7),16);
-  // Top
-  ctx.beginPath();ctx.moveTo(sx,sy-bh);ctx.lineTo(sx+tw/2,sy+th/2-bh);ctx.lineTo(sx,sy+th-bh);ctx.lineTo(sx-tw/2,sy+th/2-bh);ctx.closePath();
-  ctx.fillStyle=`rgb(${Math.min(255,r*d+30)|0},${Math.min(255,g*d+30)|0},${Math.min(255,b*d+30)|0})`;ctx.fill();ctx.strokeStyle='rgba(0,0,0,0.2)';ctx.lineWidth=1.5*zm;ctx.stroke();
-  // Right
-  ctx.beginPath();ctx.moveTo(sx,sy+th-bh);ctx.lineTo(sx+tw/2,sy+th/2-bh);ctx.lineTo(sx+tw/2,sy+th/2);ctx.lineTo(sx,sy+th);ctx.closePath();
-  ctx.fillStyle=`rgb(${r*0.6*d+15|0},${g*0.6*d+15|0},${b*0.6*d+15|0})`;ctx.fill();ctx.stroke();
-  // Left
-  ctx.beginPath();ctx.moveTo(sx,sy+th-bh);ctx.lineTo(sx-tw/2,sy+th/2-bh);ctx.lineTo(sx-tw/2,sy+th/2);ctx.lineTo(sx,sy+th);ctx.closePath();
-  ctx.fillStyle=`rgb(${r*0.75*d+20|0},${g*0.75*d+20|0},${b*0.75*d+20|0})`;ctx.fill();ctx.stroke();
+  var def = DEFS[cell.type];
+  if (!def) return;
+  var bh = def.height * G.zm;
+  var r = parseInt(def.col.slice(1, 3), 16);
+  var g = parseInt(def.col.slice(3, 5), 16);
+  var b = parseInt(def.col.slice(5, 7), 16);
+
   // Shadow
-  ctx.fillStyle=`rgba(0,0,0,${0.06+(1-d)*0.08})`;ctx.beginPath();ctx.moveTo(sx,sy+th);ctx.lineTo(sx+tw/2,sy+th/2);ctx.lineTo(sx+tw/2+5*zm,sy+th/2+3*zm);ctx.lineTo(sx+5*zm,sy+th+3*zm);ctx.closePath();ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,' + (0.08 + (1 - d) * 0.08) + ')';
+  ctx.beginPath();
+  ctx.moveTo(sx, sy + th); ctx.lineTo(sx + tw / 2, sy + th / 2);
+  ctx.lineTo(sx + tw / 2 + 6 * G.zm, sy + th / 2 + 4 * G.zm);
+  ctx.lineTo(sx + 6 * G.zm, sy + th + 4 * G.zm);
+  ctx.closePath(); ctx.fill();
+
+  // Top face (bright)
+  ctx.beginPath();
+  ctx.moveTo(sx, sy - bh); ctx.lineTo(sx + tw / 2, sy + th / 2 - bh);
+  ctx.lineTo(sx, sy + th - bh); ctx.lineTo(sx - tw / 2, sy + th / 2 - bh);
+  ctx.closePath();
+  ctx.fillStyle = 'rgb(' + Math.min(255, r * d + 40 | 0) + ',' + Math.min(255, g * d + 40 | 0) + ',' + Math.min(255, b * d + 40 | 0) + ')';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.25)'; ctx.lineWidth = 2 * G.zm; ctx.stroke();
+
+  // Right face (dark)
+  ctx.beginPath();
+  ctx.moveTo(sx, sy + th - bh); ctx.lineTo(sx + tw / 2, sy + th / 2 - bh);
+  ctx.lineTo(sx + tw / 2, sy + th / 2); ctx.lineTo(sx, sy + th);
+  ctx.closePath();
+  ctx.fillStyle = 'rgb(' + (r * 0.55 * d + 15 | 0) + ',' + (g * 0.55 * d + 15 | 0) + ',' + (b * 0.55 * d + 15 | 0) + ')';
+  ctx.fill(); ctx.stroke();
+
+  // Left face (medium)
+  ctx.beginPath();
+  ctx.moveTo(sx, sy + th - bh); ctx.lineTo(sx - tw / 2, sy + th / 2 - bh);
+  ctx.lineTo(sx - tw / 2, sy + th / 2); ctx.lineTo(sx, sy + th);
+  ctx.closePath();
+  ctx.fillStyle = 'rgb(' + (r * 0.72 * d + 22 | 0) + ',' + (g * 0.72 * d + 22 | 0) + ',' + (b * 0.72 * d + 22 | 0) + ')';
+  ctx.fill(); ctx.stroke();
+
   // Emoji
-  ctx.font=`${Math.max(14,18*zm)}px serif`;ctx.textAlign='center';ctx.fillText(def.emoji,sx,sy-bh+5*zm);
+  ctx.font = Math.max(14, 18 * G.zm) + 'px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(def.emoji, sx, sy - bh + 6 * G.zm);
+  // Label
+  ctx.font = 'bold ' + Math.max(7, 8 * G.zm) + 'px system-ui';
+  ctx.fillStyle = 'rgba(255,255,255,' + (d * 0.9) + ')';
+  ctx.fillText(def.lbl, sx, sy - bh + 18 * G.zm);
 }
 
-function drawWorker(w){
-  const s=toScr(w.x,w.y),sx=s.x*zm+camX,sy=s.y*zm+camY,d=dayL();
-  // Body color by type
-  const tcols={ace:'#FF7043',rookie:'#66BB6A',cynic:'#78909C',disengaged:'#BDBDBD',leader:'#FFD54F'};
-  ctx.fillStyle=tcols[w.type]||'#aaa';
-  ctx.beginPath();ctx.arc(sx,sy-4*zm,4*zm,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=zm;ctx.stroke();
+function drawWorker(w) {
+  var s = toScr(w.x, w.y);
+  var sx = s.x * G.zm + G.camX, sy = s.y * G.zm + G.camY;
+  var d = dayLight();
+  var tc = EMP_TYPES[w.type] || EMP_TYPES.disengaged;
+  var sizeM = tc.size;
+  var alpha = w.fadeOut;
+
+  // Shadow on ground
+  ctx.fillStyle = 'rgba(0,0,0,' + (0.15 * alpha) + ')';
+  ctx.beginPath();
+  ctx.ellipse(sx + 2 * G.zm, sy + 2 * G.zm, 5 * G.zm * sizeM, 2 * G.zm * sizeM, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Body
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = tc.color;
+  ctx.beginPath();
+  ctx.arc(sx, sy - 4 * G.zm * sizeM, 4.5 * G.zm * sizeM, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = G.zm; ctx.stroke();
+
   // Head
-  ctx.fillStyle=`rgb(${245*d+10|0},${215*d+20|0},${185*d+20|0})`;ctx.beginPath();ctx.arc(sx,sy-10*zm,3*zm,0,Math.PI*2);ctx.fill();
-  // Emotion
-  if(w.emo>0){
-    const em={happy:'\u{1F60A}',neutral:'\u{1F610}',stressed:'\u{1F62B}',bored:'\u{1F612}',excited:'\u{1F929}',productive:'\u{1F4AA}'};
-    ctx.font=`${Math.max(9,11*zm)}px serif`;ctx.textAlign='center';ctx.fillText(em[w.emot]||'\u{1F610}',sx,sy-15*zm);
+  ctx.fillStyle = 'rgb(' + (245 * d + 10 | 0) + ',' + (215 * d + 20 | 0) + ',' + (185 * d + 20 | 0) + ')';
+  ctx.beginPath();
+  ctx.arc(sx, sy - 10 * G.zm * sizeM, 3.2 * G.zm * sizeM, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Speech bubble
+  if (w.bubble && w.bubbleTimer > 0) {
+    drawBubble(sx, sy - 18 * G.zm * sizeM, w.bubble);
   }
 }
 
-function drawGhost(gx,gy){
-  if(!selTool||!inB(gx,gy))return;const s=toScr(gx,gy),sx=s.x*zm+camX,sy=s.y*zm+camY,tw=TW*zm,th=TH*zm;
-  ctx.globalAlpha=0.4;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(sx+tw/2,sy+th/2);ctx.lineTo(sx,sy+th);ctx.lineTo(sx-tw/2,sy+th/2);ctx.closePath();
-  ctx.fillStyle=(!grid[gy][gx]||selTool==='bulldoze')?'#4ADE80':'#F87171';ctx.fill();ctx.globalAlpha=1;
+function drawBubble(x, y, text) {
+  ctx.font = Math.max(9, 10 * G.zm) + 'px system-ui';
+  var tw = ctx.measureText(text).width + 14 * G.zm;
+  var th = 18 * G.zm;
+  var bx = x - tw / 2, by = y - th - 6 * G.zm;
+
+  // Rounded rect
+  ctx.fillStyle = 'rgba(255,255,255,0.95)';
+  ctx.beginPath();
+  var r = 6 * G.zm;
+  ctx.moveTo(bx + r, by);
+  ctx.lineTo(bx + tw - r, by);
+  ctx.quadraticCurveTo(bx + tw, by, bx + tw, by + r);
+  ctx.lineTo(bx + tw, by + th - r);
+  ctx.quadraticCurveTo(bx + tw, by + th, bx + tw - r, by + th);
+  ctx.lineTo(bx + r, by + th);
+  ctx.quadraticCurveTo(bx, by + th, bx, by + th - r);
+  ctx.lineTo(bx, by + r);
+  ctx.quadraticCurveTo(bx, by, bx + r, by);
+  ctx.closePath();
+  ctx.fill();
+
+  // Triangle
+  ctx.beginPath();
+  ctx.moveTo(x - 4 * G.zm, by + th);
+  ctx.lineTo(x, by + th + 5 * G.zm);
+  ctx.lineTo(x + 4 * G.zm, by + th);
+  ctx.closePath();
+  ctx.fill();
+
+  // Text
+  ctx.fillStyle = '#1a1a2e';
+  ctx.textAlign = 'center';
+  ctx.fillText(text, x, by + th - 5 * G.zm);
 }
 
-function drawWeather(){
-  if(weather==='rain'){ctx.fillStyle='rgba(100,150,255,0.12)';for(let i=0;i<50;i++){ctx.fillRect(Math.random()*canvas.width,Math.random()*canvas.height,1,7);}}
-  if(weather!=='clear'){ctx.fillStyle='rgba(0,0,0,0.06)';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function drawGhost(gx, gy) {
+  if (!G.selTool || G.selTool === 'bulldoze') return;
+  if (!inBounds(gx, gy)) return;
+  var s = toScr(gx, gy);
+  var sx = s.x * G.zm + G.camX, sy = s.y * G.zm + G.camY;
+  var tw = TW * G.zm, th = TH * G.zm;
+  var canPlace = !G.grid[gy][gx] && G.money >= (DEFS[G.selTool] ? DEFS[G.selTool].cost : 0);
+  ctx.globalAlpha = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(sx, sy); ctx.lineTo(sx + tw / 2, sy + th / 2);
+  ctx.lineTo(sx, sy + th); ctx.lineTo(sx - tw / 2, sy + th / 2);
+  ctx.closePath();
+  ctx.fillStyle = canPlace ? 'rgba(76,175,80,0.4)' : 'rgba(244,67,54,0.4)';
+  ctx.fill();
+  ctx.strokeStyle = canPlace ? '#4CAF50' : '#F44336';
+  ctx.lineWidth = 2 * G.zm;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
 }
 
-function render(){
-  ctx.fillStyle=skyCol();ctx.fillRect(0,0,canvas.width,canvas.height);
-  const hg=toGrd(mX,mY);
-  for(let gy=0;gy<GRID;gy++){
-    for(let gx=0;gx<GRID;gx++){drawTile(gx,gy);if(grid[gy][gx])drawBldg(gx,gy,grid[gy][gx]);}
-    for(const w of workers)if(Math.floor(w.y)===gy)drawWorker(w);
+function drawMinimap() {
+  mmX.fillStyle = '#1a2a1a';
+  mmX.fillRect(0, 0, 140, 105);
+  var scale = 140 / GRID;
+  for (var i = 0; i < G.bldgs.length; i++) {
+    var b = G.bldgs[i];
+    var def = DEFS[b.type];
+    mmX.fillStyle = def ? def.col : '#FFD54F';
+    mmX.fillRect(b.gx * scale, b.gy * scale, Math.max(2, scale), Math.max(2, scale));
   }
-  if(selTool&&inB(hg.x,hg.y))drawGhost(hg.x,hg.y);
-  drawWeather();drawMM();
-}
-
-function drawMM(){
-  mmX.fillStyle='#1a2a1a';mmX.fillRect(0,0,140,105);const sc=140/GRID;
-  for(let gy=0;gy<GRID;gy++)for(let gx=0;gx<GRID;gx++){
-    const c=grid[gy][gx];
-    mmX.fillStyle=!c?'#2a3a2a':c.type==='corridor'?'#998':c.type==='hq'?'#FFB830':(DEFS[c.type]?.col||'#555');
-    mmX.fillRect(gx*sc,gy*sc,Math.max(1,sc),Math.max(1,sc));
+  // HQ
+  var hx = Math.floor(GRID / 2), hy = Math.floor(GRID / 2);
+  mmX.fillStyle = '#FFD54F';
+  mmX.fillRect(hx * scale - 1, hy * scale - 1, 4, 4);
+  // Workers
+  for (var i = 0; i < G.workers.length; i++) {
+    var w = G.workers[i];
+    if (w.quitting && w.fadeOut <= 0) continue;
+    var tc = EMP_TYPES[w.type];
+    mmX.fillStyle = tc ? tc.color : '#aaa';
+    mmX.fillRect(w.x * scale, w.y * scale, 2, 2);
   }
-  const tcols={ace:'#FF7043',rookie:'#66BB6A',cynic:'#78909C',disengaged:'#BDBDBD',leader:'#FFD54F'};
-  for(const w of workers){mmX.fillStyle=tcols[w.type]||'#fff';mmX.fillRect(w.x*sc,w.y*sc,2,2);}
 }
 
-// === WORKER AI (5 types) ===
-function spawnWorker(type){
-  if(workers.length>=60)return;
-  const types={ace:{will:80,cap:80,sal:20},rookie:{will:70,cap:30,sal:8},cynic:{will:25,cap:75,sal:15},disengaged:{will:15,cap:20,sal:5},leader:{will:85,cap:85,sal:30}};
-  const t=types[type]||types.rookie;
-  workers.push({id:wID++,x:HQ.x+(Math.random()-0.5)*0.5,y:HQ.y+(Math.random()-0.5)*0.5,
-    type,will:t.will,cap:t.cap,sal:t.sal,
-    path:[],pi:0,emot:'neutral',emo:0,hap:60,hunger:0,
-    state:'wander',stT:0,dept:null});
-}
+// ============================================================
+// MAIN RENDER
+// ============================================================
+function render() {
+  var d = dayLight();
+  // Sky gradient
+  var skyR = 180 * d + 60 | 0, skyG = 210 * d + 50 | 0, skyB = 240 * d + 15 | 0;
+  ctx.fillStyle = 'rgb(' + skyR + ',' + skyG + ',' + skyB + ')';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-function bfs(sx,sy,tx,ty){
-  if(!inB(tx,ty))return[];const V=Array.from({length:GRID},()=>Array(GRID).fill(false));
-  const P=Array.from({length:GRID},()=>Array(GRID).fill(null));
-  const Q=[{x:sx|0,y:sy|0}];V[sy|0][sx|0]=true;
-  const D=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
-  while(Q.length){const c=Q.shift();if(c.x===tx&&c.y===ty){const p=[];let n=c;while(n){p.unshift({x:n.x,y:n.y});n=P[n.y][n.x];}return p;}
-    for(const d of D){const nx=c.x+d.x,ny=c.y+d.y;if(!inB(nx,ny)||V[ny][nx])continue;const cl=grid[ny][nx];
-      if(cl&&(cl.type==='corridor'||cl.type==='hq'||cl.type==='cafeteria'||cl.type==='wellness')){V[ny][nx]=true;P[ny][nx]=c;Q.push({x:nx,y:ny});}}}
-  return[];
-}
+  // Collect all renderable items sorted by iso depth (painter's algorithm)
+  var items = [];
 
-function randWalk(){const w=[];for(let gy=0;gy<GRID;gy++)for(let gx=0;gx<GRID;gx++){const c=grid[gy][gx];if(c&&(c.type==='corridor'||c.type==='hq'))w.push({x:gx,y:gy});}return w.length?w[Math.random()*w.length|0]:null;}
-
-function nearest(vx,vy,t){let b=null,bd=1e9;for(let gy=0;gy<GRID;gy++)for(let gx=0;gx<GRID;gx++)if(grid[gy][gx]?.type===t){const d=Math.abs(gx-vx)+Math.abs(gy-vy);if(d<bd){bd=d;b={x:gx,y:gy};}}return b;}
-
-function updW(w,dt){
-  w.emo=Math.max(0,w.emo-dt);w.hunger+=dt*0.25;w.stT-=dt;
-  if(w.state==='working'){
-    if(w.stT<=0){w.state='wander';w.emot='productive';w.emo=2;w.hap=Math.min(100,w.hap+5);}return true;
-  }
-  if(w.state==='eating'){if(w.stT<=0){w.state='wander';w.hunger=0;w.emot='happy';w.emo=2;}return true;}
-  // Wandering
-  if(!w.path.length||w.pi>=w.path.length){
-    if(w.hunger>50){const f=nearest(w.x|0,w.y|0,'cafeteria');if(f)w.path=bfs(w.x,w.y,f.x,f.y);else{w.emot='stressed';w.emo=2;}}
-    else{
-      // Find a dept to work at
-      const depts=bldgs.filter(b=>DEFS[b.type]?.cat==='dept');
-      if(depts.length&&Math.random()<0.7){
-        const d=depts[Math.random()*depts.length|0];
-        const dirs=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
-        for(const dir of dirs){const ax=d.gx+dir.x,ay=d.gy+dir.y;
-          if(inB(ax,ay)&&(grid[ay][ax]?.type==='corridor'||grid[ay][ax]?.type==='hq')){w.path=bfs(w.x,w.y,ax,ay);w._dept=d;break;}}
+  // Tiles and buildings
+  for (var gy = 0; gy < GRID; gy++) {
+    for (var gx = 0; gx < GRID; gx++) {
+      items.push({type: 'tile', gx: gx, gy: gy, depth: gx + gy});
+      if (G.grid[gy][gx]) {
+        items.push({type: 'building', gx: gx, gy: gy, cell: G.grid[gy][gx], depth: gx + gy + 0.1});
       }
-      if(!w.path.length){const t=randWalk();if(t)w.path=bfs(w.x,w.y,t.x,t.y);}
     }
-    w.pi=0;if(!w.path.length){w.hap-=dt;return true;}
   }
-  if(w.pi<w.path.length){const tg=w.path[w.pi],dx=tg.x-w.x,dy=tg.y-w.y,dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<0.15){w.pi++;
-      const gx=w.x|0,gy=w.y|0,cl=grid[gy]?.[gx];
-      if(cl?.type==='cafeteria'&&w.hunger>30){w.state='eating';w.stT=2;w.hunger=0;empHap=Math.min(100,empHap+0.5);}
-      if(cl?.type==='wellness'){w.hap=Math.min(100,w.hap+10);empHap=Math.min(100,empHap+0.3);}
-      if(w._dept&&w.pi>=w.path.length-1){
-        w.state='working';w.stT=4;
-        const mult={ace:1.5,rookie:0.5,cynic:1.0,disengaged:0.2,leader:1.2};
-        const rev=(DEFS[w._dept.type]?.rev||0)*(mult[w.type]||0.5);
-        money+=rev|0;totRev+=rev|0;
-        // Stakeholder effects
-        if(w._dept.type==='marketing')custSat=Math.min(100,custSat+0.3);
-        if(w._dept.type==='social')socVal=Math.min(100,socVal+0.5);
-        if(w._dept.type==='rnd')custSat=Math.min(100,custSat+0.1);
-        if(rev>10)sfxMoney();
-        w._dept=null;
+
+  // Workers
+  for (var i = 0; i < G.workers.length; i++) {
+    var w = G.workers[i];
+    if (w.quitting && w.fadeOut <= 0) continue;
+    items.push({type: 'worker', worker: w, depth: Math.round(w.x) + Math.round(w.y) + 0.2});
+  }
+
+  items.sort(function(a, b) { return a.depth - b.depth; });
+
+  for (var i = 0; i < items.length; i++) {
+    var it = items[i];
+    if (it.type === 'tile') drawTile(it.gx, it.gy);
+    else if (it.type === 'building') drawBuilding(it.gx, it.gy, it.cell);
+    else if (it.type === 'worker') drawWorker(it.worker);
+  }
+
+  // Ghost preview
+  if (G.selTool && G.mouseGX >= 0) {
+    drawGhost(G.mouseGX, G.mouseGY);
+  }
+
+  drawMinimap();
+}
+
+// ============================================================
+// GAME TICK
+// ============================================================
+function gameTick() {
+  if (G.gameOver) return;
+
+  // Advance time
+  G.gTime += G.gSpeed;
+  if (G.gTime >= 1440) {
+    G.gTime -= 1440;
+    G.gDay++;
+    dayTick();
+  }
+
+  // Event timer
+  G.eventTimer += G.gSpeed;
+  if (!G.eventActive && G.eventTimer > (40 + Math.random() * 20) * 60) {
+    G.eventTimer = 0;
+    triggerRandomEvent();
+  }
+
+  // Event countdown
+  if (G.eventActive && G.eventCountdown > 0) {
+    G.eventCountdown -= G.gSpeed / 60;
+    updateEventTimer();
+    if (G.eventCountdown <= 0) {
+      autoPickWorst();
+    }
+  }
+
+  // Worker AI
+  updateWorkers();
+
+  // Spawn timer
+  G.spawnTimer += G.gSpeed;
+  if (G.spawnTimer > 600) { // every ~10 game-minutes
+    G.spawnTimer = 0;
+    maybeSpawnWorker();
+  }
+
+  // Policy activation
+  updatePolicies();
+
+  // Metric drift
+  updateMetrics();
+
+  // Buff timers (per day handled in dayTick)
+
+  // Welfare just-built timer
+  if (G.welfareTimer > 0) {
+    G.welfareTimer -= G.gSpeed;
+    if (G.welfareTimer <= 0) G.welfareJustBuilt = false;
+  }
+
+  // Win/lose check
+  checkWinLose();
+}
+
+function dayTick() {
+  // Revenue and expenses
+  var rev = 0;
+  for (var i = 0; i < G.bldgs.length; i++) {
+    var def = DEFS[G.bldgs[i].type];
+    if (def && def.rev > 0) rev += def.rev;
+  }
+  // Employee multiplier
+  var empMult = 0;
+  var aliveWorkers = G.workers.filter(function(w) { return !w.quitting; });
+  for (var i = 0; i < aliveWorkers.length; i++) {
+    var tc = EMP_TYPES[aliveWorkers[i].type];
+    empMult += tc ? tc.revMult : 0.5;
+  }
+  if (aliveWorkers.length > 0) empMult /= aliveWorkers.length;
+  else empMult = 0;
+
+  rev = Math.round(rev * empMult * G.revPenalty);
+  if (policyActive('rewards')) rev = Math.round(rev * 1.1);
+  if (policyActive('coordination')) rev = Math.round(rev * 1.15);
+
+  var expenses = 0;
+  for (var i = 0; i < G.bldgs.length; i++) {
+    var def = DEFS[G.bldgs[i].type];
+    if (def) expenses += def.upkeep;
+  }
+  expenses += aliveWorkers.length * 5; // salary
+
+  G.money += rev - expenses;
+
+  // Buff countdown
+  if (G.revPenaltyDays > 0) {
+    G.revPenaltyDays--;
+    if (G.revPenaltyDays <= 0) G.revPenalty = 1;
+  }
+  if (G.rookieGrowthDays > 0) {
+    G.rookieGrowthDays--;
+    if (G.rookieGrowthDays <= 0) G.rookieGrowthBuff = 1;
+  }
+  if (G.delayedCustDays > 0) {
+    G.delayedCustDays--;
+    if (G.delayedCustDays <= 0 && G.delayedCust > 0) {
+      G.custSat = Math.min(100, G.custSat + G.delayedCust);
+      G.delayedCust = 0;
+      showToast('\uD601\uC2E0 \uD22C\uC790 \uD6A8\uACFC \uBC1C\uC0DD! \uACE0\uAC1D\uB9CC\uC871 +', 'success');
+    }
+  }
+
+  // Update HUD after economy
+  updateHUD();
+}
+
+function updateMetrics() {
+  // Building-based metric growth
+  for (var i = 0; i < G.bldgs.length; i++) {
+    var def = DEFS[G.bldgs[i].type];
+    if (def && def.metric && def.metricAmt) {
+      if (def.metric === 'cust') G.custSat = Math.min(100, G.custSat + def.metricAmt * G.gSpeed / 60);
+      if (def.metric === 'emp') G.empHap = Math.min(100, G.empHap + def.metricAmt * G.gSpeed / 60);
+      if (def.metric === 'soc') G.socVal = Math.min(100, G.socVal + def.metricAmt * G.gSpeed / 60);
+    }
+  }
+
+  // Policy bonuses
+  var polKeys = Object.keys(G.activePolicies);
+  for (var p = 0; p < polKeys.length; p++) {
+    var pol = POLICIES.find(function(pp) { return pp.id === polKeys[p]; });
+    if (pol) {
+      G.custSat = Math.min(100, G.custSat + pol.custBonus * 0.001 * G.gSpeed);
+      G.empHap = Math.min(100, G.empHap + pol.empBonus * 0.001 * G.gSpeed);
+      G.socVal = Math.min(100, G.socVal + pol.socBonus * 0.001 * G.gSpeed);
+    }
+  }
+
+  // Natural decay
+  G.custSat = Math.max(0, G.custSat - 0.002 * G.gSpeed);
+  G.empHap = Math.max(0, G.empHap - 0.003 * G.gSpeed);
+  G.socVal = Math.max(0, G.socVal - 0.002 * G.gSpeed);
+
+  // Rating
+  G.rating = clamp(1, 5, (G.custSat + G.empHap + G.socVal) / 60 + G.ratingBonus);
+}
+
+function updateWorkers() {
+  var hx = Math.floor(GRID / 2), hy = Math.floor(GRID / 2);
+  for (var i = G.workers.length - 1; i >= 0; i--) {
+    var w = G.workers[i];
+    var tc = EMP_TYPES[w.type] || EMP_TYPES.disengaged;
+
+    // Quitting animation
+    if (w.quitting) {
+      // Move toward HQ
+      var dx = hx - w.x, dy = hy - w.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > 0.5) {
+        w.x += (dx / dist) * 0.03 * G.gSpeed;
+        w.y += (dy / dist) * 0.03 * G.gSpeed;
+      } else {
+        w.fadeOut -= 0.02 * G.gSpeed;
+        if (w.fadeOut <= 0) {
+          G.workers.splice(i, 1);
+        }
       }
-    } else{w.x+=dx/dist*1.5*dt;w.y+=dy/dist*1.5*dt;}
+      continue;
+    }
+
+    // Speech cooldown
+    w.speechCooldown -= G.gSpeed;
+    if (w.speechCooldown <= 0 && !w.bubble) {
+      w.speechCooldown = 200 + Math.random() * 300;
+      assignSpeech(w);
+    }
+
+    // Bubble timer
+    if (w.bubbleTimer > 0) {
+      w.bubbleTimer -= G.gSpeed;
+      if (w.bubbleTimer <= 0) w.bubble = null;
+    }
+
+    // State timer
+    w.stateTimer -= G.gSpeed;
+    if (w.stateTimer <= 0) {
+      pickNewTarget(w);
+    }
+
+    // Move along path
+    if (w.path && w.path.length > 0 && w.pathIdx < w.path.length) {
+      var target = w.path[w.pathIdx];
+      var dx = target.x - w.x, dy = target.y - w.y;
+      var dist = Math.sqrt(dx * dx + dy * dy);
+      var spd = tc.speed * 0.02 * G.gSpeed;
+      if (dist < spd) {
+        w.x = target.x; w.y = target.y;
+        w.pathIdx++;
+      } else {
+        w.x += (dx / dist) * spd;
+        w.y += (dy / dist) * spd;
+      }
+    }
+
+    // Type transitions
+    w.transitionCooldown -= G.gSpeed;
+    if (w.transitionCooldown <= 0) {
+      w.transitionCooldown = 300 + Math.random() * 300;
+      attemptTransition(w);
+    }
+
+    // Happiness drain for bad conditions
+    if (!hasBuilding('cafeteria') && !hasBuilding('wellness')) {
+      w.happiness = Math.max(0, w.happiness - 0.005 * G.gSpeed);
+    }
+
+    // Quit check
+    if (w.happiness <= 0 && w.preventQuitDays <= 0) {
+      w.quitting = true;
+      w.bubble = SPEECH.quitting[0];
+      w.bubbleTimer = 120;
+      G.totalQuits++;
+    }
+
+    // Prevent quit countdown (per day in dayTick is approximate, use ticks)
+    if (w.preventQuitDays > 0) {
+      w.preventQuitDays -= G.gSpeed / 1440;
+    }
   }
-  if(w.hunger>60)w.hap-=dt*0.5;
+}
+
+function pickNewTarget(w) {
+  var hx = Math.floor(GRID / 2), hy = Math.floor(GRID / 2);
+  // Pick a random building to visit
+  var targets = G.bldgs.filter(function(b) { return b.type !== 'corridor' && b.type !== 'tree'; });
+  if (targets.length === 0) {
+    w.stateTimer = 120;
+    return;
+  }
+  var t = targets[Math.floor(Math.random() * targets.length)];
+  var path = bfsPath(w.x, w.y, t.gx, t.gy);
+  if (path.length > 0) {
+    w.path = path;
+    w.pathIdx = 0;
+    w.stateTimer = 300 + Math.random() * 300;
+  } else {
+    // Wander near current position
+    w.stateTimer = 120;
+    w.path = [];
+  }
+}
+
+function attemptTransition(w) {
+  // Rookie -> Ace (if Academy + OJT)
+  if (w.type === 'rookie' && hasBuilding('academy') && policyActive('ojt')) {
+    var chance = 0.03 * G.rookieGrowthBuff;
+    if (Math.random() < chance) {
+      w.type = 'ace';
+      w.will = 70; w.capability = 70; w.happiness = 60;
+      w.bubble = SPEECH.transition_cynic_ace[0]; // reuse "let's do this" line
+      w.bubbleTimer = 120;
+      G.totalAceTransitions++;
+    }
+  }
+  // Cynic -> Ace (if VWBE + Wellness)
+  if (w.type === 'cynic' && policyActive('vwbe') && hasBuilding('wellness')) {
+    if (Math.random() < 0.02) {
+      w.type = 'ace';
+      w.will = 65; w.capability = 65; w.happiness = 55;
+      w.bubble = SPEECH.transition_cynic_ace[0];
+      w.bubbleTimer = 120;
+      G.totalCynicRecoveries++;
+      G.totalAceTransitions++;
+    }
+  }
+  // Ace -> Cynic (burnout, if no wellness and high workload)
+  if (w.type === 'ace' && !hasBuilding('wellness') && !hasBuilding('cafeteria')) {
+    if (Math.random() < 0.008) {
+      w.type = 'cynic';
+      w.will -= 20; w.happiness -= 20;
+      w.bubble = SPEECH.transition_ace_cynic[0];
+      w.bubbleTimer = 120;
+    }
+  }
+  // Rookie -> Disengaged (neglect, if no academy and no OJT)
+  if (w.type === 'rookie' && !hasBuilding('academy') && !policyActive('ojt')) {
+    if (Math.random() < 0.01) {
+      w.type = 'disengaged';
+      w.will -= 15; w.happiness -= 15;
+    }
+  }
+}
+
+function assignSpeech(w) {
+  var lines = null;
+  if (w.type === 'disengaged') {
+    if (G.welfareJustBuilt) lines = SPEECH.after_welfare;
+    else if (hasBuilding('academy')) lines = SPEECH.disengaged_academy;
+    else lines = SPEECH.disengaged_no_welfare;
+  } else if (w.type === 'cynic') {
+    if (policyActive('vwbe')) lines = SPEECH.cynic_vwbe;
+    else lines = SPEECH.cynic_no_vwbe;
+  } else if (w.type === 'rookie') {
+    if (policyActive('ojt')) lines = SPEECH.rookie_ojt;
+    else lines = SPEECH.rookie_no_ojt;
+  } else if (w.type === 'ace') {
+    if (G.empHap > 60) lines = SPEECH.ace_good;
+    else lines = SPEECH.ace_scout;
+  } else if (w.type === 'leader') {
+    if (G.empHap > 50) lines = SPEECH.leader_good;
+    else lines = SPEECH.leader_overwhelmed;
+  }
+  if (lines) {
+    w.bubble = lines[Math.floor(Math.random() * lines.length)];
+    w.bubbleTimer = 120;
+  }
+}
+
+function maybeSpawnWorker() {
+  var hrCount = countBuilding('hr');
+  if (hrCount <= 0) return;
+  var aliveCount = G.workers.filter(function(w) { return !w.quitting; }).length;
+  if (aliveCount >= hrCount * 6 + 12) return; // cap
+  var hx = Math.floor(GRID / 2), hy = Math.floor(GRID / 2);
+  var type = Math.random() < 0.6 ? 'rookie' : 'cynic';
+  spawnWorker(type, hx, hy);
+  showToast('\uC0C8 \uC9C1\uC6D0\uC774 \uC785\uC0AC\uD588\uC2B5\uB2C8\uB2E4! (' + type + ')', 'info');
+}
+
+function updatePolicies() {
+  var keys = Object.keys(G.activatingPolicies);
+  for (var i = 0; i < keys.length; i++) {
+    var pid = keys[i];
+    G.activatingPolicies[pid] -= G.gSpeed / 60;
+    if (G.activatingPolicies[pid] <= 0) {
+      delete G.activatingPolicies[pid];
+      G.activePolicies[pid] = true;
+      showToast(POLICIES.find(function(p){return p.id===pid;}).nameKo + ' \uD65C\uC131\uD654!', 'success');
+      renderPolicyPanel();
+    }
+  }
+}
+
+function checkWinLose() {
+  if (G.gameOver) return;
+  // Lose: money <= 0
+  if (G.money <= 0) {
+    G.gameOver = true;
+    G.gameWon = false;
+    showReport();
+    return;
+  }
+  // Lose: all quit
+  var alive = G.workers.filter(function(w) { return !w.quitting; });
+  if (alive.length === 0 && G.gDay > 2) {
+    G.gameOver = true;
+    G.gameWon = false;
+    showReport();
+    return;
+  }
+  // Win: rating >= 3.0 for 30 days
+  if (G.rating >= 3.0) {
+    G.winDays += G.gSpeed / 1440;
+    if (G.winDays >= 30) {
+      G.gameOver = true;
+      G.gameWon = true;
+      showReport();
+    }
+  } else {
+    G.winDays = Math.max(0, G.winDays - G.gSpeed / 1440 * 0.5);
+  }
+}
+
+// ============================================================
+// HUD
+// ============================================================
+function buildTopBar() {
+  var tb = document.getElementById('topbar');
+  while (tb.firstChild) tb.removeChild(tb.firstChild);
+
+  var back = document.createElement('a');
+  back.href = '/index.html';
+  back.className = 'back-btn';
+  back.textContent = '\u2190 SKMS';
+  tb.appendChild(back);
+
+  var logo = document.createElement('div');
+  logo.className = 'logo';
+  logo.textContent = 'SKMS Company Builder';
+  var sm = document.createElement('small');
+  sm.textContent = 'v2';
+  logo.appendChild(sm);
+  tb.appendChild(logo);
+
+  // Money
+  var ms = createStat('money', '$', 'hud-money', '15,000');
+  ms.classList.add('money');
+  tb.appendChild(ms);
+
+  // Workers
+  tb.appendChild(createStat('', '\u{1F464}', 'hud-workers', '12'));
+
+  // Rating
+  var rs = createStat('rating', '\u2B50', 'hud-rating', '1.2');
+  rs.classList.add('rating');
+  tb.appendChild(rs);
+
+  // Metrics
+  tb.appendChild(createStatColored('\u{1F465}', 'hud-cust', '25', 'cust'));
+  tb.appendChild(createStatColored('\u{1F49A}', 'hud-emp', '18', 'emp'));
+  tb.appendChild(createStatColored('\u{1F30D}', 'hud-soc', '10', 'soc'));
+
+  // Time
+  var td = document.createElement('div');
+  td.className = 'time-display';
+  var dayEl = document.createElement('span');
+  dayEl.className = 'day'; dayEl.id = 'hud-day'; dayEl.textContent = 'Day 1';
+  td.appendChild(dayEl);
+  var clockEl = document.createElement('span');
+  clockEl.className = 'clock'; clockEl.id = 'hud-clock'; clockEl.textContent = '08:00';
+  td.appendChild(clockEl);
+  var speedBtn = document.createElement('button');
+  speedBtn.className = 'speed-btn active'; speedBtn.id = 'btn-speed'; speedBtn.textContent = '1x';
+  speedBtn.addEventListener('click', function() {
+    initAudio();
+    G.gSpeed = G.gSpeed === 1 ? 2 : G.gSpeed === 2 ? 4 : 1;
+    speedBtn.textContent = G.gSpeed + 'x';
+  });
+  td.appendChild(speedBtn);
+  tb.appendChild(td);
+}
+
+function createStat(cls, icon, id, val) {
+  var d = document.createElement('div');
+  d.className = 'stat' + (cls ? ' ' + cls : '');
+  var ic = document.createElement('span');
+  ic.textContent = icon;
+  d.appendChild(ic);
+  var v = document.createElement('span');
+  v.className = 'val'; v.id = id; v.textContent = val;
+  d.appendChild(v);
+  return d;
+}
+
+function createStatColored(icon, id, val, cls) {
+  var d = document.createElement('div');
+  d.className = 'stat';
+  var ic = document.createElement('span');
+  ic.textContent = icon;
+  d.appendChild(ic);
+  var v = document.createElement('span');
+  v.className = 'val ' + cls; v.id = id; v.textContent = val;
+  d.appendChild(v);
+  return d;
+}
+
+function updateHUD() {
+  var el;
+  el = document.getElementById('hud-money');
+  if (el) el.textContent = G.money.toLocaleString();
+  el = document.getElementById('hud-workers');
+  if (el) el.textContent = G.workers.filter(function(w){return !w.quitting;}).length;
+  el = document.getElementById('hud-rating');
+  if (el) el.textContent = G.rating.toFixed(1);
+  el = document.getElementById('hud-cust');
+  if (el) el.textContent = Math.round(G.custSat);
+  el = document.getElementById('hud-emp');
+  if (el) el.textContent = Math.round(G.empHap);
+  el = document.getElementById('hud-soc');
+  if (el) el.textContent = Math.round(G.socVal);
+  el = document.getElementById('hud-day');
+  if (el) el.textContent = 'Day ' + G.gDay;
+  el = document.getElementById('hud-clock');
+  if (el) {
+    var h = Math.floor(G.gTime / 60), m = Math.floor(G.gTime % 60);
+    el.textContent = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+  }
+}
+
+// ============================================================
+// BUILD PANEL
+// ============================================================
+function buildBuildPanel() {
+  var bp = document.getElementById('build-panel');
+  while (bp.firstChild) bp.removeChild(bp.firstChild);
+
+  var tools = Object.keys(DEFS).concat(['bulldoze']);
+  for (var t = 0; t < tools.length; t++) {
+    (function(toolType) {
+      var b = document.createElement('button');
+      b.className = 'build-btn';
+
+      var ico = document.createElement('span');
+      ico.className = 'icon';
+      ico.textContent = toolType === 'bulldoze' ? '\u{1F5D1}' : (DEFS[toolType] ? DEFS[toolType].emoji : '');
+      b.appendChild(ico);
+
+      var lbl = document.createElement('span');
+      lbl.className = 'label';
+      lbl.textContent = toolType === 'bulldoze' ? 'Bulldoze' : (DEFS[toolType] ? DEFS[toolType].lbl : toolType);
+      b.appendChild(lbl);
+
+      if (DEFS[toolType]) {
+        var cost = document.createElement('span');
+        cost.className = 'cost';
+        cost.textContent = '$' + DEFS[toolType].cost;
+        b.appendChild(cost);
+      }
+
+      b.addEventListener('click', function() {
+        initAudio();
+        var btns = bp.querySelectorAll('.build-btn');
+        for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+        if (G.selTool === toolType) {
+          G.selTool = null;
+          canvas.style.cursor = 'default';
+        } else {
+          G.selTool = toolType;
+          b.classList.add('active');
+          canvas.style.cursor = 'crosshair';
+        }
+        // Close meeting if open
+        closeMeeting();
+      });
+
+      bp.appendChild(b);
+    })(tools[t]);
+  }
+}
+
+// ============================================================
+// POLICY PANEL
+// ============================================================
+function buildPolicyToggle() {
+  var btn = document.getElementById('policy-toggle');
+  btn.textContent = '\u{1F4DC} SKMS \uACBD\uC601 \uC81C\uB3C4';
+  btn.addEventListener('click', function() {
+    G.policyOpen = !G.policyOpen;
+    var panel = document.getElementById('policy-panel');
+    if (G.policyOpen) panel.classList.add('open');
+    else panel.classList.remove('open');
+  });
+}
+
+function renderPolicyPanel() {
+  var panel = document.getElementById('policy-panel');
+  while (panel.firstChild) panel.removeChild(panel.firstChild);
+
+  var title = document.createElement('h3');
+  title.textContent = 'SKMS \uACBD\uC601 \uC81C\uB3C4';
+  panel.appendChild(title);
+
+  for (var i = 0; i < POLICIES.length; i++) {
+    (function(pol) {
+      var div = document.createElement('div');
+      div.className = 'pol-item';
+
+      var isActive = !!G.activePolicies[pol.id];
+      var isActivating = !!G.activatingPolicies[pol.id];
+      var meetsPrereqs = checkPolicyPrereqs(pol);
+
+      if (isActive) div.classList.add('active');
+      else if (isActivating) div.classList.add('activating');
+      else if (!meetsPrereqs) div.classList.add('locked');
+
+      var nameEl = document.createElement('div');
+      nameEl.className = 'pol-name';
+      nameEl.textContent = (isActive ? '\u2705 ' : isActivating ? '\u23F3 ' : !meetsPrereqs ? '\u{1F512} ' : '') + pol.nameKo;
+      div.appendChild(nameEl);
+
+      var costEl = document.createElement('div');
+      costEl.className = 'pol-cost';
+      costEl.textContent = isActive ? '\uD65C\uC131\uD654\uB428' : isActivating ? '\uD65C\uC131\uD654 \uC911...' : '$' + pol.cost + ' \u00B7 ' + pol.time + 's';
+      div.appendChild(costEl);
+
+      var descEl = document.createElement('div');
+      descEl.className = 'pol-desc';
+      descEl.textContent = pol.desc;
+      div.appendChild(descEl);
+
+      if (!meetsPrereqs && !isActive && !isActivating) {
+        var reqEl = document.createElement('div');
+        reqEl.className = 'pol-req';
+        reqEl.textContent = '\uD544\uC694: ' + getPrereqText(pol);
+        div.appendChild(reqEl);
+      }
+
+      if (isActivating) {
+        var progWrap = document.createElement('div');
+        progWrap.className = 'pol-progress';
+        var progBar = document.createElement('div');
+        progBar.className = 'pol-progress-bar';
+        var remain = G.activatingPolicies[pol.id] || 0;
+        var pct = Math.max(0, 100 - (remain / pol.time * 100));
+        progBar.style.width = pct + '%';
+        progWrap.appendChild(progBar);
+        div.appendChild(progWrap);
+      }
+
+      if (!isActive && !isActivating && meetsPrereqs) {
+        div.addEventListener('click', function() {
+          if (G.money < pol.cost) {
+            showToast('\uB3C8\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4!', 'warn');
+            return;
+          }
+          G.money -= pol.cost;
+          G.activatingPolicies[pol.id] = pol.time;
+          showToast(pol.nameKo + ' \uD65C\uC131\uD654 \uC2DC\uC791!', 'info');
+          renderPolicyPanel();
+          updateHUD();
+        });
+      }
+
+      panel.appendChild(div);
+    })(POLICIES[i]);
+  }
+}
+
+function checkPolicyPrereqs(pol) {
+  for (var i = 0; i < pol.prereqs.length; i++) {
+    var req = pol.prereqs[i];
+    // Check if it's a policy prereq
+    var isPol = POLICIES.some(function(p) { return p.id === req; });
+    if (isPol) {
+      if (!G.activePolicies[req]) return false;
+    } else {
+      // Building prereq
+      if (!hasBuilding(req)) return false;
+    }
+  }
   return true;
 }
 
-// === GAME TICK ===
-function tick(dt){
-  tickA+=dt*gSpeed;if(tickA<0.016)return;const tdt=tickA;tickA=0;
-  gTime+=tdt*10;if(gTime>=1440){gTime-=1440;gDay++;}
-  const h=gTime/60;
+function getPrereqText(pol) {
+  var texts = [];
+  var buildingNames = {
+    planning: '\uAE30\uD68D\uBD80\uC11C', rnd: 'R&D \uBD80\uC11C', hr: 'HR \uBD80\uC11C',
+    wellness: '\uBCF5\uC9C0\uC2DC\uC124', social: '\uC0AC\uD68C\uACF5\uD5CC \uBD80\uC11C',
+    supex: 'SUPEX \uCD94\uAD6C', vwbe: 'VWBE \uBB38\uD654'
+  };
+  for (var i = 0; i < pol.prereqs.length; i++) {
+    texts.push(buildingNames[pol.prereqs[i]] || pol.prereqs[i]);
+  }
+  return texts.join(' + ');
+}
 
-  // Auto-spawn workers based on HR dept count
-  const hrCount=bldgs.filter(b=>b.type==='hr').length;
-  if(h>=8&&h<=18&&Math.random()<tdt*(0.15+hrCount*0.2)&&bldgs.some(b=>DEFS[b.type]?.cat==='dept')){
-    const types=['rookie','rookie','rookie','cynic','ace','disengaged'];
-    if(hrCount>0)types.push('rookie','ace'); // HR boosts good hires
-    spawnWorker(types[Math.random()*types.length|0]);
+// ============================================================
+// MEETING PANEL
+// ============================================================
+function openMeeting(worker) {
+  if (G.selTool) return; // don't open if building
+  G.meetingWorker = worker;
+  var panel = document.getElementById('meeting-panel');
+  while (panel.firstChild) panel.removeChild(panel.firstChild);
+
+  // Close button
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'meeting-close';
+  closeBtn.textContent = '\u2715';
+  closeBtn.addEventListener('click', closeMeeting);
+  panel.appendChild(closeBtn);
+
+  // Portrait
+  var portrait = document.createElement('div');
+  portrait.className = 'meeting-portrait';
+  var tc = EMP_TYPES[worker.type] || EMP_TYPES.disengaged;
+  portrait.style.background = tc.color;
+  portrait.textContent = tc.emoji;
+  panel.appendChild(portrait);
+
+  // Name
+  var name = document.createElement('div');
+  name.className = 'meeting-name';
+  name.textContent = 'Employee #' + worker.id;
+  panel.appendChild(name);
+
+  // Type
+  var typeEl = document.createElement('div');
+  typeEl.className = 'meeting-type';
+  var typeNames = {ace:'\uC5D0\uC774\uC2A4', rookie:'\uC2E0\uC785', cynic:'\uC2DC\uB2C8\uD06C', disengaged:'\uBC29\uAD00\uC790', leader:'\uB9AC\uB354'};
+  typeEl.textContent = typeNames[worker.type] || worker.type;
+  panel.appendChild(typeEl);
+
+  // Stats
+  var stats = document.createElement('div');
+  stats.className = 'meeting-stats';
+  var statData = [
+    {label:'\uC758\uC695', value:Math.round(worker.will), color:'#FFB830'},
+    {label:'\uC5ED\uB7C9', value:Math.round(worker.capability), color:'#60A5FA'},
+    {label:'\uD589\uBCF5', value:Math.round(worker.happiness), color:'#4ADE80'}
+  ];
+  for (var i = 0; i < statData.length; i++) {
+    var sd = document.createElement('div');
+    sd.className = 'meeting-stat';
+    var sv = document.createElement('span');
+    sv.className = 'v';
+    sv.textContent = statData[i].value;
+    sv.style.color = statData[i].color;
+    sd.appendChild(sv);
+    var sl = document.createElement('span');
+    sl.textContent = statData[i].label;
+    sd.appendChild(sl);
+    stats.appendChild(sd);
+  }
+  panel.appendChild(stats);
+
+  // Choices
+  var choices = getMeetingChoices(worker);
+  for (var c = 0; c < choices.length; c++) {
+    (function(choice) {
+      var btn = document.createElement('button');
+      btn.className = 'meeting-choice';
+      var textNode = document.createElement('span');
+      textNode.textContent = choice.text;
+      btn.appendChild(textNode);
+      var effect = document.createElement('span');
+      effect.className = 'effect';
+      effect.textContent = choice.effect;
+      btn.appendChild(effect);
+      btn.addEventListener('click', function() {
+        choice.apply(worker, G);
+        closeMeeting();
+        showToast(choice.toast || '\uBA74\uB2F4 \uC644\uB8CC', 'success');
+      });
+      panel.appendChild(btn);
+    })(choices[c]);
   }
 
-  workers.forEach(w=>updW(w,tdt));
+  panel.classList.add('open');
+}
 
-  // Upkeep per game-hour
-  if((gTime/60|0)!==((gTime-tdt*10)/60|0)){
-    let up=0;bldgs.forEach(b=>{up+=DEFS[b.type]?.upkeep||0;});
-    workers.forEach(w=>{up+=w.sal;});
-    money-=up;totExp+=up;
+function closeMeeting() {
+  G.meetingWorker = null;
+  document.getElementById('meeting-panel').classList.remove('open');
+}
+
+function getMeetingChoices(w) {
+  var choices = [];
+  if (w.type === 'disengaged') {
+    choices.push({
+      text: '"\uC5B4\uB5A4 \uC810\uC774 \uD798\uB4E0\uAC00\uC694?"',
+      effect: '\uC758\uC695 +5',
+      toast: '\uC9C1\uC6D0\uC774 \uB9C8\uC74C\uC744 \uC5F4\uC5C8\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.will = Math.min(100, w.will + 5); }
+    });
+    choices.push({
+      text: '"\uC5ED\uB7C9 \uAC1C\uBC1C \uAE30\uD68C\uB97C \uC8FC\uACA0\uC2B5\uB2C8\uB2E4"',
+      effect: hasBuilding('academy') ? '\uAD50\uC721 \uC2DC\uC791, \uC758\uC695 +10' : '\uC544\uCE74\uB370\uBBF8 \uD544\uC694',
+      toast: hasBuilding('academy') ? '\uAD50\uC721\uC774 \uC2DC\uC791\uB429\uB2C8\uB2E4!' : '\uC544\uCE74\uB370\uBBF8\uB97C \uBA3C\uC800 \uAC74\uC124\uD558\uC138\uC694',
+      apply: function(w) { if (hasBuilding('academy')) { w.will = Math.min(100, w.will + 10); w.capability = Math.min(100, w.capability + 5); } }
+    });
+    choices.push({
+      text: '"\uC194\uC9C1\uD788 \uAC1C\uC120\uC774 \uD544\uC694\uD569\uB2C8\uB2E4"',
+      effect: '50% \uD655\uB960 \uC758\uC695 +10 \uB610\uB294 -10',
+      toast: Math.random() < 0.5 ? '\uC790\uADF9\uC744 \uBC1B\uC558\uC2B5\uB2C8\uB2E4!' : '\uBC29\uC5B4\uC801 \uBC18\uC751...',
+      apply: function(w) { w.will += Math.random() < 0.5 ? 10 : -10; w.will = clamp(0, 100, w.will); }
+    });
+  } else if (w.type === 'cynic') {
+    choices.push({
+      text: '"\uB2F9\uC2E0\uC758 \uC804\uBB38\uC131\uC774 \uD544\uC694\uD569\uB2C8\uB2E4"',
+      effect: '\uC758\uC695 +10',
+      toast: '\uAC00\uCE58\uB97C \uC778\uC815\uBC1B\uC558\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.will = Math.min(100, w.will + 10); }
+    });
+    choices.push({
+      text: '"\uD300\uC5D0 \uC5B4\uB5A4 \uBCC0\uD654\uAC00 \uD544\uC694\uD560\uAE4C\uC694?"',
+      effect: '\uC2E0\uB8B0 +, \uBB38\uC81C \uBC1C\uACAC',
+      toast: '\uBD80\uC11C \uBB38\uC81C\uB97C \uD30C\uC545\uD588\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.will = Math.min(100, w.will + 5); w.happiness = Math.min(100, w.happiness + 5); }
+    });
+    choices.push({
+      text: '"\uC131\uACFC\uC5D0 \uB530\uB978 \uBCF4\uC0C1\uC744 \uC57D\uC18D\uD569\uB2C8\uB2E4"',
+      effect: policyActive('rewards') ? '\uC758\uC695 +15' : '\uBE48 \uC57D\uC18D, \uC758\uC695 -5',
+      toast: policyActive('rewards') ? '\uBCF4\uC0C1 \uC57D\uC18D\uC5D0 \uB3D9\uAE30\uBD80\uC5EC!' : '\uBE48 \uC57D\uC18D\uC73C\uB85C \uC2E0\uB8B0 \uD558\uB77D...',
+      apply: function(w) { if (policyActive('rewards')) w.will = Math.min(100, w.will + 15); else w.will = Math.max(0, w.will - 5); }
+    });
+  } else if (w.type === 'rookie') {
+    choices.push({
+      text: '"\uC801\uC751\uC740 \uC798 \uB418\uACE0 \uC788\uB098\uC694?"',
+      effect: '\uC758\uC695 +5',
+      toast: '\uC2E0\uC785 \uC9C1\uC6D0\uC774 \uC548\uC2EC\uD588\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.will = Math.min(100, w.will + 5); w.happiness = Math.min(100, w.happiness + 3); }
+    });
+    choices.push({
+      text: '"\uBA58\uD1A0\uB97C \uBD99\uC5EC\uB4DC\uB9AC\uACA0\uC2B5\uB2C8\uB2E4"',
+      effect: G.workers.some(function(x){return x.type==='ace'&&!x.quitting;}) ? '\uC5ED\uB7C9 \uC131\uC7A5 2\uBC30' : '\uC5D0\uC774\uC2A4 \uD544\uC694',
+      toast: G.workers.some(function(x){return x.type==='ace'&&!x.quitting;}) ? '\uBA58\uD1A0\uB9C1 \uC2DC\uC791!' : '\uC5D0\uC774\uC2A4 \uC9C1\uC6D0\uC774 \uD544\uC694\uD569\uB2C8\uB2E4',
+      apply: function(w) { if (G.workers.some(function(x){return x.type==='ace'&&!x.quitting;})) { w.capability = Math.min(100, w.capability + 15); } }
+    });
+    choices.push({
+      text: '"\uC5B4\uB5A4 \uBD84\uC57C\uC5D0 \uAD00\uC2EC\uC774 \uC788\uB098\uC694?"',
+      effect: '\uC801\uC131 \uD30C\uC545',
+      toast: '\uC9C1\uC6D0\uC758 \uAD00\uC2EC\uC0AC\uB97C \uD30C\uC545\uD588\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.will = Math.min(100, w.will + 3); w.happiness = Math.min(100, w.happiness + 3); }
+    });
+  } else if (w.type === 'ace') {
+    choices.push({
+      text: '"\uCEE4\uB9AC\uC5B4 \uBAA9\uD45C\uAC00 \uBB54\uAC00\uC694?"',
+      effect: '30\uC77C\uAC04 \uD1B4\uC0AC \uBC29\uC9C0',
+      toast: '\uCEE4\uB9AC\uC5B4 \uBE44\uC804\uC744 \uACF5\uC720\uD588\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.preventQuitDays = 30; w.happiness = Math.min(100, w.happiness + 5); }
+    });
+    choices.push({
+      text: '"\uB9AC\uB354 \uC5ED\uD560\uC744 \uB9E1\uC544\uBCF4\uC2DC\uACA0\uC5B4\uC694?"',
+      effect: w.capability > 80 ? '\uB9AC\uB354\uB85C \uC2B9\uC9C4!' : '\uC5ED\uB7C9 80+ \uD544\uC694',
+      toast: w.capability > 80 ? '\uB9AC\uB354\uB85C \uC2B9\uC9C4!' : '\uC544\uC9C1 \uC5ED\uB7C9\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4',
+      apply: function(w) { if (w.capability > 80) { w.type = 'leader'; w.will = 80; G.totalLeaderPromotions++; } }
+    });
+    choices.push({
+      text: '"\uC9C0\uAE08 \uC5C5\uBB34 \uAC15\uB3C4\uB294 \uAD1C\uCC2E\uB098\uC694?"',
+      effect: '\uBC88\uC544\uC6C3 \uC704\uD5D8 \uD30C\uC545',
+      toast: '\uC5C5\uBB34 \uAC15\uB3C4\uB97C \uD30C\uC545\uD588\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.happiness = Math.min(100, w.happiness + 5); }
+    });
+  } else if (w.type === 'leader') {
+    choices.push({
+      text: '"\uD300 \uC0C1\uD669\uC740 \uC5B4\uB5A4\uAC00\uC694?"',
+      effect: '\uBD80\uC11C \uC0AC\uAE30 \uD30C\uC545',
+      toast: '\uD300 \uC0C1\uD669\uC744 \uD30C\uC545\uD588\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.happiness = Math.min(100, w.happiness + 3); }
+    });
+    choices.push({
+      text: '"\uD544\uC694\uD55C \uC9C0\uC6D0\uC774 \uC788\uB098\uC694?"',
+      effect: '\uD300 \uD6A8\uC728 +',
+      toast: '\uC9C0\uC6D0 \uBC29\uC548\uC744 \uB17C\uC758\uD588\uC2B5\uB2C8\uB2E4',
+      apply: function(w) { w.will = Math.min(100, w.will + 5); w.capability = Math.min(100, w.capability + 3); }
+    });
+    choices.push({
+      text: '"\uCF54\uCE6D \uC5ED\uB7C9\uC744 \uD0A4\uC6CC\uBD05\uC2DC\uB2E4"',
+      effect: hasBuilding('academy') ? '\uB9AC\uB354\uC2ED +' : '\uC544\uCE74\uB370\uBBF8 \uD544\uC694',
+      toast: hasBuilding('academy') ? '\uCF54\uCE6D \uAD50\uC721 \uC2DC\uC791!' : '\uC544\uCE74\uB370\uBBF8\uB97C \uBA3C\uC800 \uAC74\uC124\uD558\uC138\uC694',
+      apply: function(w) { if (hasBuilding('academy')) { w.capability = Math.min(100, w.capability + 10); } }
+    });
+  }
+  return choices;
+}
+
+// ============================================================
+// EVENT SYSTEM
+// ============================================================
+function triggerRandomEvent() {
+  if (G.eventActive || G.gameOver) return;
+  // Pick unused event, or cycle
+  var available = EVENTS.filter(function(e) { return G.usedEvents.indexOf(e.id) === -1; });
+  if (available.length === 0) {
+    G.usedEvents = [];
+    available = EVENTS.slice();
+  }
+  var evt = available[Math.floor(Math.random() * available.length)];
+  G.usedEvents.push(evt.id);
+  G.currentEvent = evt;
+  G.eventActive = true;
+  G.eventCountdown = 15;
+  showEventModal(evt);
+}
+
+function showEventModal(evt) {
+  var overlay = document.getElementById('event-overlay');
+  while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+
+  var card = document.createElement('div');
+  card.className = 'event-card';
+
+  // Timer
+  var timer = document.createElement('div');
+  timer.className = 'event-timer';
+  timer.id = 'event-timer-display';
+  timer.textContent = '15s';
+  card.appendChild(timer);
+
+  // Tag
+  var tag = document.createElement('div');
+  tag.className = 'event-tag';
+  tag.textContent = '\u{1F4F0} NEWS';
+  card.appendChild(tag);
+
+  // Headline
+  var headline = document.createElement('div');
+  headline.className = 'event-headline';
+  headline.textContent = evt.headline;
+  card.appendChild(headline);
+
+  // Description
+  var desc = document.createElement('div');
+  desc.className = 'event-desc';
+  desc.textContent = evt.desc;
+  card.appendChild(desc);
+
+  // Choices
+  for (var c = 0; c < evt.choices.length; c++) {
+    (function(choice, idx) {
+      var btn = document.createElement('button');
+      btn.className = 'event-choice';
+
+      var textEl = document.createElement('span');
+      textEl.textContent = choice.text;
+      btn.appendChild(textEl);
+
+      var previewEl = document.createElement('span');
+      previewEl.className = 'preview';
+
+      var previewText = choice.preview;
+      var disabled = false;
+
+      // Check policy requirement
+      if (choice.reqPolicy && !policyActive(choice.reqPolicy)) {
+        disabled = true;
+        var reqSpan = document.createElement('span');
+        reqSpan.className = 'req';
+        var polName = POLICIES.find(function(p){return p.id===choice.reqPolicy;});
+        reqSpan.textContent = ' [\uD544\uC694: ' + (polName ? polName.nameKo : choice.reqPolicy) + ']';
+        previewEl.textContent = previewText;
+        previewEl.appendChild(reqSpan);
+      } else if (choice.reqBuilding && !hasBuilding(choice.reqBuilding)) {
+        disabled = true;
+        previewEl.textContent = previewText + ' [\uD544\uC694: ' + (DEFS[choice.reqBuilding] ? DEFS[choice.reqBuilding].lbl : choice.reqBuilding) + ']';
+      } else if (choice.condition && !choice.condition(G)) {
+        disabled = true;
+        previewEl.textContent = previewText + ' [\uC870\uAC74 \uBBF8\uCDA9\uC871]';
+      } else {
+        previewEl.textContent = previewText;
+      }
+
+      btn.appendChild(previewEl);
+      btn.disabled = disabled;
+
+      if (!disabled) {
+        btn.addEventListener('click', function() {
+          choice.apply(G);
+          G.choiceLog.push({event: G.currentEvent.id, choice: idx});
+          closeEvent();
+          updateHUD();
+        });
+      }
+
+      card.appendChild(btn);
+    })(evt.choices[c], c);
   }
 
-  // Stakeholder decay
-  custSat=Math.max(0,custSat-tdt*0.08);
-  empHap=Math.max(0,empHap-tdt*0.06);
-  socVal=Math.max(0,socVal-tdt*0.05);
-
-  // Facilities boost
-  const cafCount=bldgs.filter(b=>b.type==='cafeteria').length;
-  const welCount=bldgs.filter(b=>b.type==='wellness').length;
-  empHap=Math.min(100,empHap+cafCount*tdt*0.1+welCount*tdt*0.15);
-
-  // Rating
-  rating=Math.min(5,Math.max(1,(custSat+empHap+socVal)/60));
-  rating=Math.round(rating*10)/10;
-
-  // Weather
-  wTimer-=tdt;if(wTimer<=0){wTimer=30+Math.random()*60;const r=Math.random();weather=r<0.65?'clear':r<0.85?'cloudy':'rain';}
-  if(money<2000&&money>0)showToast('Funds running low!','warn');if(money<0)money=0;
-  updHUD();
+  overlay.appendChild(card);
+  overlay.classList.add('show');
 }
 
-function updHUD(){
-  document.getElementById('hud-money').textContent=money.toLocaleString();
-  document.getElementById('hud-workers').textContent=workers.length;
-  document.getElementById('hud-rating').textContent=rating.toFixed(1);
-  document.getElementById('hud-cust').textContent=custSat|0;
-  document.getElementById('hud-emp').textContent=empHap|0;
-  document.getElementById('hud-soc').textContent=socVal|0;
-  document.getElementById('hud-day').textContent='Day '+gDay;
-  const h=gTime/60|0,m=gTime%60|0;
-  document.getElementById('hud-clock').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
-}
-function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show '+type;setTimeout(()=>t.classList.remove('show'),3000);}
-
-// === INPUT ===
-canvas.addEventListener('mousedown',e=>{initAudio();if(e.button===0&&!selTool){drag=true;ds={x:e.clientX,y:e.clientY};cs={x:camX,y:camY};}if(e.button===0&&selTool)place(toGrd(e.clientX,e.clientY));});
-canvas.addEventListener('mousemove',e=>{mX=e.clientX;mY=e.clientY;if(drag){camX=cs.x+(e.clientX-ds.x);camY=cs.y+(e.clientY-ds.y);}});
-canvas.addEventListener('mouseup',()=>{drag=false;});
-canvas.addEventListener('wheel',e=>{const oz=zm;zm*=e.deltaY<0?1.1:0.9;zm=Math.max(0.3,Math.min(3,zm));camX=e.clientX-(e.clientX-camX)*(zm/oz);camY=e.clientY-(e.clientY-camY)*(zm/oz);e.preventDefault();},{passive:false});
-
-function place(g){
-  if(!inB(g.x,g.y))return;
-  if(selTool==='bulldoze'){const c=grid[g.y][g.x];if(!c||c.type==='hq')return sfxErr();undo.push({a:'rm',x:g.x,y:g.y,c:{...c}});redo=[];grid[g.y][g.x]=null;bldgs=bldgs.filter(b=>!(b.gx===g.x&&b.gy===g.y));money+=(DEFS[c.type]?.cost||0)*0.5|0;sfxDel();return;}
-  const def=DEFS[selTool];if(!def)return;if(grid[g.y][g.x])return sfxErr();if(money<def.cost){showToast('Not enough money!','warn');return sfxErr();}
-  money-=def.cost;totExp+=def.cost;grid[g.y][g.x]={type:selTool};bldgs.push({type:selTool,gx:g.x,gy:g.y});undo.push({a:'pl',x:g.x,y:g.y,t:selTool});redo=[];sfxPlace();
-  if(tutStep===0&&selTool==='corridor')nextTut();
-  if(tutStep===1&&DEFS[selTool]?.cat==='dept')nextTut();
+function updateEventTimer() {
+  var el = document.getElementById('event-timer-display');
+  if (el) el.textContent = Math.ceil(G.eventCountdown) + 's';
 }
 
-canvas.addEventListener('contextmenu',e=>{
-  e.preventDefault();const g=toGrd(e.clientX,e.clientY);if(!inB(g.x,g.y))return;
-  const c=grid[g.y][g.x],p=document.getElementById('info-panel');if(!c||!DEFS[c.type]){p.classList.remove('show');return;}
-  const def=DEFS[c.type];document.getElementById('info-title').textContent=def.lbl;
-  const body=document.getElementById('info-body');body.textContent='';
-  [{k:'Category',v:def.cat},{k:'Revenue',v:'$'+def.rev+'/worker'},{k:'Upkeep',v:'$'+def.upkeep+'/hr'},{k:'Position',v:'('+g.x+', '+g.y+')'}].forEach(r=>{
-    const row=document.createElement('div');row.className='row';
-    const kk=document.createElement('span');kk.className='k';kk.textContent=r.k;
-    const vv=document.createElement('span');vv.className='v';vv.textContent=r.v;
-    row.appendChild(kk);row.appendChild(vv);body.appendChild(row);});
-  p.classList.add('show');
-});
+function autoPickWorst() {
+  // Pick last choice (worst option)
+  if (!G.currentEvent) { closeEvent(); return; }
+  var choices = G.currentEvent.choices;
+  var lastValid = null;
+  for (var i = choices.length - 1; i >= 0; i--) {
+    var c = choices[i];
+    var disabled = false;
+    if (c.reqPolicy && !policyActive(c.reqPolicy)) disabled = true;
+    if (c.reqBuilding && !hasBuilding(c.reqBuilding)) disabled = true;
+    if (c.condition && !c.condition(G)) disabled = true;
+    if (!disabled) { lastValid = c; break; }
+  }
+  if (lastValid) {
+    lastValid.apply(G);
+    G.choiceLog.push({event: G.currentEvent.id, choice: 'auto'});
+  }
+  closeEvent();
+  showToast('\uC2DC\uAC04 \uCD08\uACFC! \uCD5C\uC545\uC758 \uC120\uD0DD\uC774 \uC801\uC6A9\uB418\uC5C8\uC2B5\uB2C8\uB2E4.', 'warn');
+  updateHUD();
+}
 
-document.getElementById('btn-speed').addEventListener('click',()=>{const sp=[1,2,4];gSpeed=sp[(sp.indexOf(gSpeed)+1)%sp.length];document.getElementById('btn-speed').textContent=gSpeed+'x';});
+function closeEvent() {
+  G.eventActive = false;
+  G.currentEvent = null;
+  document.getElementById('event-overlay').classList.remove('show');
+}
 
-document.addEventListener('keydown',e=>{
-  if((e.metaKey||e.ctrlKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();if(!undo.length)return;const a=undo.pop();
-    if(a.a==='pl'){grid[a.y][a.x]=null;bldgs=bldgs.filter(b=>!(b.gx===a.x&&b.gy===a.y));money+=DEFS[a.t]?.cost||0;}
-    else{grid[a.y][a.x]=a.c;bldgs.push({type:a.c.type,gx:a.x,gy:a.y});}redo.push(a);showToast('Undo','info');}
-  if((e.metaKey||e.ctrlKey)&&((e.key==='z'&&e.shiftKey)||e.key==='y')){e.preventDefault();if(!redo.length)return;const a=redo.pop();
-    if(a.a==='pl'){grid[a.y][a.x]={type:a.t};bldgs.push({type:a.t,gx:a.x,gy:a.y});money-=DEFS[a.t]?.cost||0;}
-    else{grid[a.y][a.x]=null;bldgs=bldgs.filter(b=>!(b.gx===a.x&&b.gy===a.y));}undo.push(a);showToast('Redo','info');}
-});
+// ============================================================
+// REPORT CARD
+// ============================================================
+function showReport() {
+  var overlay = document.getElementById('report-overlay');
+  while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
 
-// === TUTORIAL ===
-const tutSteps=[
-  {s:'Step 1/3',m:'Welcome to SKMS Company Builder! Click Corridor below, then lay paths from HQ.'},
-  {s:'Step 2/3',m:'Great! Now build a department \u2014 try Production or R&D next to your corridors.'},
-  {s:'Step 3/3',m:'Workers are arriving! Build a Cafeteria and Wellness center to keep them happy. Balance your 3 stakeholder metrics!'},
+  var card = document.createElement('div');
+  card.className = 'report-card';
+
+  // Title
+  var title = document.createElement('div');
+  title.className = 'report-title';
+  title.textContent = G.gameWon ? '\u{1F3C6} \uACBD\uC601 \uC131\uC801\uD45C' : '\u{1F4C9} \uACBD\uC601 \uC131\uC801\uD45C';
+  card.appendChild(title);
+
+  var subtitle = document.createElement('div');
+  subtitle.className = 'report-subtitle';
+  subtitle.textContent = G.gameWon ? '\uCD95\uD558\uD569\uB2C8\uB2E4! \uD68C\uC0AC\uB97C \uC0B4\uB838\uC2B5\uB2C8\uB2E4.' : '\uC548\uD0C0\uAE5D\uC9C0\uB9CC \uD68C\uC0AC\uAC00 \uBB34\uB108\uC84C\uC2B5\uB2C8\uB2E4.';
+  card.appendChild(subtitle);
+
+  // Style and SKMS alignment
+  var style = getManagementStyle();
+  var alignment = calcSKMSAlignment();
+
+  var sec1 = document.createElement('div');
+  sec1.className = 'report-section';
+  var h41 = document.createElement('h4');
+  h41.textContent = '\uACBD\uC601 \uC2A4\uD0C0\uC77C';
+  sec1.appendChild(h41);
+  addReportRow(sec1, '\uC2A4\uD0C0\uC77C', style);
+  addReportRow(sec1, 'SKMS \uC815\uD569\uC131', alignment + '%');
+  addReportRow(sec1, '\uC18C\uC694 \uAE30\uAC04', G.gDay + '\uC77C');
+  addReportRow(sec1, '\uBCC4\uC810', G.rating.toFixed(1) + ' \u2B50');
+  card.appendChild(sec1);
+
+  // Stakeholder bars
+  var sec2 = document.createElement('div');
+  sec2.className = 'report-section';
+  var h42 = document.createElement('h4');
+  h42.textContent = '\uC774\uD574\uAD00\uACC4\uC790 \uADE0\uD615';
+  sec2.appendChild(h42);
+  addReportBar(sec2, '\uACE0\uAC1D \uB9CC\uC871', Math.round(G.custSat), 'var(--cust)');
+  addReportBar(sec2, '\uAD6C\uC131\uC6D0 \uD589\uBCF5', Math.round(G.empHap), 'var(--emp)');
+  addReportBar(sec2, '\uC0AC\uD68C\uC801 \uAC00\uCE58', Math.round(G.socVal), 'var(--soc)');
+  card.appendChild(sec2);
+
+  // Employee changes
+  var sec3 = document.createElement('div');
+  sec3.className = 'report-section';
+  var h43 = document.createElement('h4');
+  h43.textContent = '\uAD6C\uC131\uC6D0 \uBCC0\uD654';
+  sec3.appendChild(h43);
+  addReportRow(sec3, '\uC5D0\uC774\uC2A4 \uC804\uD658', G.totalAceTransitions + '\uBA85');
+  addReportRow(sec3, '\uC2DC\uB2C8\uD06C \uD68C\uBCF5', G.totalCynicRecoveries + '\uBA85');
+  addReportRow(sec3, '\uD1B4\uC0AC', G.totalQuits + '\uBA85');
+  addReportRow(sec3, '\uB9AC\uB354 \uC721\uC131', G.totalLeaderPromotions + '\uBA85');
+  card.appendChild(sec3);
+
+  // Choices evaluation
+  var sec4 = document.createElement('div');
+  sec4.className = 'report-section';
+  var h44 = document.createElement('h4');
+  h44.textContent = '\uC120\uD0DD vs SKMS';
+  sec4.appendChild(h44);
+  var polCount = Object.keys(G.activePolicies).length;
+  addReportCheck(sec4, polCount >= 5, 'SKMS \uC815\uCC45 \uC801\uADF9 \uB3C4\uC785');
+  addReportCheck(sec4, G.empHap >= 60, '\uAD6C\uC131\uC6D0 \uD589\uBCF5 \uC6B0\uC120');
+  addReportCheck(sec4, G.socVal >= 40, '\uC0AC\uD68C\uC801 \uAC00\uCE58 \uD22C\uC790');
+  addReportCheck(sec4, G.ignoreCount <= 1, '\uBB38\uC81C \uC801\uADF9 \uB300\uC751');
+  addReportCheck(sec4, G.pressureCount === 0, '\uC5B5\uC555\uC801 \uACBD\uC601 \uD68C\uD53C');
+  addReportCheck(sec4, G.totalQuits <= 3, '\uC778\uC7AC \uC720\uCD9C \uCD5C\uC18C\uD654');
+  card.appendChild(sec4);
+
+  // SKMS Quote
+  var quote = document.createElement('div');
+  quote.className = 'report-quote';
+  quote.textContent = '"\uACBD\uC601\uC758 \uAD81\uADF9\uC801 \uBAA9\uC801\uC740 \uC774\uD574\uAD00\uACC4\uC790\uC758 \uD589\uBCF5 \uADF9\uB300\uD654\uC774\uB2E4"\n\u2014 SKMS 14\uCC28 \uAC1C\uC815\uD310';
+  card.appendChild(quote);
+
+  // Try again button
+  var btn = document.createElement('button');
+  btn.className = 'report-btn';
+  btn.textContent = '\uB2E4\uC2DC \uB3C4\uC804';
+  btn.addEventListener('click', function() { location.reload(); });
+  card.appendChild(btn);
+
+  overlay.appendChild(card);
+  overlay.classList.add('show');
+}
+
+function addReportRow(parent, label, value) {
+  var row = document.createElement('div');
+  row.className = 'report-row';
+  var l = document.createElement('span');
+  l.textContent = label;
+  row.appendChild(l);
+  var v = document.createElement('span');
+  v.textContent = value;
+  v.style.fontWeight = '700';
+  row.appendChild(v);
+  parent.appendChild(row);
+}
+
+function addReportBar(parent, label, value, color) {
+  var row = document.createElement('div');
+  row.className = 'report-row';
+  var l = document.createElement('span');
+  l.textContent = label;
+  l.style.minWidth = '80px';
+  row.appendChild(l);
+  var bar = document.createElement('div');
+  bar.className = 'report-bar';
+  var fill = document.createElement('div');
+  fill.className = 'report-bar-fill';
+  fill.style.width = value + '%';
+  fill.style.background = color;
+  bar.appendChild(fill);
+  row.appendChild(bar);
+  var v = document.createElement('span');
+  v.textContent = value;
+  v.style.fontWeight = '700';
+  v.style.minWidth = '30px';
+  v.style.textAlign = 'right';
+  row.appendChild(v);
+  parent.appendChild(row);
+}
+
+function addReportCheck(parent, passed, text) {
+  var el = document.createElement('div');
+  el.className = 'report-check';
+  el.textContent = (passed ? '\u2705 ' : '\u274C ') + text;
+  el.style.color = passed ? 'var(--green)' : 'rgba(255,255,255,0.4)';
+  parent.appendChild(el);
+}
+
+function getManagementStyle() {
+  var polCount = Object.keys(G.activePolicies).length;
+  if (polCount >= 7 && G.empHap >= 70 && G.socVal >= 50) return '\uC774\uD574\uAD00\uACC4\uC790 \uC911\uC2EC \uACBD\uC601\uC790';
+  if (G.custSat >= 70 && G.empHap < 50) return '\uC131\uACFC \uC911\uC2EC \uC2E4\uC6A9\uC8FC\uC758\uC790';
+  if (G.socVal >= 60) return '\uC0AC\uD68C\uC801 \uAC00\uCE58 \uACBD\uC601\uC790';
+  if (G.empHap >= 60) return '\uAD6C\uC131\uC6D0 \uD589\uBCF5 \uC6B0\uC120 \uACBD\uC601\uC790';
+  if (polCount >= 4) return '\uADE0\uD615 \uC7A1\uD78C \uACBD\uC601\uC790';
+  return '\uC0DD\uC874 \uC911\uC2EC \uACBD\uC601\uC790';
+}
+
+function calcSKMSAlignment() {
+  var score = 0;
+  // +10 per active policy
+  score += Object.keys(G.activePolicies).length * 10;
+  // +5 if emp > 70
+  if (G.empHap > 70) score += 5;
+  // +5 if no neglect quits (approximate: if totalQuits <= 2)
+  if (G.totalQuits <= 2) score += 5;
+  // -10 per ignore
+  score -= G.ignoreCount * 10;
+  // -5 per pressure
+  score -= G.pressureCount * 5;
+  return clamp(0, 100, score);
+}
+
+// ============================================================
+// TUTORIAL
+// ============================================================
+var TUTORIAL_STEPS = [
+  '\uC774 \uD68C\uC0AC\uB294 \uC704\uAE30\uC5D0 \uCC98\uD574 \uC788\uC2B5\uB2C8\uB2E4! HR \uBD80\uC11C\uC640 \uAD6C\uB0B4\uC2DD\uB2F9\uBD80\uD130 \uAC74\uC124\uD558\uC138\uC694.',
+  '\uC9C1\uC6D0\uC744 \uD074\uB9AD\uD574\uC11C 1:1 \uBA74\uB2F4\uC744 \uD558\uACE0 \uBB38\uC81C\uB97C \uD30C\uC545\uD558\uC138\uC694.',
+  '\uC624\uB978\uCABD \uC815\uCC45 \uD328\uB110\uC744 \uC5F4\uACE0 \uCCAB SKMS \uC815\uCC45\uC744 \uD65C\uC131\uD654\uD558\uC138\uC694.'
 ];
-function nextTut(){tutStep++;const el=document.getElementById('tutorial');
-  if(tutStep>=tutSteps.length){el.style.display='none';showToast('Tutorial complete! Build your company!','success');return;}
-  el.querySelector('.step').textContent=tutSteps[tutStep].s;el.querySelector('.msg').textContent=tutSteps[tutStep].m;}
-document.getElementById('tut-dismiss').addEventListener('click',nextTut);
 
-// === LOOP ===
-let lt=performance.now();
-(function loop(now){const dt=Math.min(0.1,(now-lt)/1000);lt=now;tick(dt);render();requestAnimationFrame(loop);})(lt);
-showToast('Welcome to SKMS Company Builder!','success');
+function showTutorial() {
+  if (G.tutDone || G.tutStep >= TUTORIAL_STEPS.length) return;
+  var el = document.getElementById('tutorial');
+  while (el.firstChild) el.removeChild(el.firstChild);
+
+  var step = document.createElement('div');
+  step.className = 'step';
+  step.textContent = 'Step ' + (G.tutStep + 1) + '/' + TUTORIAL_STEPS.length;
+  el.appendChild(step);
+
+  var msg = document.createElement('div');
+  msg.className = 'msg';
+  msg.textContent = TUTORIAL_STEPS[G.tutStep];
+  el.appendChild(msg);
+
+  var dismiss = document.createElement('div');
+  dismiss.className = 'dismiss';
+  dismiss.textContent = '\uC54C\uACA0\uC2B5\uB2C8\uB2E4 \u2192';
+  dismiss.addEventListener('click', function() {
+    G.tutStep++;
+    if (G.tutStep >= TUTORIAL_STEPS.length) {
+      G.tutDone = true;
+      el.classList.remove('show');
+    } else {
+      showTutorial();
+    }
+  });
+  el.appendChild(dismiss);
+
+  el.classList.add('show');
+}
+
+// ============================================================
+// INPUT HANDLING
+// ============================================================
+canvas.addEventListener('mousedown', function(e) {
+  initAudio();
+  if (e.button === 0) {
+    G.drag = true;
+    G.dragStart = {x: e.clientX, y: e.clientY};
+    G.camStart = {x: G.camX, y: G.camY};
+  }
+});
+
+canvas.addEventListener('mousemove', function(e) {
+  G.mouseX = e.clientX;
+  G.mouseY = e.clientY;
+  var grd = toGrd(e.clientX, e.clientY);
+  G.mouseGX = grd.x;
+  G.mouseGY = grd.y;
+
+  if (G.drag) {
+    var dx = e.clientX - G.dragStart.x;
+    var dy = e.clientY - G.dragStart.y;
+    G.camX = G.camStart.x + dx;
+    G.camY = G.camStart.y + dy;
+  }
+});
+
+canvas.addEventListener('mouseup', function(e) {
+  if (!G.drag) return;
+  var dx = Math.abs(e.clientX - G.dragStart.x);
+  var dy = Math.abs(e.clientY - G.dragStart.y);
+  G.drag = false;
+
+  // Only act if not dragging (click)
+  if (dx < 5 && dy < 5) {
+    handleClick(e.clientX, e.clientY);
+  }
+});
+
+canvas.addEventListener('wheel', function(e) {
+  e.preventDefault();
+  var oldZm = G.zm;
+  G.zm = clamp(0.3, 3, G.zm - e.deltaY * 0.001);
+  // Zoom toward mouse
+  var ratio = G.zm / oldZm;
+  G.camX = e.clientX - (e.clientX - G.camX) * ratio;
+  G.camY = e.clientY - (e.clientY - G.camY) * ratio;
+}, {passive: false});
+
+function handleClick(cx, cy) {
+  var grd = toGrd(cx, cy);
+  var gx = grd.x, gy = grd.y;
+  if (!inBounds(gx, gy)) return;
+
+  if (G.selTool === 'bulldoze') {
+    bulldoze(gx, gy);
+    return;
+  }
+
+  if (G.selTool && DEFS[G.selTool]) {
+    placeBuild(gx, gy, G.selTool);
+    return;
+  }
+
+  // Click on worker?
+  var closest = null, closestDist = 999;
+  for (var i = 0; i < G.workers.length; i++) {
+    var w = G.workers[i];
+    if (w.quitting) continue;
+    var dx = w.x - gx, dy = w.y - gy;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 1.5 && dist < closestDist) {
+      closest = w;
+      closestDist = dist;
+    }
+  }
+  if (closest) {
+    openMeeting(closest);
+  }
+}
+
+function placeBuild(gx, gy, type) {
+  if (G.grid[gy][gx]) {
+    sfxErr();
+    showToast('\uC774\uBBF8 \uAC74\uBB3C\uC774 \uC788\uC2B5\uB2C8\uB2E4!', 'warn');
+    return;
+  }
+  var def = DEFS[type];
+  if (G.money < def.cost) {
+    sfxErr();
+    showToast('\uB3C8\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4!', 'warn');
+    return;
+  }
+  // Save undo
+  G.undoStack.push({action:'build', x:gx, y:gy, type:type});
+  G.redoStack = [];
+
+  G.money -= def.cost;
+  G.grid[gy][gx] = {type: type};
+  G.bldgs.push({type: type, gx: gx, gy: gy});
+  sfxPlace();
+
+  // Check welfare buildings for speech trigger
+  if (type === 'cafeteria' || type === 'wellness') {
+    G.welfareJustBuilt = true;
+    G.welfareTimer = 300;
+  }
+
+  updateHUD();
+  renderPolicyPanel();
+}
+
+function bulldoze(gx, gy) {
+  var cell = G.grid[gy][gx];
+  if (!cell || cell.type === 'hq') {
+    sfxErr();
+    return;
+  }
+  var def = DEFS[cell.type];
+  var refund = def ? Math.floor(def.cost * 0.5) : 0;
+
+  G.undoStack.push({action:'bulldoze', x:gx, y:gy, type:cell.type});
+  G.redoStack = [];
+
+  G.grid[gy][gx] = null;
+  for (var i = G.bldgs.length - 1; i >= 0; i--) {
+    if (G.bldgs[i].gx === gx && G.bldgs[i].gy === gy) {
+      G.bldgs.splice(i, 1);
+      break;
+    }
+  }
+  G.money += refund;
+  sfxDel();
+  showToast('\uCCA0\uAC70 (+$' + refund + ')', 'info');
+  updateHUD();
+  renderPolicyPanel();
+}
+
+// Undo/Redo
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+    e.preventDefault();
+    undoAction();
+  }
+  if (e.ctrlKey && e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+    e.preventDefault();
+    redoAction();
+  }
+});
+
+function undoAction() {
+  if (G.undoStack.length === 0) return;
+  var action = G.undoStack.pop();
+  G.redoStack.push(action);
+  if (action.action === 'build') {
+    // Remove building
+    G.grid[action.y][action.x] = null;
+    for (var i = G.bldgs.length - 1; i >= 0; i--) {
+      if (G.bldgs[i].gx === action.x && G.bldgs[i].gy === action.y) {
+        G.bldgs.splice(i, 1); break;
+      }
+    }
+    G.money += DEFS[action.type].cost;
+  } else if (action.action === 'bulldoze') {
+    // Restore building
+    G.grid[action.y][action.x] = {type: action.type};
+    G.bldgs.push({type: action.type, gx: action.x, gy: action.y});
+    G.money -= Math.floor(DEFS[action.type].cost * 0.5);
+  }
+  updateHUD();
+  showToast('Undo', 'info');
+}
+
+function redoAction() {
+  if (G.redoStack.length === 0) return;
+  var action = G.redoStack.pop();
+  G.undoStack.push(action);
+  if (action.action === 'build') {
+    G.grid[action.y][action.x] = {type: action.type};
+    G.bldgs.push({type: action.type, gx: action.x, gy: action.y});
+    G.money -= DEFS[action.type].cost;
+  } else if (action.action === 'bulldoze') {
+    G.grid[action.y][action.x] = null;
+    for (var i = G.bldgs.length - 1; i >= 0; i--) {
+      if (G.bldgs[i].gx === action.x && G.bldgs[i].gy === action.y) {
+        G.bldgs.splice(i, 1); break;
+      }
+    }
+    G.money += Math.floor(DEFS[action.type].cost * 0.5);
+  }
+  updateHUD();
+  showToast('Redo', 'info');
+}
+
+// ============================================================
+// GAME LOOP
+// ============================================================
+var lastTime = 0;
+function gameLoop(ts) {
+  var dt = ts - lastTime;
+  lastTime = ts;
+
+  if (!G.gameOver) {
+    G.tickAccum += dt;
+    while (G.tickAccum >= 1000 / 60) {
+      G.tickAccum -= 1000 / 60;
+      gameTick();
+    }
+    // Update HUD periodically
+    if (Math.floor(ts / 500) !== Math.floor((ts - dt) / 500)) {
+      updateHUD();
+      // Update policy progress bars
+      if (G.policyOpen && Object.keys(G.activatingPolicies).length > 0) {
+        renderPolicyPanel();
+      }
+    }
+  }
+
+  render();
+  requestAnimationFrame(gameLoop);
+}
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+function init() {
+  setupCrisisScenario();
+  buildTopBar();
+  buildBuildPanel();
+  buildPolicyToggle();
+  renderPolicyPanel();
+  centerCamera();
+  showTutorial();
+  updateHUD();
+  requestAnimationFrame(gameLoop);
+}
+
+init();
 </script>
 </body>
 </html>
