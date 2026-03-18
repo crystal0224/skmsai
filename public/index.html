@@ -672,14 +672,14 @@
     </div>
 
     <!-- Dashboard Overlay -->
-    <div class="dashboard-overlay" id="dashboard-overlay">
+    <div class="dashboard-overlay" id="dashboard-overlay" role="dialog" aria-modal="true" aria-label="System Dashboard">
         <div class="dashboard-container">
             <div class="dashboard-header">
                 <div>
                     <h2>SYSTEM DASHBOARD</h2>
-                    <p>서비스 상태 및 실시간 메트릭을 모니터링합니다.</p>
+                    <p>Service status and real-time metrics monitoring.</p>
                 </div>
-                <span class="close-overlay" id="close-dashboard">&times;</span>
+                <button class="close-overlay" id="close-dashboard" aria-label="Close dashboard">&times;</button>
             </div>
             <div class="dashboard-body">
                 <!-- Service Status -->
@@ -746,16 +746,16 @@
 
                 <!-- Quality Status -->
                 <div class="dashboard-section">
-                    <h3 class="dashboard-section-title">품질 현황 (QUALITY STATUS)</h3>
+                    <h3 class="dashboard-section-title">QUALITY STATUS</h3>
                     <div class="dashboard-quality-summary" id="dashboard-quality-summary">
                         <p class="loading-text">Loading...</p>
                     </div>
-                    <div class="dashboard-quality-coverage" id="dashboard-quality-coverage" style="margin-top: 1rem;"></div>
+                    <div class="dashboard-quality-coverage" id="dashboard-quality-coverage"></div>
                 </div>
 
                 <!-- Health Detail -->
                 <div class="dashboard-section">
-                    <h3 class="dashboard-section-title">서비스 상세 (HEALTH DETAIL)</h3>
+                    <h3 class="dashboard-section-title">HEALTH DETAIL</h3>
                     <div class="dashboard-health-detail" id="dashboard-health-detail">
                         <p class="loading-text">Loading...</p>
                     </div>
@@ -763,15 +763,15 @@
 
                 <!-- Job History (NEW) -->
                 <div class="dashboard-section">
-                    <h3 class="dashboard-section-title">최근 작업 내역 (JOB HISTORY)</h3>
+                    <h3 class="dashboard-section-title">JOB HISTORY</h3>
                     <div class="dashboard-jobs" id="dashboard-jobs-container">
                         <table class="jobs-table">
                             <thead>
                                 <tr>
-                                    <th>일시</th>
-                                    <th>유형</th>
-                                    <th>주제</th>
-                                    <th>상태</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Topic</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody id="dashboard-jobs-list">
@@ -2955,7 +2955,7 @@
             if (data.evidence_check) {
                 const ec = data.evidence_check;
                 html += `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-                    근거 커버리지: ${(ec.coverage_score * 100).toFixed(0)}%
+                    Evidence Coverage: ${(ec.coverage_score * 100).toFixed(0)}%
                     ${ec.passed ? ' ✓' : ' ⚠'}
                 </p>`;
             }
@@ -3107,7 +3107,7 @@
             if (!listEl) return;
 
             if (!jobs || jobs.length === 0) {
-                listEl.innerHTML = '<tr><td colspan="4" class="empty-text">작업 내역이 없습니다.</td></tr>';
+                listEl.innerHTML = '<tr><td colspan="4" class="empty-text">No job history available.</td></tr>';
                 return;
             }
 
@@ -3140,7 +3140,7 @@
                     showStudioResult(statusData.result, requestId);
                 }
             } catch (err) {
-                showToast('상세 정보를 불러올 수 없습니다.');
+                showToast('Unable to load details.');
             }
         }
 
@@ -3252,7 +3252,7 @@
                     const qCount = summary ? summary.golden_questions : 0;
                     summaryEl.innerHTML = `
                         <div class="quality-notice">
-                            <p>평가 결과가 아직 없습니다. Golden QA 셋: ${qCount}건</p>
+                            <p>No evaluation results yet. Golden QA set: ${qCount} items</p>
                         </div>`;
                 }
                 if (coverageEl) coverageEl.innerHTML = '';
@@ -3265,7 +3265,7 @@
                     <div class="dashboard-metrics-grid">
                         <div class="metric-card">
                             <span class="metric-value ${gradeClass}">${escapeHtml(summary.overall_grade)}</span>
-                            <span class="metric-label">전체 등급</span>
+                            <span class="metric-label">Overall Grade</span>
                         </div>
                         <div class="metric-card">
                             <span class="metric-value">${(summary.pass_rate * 100).toFixed(1)}%</span>
@@ -3273,11 +3273,11 @@
                         </div>
                         <div class="metric-card">
                             <span class="metric-value">${(summary.coverage_score * 100).toFixed(0)}%</span>
-                            <span class="metric-label">커버리지</span>
+                            <span class="metric-label">Coverage</span>
                         </div>
                         <div class="metric-card">
                             <span class="metric-value ${summary.gate_passed ? 'quality-pass' : 'quality-fail'}">${summary.gate_passed ? 'PASS' : 'FAIL'}</span>
-                            <span class="metric-label">품질 게이트</span>
+                            <span class="metric-label">Quality Gate</span>
                         </div>
                     </div>`;
             }
@@ -3290,7 +3290,7 @@
                 }
                 const maxCount = Math.max(...editions.map(e => e.question_count), 1);
                 coverageEl.innerHTML = `
-                    <h4 class="coverage-subtitle">판본별 커버리지 (총 ${coverage.total_questions}건)</h4>
+                    <h4 class="coverage-subtitle">Edition Coverage (${coverage.total_questions} total)</h4>
                     <div class="coverage-bars">
                         ${editions.map(ed => {
                             const pct = Math.round((ed.question_count / maxCount) * 100);
@@ -3312,7 +3312,7 @@
             if (!el) return;
 
             if (!detail) {
-                el.innerHTML = '<p class="loading-text">서비스 상세 정보를 불러올 수 없습니다.</p>';
+                el.innerHTML = '<p class="loading-text">Unable to load health detail.</p>';
                 return;
             }
 
@@ -3340,7 +3340,7 @@
                     </div>
                 </div>
                 <div class="health-components">
-                    <h4 class="coverage-subtitle">컴포넌트 상태</h4>
+                    <h4 class="coverage-subtitle">Component Status</h4>
                     <div class="dashboard-status-grid" style="margin-top: 0.5rem;">
                         ${componentEntries.map(([name, info]) => {
                             const available = info.available;

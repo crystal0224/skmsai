@@ -2428,6 +2428,7 @@ textarea.plan-field-input {
   transition: color 0.2s;
 }
 .close-overlay:hover { color: var(--text-black); }
+.close-overlay:focus { outline: 2px solid var(--text-black); outline-offset: 4px; border-radius: 4px; }
 
 /* Edition Browser Body */
 .editions-body {
@@ -2943,17 +2944,30 @@ textarea.plan-field-input {
   letter-spacing: 0.05em;
 }
 .status-on {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: #f0fdf4;
+  color: #166534;
 }
 .status-off {
-  background: #ffebee;
-  color: #c62828;
+  background: #fef2f2;
+  color: #991b1b;
 }
 .status-na {
   background: var(--bg-light);
   color: var(--text-muted);
   border: 1px solid var(--border-color);
+}
+
+/* Loading & Empty States */
+.loading-text {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 1.5rem 0;
+}
+.empty-state {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 2rem 0;
+  text-align: center;
 }
 
 /* Metrics Grid */
@@ -3042,16 +3056,16 @@ textarea.plan-field-input {
   border-radius: 20px;
 }
 .status-code-2xx {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: #f0fdf4;
+  color: #166534;
 }
 .status-code-4xx {
-  background: #fff8e1;
-  color: #f57f17;
+  background: #fef3c7;
+  color: #92400e;
 }
 .status-code-5xx {
-  background: #ffebee;
-  color: #c62828;
+  background: #fef2f2;
+  color: #991b1b;
 }
 .status-code-other {
   background: var(--bg-light);
@@ -3060,10 +3074,10 @@ textarea.plan-field-input {
 
 /* Quality Status */
 .dashboard-quality-summary .quality-pass {
-  color: #2e7d32;
+  color: #166534;
 }
 .dashboard-quality-summary .quality-fail {
-  color: #c62828;
+  color: #991b1b;
 }
 .quality-notice {
   background: var(--bg-light);
@@ -3115,6 +3129,53 @@ textarea.plan-field-input {
   color: var(--text-black);
 }
 .health-components {
+  margin-top: 1rem;
+}
+
+/* Jobs Table */
+.jobs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.jobs-table th {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  padding: 0.8rem 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+.jobs-table td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  vertical-align: middle;
+}
+.jobs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.jobs-table tbody tr:hover {
+  background: var(--bg-light);
+}
+.job-status-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.job-done { background: #f0fdf4; color: #166534; }
+.job-running { background: #eff6ff; color: #1e40af; }
+.job-failed { background: #fef2f2; color: #991b1b; }
+.job-pending { background: var(--bg-light); color: var(--text-muted); }
+
+/* Dashboard quality coverage gap */
+.dashboard-quality-coverage {
   margin-top: 1rem;
 }
 
@@ -3268,7 +3329,10 @@ textarea.plan-field-input {
   .search-results { padding: 1rem 1.5rem; }
   .dashboard-status-grid, .dashboard-metrics-grid, .health-detail-grid { grid-template-columns: repeat(2, 1fr); }
   .dashboard-body { padding: 1.5rem; }
-  .endpoint-name { width: 140px; font-size: 0.75rem; }
+  .dashboard-header { padding: 1.5rem; }
+  .endpoint-name { width: 120px; font-size: 0.75rem; }
+  .jobs-table { font-size: 0.8rem; }
+  .jobs-table th, .jobs-table td { padding: 0.5rem 0.6rem; }
 }
 
 @media (max-width: 640px) {
@@ -3297,6 +3361,9 @@ textarea.plan-field-input {
     width: min(280px, 100%);
     text-align: center;
   }
+  .dashboard-status-grid, .dashboard-metrics-grid, .health-detail-grid { grid-template-columns: 1fr; }
+  .endpoint-name { width: 80px; }
+  .dashboard-header h2 { font-size: 1.4rem; }
 }
 
 /* Phase 8: Showcase & Onboarding Styles */
