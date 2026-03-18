@@ -878,7 +878,7 @@ function drawWorker(w) {
 }
 
 function drawBubble(x, y, text) {
-  ctx.font = Math.max(9, 10 * G.zm) + 'px system-ui';
+  ctx.font = Math.max(11, 10 * G.zm) + 'px system-ui';
   var tw = ctx.measureText(text).width + 14 * G.zm;
   var th = 18 * G.zm;
   var bx = x - tw / 2, by = y - th - 6 * G.zm;
@@ -1272,6 +1272,7 @@ function attemptTransition(w) {
       w.bubble = SPEECH.transition_cynic_ace[0];
       w.bubbleTimer = 120;
       sfxLevelUp();
+      showToast('\u{1F525} \uC9C1\uC6D0 #' + w.id + ' \uC5D0\uC774\uC2A4\uB85C \uC131\uC7A5!', 'success');
       G.totalAceTransitions++;
     }
   }
@@ -1283,6 +1284,7 @@ function attemptTransition(w) {
       w.bubble = SPEECH.transition_cynic_ace[0];
       w.bubbleTimer = 120;
       sfxLevelUp();
+      showToast('\u{1F525} \uC9C1\uC6D0 #' + w.id + ' \uC5D0\uC774\uC2A4\uB85C \uC131\uC7A5!', 'success');
       G.totalCynicRecoveries++;
       G.totalAceTransitions++;
     }
@@ -1295,6 +1297,7 @@ function attemptTransition(w) {
       w.bubble = SPEECH.transition_ace_cynic[0];
       w.bubbleTimer = 120;
       sfxSad();
+      showToast('\u{1F9CA} \uC9C1\uC6D0 #' + w.id + ' \uBC88\uC544\uC6C3\uC73C\uB85C \uB0C9\uC18C\uD30C \uC804\uD658', 'warn');
     }
   }
   // Rookie -> Disengaged (neglect, if no academy and no OJT)
@@ -1302,6 +1305,7 @@ function attemptTransition(w) {
     if (Math.random() < 0.01) {
       w.type = 'disengaged';
       w.will -= 15; w.happiness -= 15;
+      showToast('\u{1F634} \uC2E0\uC785 #' + w.id + ' \uBC29\uCE58\uB85C \uBB34\uAE30\uB825\uD654', 'warn');
     }
   }
 }
@@ -1761,7 +1765,7 @@ function openMeeting(worker) {
         sfxClick();
         choice.apply(worker, G);
         closeMeeting();
-        showToast(choice.toast || '\uBA74\uB2F4 \uC644\uB8CC', 'success');
+        showToast((choice.toast || '\uBA74\uB2F4 \uC644\uB8CC') + ' (' + (choice.effect || '') + ')', 'success');
       });
       panel.appendChild(btn);
     })(choices[c]);
