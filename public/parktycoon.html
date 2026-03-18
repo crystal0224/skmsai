@@ -1019,7 +1019,7 @@ function gameTick() {
   }
 
   // Event timer
-  G.eventTimer += G.gSpeed;
+  G.eventTimer += 1;
   if (!G.eventActive && G.eventTimer > (40 + Math.random() * 20) * 60) {
     G.eventTimer = 0;
     triggerRandomEvent();
@@ -1538,9 +1538,11 @@ function buildBuildPanel() {
       b.appendChild(lbl);
 
       if (DEFS[toolType]) {
+        var d = DEFS[toolType];
+        b.title = d.lbl + ' ($' + d.cost + ') \u2014 ' + (d.cat === 'dept' ? '\uBD80\uC11C' : d.cat === 'facility' ? '\uC2DC\uC124' : '\uC7A5\uC2DD') + (d.rev > 0 ? ', \uC218\uC775 $' + d.rev + '/day' : '') + (d.metric ? ', ' + (d.metric === 'cust' ? '\uACE0\uAC1D\u2191' : d.metric === 'emp' ? '\uAD6C\uC131\uC6D0\u2191' : '\uC0AC\uD68C\u2191') : '');
         var cost = document.createElement('span');
         cost.className = 'cost';
-        cost.textContent = '$' + DEFS[toolType].cost;
+        cost.textContent = '$' + d.cost;
         b.appendChild(cost);
       }
 
@@ -2717,6 +2719,21 @@ function placeBuild(gx, gy, type) {
   G.money -= def.cost;
   G.grid[gy][gx] = {type: type};
   G.bldgs.push({type: type, gx: gx, gy: gy});
+
+    // Connection warning for departments and facilities
+    if (def.cat === 'dept' || def.cat === 'facility') {
+      var dirs = [{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+      var connected = false;
+      for (var d = 0; d < dirs.length; d++) {
+        var nx = gx + dirs[d].x, ny = gy + dirs[d].y;
+        if (nx >= 0 && ny >= 0 && nx < GRID && ny < GRID) {
+          var adj = G.grid[ny][nx];
+          if (adj && (adj.type === 'corridor' || adj.type === 'hq')) { connected = true; break; }
+        }
+      }
+      if (!connected) showToast('\u26A0 \uBCF5\uB3C4\uC640 \uC5F0\uACB0\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4!', 'warn');
+    }
+
   sfxPlace();
 
   // Check welfare buildings for speech trigger
