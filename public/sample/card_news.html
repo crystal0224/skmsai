@@ -4,22 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKMS Card News Sample</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
     :root {
-      --ink: #18214d;
-      --yellow: #f3df2d;
-      --panel: #fffef4;
-      --line: rgba(24, 33, 77, 0.12);
+      --c-primary: #0052A2;
+      --c-primary-light: #EBF2FA;
+      --c-accent: #E4002B;
+      --c-text: #1F2937;
+      --c-text-muted: #6B7280;
+      --c-text-subtle: #9CA3AF;
+      --c-bg: #FFFFFF;
+      --c-bg-warm: #FAFAF8;
+      --c-surface: #F3F4F6;
+      --c-border: rgba(107,114,128,0.15);
+      --radius-sm: 4px;
+      --radius-md: 10px;
+      --radius-lg: 18px;
+      --font-stack: 'Pretendard','Apple SD Gothic Neo',sans-serif;
+      --transition: 0.2s ease-out;
     }
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at top right, rgba(243, 223, 45, 0.45), transparent 28%),
-        linear-gradient(180deg, #fffef6 0%, #fff6bd 100%);
-      padding: 32px 20px 64px;
+      font-family: var(--font-stack);
+      color: var(--c-text);
+      background: var(--c-bg-warm);
+      -webkit-font-smoothing: antialiased;
+      padding: clamp(20px, 4vw, 48px);
     }
     .wrap {
       max-width: 1080px;
@@ -27,70 +38,100 @@
     }
     .eyebrow {
       display: inline-block;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 1px solid var(--line);
-      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--c-primary);
+      color: var(--c-bg);
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
     }
     h1 {
-      margin: 18px 0 12px;
-      font-size: clamp(40px, 6vw, 72px);
-      line-height: 0.92;
-      letter-spacing: -0.06em;
+      margin: 20px 0 10px;
+      font-size: clamp(36px, 6vw, 64px);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      font-weight: 800;
     }
-    p.lead {
-      margin: 0 0 28px;
-      max-width: 680px;
-      font-size: 18px;
-      line-height: 1.6;
-      color: rgba(24, 33, 77, 0.8);
+    .lead {
+      margin: 0 0 32px;
+      max-width: 640px;
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--c-text-muted);
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
     }
     .card {
-      min-height: 280px;
-      padding: 22px;
-      border-radius: 24px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow: 0 20px 40px rgba(24, 33, 77, 0.08);
+      min-height: 300px;
+      padding: 28px;
+      border-radius: var(--radius-lg);
+      background: var(--c-bg);
+      border: 1px solid var(--c-border);
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition), box-shadow var(--transition);
     }
-    .card:nth-child(1) { background: linear-gradient(180deg, #18214d 0%, #2940a7 100%); color: white; }
-    .card:nth-child(2) { background: var(--panel); }
-    .card:nth-child(3) { background: linear-gradient(180deg, #fff7d0 0%, #ffffff 100%); }
-    .label {
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(31,41,55,0.10);
+    }
+    .card.featured {
+      background: var(--c-primary);
+      color: var(--c-bg);
+      border-color: transparent;
+    }
+    .card.featured .card-label { background: rgba(255,255,255,0.18); color: var(--c-bg); border-color: rgba(255,255,255,0.2); }
+    .card.featured .card-body { color: rgba(255,255,255,0.85); }
+    .card.warm {
+      background: linear-gradient(175deg, var(--c-bg-warm) 0%, var(--c-bg) 100%);
+    }
+    .card-label {
       display: inline-block;
-      margin-bottom: 18px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 16px;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-    }
-    .card:not(:first-child) .label {
-      background: rgba(24, 33, 77, 0.06);
-      border-color: rgba(24, 33, 77, 0.08);
+      color: var(--c-text-muted);
+      align-self: flex-start;
     }
     h2 {
       margin: 0 0 12px;
-      font-size: 30px;
-      line-height: 1;
-      letter-spacing: -0.05em;
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      font-weight: 700;
     }
-    ul {
-      margin: 12px 0 0;
+    .card-body {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--c-text-muted);
+    }
+    .card-body ul {
+      margin: 0;
       padding-left: 18px;
-      line-height: 1.7;
+    }
+    .card-body li {
+      margin-bottom: 4px;
+    }
+    .card-body li::marker {
+      color: var(--c-primary);
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 12px;
+      color: var(--c-text-subtle);
+      letter-spacing: 1px;
     }
   </style>
 </head>
@@ -100,26 +141,29 @@
     <h1>이해관계자 행복의 변천</h1>
     <p class="lead">SKMS 핵심 개념을 카드뉴스 톤으로 재구성한 샘플입니다. 실제 운영본은 주제와 판본에 따라 카드 수와 문구가 달라집니다.</p>
     <section class="grid">
-      <article class="card">
-        <div class="label">Card 01</div>
+      <article class="card featured">
+        <div class="card-label">Card 01</div>
         <h2>행복은 결과가 아니라 기준</h2>
-        <p>SKMS는 이해관계자 행복을 경영 판단의 기준으로 다루며, 성과와 사람의 의미를 동시에 묻습니다.</p>
+        <p class="card-body">SKMS는 이해관계자 행복을 경영 판단의 기준으로 다루며, 성과와 사람의 의미를 동시에 묻습니다.</p>
       </article>
       <article class="card">
-        <div class="label">Card 02</div>
+        <div class="card-label">Card 02</div>
         <h2>판본이 바뀌며 강조점도 이동</h2>
-        <ul>
-          <li>초기: 기업 존재 이유와 기본 이념</li>
-          <li>중기: 자율, 책임, 실행력 강조</li>
-          <li>최근: 이해관계자와 지속가능성 연결</li>
-        </ul>
+        <div class="card-body">
+          <ul>
+            <li>초기: 기업 존재 이유와 기본 이념</li>
+            <li>중기: 자율, 책임, 실행력 강조</li>
+            <li>최근: 이해관계자와 지속가능성 연결</li>
+          </ul>
+        </div>
       </article>
-      <article class="card">
-        <div class="label">Card 03</div>
+      <article class="card warm">
+        <div class="card-label">Card 03</div>
         <h2>결국 질문은 하나</h2>
-        <p>우리의 결정이 고객, 구성원, 사회의 행복에 어떤 영향을 주는가. 이 질문이 전체 서사를 관통합니다.</p>
+        <p class="card-body">우리의 결정이 고객, 구성원, 사회의 행복에 어떤 영향을 주는가. 이 질문이 전체 서사를 관통합니다.</p>
       </article>
     </section>
+    <footer>SKMS CONTENT STUDIO</footer>
   </main>
 </body>
 </html>

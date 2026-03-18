@@ -4,127 +4,155 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKMS Visualization Sample</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
+    :root {
+      --c-primary: #0052A2;
+      --c-primary-light: #EBF2FA;
+      --c-text: #1F2937;
+      --c-text-muted: #6B7280;
+      --c-bg: #FFFFFF;
+      --c-bg-warm: #FAFAF8;
+      --c-surface: #F3F4F6;
+      --c-border: rgba(107,114,128,0.15);
+      --radius-sm: 4px;
+      --radius-md: 10px;
+      --radius-lg: 18px;
+      --font-stack: 'Pretendard','Apple SD Gothic Neo',sans-serif;
+      --transition: 0.2s ease-out;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f6f8fc;
-      color: #17204c;
-      padding: 28px;
+      font-family: var(--font-stack);
+      color: var(--c-text);
+      background: var(--c-bg-warm);
+      -webkit-font-smoothing: antialiased;
+      padding: clamp(16px, 3vw, 32px);
     }
     .frame {
       max-width: 1100px;
       margin: 0 auto;
-      background: white;
-      border-radius: 28px;
-      padding: 28px;
-      box-shadow: 0 20px 50px rgba(23, 32, 76, 0.08);
-      border: 1px solid rgba(23, 32, 76, 0.08);
+      background: var(--c-bg);
+      border-radius: var(--radius-lg);
+      padding: clamp(20px, 4vw, 40px);
+      border: 1px solid var(--c-border);
     }
     h1 {
-      margin: 0 0 10px;
-      font-size: clamp(34px, 5vw, 56px);
-      line-height: 0.95;
-      letter-spacing: -0.06em;
+      margin: 0 0 8px;
+      font-size: clamp(28px, 5vw, 44px);
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      font-weight: 800;
     }
-    p {
-      margin: 0 0 22px;
-      color: rgba(23, 32, 76, 0.72);
+    .desc {
+      margin: 0 0 28px;
+      color: var(--c-text-muted);
       line-height: 1.7;
+      font-size: 16px;
+      max-width: 720px;
     }
     svg {
       width: 100%;
       height: auto;
-      border-radius: 20px;
-      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
-      border: 1px solid rgba(23, 32, 76, 0.06);
+      border-radius: var(--radius-md);
+      background: var(--c-bg-warm);
+      border: 1px solid var(--c-border);
     }
     .legend {
       display: flex;
-      gap: 16px;
+      gap: 20px;
       flex-wrap: wrap;
-      margin-top: 18px;
-      font-size: 14px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--c-text-muted);
+    }
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .legend span::before {
       content: "";
       display: inline-block;
       width: 10px;
       height: 10px;
-      margin-right: 8px;
       border-radius: 50%;
-      vertical-align: middle;
     }
-    .l1::before { background: #1e3ea8; }
-    .l2::before { background: #f0d91a; }
-    .l3::before { background: #2b2f3f; }
+    .l-principle::before { background: var(--c-primary); }
+    .l-value::before { background: #D97706; }
+    .l-execution::before { background: var(--c-text); }
   </style>
 </head>
 <body>
   <div class="frame">
     <h1>경영요소 유기적 네트워크</h1>
-    <p>SKMS 핵심 요소가 어떻게 서로 연결되는지 보여주는 정적 시각화 샘플입니다. 실제 운영본은 주제별 근거와 판본별 비교 데이터에 따라 동적으로 바뀝니다.</p>
-    <svg viewBox="0 0 960 560" role="img" aria-label="Management elements network">
+    <p class="desc">SKMS 핵심 요소가 어떻게 서로 연결되는지 보여주는 시각화 샘플입니다. 실제 운영본은 주제별 근거와 판본별 비교 데이터에 따라 동적으로 바뀝니다.</p>
+    <svg viewBox="0 0 960 560" role="img" aria-label="SKMS 경영요소 네트워크">
       <defs>
-        <linearGradient id="lineGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#f0d91a" stop-opacity="0.9"/>
-          <stop offset="100%" stop-color="#1e3ea8" stop-opacity="0.5"/>
+        <linearGradient id="link" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0052A2" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#D97706" stop-opacity="0.2"/>
         </linearGradient>
       </defs>
-      <g stroke="url(#lineGlow)" stroke-width="3" fill="none" opacity="0.85">
+      <!-- connections -->
+      <g stroke="url(#link)" stroke-width="2.5" fill="none">
         <path d="M220 160 L470 120 L720 180" />
         <path d="M220 160 L340 330 L620 350 L720 180" />
         <path d="M470 120 L500 280 L620 350" />
         <path d="M340 330 L500 280 L250 460" />
         <path d="M500 280 L730 430 L620 350" />
       </g>
+      <!-- nodes -->
       <g font-family="Pretendard, sans-serif" text-anchor="middle">
+        <!-- primary nodes -->
         <g>
-          <circle cx="220" cy="160" r="58" fill="#1e3ea8" />
-          <text x="220" y="155" fill="white" font-size="20" font-weight="700">VWBE</text>
-          <text x="220" y="180" fill="white" font-size="13">자발적 의욕</text>
+          <circle cx="220" cy="160" r="58" fill="#0052A2" />
+          <text x="220" y="153" fill="white" font-size="20" font-weight="700">VWBE</text>
+          <text x="220" y="176" fill="rgba(255,255,255,0.8)" font-size="12">자발적 의욕</text>
         </g>
         <g>
-          <circle cx="470" cy="120" r="54" fill="#2b2f3f" />
-          <text x="470" y="115" fill="white" font-size="20" font-weight="700">SUPEX</text>
-          <text x="470" y="140" fill="white" font-size="13">최고 수준 추구</text>
+          <circle cx="470" cy="120" r="54" fill="#1F2937" />
+          <text x="470" y="113" fill="white" font-size="20" font-weight="700">SUPEX</text>
+          <text x="470" y="136" fill="rgba(255,255,255,0.8)" font-size="12">최고 수준 추구</text>
         </g>
         <g>
-          <circle cx="720" cy="180" r="56" fill="#f0d91a" />
-          <text x="720" y="175" fill="#17204c" font-size="20" font-weight="700">행복</text>
-          <text x="720" y="200" fill="#17204c" font-size="13">이해관계자 중심</text>
+          <circle cx="720" cy="180" r="56" fill="#D97706" />
+          <text x="720" y="173" fill="white" font-size="20" font-weight="700">행복</text>
+          <text x="720" y="196" fill="rgba(255,255,255,0.85)" font-size="12">이해관계자 중심</text>
+        </g>
+        <!-- secondary nodes -->
+        <g>
+          <circle cx="340" cy="330" r="48" fill="#F3F4F6" stroke="#0052A2" stroke-width="2.5" />
+          <text x="340" y="326" fill="#1F2937" font-size="17" font-weight="700">실행</text>
+          <text x="340" y="346" fill="#6B7280" font-size="11">실천과 검증</text>
         </g>
         <g>
-          <circle cx="340" cy="330" r="50" fill="#f7f8fb" stroke="#1e3ea8" stroke-width="3" />
-          <text x="340" y="327" fill="#17204c" font-size="18" font-weight="700">실행</text>
-          <text x="340" y="348" fill="#17204c" font-size="12">실천과 검증</text>
+          <circle cx="500" cy="280" r="48" fill="#F3F4F6" stroke="#1F2937" stroke-width="2.5" />
+          <text x="500" y="276" fill="#1F2937" font-size="17" font-weight="700">전략</text>
+          <text x="500" y="296" fill="#6B7280" font-size="11">방향성과 정렬</text>
         </g>
         <g>
-          <circle cx="500" cy="280" r="50" fill="#f7f8fb" stroke="#2b2f3f" stroke-width="3" />
-          <text x="500" y="277" fill="#17204c" font-size="18" font-weight="700">전략</text>
-          <text x="500" y="298" fill="#17204c" font-size="12">방향성과 정렬</text>
+          <circle cx="620" cy="350" r="46" fill="#F3F4F6" stroke="#D97706" stroke-width="2.5" />
+          <text x="620" y="346" fill="#1F2937" font-size="17" font-weight="700">문화</text>
+          <text x="620" y="366" fill="#6B7280" font-size="11">지속적 내재화</text>
         </g>
         <g>
-          <circle cx="620" cy="350" r="48" fill="#f7f8fb" stroke="#f0d91a" stroke-width="4" />
-          <text x="620" y="347" fill="#17204c" font-size="18" font-weight="700">문화</text>
-          <text x="620" y="368" fill="#17204c" font-size="12">지속적 내재화</text>
+          <circle cx="250" cy="460" r="44" fill="#F3F4F6" stroke="#0052A2" stroke-width="2.5" />
+          <text x="250" y="456" fill="#1F2937" font-size="16" font-weight="700">학습</text>
+          <text x="250" y="474" fill="#6B7280" font-size="11">성찰과 축적</text>
         </g>
         <g>
-          <circle cx="250" cy="460" r="46" fill="#f7f8fb" stroke="#1e3ea8" stroke-width="3" />
-          <text x="250" y="457" fill="#17204c" font-size="17" font-weight="700">학습</text>
-          <text x="250" y="478" fill="#17204c" font-size="12">성찰과 축적</text>
-        </g>
-        <g>
-          <circle cx="730" cy="430" r="46" fill="#f7f8fb" stroke="#2b2f3f" stroke-width="3" />
-          <text x="730" y="427" fill="#17204c" font-size="17" font-weight="700">성과</text>
-          <text x="730" y="448" fill="#17204c" font-size="12">측정과 환류</text>
+          <circle cx="730" cy="430" r="44" fill="#F3F4F6" stroke="#1F2937" stroke-width="2.5" />
+          <text x="730" y="426" fill="#1F2937" font-size="16" font-weight="700">성과</text>
+          <text x="730" y="444" fill="#6B7280" font-size="11">측정과 환류</text>
         </g>
       </g>
     </svg>
     <div class="legend">
-      <span class="l1">핵심 원칙</span>
-      <span class="l2">지향 가치</span>
-      <span class="l3">실행 요소</span>
+      <span class="l-principle">핵심 원칙</span>
+      <span class="l-value">지향 가치</span>
+      <span class="l-execution">실행 요소</span>
     </div>
   </div>
 </body>

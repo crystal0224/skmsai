@@ -4,22 +4,163 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKMS Workshop Sample</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
-    body { margin: 0; font-family: "Pretendard", sans-serif; background: #fcfcf9; color: #20253c; }
-    main { max-width: 920px; margin: 0 auto; padding: 32px 20px 56px; }
-    h1 { font-size: clamp(34px, 6vw, 56px); letter-spacing: -0.06em; margin: 0 0 12px; }
-    .slot { background: white; border: 1px solid rgba(32,37,60,.08); border-radius: 18px; padding: 18px 20px; margin-top: 14px; }
-    .time { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #0052A2; }
-    h2 { margin: 8px 0 8px; font-size: 22px; }
-    p { margin: 0; line-height: 1.7; color: rgba(32,37,60,.76); }
+    :root {
+      --c-primary: #0052A2;
+      --c-primary-light: #EBF2FA;
+      --c-text: #1F2937;
+      --c-text-muted: #6B7280;
+      --c-bg: #FFFFFF;
+      --c-bg-warm: #FAFAF8;
+      --c-surface: #F3F4F6;
+      --c-border: rgba(107,114,128,0.15);
+      --radius-sm: 4px;
+      --radius-md: 10px;
+      --radius-lg: 18px;
+      --font-stack: 'Pretendard','Apple SD Gothic Neo',sans-serif;
+      --transition: 0.2s ease-out;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-stack);
+      color: var(--c-text);
+      background: var(--c-bg);
+      -webkit-font-smoothing: antialiased;
+    }
+    .content-wrap {
+      max-width: 920px;
+      width: 100%;
+      margin: 0 auto;
+      padding: clamp(20px, 4vw, 60px);
+    }
+    header {
+      border-bottom: 2px solid var(--c-border);
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+    }
+    h1 {
+      color: var(--c-primary);
+      font-size: clamp(28px, 5vw, 36px);
+      margin: 0 0 8px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+    .meta {
+      color: var(--c-text-muted);
+      font-size: 15px;
+    }
+    .meta strong {
+      color: var(--c-text);
+    }
+    .timeline-bar {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 36px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      height: 6px;
+    }
+    .timeline-bar span {
+      background: var(--c-primary);
+      flex: 1;
+      opacity: 0.2;
+    }
+    .timeline-bar span.active {
+      opacity: 1;
+    }
+    .phase-block {
+      margin-bottom: 28px;
+      padding: 24px;
+      border-left: 4px solid var(--c-primary);
+      background: var(--c-surface);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      transition: background var(--transition);
+    }
+    .phase-block:hover {
+      background: var(--c-primary-light);
+    }
+    .phase-label {
+      color: var(--c-primary);
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .phase-time {
+      font-weight: 600;
+      color: var(--c-text-muted);
+      font-size: 12px;
+      letter-spacing: 0;
+    }
+    .phase-title {
+      margin: 0 0 10px;
+      font-size: 21px;
+      color: var(--c-text);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .phase-content {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--c-text-muted);
+    }
+    footer {
+      margin-top: 60px;
+      color: var(--c-text-muted);
+      font-size: 12px;
+      letter-spacing: 1px;
+      border-top: 1px solid var(--c-border);
+      padding-top: 16px;
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>VWBE 워크숍 샘플 가이드</h1>
-    <div class="slot"><div class="time">00-10 min</div><h2>오프닝 질문</h2><p>우리 팀이 스스로 몰입해서 움직였던 순간은 언제였는가?</p></div>
-    <div class="slot"><div class="time">10-25 min</div><h2>핵심 개념 브리핑</h2><p>VWBE와 SUPEX 추구의 연결을 실제 조직 행동 관점에서 설명합니다.</p></div>
-    <div class="slot"><div class="time">25-45 min</div><h2>팀 토론</h2><p>자율과 책임을 동시에 높이기 위해 제거해야 할 장애물을 식별합니다.</p></div>
-  </main>
+  <div class="content-wrap">
+    <header>
+      <h1>VWBE 워크숍 가이드</h1>
+      <div class="meta">SKMS 워크숍 진행자 가이드 &mdash; <strong>총 45분</strong></div>
+    </header>
+
+    <div class="timeline-bar" aria-hidden="true">
+      <span class="active"></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <div class="phase-block">
+      <div class="phase-label">
+        INTRO PHASE
+        <span class="phase-time">00 &ndash; 10 min</span>
+      </div>
+      <h2 class="phase-title">오프닝 질문</h2>
+      <div class="phase-content">우리 팀이 스스로 몰입해서 움직였던 순간은 언제였는가? 각자 한 문장으로 떠올려보고 옆 사람과 공유합니다.</div>
+    </div>
+
+    <div class="phase-block">
+      <div class="phase-label">
+        MAIN PHASE
+        <span class="phase-time">10 &ndash; 25 min</span>
+      </div>
+      <h2 class="phase-title">핵심 개념 브리핑</h2>
+      <div class="phase-content">VWBE와 SUPEX 추구의 연결을 실제 조직 행동 관점에서 설명합니다. 14차 개정판의 핵심 변화를 3가지 키워드로 정리하고, 참가자에게 자기 팀에 적용 가능한 행동을 하나씩 적어보게 합니다.</div>
+    </div>
+
+    <div class="phase-block">
+      <div class="phase-label">
+        ACTIVITY PHASE
+        <span class="phase-time">25 &ndash; 45 min</span>
+      </div>
+      <h2 class="phase-title">팀 토론</h2>
+      <div class="phase-content">자율과 책임을 동시에 높이기 위해 제거해야 할 장애물을 식별합니다. 포스트잇에 장애물을 적고, 유사한 것끼리 클러스터링한 뒤 상위 3개를 선정합니다.</div>
+    </div>
+
+    <footer>SKMS CONTENT STUDIO</footer>
+  </div>
 </body>
 </html>

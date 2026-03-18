@@ -4,24 +4,228 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKMS Quiz Sample</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <style>
-    body { margin: 0; font-family: "Pretendard", sans-serif; background: #f6f8ff; color: #17204c; }
-    main { max-width: 760px; margin: 0 auto; padding: 32px 20px 56px; }
-    .card { background: white; border-radius: 22px; padding: 28px; box-shadow: 0 20px 50px rgba(23,32,76,.08); }
-    h1 { margin: 0 0 18px; font-size: 40px; letter-spacing: -0.05em; }
-    .opt { display: block; margin-top: 10px; padding: 14px 16px; border-radius: 14px; background: #f7f9ff; border: 1px solid rgba(23,32,76,.08); }
+    :root {
+      --c-primary: #0052A2;
+      --c-primary-light: #EBF2FA;
+      --c-text: #1F2937;
+      --c-text-muted: #6B7280;
+      --c-bg: #FFFFFF;
+      --c-bg-warm: #FAFAF8;
+      --c-surface: #F3F4F6;
+      --c-border: rgba(107,114,128,0.15);
+      --c-correct: #166534;
+      --c-correct-bg: #F0FDF4;
+      --c-wrong: #991B1B;
+      --c-wrong-bg: #FEF2F2;
+      --radius-sm: 4px;
+      --radius-md: 10px;
+      --radius-lg: 18px;
+      --font-stack: 'Pretendard','Apple SD Gothic Neo',sans-serif;
+      --transition: 0.2s ease-out;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-stack);
+      color: var(--c-text);
+      background: var(--c-bg-warm);
+      -webkit-font-smoothing: antialiased;
+    }
+    .content-wrap {
+      max-width: 760px;
+      width: 100%;
+      margin: 0 auto;
+      padding: clamp(20px, 4vw, 60px);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 5vw, 40px);
+      letter-spacing: -0.03em;
+      font-weight: 800;
+      color: var(--c-primary);
+      line-height: 1.15;
+    }
+    .subtitle {
+      color: var(--c-text-muted);
+      font-size: 16px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--c-border);
+    }
+    .progress {
+      text-align: right;
+      color: var(--c-text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .question {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--c-border);
+    }
+    .q-num {
+      color: var(--c-primary);
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .q-text {
+      font-size: 19px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .choice {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--c-border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      background: var(--c-bg);
+      cursor: pointer;
+      font-size: 15px;
+      font-family: var(--font-stack);
+      color: var(--c-text);
+      transition: all var(--transition);
+      text-align: left;
+    }
+    .choice:hover {
+      border-color: var(--c-primary);
+      background: var(--c-primary-light);
+      color: var(--c-primary);
+    }
+    .choice:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px var(--c-primary-light);
+      border-color: var(--c-primary);
+    }
+    .choice .idx {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      background: var(--c-surface);
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .choice.correct { border-color: var(--c-correct); background: var(--c-correct-bg); color: var(--c-correct); }
+    .choice.correct .idx { background: var(--c-correct); color: white; }
+    .choice.wrong { border-color: var(--c-wrong); background: var(--c-wrong-bg); color: var(--c-wrong); }
+    .choice.wrong .idx { background: var(--c-wrong); color: white; }
+    .choice.disabled { pointer-events: none; opacity: 0.7; }
+    .explanation {
+      margin-top: 16px;
+      padding: 16px 20px;
+      background: var(--c-surface);
+      border-left: 4px solid var(--c-primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 14px;
+      color: var(--c-text-muted);
+      line-height: 1.7;
+    }
+    .score {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--c-primary);
+      margin-top: 40px;
+      padding: 24px;
+      background: var(--c-primary-light);
+      border-radius: var(--radius-md);
+    }
+    footer {
+      margin-top: 48px;
+      color: var(--c-text-muted);
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
   </style>
 </head>
 <body>
-  <main>
-    <div class="card">
-      <h1>SKMS 퀴즈 샘플</h1>
-      <p>다음 중 VWBE 설명으로 가장 적절한 것은?</p>
-      <label class="opt"><input type="radio" name="q1"> 외부 통제를 강화해 실행을 표준화하는 방식</label>
-      <label class="opt"><input type="radio" name="q1" checked> 자발적 의욕을 바탕으로 구성원이 스스로 몰입하게 만드는 상태</label>
-      <label class="opt"><input type="radio" name="q1"> 단기 성과만을 최대화하는 인사 제도</label>
-      <label class="opt"><input type="radio" name="q1"> 의사결정을 본사에만 집중시키는 운영 원칙</label>
+  <div class="content-wrap">
+    <h1>SKMS 퀴즈 샘플</h1>
+    <div class="subtitle">VWBE와 SUPEX 추구의 핵심 개념을 확인하는 학습 퀴즈입니다.</div>
+    <div class="progress" aria-live="polite">0 / 2 완료</div>
+
+    <div class="question" id="q1">
+      <div class="q-num">Q1</div>
+      <div class="q-text">다음 중 VWBE 설명으로 가장 적절한 것은?</div>
+      <div class="choices" role="group" aria-label="질문 1 선택지">
+        <button class="choice" data-q="1" data-c="0" onclick="checkAnswer(this,1,1)" aria-label="선택지 A">
+          <span class="idx">A</span> 외부 통제를 강화해 실행을 표준화하는 방식
+        </button>
+        <button class="choice" data-q="1" data-c="1" onclick="checkAnswer(this,1,1)" aria-label="선택지 B">
+          <span class="idx">B</span> 자발적 의욕을 바탕으로 구성원이 스스로 몰입하게 만드는 상태
+        </button>
+        <button class="choice" data-q="1" data-c="2" onclick="checkAnswer(this,1,1)" aria-label="선택지 C">
+          <span class="idx">C</span> 단기 성과만을 최대화하는 인사 제도
+        </button>
+        <button class="choice" data-q="1" data-c="3" onclick="checkAnswer(this,1,1)" aria-label="선택지 D">
+          <span class="idx">D</span> 의사결정을 본사에만 집중시키는 운영 원칙
+        </button>
+      </div>
+      <div class="explanation" id="exp1" style="display:none;">
+        VWBE(자발적·의욕적 두뇌활용)는 구성원이 외부 통제 없이 스스로 몰입하여 두뇌를 최대한 활용하는 상태를 뜻합니다. 14차 개정판(2020)에서 핵심 개념으로 도입되었습니다.
+      </div>
     </div>
-  </main>
+
+    <div class="question" id="q2">
+      <div class="q-num">Q2</div>
+      <div class="q-text">SUPEX 추구의 궁극적 목표에 해당하는 것은?</div>
+      <div class="choices" role="group" aria-label="질문 2 선택지">
+        <button class="choice" data-q="2" data-c="0" onclick="checkAnswer(this,2,2)" aria-label="선택지 A">
+          <span class="idx">A</span> 단기 매출 극대화
+        </button>
+        <button class="choice" data-q="2" data-c="1" onclick="checkAnswer(this,2,2)" aria-label="선택지 B">
+          <span class="idx">B</span> 비용 절감을 통한 이익 확보
+        </button>
+        <button class="choice" data-q="2" data-c="2" onclick="checkAnswer(this,2,2)" aria-label="선택지 C">
+          <span class="idx">C</span> 인간의 능력으로 도달할 수 있는 최고 수준의 달성
+        </button>
+        <button class="choice" data-q="2" data-c="3" onclick="checkAnswer(this,2,2)" aria-label="선택지 D">
+          <span class="idx">D</span> 경쟁사 대비 우위 확보
+        </button>
+      </div>
+      <div class="explanation" id="exp2" style="display:none;">
+        SUPEX(Super Excellent Level)는 인간의 능력으로 도달할 수 있는 최고 수준을 뜻하며, 6차 개정판(1989)에서 처음 도입되었습니다. 단기 성과가 아닌 지속적 수월성을 추구합니다.
+      </div>
+    </div>
+
+    <div class="score" id="score" role="status"></div>
+    <footer>SKMS CONTENT STUDIO</footer>
+  </div>
+
+  <script>
+    let answered=0, correct=0, total=2;
+    function checkAnswer(btn, qIdx, correctIdx) {
+      const btns = document.querySelectorAll('.choice[data-q="'+qIdx+'"]');
+      btns.forEach(function(b) {
+        b.classList.add('disabled');
+        b.setAttribute('aria-disabled','true');
+        if (parseInt(b.dataset.c) === correctIdx) b.classList.add('correct');
+      });
+      if (parseInt(btn.dataset.c) !== correctIdx) btn.classList.add('wrong');
+      else correct++;
+      answered++;
+      document.querySelector('.progress').textContent = answered + ' / ' + total + ' 완료';
+      document.getElementById('exp'+qIdx).style.display = 'block';
+      if (answered === total) {
+        document.getElementById('score').textContent =
+          '결과: ' + total + '문제 중 ' + correct + '개 정답 (' + Math.round(correct/total*100) + '%)';
+      }
+    }
+  </script>
 </body>
 </html>
