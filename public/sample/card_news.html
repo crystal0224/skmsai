@@ -5,14 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKMS Card News Sample</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>@font-face{font-family:'Pretendard';font-display:swap;src:local('Pretendard')}</style>
   <style>
     :root {
       --c-primary: #0052A2;
       --c-primary-light: #EBF2FA;
-      --c-accent: #E4002B;
+
       --c-text: #1F2937;
       --c-text-muted: #6B7280;
-      --c-text-subtle: #9CA3AF;
+      --c-text-subtle: #9CA3AF; /* large text only */
       --c-bg: #FFFFFF;
       --c-bg-warm: #FAFAF8;
       --c-surface: #F3F4F6;
@@ -86,7 +87,7 @@
       border-color: transparent;
     }
     .card.featured .card-label { background: rgba(255,255,255,0.18); color: var(--c-bg); border-color: rgba(255,255,255,0.2); }
-    .card.featured .card-body { color: rgba(255,255,255,0.85); }
+    .card.featured .card-body { color: rgba(255,255,255,0.95); }
     .card.warm {
       background: linear-gradient(175deg, var(--c-bg-warm) 0%, var(--c-bg) 100%);
     }
@@ -130,7 +131,7 @@
     footer {
       margin-top: 40px;
       font-size: 12px;
-      color: var(--c-text-subtle);
+      color: var(--c-text-muted);
       letter-spacing: 1px;
     }
   </style>

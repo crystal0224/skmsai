@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKMS Workshop Sample</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>@font-face{font-family:'Pretendard';font-display:swap;src:local('Pretendard')}</style>
   <style>
     :root {
       --c-primary: #0052A2;
@@ -66,10 +67,14 @@
     .timeline-bar span {
       background: var(--c-primary);
       flex: 1;
-      opacity: 0.2;
+      opacity: 0.15;
+      transition: opacity var(--transition);
     }
-    .timeline-bar span.active {
+    .timeline-bar span.done {
       opacity: 1;
+    }
+    .timeline-bar span.current {
+      opacity: 0.5;
     }
     .phase-block {
       margin-bottom: 28px;
@@ -128,37 +133,37 @@
     </header>
 
     <div class="timeline-bar" aria-hidden="true">
-      <span class="active"></span>
-      <span></span>
+      <span class="done"></span>
+      <span class="current"></span>
       <span></span>
     </div>
 
-    <div class="phase-block">
+    <section class="phase-block" aria-labelledby="phase-intro">
       <div class="phase-label">
         INTRO PHASE
         <span class="phase-time">00 &ndash; 10 min</span>
       </div>
-      <h2 class="phase-title">오프닝 질문</h2>
+      <h2 class="phase-title" id="phase-intro">오프닝 질문</h2>
       <div class="phase-content">우리 팀이 스스로 몰입해서 움직였던 순간은 언제였는가? 각자 한 문장으로 떠올려보고 옆 사람과 공유합니다.</div>
-    </div>
+    </section>
 
-    <div class="phase-block">
+    <section class="phase-block" aria-labelledby="phase-main">
       <div class="phase-label">
         MAIN PHASE
         <span class="phase-time">10 &ndash; 25 min</span>
       </div>
-      <h2 class="phase-title">핵심 개념 브리핑</h2>
+      <h2 class="phase-title" id="phase-main">핵심 개념 브리핑</h2>
       <div class="phase-content">VWBE와 SUPEX 추구의 연결을 실제 조직 행동 관점에서 설명합니다. 14차 개정판의 핵심 변화를 3가지 키워드로 정리하고, 참가자에게 자기 팀에 적용 가능한 행동을 하나씩 적어보게 합니다.</div>
-    </div>
+    </section>
 
-    <div class="phase-block">
+    <section class="phase-block" aria-labelledby="phase-activity">
       <div class="phase-label">
         ACTIVITY PHASE
         <span class="phase-time">25 &ndash; 45 min</span>
       </div>
-      <h2 class="phase-title">팀 토론</h2>
+      <h2 class="phase-title" id="phase-activity">팀 토론</h2>
       <div class="phase-content">자율과 책임을 동시에 높이기 위해 제거해야 할 장애물을 식별합니다. 포스트잇에 장애물을 적고, 유사한 것끼리 클러스터링한 뒤 상위 3개를 선정합니다.</div>
-    </div>
+    </section>
 
     <footer>SKMS CONTENT STUDIO</footer>
   </div>

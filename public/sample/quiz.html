@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SKMS Quiz Sample</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <style>@font-face{font-family:'Pretendard';font-display:swap;src:local('Pretendard')}</style>
   <style>
     :root {
       --c-primary: #0052A2;
@@ -104,7 +105,7 @@
       color: var(--c-primary);
     }
     .choice:focus {
-      outline: none;
+      outline: 2px solid transparent;
       box-shadow: 0 0 0 3px var(--c-primary-light);
       border-color: var(--c-primary);
     }
@@ -208,7 +209,7 @@
   </div>
 
   <script>
-    let answered=0, correct=0, total=2;
+    let answered=0, correct=0; const total=2;
     function checkAnswer(btn, qIdx, correctIdx) {
       const btns = document.querySelectorAll('.choice[data-q="'+qIdx+'"]');
       btns.forEach(function(b) {
