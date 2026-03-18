@@ -183,14 +183,93 @@ Stakeholder Indicators:
 
 ---
 
+## Core Definitions
+
+### Tick Rate & Time
+- **1 tick = 1 real second at 1x speed**
+- Game speeds: Pause (0x), Normal (1x), Fast (2x), Ultra (4x)
+- 1 game-day = 120 ticks (2 real minutes at 1x). Day/night cycle is visual only (dimming), no mechanical effect.
+- Revenue and salary are calculated per tick. Upkeep is deducted once per game-day.
+
+### Building Sizes
+- **Departments:** 2x2 tiles
+- **Facilities (Cafeteria, Wellness, Training):** 2x2 tiles
+- **Corridors:** 1x1 tiles
+- **Company HQ (pre-placed):** 3x3 tiles at grid center
+
+### Adjacency
+- "Adjacent to corridor" = at least one of the building's tiles shares an edge with a corridor tile.
+- "Adjacent department synergy" (Coordination policy) = any tile of one department within 3 tiles of any tile of another department.
+
+### Revenue Model
+- Department revenue is **per tick, per assigned employee**, modified by type multiplier:
+  - Ace: 1.5x
+  - Eager Rookie: 0.5x
+  - Cynic: 1.0x (skilled but minimal effort)
+  - Disengaged: 0.2x
+  - Leader: 1.2x (plus aura effect)
+- Example: Production ($30/tick base) with 1 Ace = $45/tick revenue. With 1 Rookie = $15/tick.
+- Department capacity: 4 employees per department. Leader occupies 1 slot.
+
+### Star Rating
+`rating = clamp(1, 5, (customer + employee + social) / 60)`
+- Policy bonuses are applied to the metrics themselves (not added after division).
+- SK-Manship "+10% all metrics" means each metric gains +10 (capped at 100).
+
+---
+
+## Hiring & Assignment
+
+### Hiring
+- **Hire button** in the HUD top bar opens a hire panel showing available candidates (random pool of 3-5, refreshes every 30 ticks).
+- Each candidate shows: type, cost, and a one-line trait ("Eager to learn", "Skeptical but skilled").
+- Click to hire → employee spawns at HQ and walks to assignment.
+
+### Assignment
+- After hiring, player clicks a department to assign the employee.
+- Employees can be reassigned by clicking them → choosing a new department.
+- Unassigned employees idle at HQ (cost salary but produce nothing).
+
+---
+
+## Tutorial (3 Steps)
+
+1. **"Build a corridor"** — Prompt highlights Corridor button. Player lays 3+ corridors from HQ. Completes when corridors placed.
+2. **"Build a department & hire"** — Prompt highlights Production button. After placing, hire panel opens automatically. Player hires first employee. Completes when employee is assigned.
+3. **"Activate a policy"** — Prompt highlights Policy panel. Player activates Performance Rewards (cheapest). Completes when policy activated. Toast: "Tutorial complete! Balance your stakeholders!"
+
+---
+
+## Out of Scope
+
+- **Save/Load:** Not implemented. Game is session-based (educational tool, not long-term progression).
+- **Undo/Redo:** Cut to reduce scope. Bulldoze provides the recovery path.
+- **Minimap:** Cut. 40x40 grid with pan/zoom is manageable.
+- **Audio:** SFX only (procedural Web Audio API tones for placement, events, money). No background music track. Stretch goal.
+
+---
+
+## SKMS Glossary (for implementer)
+
+| SKMS Term | In-Game Mechanic |
+|---|---|
+| SUPEX (Super Excellent Level) | Policy that raises performance ceiling — departments produce more |
+| VWBE (자발적·의욕적 두뇌활용) | Policy that boosts employee will — Cynics convert to Aces |
+| Coordination (코디네이션) | Policy that adds synergy bonus between adjacent departments |
+| SK-Manship | Ultimate policy — requires SUPEX + VWBE, boosts everything |
+| Stakeholder Happiness (이해관계자 행복) | The 3-metric balance system (customer, employee, social) |
+| SUPEX 추구 (Pursuit of SUPEX) | Same as SUPEX policy — continuous improvement mindset |
+
+---
+
 ## Technical Architecture
 
-Single HTML file (`public/skms-builder.html`), no external dependencies.
+Single HTML file (`public/skms-builder.html`), no external dependencies. Target: under 3000 lines.
 
 - **Rendering:** Canvas 2D, isometric projection
 - **Game loop:** requestAnimationFrame with delta-time accumulator
-- **Pathfinding:** BFS on corridor/walkable tiles
-- **Audio:** Web Audio API (placement SFX, event chime, ambient BGM)
+- **Pathfinding:** BFS on corridor/walkable tiles (1x1 grid resolution)
+- **Audio:** Web Audio API procedural tones only (SFX). No embedded assets.
 - **State:** Plain JS objects, no framework
 
 ---
