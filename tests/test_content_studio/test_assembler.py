@@ -315,6 +315,36 @@ class TestAssembleCardNews:
         assert results[0].file_type == "png"
         assert results[1].file_type == "html"
 
+    def test_card_uses_design_tokens(self, tmp_path):
+        """카드뉴스 HTML이 디자인 토큰 CSS 변수를 포함해야 한다."""
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = _make_card_news_content(1)
+        results = asm.assemble_card_news(content, topic="토큰테스트")
+        html = Path(results[0].file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_card_responsive_not_fixed_1080(self, tmp_path):
+        """기본 렌더링은 반응형, 고정 1080px가 아니어야 한다."""
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = _make_card_news_content(1)
+        results = asm.assemble_card_news(content, topic="반응형테스트")
+        html = Path(results[0].file_path).read_text(encoding="utf-8")
+        assert "width:1080px;height:1080px" not in html
+        assert "card-canvas" in html
+
+    def test_card_wcag_no_bad_colors(self, tmp_path):
+        """WCAG AA 미충족 색상이 없어야 한다."""
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = _make_card_news_content(1)
+        results = asm.assemble_card_news(content, topic="WCAG테스트")
+        html = Path(results[0].file_path).read_text(encoding="utf-8")
+        assert "color:#AAA" not in html
+        assert "color:#999" not in html
+
 
 # ---------------------------------------------------------------------------
 # Workshop Assembly
@@ -339,6 +369,45 @@ class TestAssembleWorkshop:
         assert "도입" in text
         assert "본론" in text
 
+    def test_workshop_uses_design_tokens(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockWorkshopContent(
+            phases=(
+                MockPhaseContent(phase_type="intro", title="도입", content_text="환영"),
+            ),
+        )
+        result = asm.assemble_workshop(content, topic="토큰워크숍")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_workshop_responsive_padding(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockWorkshopContent(
+            phases=(
+                MockPhaseContent(phase_type="intro", title="도입", content_text="환영"),
+            ),
+        )
+        result = asm.assemble_workshop(content, topic="반응형워크숍")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "content-wrap" in html
+        assert "padding:60px" not in html
+
+    def test_workshop_wcag_colors(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockWorkshopContent(
+            phases=(
+                MockPhaseContent(phase_type="intro", title="도입", content_text="환영"),
+            ),
+        )
+        result = asm.assemble_workshop(content, topic="WCAG워크숍")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "color:#AAA" not in html
+        assert "color:#666" not in html
+
 
 # ---------------------------------------------------------------------------
 # Audio Assembly
@@ -361,6 +430,27 @@ class TestAssembleAudio:
         assert result.size_bytes > 0
         text = Path(result.file_path).read_text(encoding="utf-8")
         assert "narrator" in text
+
+    def test_audio_uses_design_tokens(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockAudioContent(
+            sections=(MockSectionContent(index=1, speaker="narrator", text="안녕하세요"),),
+        )
+        result = asm.assemble_audio(content, topic="토큰오디오")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_audio_wcag_colors(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = MockAudioContent(
+            sections=(MockSectionContent(index=1, speaker="narrator", text="테스트"),),
+        )
+        result = asm.assemble_audio(content, topic="WCAG오디오")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "color:#AAA" not in html
 
 
 # ---------------------------------------------------------------------------
@@ -393,6 +483,28 @@ class TestAssembleVisualization:
 
         assert result.file_type == "svg"
         assert result.size_bytes > 0
+
+    def test_viz_uses_design_tokens(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        result = asm.assemble_visualization(None, topic="토큰시각화")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_viz_wcag_colors(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        result = asm.assemble_visualization(None, topic="WCAG시각화")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "color:#AAA" not in html
+
+    def test_viz_highlight_key_events(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        result = asm.assemble_visualization(None, topic="핵심이벤트")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "highlight" in html
 
 
 # ---------------------------------------------------------------------------
@@ -636,3 +748,77 @@ class TestOutputPathSecurity:
         asm = FileAssembler(AssemblerConfig(output_dir=str(tmp_path / "out")))
         path = asm._output_path("unknown_type", "test", "html")
         assert "unknown_type" in str(path)
+
+
+# ---------------------------------------------------------------------------
+# Quiz Assembly
+# ---------------------------------------------------------------------------
+
+
+class TestAssembleQuiz:
+    def _make_quiz_content(self, n=2):
+        """퀴즈 콘텐츠 mock."""
+        from types import SimpleNamespace
+
+        questions = tuple(
+            SimpleNamespace(
+                index=i + 1,
+                question_text=f"질문 {i+1}",
+                choices=(f"선택지A-{i+1}", f"선택지B-{i+1}", f"선택지C-{i+1}"),
+                correct_answer=0,
+                explanation=f"설명 {i+1}",
+                source_quote=f"출처 {i+1}" if i == 0 else "",
+            )
+            for i in range(n)
+        )
+        return SimpleNamespace(questions=questions)
+
+    def test_quiz_html_output(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(3)
+        result = asm.assemble_quiz(content, topic="퀴즈테스트")
+        assert result.file_type == "html"
+        assert result.size_bytes > 0
+
+    def test_quiz_uses_design_tokens(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(2)
+        result = asm.assemble_quiz(content, topic="토큰퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":root" in html
+        assert "--c-primary" in html
+
+    def test_quiz_wcag_colors(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(2)
+        result = asm.assemble_quiz(content, topic="WCAG퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "#28a745" not in html
+        assert "#dc3545" not in html
+
+    def test_quiz_focus_ring(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(2)
+        result = asm.assemble_quiz(content, topic="포커스퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert ":focus" in html
+
+    def test_quiz_aria_disabled(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(2)
+        result = asm.assemble_quiz(content, topic="접근성퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "aria-disabled" in html
+
+    def test_quiz_progress_indicator(self, tmp_path):
+        config = AssemblerConfig(output_dir=str(tmp_path / "out"))
+        asm = FileAssembler(config)
+        content = self._make_quiz_content(3)
+        result = asm.assemble_quiz(content, topic="프로그레스퀴즈")
+        html = Path(result.file_path).read_text(encoding="utf-8")
+        assert "progress" in html.lower()
