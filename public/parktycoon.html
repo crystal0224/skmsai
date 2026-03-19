@@ -6909,63 +6909,10 @@ function showOnboarding() {
     return card;
   }
 
-  // SVG illustrations for scenario cards
-  var crisisSvg = '<svg viewBox="0 0 260 180" style="width:100%;height:100%">'
-    // Crumbling building
-    + '<rect x="80" y="40" width="100" height="110" rx="4" fill="#D1D5DB" opacity="0.6"/>'
-    + '<rect x="90" y="55" width="20" height="18" rx="2" fill="#9CA3AF"/>'
-    + '<rect x="120" y="55" width="20" height="18" rx="2" fill="#9CA3AF"/>'
-    + '<rect x="150" y="55" width="20" height="18" rx="2" fill="#9CA3AF"/>'
-    + '<rect x="90" y="85" width="20" height="18" rx="2" fill="#9CA3AF"/>'
-    + '<rect x="120" y="85" width="20" height="18" rx="2" fill="#BDBDBD"/>'
-    + '<rect x="150" y="85" width="20" height="18" rx="2" fill="#BDBDBD"/>'
-    + '<rect x="115" y="115" width="30" height="35" rx="2" fill="#78909C"/>'
-    // Cracks
-    + '<path d="M130 40 L125 60 L132 75 L128 95" stroke="#EF4444" stroke-width="1.5" fill="none" opacity="0.6"/>'
-    + '<path d="M160 50 L155 70 L162 85" stroke="#EF4444" stroke-width="1" fill="none" opacity="0.4"/>'
-    // Decline arrow
-    + '<path d="M30 60 Q70 55 100 80 T180 120" stroke="#EF4444" stroke-width="2" fill="none" stroke-dasharray="4 3" opacity="0.5"/>'
-    + '<polygon points="180,115 185,125 175,125" fill="#EF4444" opacity="0.5"/>'
-    // Sad figures
-    + '<circle cx="40" cy="140" r="8" fill="#BDBDBD"/><line x1="36" y1="143" x2="44" y2="143" stroke="#78909C" stroke-width="1.5" stroke-linecap="round"/>'
-    + '<circle cx="220" cy="130" r="7" fill="#9CA3AF"/><line x1="217" y1="133" x2="223" y2="133" stroke="#78909C" stroke-width="1.5" stroke-linecap="round"/>'
-    // Falling papers
-    + '<rect x="200" y="50" width="12" height="16" rx="1" fill="#FCA5A5" transform="rotate(15 206 58)" opacity="0.5"/>'
-    + '<rect x="25" y="80" width="10" height="14" rx="1" fill="#FECACA" transform="rotate(-20 30 87)" opacity="0.4"/>'
-    + '</svg>';
-
-  var aiSvg = '<svg viewBox="0 0 260 180" style="width:100%;height:100%">'
-    // Modern building
-    + '<rect x="80" y="30" width="100" height="120" rx="6" fill="#93C5FD" opacity="0.4"/>'
-    + '<rect x="80" y="30" width="100" height="120" rx="6" stroke="#3B82F6" stroke-width="1" fill="none" opacity="0.3"/>'
-    + '<rect x="92" y="45" width="16" height="16" rx="3" fill="#60A5FA" opacity="0.6"/>'
-    + '<rect x="122" y="45" width="16" height="16" rx="3" fill="#60A5FA" opacity="0.6"/>'
-    + '<rect x="152" y="45" width="16" height="16" rx="3" fill="#60A5FA" opacity="0.6"/>'
-    + '<rect x="92" y="75" width="16" height="16" rx="3" fill="#60A5FA" opacity="0.6"/>'
-    + '<rect x="122" y="75" width="16" height="16" rx="3" fill="#93C5FD" opacity="0.6"/>'
-    + '<rect x="152" y="75" width="16" height="16" rx="3" fill="#93C5FD" opacity="0.6"/>'
-    + '<rect x="115" y="110" width="30" height="40" rx="3" fill="#3B82F6" opacity="0.5"/>'
-    // AI circuit lines
-    + '<path d="M20 90 L60 90 L60 60 L80 60" stroke="#3B82F6" stroke-width="1" fill="none" opacity="0.3" stroke-dasharray="3 2"/>'
-    + '<path d="M180 50 L210 50 L210 90 L240 90" stroke="#3B82F6" stroke-width="1" fill="none" opacity="0.3" stroke-dasharray="3 2"/>'
-    + '<circle cx="20" cy="90" r="3" fill="#3B82F6" opacity="0.4"/>'
-    + '<circle cx="240" cy="90" r="3" fill="#3B82F6" opacity="0.4"/>'
-    // Robot icon
-    + '<rect x="195" y="120" width="28" height="24" rx="4" fill="#2563EB" opacity="0.6"/>'
-    + '<circle cx="204" cy="130" r="3" fill="#BFDBFE"/><circle cx="218" cy="130" r="3" fill="#BFDBFE"/>'
-    + '<rect x="207" y="136" width="10" height="2" rx="1" fill="#BFDBFE"/>'
-    // Person + robot handshake hint
-    + '<circle cx="40" cy="135" r="8" fill="#60A5FA" opacity="0.5"/>'
-    + '<path d="M48 135 L58 135" stroke="#3B82F6" stroke-width="1.5" stroke-dasharray="2 2" opacity="0.4"/>'
-    // Growth arrow
-    + '<path d="M30 150 Q90 140 130 110 T230 50" stroke="#22C55E" stroke-width="2" fill="none" opacity="0.4"/>'
-    + '<polygon points="228,46 234,52 226,54" fill="#22C55E" opacity="0.4"/>'
-    + '</svg>';
-
   // Scenario 1: 위기의 회사
   var sc1 = buildScenarioCard({
     active: true,
-    svg: crisisSvg,
+    svg: '<div style="font-size:64px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.1))">🔥</div>',
     title: '\uC704\uAE30\uC758 \uD68C\uC0AC',
     desc: '\uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 CEO\uB85C \uBD80\uC784\uD558\uC5EC \uC870\uC9C1\uC744 \uC0B4\uB824\uB77C!',
     difficulty: '\u2605\u2605\u2605 HARD',
@@ -6977,7 +6924,7 @@ function showOnboarding() {
   // Scenario 2: AI 혁신 시대
   var sc2 = buildScenarioCard({
     active: false,
-    svg: aiSvg,
+    svg: '<div style="font-size:64px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.1))">🤖</div>',
     title: 'AI \uD601\uC2E0 \uC2DC\uB300',
     desc: '\uBCC0\uD654\uD558\uAE30 \uC2EB\uC5B4\uD558\uB294 \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785\uD558\uC5EC \uCD08\uC77C\uB958 \uAE30\uC5C5\uC73C\uB85C!',
     difficulty: '\u2605\u2605\u2606 NORMAL',
