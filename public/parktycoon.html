@@ -5751,114 +5751,7 @@ function showOnboarding() {
   function animatePreview() { drawPreview(); previewRAF = requestAnimationFrame(animatePreview); }
   animatePreview();
 
-  // Scenario cards
-  var scenarios = document.createElement('div');
-  scenarios.className = 'onboard-scenarios';
-
-  // SVG illustrations for scenarios
-  var svg1 = '<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">'
-    + '<rect x="8" y="24" width="24" height="40" rx="3" fill="#E5E7EB" stroke="#D1D5DB" stroke-width="1.5"/>'
-    + '<rect x="12" y="30" width="6" height="6" rx="1" fill="#F87171" opacity="0.5"/>'
-    + '<rect x="22" y="30" width="6" height="6" rx="1" fill="#F87171" opacity="0.3"/>'
-    + '<rect x="12" y="40" width="6" height="6" rx="1" fill="#F87171" opacity="0.2"/>'
-    + '<rect x="22" y="40" width="6" height="6" rx="1" fill="#D1D5DB"/>'
-    + '<polyline points="42,58 50,50 58,54 66,38 74,42" stroke="#F87171" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
-    + '<polyline points="66,38 74,42 74,38" stroke="#F87171" stroke-width="2" stroke-linecap="round" fill="none"/>'
-    + '<circle cx="54" cy="18" r="4" fill="#BDBDBD"/><circle cx="54" cy="13" r="3" fill="#FDDCB5"/>'
-    + '<circle cx="68" cy="22" r="3.5" fill="#BDBDBD" opacity="0.5"/><circle cx="68" cy="18" r="2.5" fill="#FDDCB5" opacity="0.5"/>'
-    + '<line x1="8" y1="68" x2="74" y2="68" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="3 3"/>'
-    + '</svg>';
-
-  var svg2 = '<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">'
-    + '<rect x="8" y="20" width="24" height="44" rx="3" fill="#DBEAFE" stroke="#93C5FD" stroke-width="1.5"/>'
-    + '<rect x="12" y="26" width="6" height="6" rx="1" fill="#60A5FA"/>'
-    + '<rect x="22" y="26" width="6" height="6" rx="1" fill="#60A5FA"/>'
-    + '<rect x="12" y="36" width="6" height="6" rx="1" fill="#60A5FA" opacity="0.7"/>'
-    + '<rect x="22" y="36" width="6" height="6" rx="1" fill="#60A5FA" opacity="0.7"/>'
-    + '<rect x="12" y="46" width="6" height="6" rx="1" fill="#93C5FD"/>'
-    + '<rect x="22" y="46" width="6" height="6" rx="1" fill="#93C5FD"/>'
-    + '<polyline points="42,56 50,48 58,44 66,36 74,28" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
-    + '<polyline points="68,28 74,28 74,34" stroke="#16A34A" stroke-width="2" stroke-linecap="round" fill="none"/>'
-    + '<circle cx="54" cy="16" r="4" fill="#FF7043"/><circle cx="54" cy="11" r="3" fill="#FDDCB5"/>'
-    + '<circle cx="68" cy="14" r="4.5" fill="#FFD54F"/><circle cx="68" cy="9" r="3.5" fill="#FDDCB5"/>'
-    + '<rect x="44" y="62" width="14" height="10" rx="2" fill="#93C5FD" opacity="0.4"/>'
-    + '<text x="51" y="70" text-anchor="middle" font-size="7" font-weight="bold" fill="#2563EB">AI</text>'
-    + '<line x1="8" y1="68" x2="36" y2="68" stroke="#93C5FD" stroke-width="1" stroke-dasharray="3 3"/>'
-    + '</svg>';
-
-  var sc1 = document.createElement('div');
-  sc1.className = 'onboard-scenario-card active';
-  sc1.style.cursor = 'pointer';
-  var sc1badge = document.createElement('span');
-  sc1badge.className = 'sc-badge';
-  sc1badge.style.color = '#F87171';
-  sc1badge.textContent = '\u25B6 \uC2DC\uB098\uB9AC\uC624 1';
-  sc1.appendChild(sc1badge);
-  var sc1vis = document.createElement('div');
-  sc1vis.className = 'sc-visual';
-  var sc1svgWrap = document.createElement('div');
-  sc1svgWrap.insertAdjacentHTML('beforeend', svg1);
-  sc1vis.appendChild(sc1svgWrap);
-  var sc1text = document.createElement('div');
-  sc1text.className = 'sc-visual-text';
-  var sc1line = document.createElement('div');
-  sc1line.className = 'sc-title-line';
-  sc1line.textContent = '\uC704\uAE30\uC758 \uD68C\uC0AC';
-  sc1text.appendChild(sc1line);
-  var sc1descLine = document.createElement('div');
-  sc1descLine.className = 'sc-desc-line';
-  sc1descLine.textContent = '\uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 CEO\uB85C \uBD80\uC784\uD558\uC5EC \uC870\uC9C1\uC744 \uC0B4\uB824\uB77C';
-  sc1text.appendChild(sc1descLine);
-  sc1vis.appendChild(sc1text);
-  sc1.appendChild(sc1vis);
-  scenarios.appendChild(sc1);
-
-  var sc2 = document.createElement('div');
-  sc2.className = 'onboard-scenario-card';
-  sc2.style.cursor = 'pointer';
-  var sc2badge = document.createElement('span');
-  sc2badge.className = 'sc-badge';
-  sc2badge.style.color = '#60A5FA';
-  sc2badge.textContent = '\uC2DC\uB098\uB9AC\uC624 2';
-  sc2.appendChild(sc2badge);
-  var sc2vis = document.createElement('div');
-  sc2vis.className = 'sc-visual';
-  var sc2svgWrap = document.createElement('div');
-  sc2svgWrap.insertAdjacentHTML('beforeend', svg2);
-  sc2vis.appendChild(sc2svgWrap);
-  var sc2text = document.createElement('div');
-  sc2text.className = 'sc-visual-text';
-  var sc2line = document.createElement('div');
-  sc2line.className = 'sc-title-line';
-  sc2line.textContent = 'AI \uD601\uC2E0 \uC2DC\uB300';
-  sc2text.appendChild(sc2line);
-  var sc2descLine = document.createElement('div');
-  sc2descLine.className = 'sc-desc-line';
-  sc2descLine.textContent = '\uC548\uC815\uB41C \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785\uD558\uC5EC \uCD08\uC77C\uB958 \uAE30\uC5C5\uC73C\uB85C';
-  sc2text.appendChild(sc2descLine);
-  sc2vis.appendChild(sc2text);
-  sc2.appendChild(sc2vis);
-  scenarios.appendChild(sc2);
-
-  function selectScenario(num) {
-    selectedScenario = num;
-    if (num === 1) {
-      sc1.className = 'onboard-scenario-card active';
-      sc2.className = 'onboard-scenario-card';
-      sc1badge.textContent = '\u25B6 \uC2DC\uB098\uB9AC\uC624 1';
-      sc2badge.textContent = '\uC2DC\uB098\uB9AC\uC624 2';
-    } else {
-      sc1.className = 'onboard-scenario-card';
-      sc2.className = 'onboard-scenario-card active';
-      sc2.style.borderColor = 'rgba(96,165,250,0.3)';
-      sc2.style.background = 'rgba(96,165,250,0.06)';
-      sc1badge.textContent = '\uC2DC\uB098\uB9AC\uC624 1';
-      sc2badge.textContent = '\u25B6 \uC2DC\uB098\uB9AC\uC624 2';
-    }
-  }
-
-  sc1.addEventListener('click', function() { selectScenario(1); });
-  sc2.addEventListener('click', function() { selectScenario(2); });
+  // Old scenario cards removed — now built inside Slide 2
 
   // Continue button row (if save exists)
   var continueRow = null;
@@ -6114,73 +6007,105 @@ function showOnboarding() {
 
   slides.push(s1);
 
-  // --- SLIDE 2: 3-step Game Flow ---
+  // --- SLIDE 2: Scenario Cards + Play Strip ---
   var s2 = document.createElement('div');
   s2.className = 'onboard-slide';
+
   var s2title = document.createElement('div');
-  s2title.style.cssText = 'font-size:22px;font-weight:800;text-align:center;margin-bottom:4px;color:#1F2937;';
-  s2title.textContent = '\uC774\uB807\uAC8C \uD50C\uB808\uC774\uD569\uB2C8\uB2E4';
+  s2title.style.cssText = 'font-size:16px;font-weight:bold;text-align:center;color:#1F2937;margin-bottom:12px';
+  s2title.textContent = '\uD83D\uDCCB \uC2DC\uB098\uB9AC\uC624\uB97C \uC120\uD0DD\uD558\uC138\uC694';
   s2.appendChild(s2title);
-  // subtitle removed per user feedback
 
-  var flow = document.createElement('div');
-  flow.className = 'onboard-flow';
+  var scRow = document.createElement('div');
+  scRow.style.cssText = 'display:flex;gap:12px;margin-bottom:12px';
 
-  var steps = [
-    {num:'1', icon:'\uD83C\uDFE2', title:'\uC870\uC9C1\uC744 \uC138\uC6B0\uACE0', items:[
-      {ic:'\uD83C\uDFE2',t:'\uBD80\uC11C \uBC30\uCE58 + \uC2DC\uC124 \uAC74\uC124'},
-      {ic:'\uD83D\uDC64',t:'\uC2E0\uC785/\uACBD\uB825/\uC5D0\uC774\uC2A4 \uCC44\uC6A9'},
-      {ic:'\uD83D\uDCDC',t:'SKMS \uC815\uCC45 9\uC885 \uD65C\uC131\uD654'}
-    ]},
-    {num:'2', icon:'\uD83E\uDD1D', title:'\uC0AC\uB78C\uC744 \uD0A4\uC6B0\uACE0', items:[
-      {ic:'\uD83D\uDCAC',t:'1:1 \uBA74\uB2F4\uC73C\uB85C \uC758\uC695/\uC5ED\uB7C9 \uAD00\uB9AC'},
-      {ic:'\uD83C\uDFC6',t:'\uC131\uACFC\uD3C9\uAC00 \u00B7 \uC2B9\uC9C4 \u00B7 \uBCF4\uC0C1'},
-      {ic:'\uD83D\uDD04',t:'\uC2E0\uC785\u2192\uC5D0\uC774\uC2A4\u2192\uB9AC\uB354 \uC131\uC7A5'}
-    ]},
-    {num:'3', icon:'\u2B50', title:'\uC704\uAE30\uB97C \uB118\uAE30\uC138\uC694', items:[
-      {ic:'\uD83D\uDCF0',t:'\uB274\uC2A4 \uC774\uBCA4\uD2B8 15\uC885 \uB300\uC751'},
-      {ic:'\u2696\uFE0F',t:'\uB178\uC0AC\uAD00\uACC4 \u00B7 \uD30C\uC5C5 \uAD00\uB9AC'},
-      {ic:'\u2B50',t:'\uC774\uD574\uAD00\uACC4\uC790 \uADE0\uD615 = \uC2B9\uB9AC!'}
-    ]}
-  ];
+  // Scenario 1: 위기의 회사
+  var sc1 = document.createElement('div');
+  sc1.className = 'sc-card-new active';
+  sc1.style.background = 'linear-gradient(180deg, rgba(248,113,113,0.12), rgba(248,113,113,0.04))';
+  var sc1Icon = document.createElement('div');
+  sc1Icon.style.cssText = 'font-size:32px';
+  sc1Icon.textContent = '\uD83D\uDD25';
+  sc1.appendChild(sc1Icon);
+  var sc1Title = document.createElement('div');
+  sc1Title.style.cssText = 'font-size:13px;font-weight:800;color:#f87171';
+  sc1Title.textContent = '\uC704\uAE30\uC758 \uD68C\uC0AC';
+  sc1.appendChild(sc1Title);
+  var sc1Desc = document.createElement('div');
+  sc1Desc.style.cssText = 'font-size:10px;color:#4B5563;text-align:center;line-height:1.5';
+  sc1Desc.textContent = '\uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 CEO\uB85C \uBD80\uC784\uD558\uC5EC \uC870\uC9C1\uC744 \uC0B4\uB824\uB77C!';
+  sc1.appendChild(sc1Desc);
+  var sc1Badge = document.createElement('div');
+  sc1Badge.className = 'difficulty-badge';
+  sc1Badge.style.cssText = 'background:rgba(248,113,113,0.12);color:#f87171';
+  sc1Badge.textContent = '\uB09C\uC774\uB3C4: \u2605\u2605\u2605';
+  sc1.appendChild(sc1Badge);
+  scRow.appendChild(sc1);
 
-  for (var si = 0; si < steps.length; si++) {
-    if (si > 0) {
-      var arrDiv = document.createElement('div');
-      arrDiv.className = 'onboard-flow-arrow';
-      arrDiv.textContent = '\u2192';
-      flow.appendChild(arrDiv);
+  // Scenario 2: AI 혁신 시대
+  var sc2 = document.createElement('div');
+  sc2.className = 'sc-card-new';
+  sc2.style.background = 'linear-gradient(180deg, rgba(96,165,250,0.12), rgba(96,165,250,0.04))';
+  var sc2Icon = document.createElement('div');
+  sc2Icon.style.cssText = 'font-size:32px';
+  sc2Icon.textContent = '\uD83E\uDD16';
+  sc2.appendChild(sc2Icon);
+  var sc2Title = document.createElement('div');
+  sc2Title.style.cssText = 'font-size:13px;font-weight:800;color:#60a5fa';
+  sc2Title.textContent = 'AI \uD601\uC2E0 \uC2DC\uB300';
+  sc2.appendChild(sc2Title);
+  var sc2Desc = document.createElement('div');
+  sc2Desc.style.cssText = 'font-size:10px;color:#4B5563;text-align:center;line-height:1.5';
+  sc2Desc.textContent = '\uC548\uC815\uB41C \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785\uD558\uC5EC \uCD08\uC77C\uB958 \uAE30\uC5C5\uC73C\uB85C!';
+  sc2.appendChild(sc2Desc);
+  var sc2Badge = document.createElement('div');
+  sc2Badge.className = 'difficulty-badge';
+  sc2Badge.style.cssText = 'background:rgba(96,165,250,0.12);color:#60a5fa';
+  sc2Badge.textContent = '\uB09C\uC774\uB3C4: \u2605\u2605\u2606';
+  sc2.appendChild(sc2Badge);
+  scRow.appendChild(sc2);
+
+  s2.appendChild(scRow);
+
+  // Play strip
+  var playStrip = document.createElement('div');
+  playStrip.className = 'play-strip';
+  var stripLabel = document.createElement('div');
+  stripLabel.className = 'strip-label';
+  stripLabel.textContent = '\uD83C\uDFAE \uD50C\uB808\uC774';
+  playStrip.appendChild(stripLabel);
+  var stripSteps = document.createElement('div');
+  stripSteps.className = 'strip-steps';
+  var chipTexts = ['\u2460 \uC870\uC9C1 \uC138\uC6B0\uACE0', '\u2461 \uC0AC\uB78C \uD0A4\uC6B0\uACE0', '\u2462 \uC704\uAE30 \uB118\uAE30\uC138\uC694'];
+  for (var ci = 0; ci < chipTexts.length; ci++) {
+    if (ci > 0) {
+      var arrow = document.createElement('span');
+      arrow.className = 'strip-arrow';
+      arrow.textContent = '\u2192';
+      stripSteps.appendChild(arrow);
     }
-    var step = document.createElement('div');
-    step.className = 'onboard-flow-step';
-    var numEl = document.createElement('div');
-    numEl.className = 'onboard-flow-num';
-    numEl.textContent = steps[si].num;
-    step.appendChild(numEl);
-    var iconEl = document.createElement('span');
-    iconEl.className = 'onboard-flow-icon';
-    iconEl.textContent = steps[si].icon;
-    step.appendChild(iconEl);
-    var titleEl = document.createElement('div');
-    titleEl.className = 'onboard-flow-title';
-    titleEl.textContent = steps[si].title;
-    step.appendChild(titleEl);
-    var itemsEl = document.createElement('div');
-    itemsEl.className = 'onboard-flow-items';
-    for (var ii = 0; ii < steps[si].items.length; ii++) {
-      var line = document.createElement('div');
-      line.className = 'onboard-flow-item';
-      var fiIcon = document.createElement('span');
-      fiIcon.className = 'fi-icon';
-      fiIcon.textContent = steps[si].items[ii].ic;
-      line.appendChild(fiIcon);
-      line.appendChild(document.createTextNode(steps[si].items[ii].t));
-      itemsEl.appendChild(line);
-    }
-    step.appendChild(itemsEl);
-    flow.appendChild(step);
+    var chip = document.createElement('span');
+    chip.className = 'strip-chip';
+    chip.textContent = chipTexts[ci];
+    stripSteps.appendChild(chip);
   }
-  s2.appendChild(flow);
+  playStrip.appendChild(stripSteps);
+  s2.appendChild(playStrip);
+
+  // selectScenario toggles active class
+  function selectScenario(num) {
+    selectedScenario = num;
+    if (num === 1) {
+      sc1.className = 'sc-card-new active';
+      sc2.className = 'sc-card-new';
+    } else {
+      sc1.className = 'sc-card-new';
+      sc2.className = 'sc-card-new active';
+    }
+  }
+  sc1.addEventListener('click', function() { selectScenario(1); });
+  sc2.addEventListener('click', function() { selectScenario(2); });
+
   slides.push(s2);
 
   // Add slides to container
