@@ -344,6 +344,15 @@ canvas{display:block;cursor:default}
 .mgmt-bar-fill{height:100%;border-radius:2px}
 .mgmt-grade-btn{width:22px;height:22px;border:1px solid rgba(255,255,255,0.1);border-radius:4px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .12s;display:flex;align-items:center;justify-content:center}
 .mgmt-grade-btn:hover{background:rgba(255,255,255,0.1)}
+.perf-quota-bar{display:flex;gap:6px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:6px;margin-bottom:8px;flex-wrap:wrap;align-items:center;font-size:10px;color:rgba(255,255,255,0.5)}
+.perf-quota-item{display:flex;gap:2px;align-items:center}
+.perf-quota-item.over{color:#f87171;font-weight:700}
+.perf-quota-item.under{color:#fbbf24;font-weight:700}
+.perf-quota-item.ok{color:#4ade80}
+.perf-confirm-btn{width:100%;margin-top:10px;padding:10px;border:1px solid rgba(74,222,128,0.3);border-radius:8px;background:rgba(74,222,128,0.1);color:#4ade80;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.perf-confirm-btn:hover{background:rgba(74,222,128,0.2)}
+.perf-confirm-btn:disabled{opacity:0.3;cursor:not-allowed;color:rgba(255,255,255,0.3);border-color:rgba(255,255,255,0.1);background:rgba(255,255,255,0.03)}
+.perf-warning{font-size:10px;color:#fbbf24;text-align:center;padding:4px 0}
 .mgmt-stat{display:flex;justify-content:space-between;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.04)}
 .mgmt-stat .k{color:rgba(255,255,255,0.5)}
 .mgmt-stat .v{font-weight:700}
@@ -2881,6 +2890,16 @@ function makeMiniBar(value, maxVal, color) {
   return bar;
 }
 
+function calcPerfQuotas(workers) {
+  var n = workers.length;
+  return {
+    sMax: Math.floor(n * 0.2),
+    aMax: Math.floor(n * 0.3),
+    cMin: Math.max(1, Math.ceil(n * 0.1)),
+    dMin: Math.max(1, Math.ceil(n * 0.1))
+  };
+}
+
 function openPerfPanel() {
   closeMgmtPanel();
   var panel = document.getElementById('mgmt-panel');
@@ -2904,6 +2923,142 @@ function openPerfPanel() {
     {g:'D', will:-10, hap:-15, bonus:0, pip:true}
   ];
 
+  var pendingGrades = {};
+  var quotas = calcPerfQuotas(workers);
+
+  // Pre-populate from existing perfGrade
+  for (var pi = 0; pi < workers.length; pi++) {
+    var pw = workers[pi];
+    if (pw.perfGrade) {
+      for (var pgi = 0; pgi < GRADES.length; pgi++) {
+        if (GRADES[pgi].g === pw.perfGrade) {
+          pendingGrades[pw.id] = GRADES[pgi];
+          break;
+        }
+      }
+    }
+  }
+
+  // Quota bar container
+  var quotaBar = document.createElement('div');
+  quotaBar.className = 'perf-quota-bar';
+  panel.appendChild(quotaBar);
+
+  // Warning container
+  var warningEl = document.createElement('div');
+  warningEl.className = 'perf-warning';
+  panel.appendChild(warningEl);
+
+  // Worker rows container
+  var rowsContainer = document.createElement('div');
+  panel.appendChild(rowsContainer);
+
+  // Confirm button
+  var confirmBtn = document.createElement('button');
+  confirmBtn.className = 'perf-confirm-btn';
+  confirmBtn.textContent = '\u2705 \uD3C9\uAC00 \uD655\uC815';
+  panel.appendChild(confirmBtn);
+
+  function countGrades() {
+    var counts = {S:0, A:0, B:0, C:0, D:0};
+    var keys = Object.keys(pendingGrades);
+    for (var ci = 0; ci < keys.length; ci++) {
+      var g = pendingGrades[keys[ci]].g;
+      counts[g] = (counts[g] || 0) + 1;
+    }
+    return counts;
+  }
+
+  function refreshPanel() {
+    var counts = countGrades();
+    var allGraded = Object.keys(pendingGrades).length === workers.length;
+    var cMet = counts.C >= quotas.cMin;
+    var dMet = counts.D >= quotas.dMin;
+
+    // Update quota bar — clear children safely
+    while (quotaBar.firstChild) quotaBar.removeChild(quotaBar.firstChild);
+    var items = [
+      {label:'S', count:counts.S, limit:quotas.sMax, type:'max'},
+      {label:'A', count:counts.A, limit:quotas.aMax, type:'max'},
+      {label:'B', count:counts.B, limit:null, type:'none'},
+      {label:'C', count:counts.C, limit:quotas.cMin, type:'min'},
+      {label:'D', count:counts.D, limit:quotas.dMin, type:'min'}
+    ];
+    for (var qi = 0; qi < items.length; qi++) {
+      var it = items[qi];
+      var span = document.createElement('span');
+      span.className = 'perf-quota-item';
+      if (it.type === 'max' && it.count > it.limit) {
+        span.classList.add('over');
+      } else if (it.type === 'min' && it.count < it.limit) {
+        span.classList.add('under');
+      } else if (it.type !== 'none') {
+        span.classList.add('ok');
+      }
+      if (it.type === 'max') {
+        span.textContent = it.label + ':' + it.count + '/' + it.limit;
+      } else if (it.type === 'min') {
+        span.textContent = it.label + ':' + it.count + '/' + it.limit + '+';
+      } else {
+        span.textContent = it.label + ':' + it.count + '/-';
+      }
+      quotaBar.appendChild(span);
+      if (qi < items.length - 1) {
+        var sep = document.createElement('span');
+        sep.textContent = '|';
+        sep.style.color = 'rgba(255,255,255,0.2)';
+        quotaBar.appendChild(sep);
+      }
+    }
+
+    // Warning
+    if (!cMet || !dMet) {
+      warningEl.textContent = 'C/D \uB4F1\uAE09 \uCD5C\uC18C \uBC30\uC815 \uD544\uC694';
+      warningEl.style.display = '';
+    } else {
+      warningEl.style.display = 'none';
+    }
+
+    // Confirm button state
+    var canConfirm = allGraded && cMet && dMet;
+    confirmBtn.disabled = !canConfirm;
+
+    // Update grade buttons styling and disabled state
+    var allBtns = rowsContainer.querySelectorAll('[data-worker-id]');
+    for (var bi = 0; bi < allBtns.length; bi++) {
+      var b = allBtns[bi];
+      var wid = parseInt(b.getAttribute('data-worker-id'));
+      var gr = b.getAttribute('data-grade');
+      var selected = pendingGrades[wid] && pendingGrades[wid].g === gr;
+
+      // Reset style
+      b.style.background = selected ? 'rgba(255,184,48,0.2)' : '';
+      b.style.borderColor = selected ? 'rgba(255,184,48,0.4)' : '';
+      b.style.color = selected ? '#FFB830' : '';
+      b.disabled = false;
+
+      // Disable if S/A quota full and not the currently selected one
+      if (gr === 'S' && counts.S >= quotas.sMax && !selected) {
+        b.disabled = true;
+        b.style.opacity = '0.3';
+      } else if (gr === 'A' && counts.A >= quotas.aMax && !selected) {
+        b.disabled = true;
+        b.style.opacity = '0.3';
+      } else {
+        b.style.opacity = '';
+      }
+    }
+
+    // Update current grade display spans
+    var gradeDisplays = rowsContainer.querySelectorAll('[data-grade-display]');
+    for (var di = 0; di < gradeDisplays.length; di++) {
+      var dEl = gradeDisplays[di];
+      var dwid = parseInt(dEl.getAttribute('data-grade-display'));
+      dEl.textContent = pendingGrades[dwid] ? pendingGrades[dwid].g : '-';
+    }
+  }
+
+  // Render worker rows
   for (var i = 0; i < workers.length; i++) {
     (function(w) {
       var tc = EMP_TYPES[w.type] || EMP_TYPES.disengaged;
@@ -2934,10 +3089,11 @@ function openPerfPanel() {
       // Happiness bar
       row.appendChild(makeMiniBar(w.happiness, 100, '#66BB6A'));
 
-      // Current grade
+      // Current pending grade display
       var gradeSpan = document.createElement('span');
       gradeSpan.style.cssText = 'min-width:20px;text-align:center;font-weight:700;font-size:10px';
-      gradeSpan.textContent = w.perfGrade || '-';
+      gradeSpan.setAttribute('data-grade-display', w.id);
+      gradeSpan.textContent = pendingGrades[w.id] ? pendingGrades[w.id].g : '-';
       row.appendChild(gradeSpan);
 
       // Grade buttons
@@ -2948,38 +3104,61 @@ function openPerfPanel() {
           var btn = document.createElement('button');
           btn.className = 'mgmt-grade-btn';
           btn.textContent = grade.g;
-          if (w.perfGrade === grade.g) {
-            btn.style.background = 'rgba(255,184,48,0.2)';
-            btn.style.borderColor = 'rgba(255,184,48,0.4)';
-            btn.style.color = '#FFB830';
-          }
+          btn.setAttribute('data-worker-id', w.id);
+          btn.setAttribute('data-grade', grade.g);
           btn.addEventListener('click', function() {
-            w.perfGrade = grade.g;
-            if (!w.perfHistory) w.perfHistory = [];
-            w.perfHistory.push(grade.g);
-            w.will = clamp(0, 100, w.will + grade.will);
-            w.happiness = clamp(0, 100, w.happiness + grade.hap);
-            if (grade.bonus > 0) {
-              G.money += grade.bonus;
-            }
-            if (grade.pip) {
-              w.pipActive = true;
-              w.pipDays = 30;
-            }
-            var msg = '#' + w.id + ' \u2192 ' + grade.g + '\uB4F1\uAE09';
-            if (grade.will > 0) msg += ' (\uC758\uC695+' + grade.will + ', \uD589\uBCF5+' + grade.hap + ', $' + grade.bonus + ')';
-            else if (grade.will < 0) msg += ' (\uC758\uC695' + grade.will + ', \uD589\uBCF5' + grade.hap + ')';
-            if (grade.pip) msg += ' \u26A0 PIP \uBC1C\uB839';
-            showToast(msg, grade.will >= 0 ? 'success' : 'warn');
-            openPerfPanel();
+            pendingGrades[w.id] = grade;
+            refreshPanel();
           });
           gradeGroup.appendChild(btn);
         })(GRADES[gi]);
       }
       row.appendChild(gradeGroup);
-      panel.appendChild(row);
+      rowsContainer.appendChild(row);
     })(workers[i]);
   }
+
+  // Confirm handler
+  confirmBtn.addEventListener('click', function() {
+    if (confirmBtn.disabled) return;
+    var keys = Object.keys(pendingGrades);
+    var totalBonus = 0;
+    var pipCount = 0;
+    for (var ci = 0; ci < keys.length; ci++) {
+      var wid = parseInt(keys[ci]);
+      var grade = pendingGrades[wid];
+      // Find worker
+      var w = null;
+      for (var wi = 0; wi < workers.length; wi++) {
+        if (workers[wi].id === wid) { w = workers[wi]; break; }
+      }
+      if (!w) continue;
+      w.perfGrade = grade.g;
+      if (!w.perfHistory) w.perfHistory = [];
+      w.perfHistory.push(grade.g);
+      w.will = clamp(0, 100, w.will + grade.will);
+      w.happiness = clamp(0, 100, w.happiness + grade.hap);
+      if (grade.bonus > 0) {
+        G.money -= grade.bonus;
+        totalBonus += grade.bonus;
+      }
+      if (grade.pip) {
+        w.pipActive = true;
+        w.pipDays = 30;
+        pipCount++;
+      }
+    }
+    var msg = '\uC131\uACFC\uD3C9\uAC00 \uD655\uC815! ' + keys.length + '\uBA85 \uD3C9\uAC00 \uC644\uB8CC';
+    if (totalBonus > 0) msg += ' (\uCD1D \uBCF4\uB108\uC2A4 $' + totalBonus + ')';
+    if (pipCount > 0) msg += ' | PIP ' + pipCount + '\uBA85';
+    showToast(msg, 'success');
+    closeMgmtPanel();
+    updateHUD();
+    saveGame();
+  });
+
+  // Initial render of quota bar and button states
+  refreshPanel();
 
   panel.classList.add('open');
 }
