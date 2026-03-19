@@ -5404,281 +5404,347 @@ function showOnboarding() {
 
   // ── Shared elements built first ──
 
-  // Isometric character Before → After canvas
-  var previewWrap = document.createElement('div');
-  previewWrap.className = 'onboard-preview';
-  var previewCanvas = document.createElement('canvas');
-  previewCanvas.width = 1060;
-  previewCanvas.height = 260;
-  previewWrap.appendChild(previewCanvas);
-
-  var pCtx = previewCanvas.getContext('2d');
-  var leftChars = [
+  // Character data sets for 3-column layout
+  var beforeChars = [
     {col:'#BDBDBD',size:0.7,label:'\uBB34\uAE30\uB825',bubble:'\uB9E4\uC77C \uB611\uAC19\uC740 \uD558\uB8E8...'},
     {col:'#78909C',size:0.9,label:'\uB0C9\uC18C\uD30C',bubble:'\uD574\uBD24\uC790 \uB2EC\uB77C\uC9C0\uB294 \uAC74 \uC5C6\uC5B4'},
-    {col:'#66BB6A',size:0.8,label:'\uC2E0\uC785',bubble:'\uBB50\uBD80\uD130 \uD574\uC57C \uD560\uC9C0...'}
+    {col:'#66BB6A',size:0.6,label:'\uC2E0\uC785',bubble:'\uBB50\uBD80\uD130 \uD574\uC57C \uD560\uC9C0...'}
   ];
-  var rightChars = [
-    {col:'#66BB6A',size:1.0,label:'\uD68C\uBCF5',bubble:'\uB2E4\uC2DC \uD574\uBCFC\uAC8C\uC694!'},
-    {col:'#FF7043',size:1.1,label:'\uC5D0\uC774\uC2A4',bubble:'\uC131\uACFC \uB0B4\uACE0 \uC788\uC5B4\uC694!'},
-    {col:'#FFD54F',size:1.3,label:'\uB9AC\uB354',bubble:'SUPEX \uCD94\uAD6C!'}
+  var successChars = [
+    {col:'#66BB6A',size:0.8,label:'\uD68C\uBCF5',bubble:'\uB2E4\uC2DC \uD574\uBCFC\uAC8C\uC694!'},
+    {col:'#FF7043',size:1.0,label:'\uC5D0\uC774\uC2A4',bubble:'\uC131\uACFC \uB0B4\uACE0 \uC788\uC5B4\uC694!'},
+    {col:'#FFD54F',size:1.2,label:'\uB9AC\uB354',bubble:'SUPEX \uCD94\uAD6C!'}
+  ];
+  var failChars = [
+    {col:'#BDBDBD',size:0.5,label:'\uD1F4\uC0AC',bubble:'\uB354\uB294 \uBABB\uD558\uACA0\uC5B4\uC694...'},
+    {col:'#9E9E9E',size:0.4,label:'\uC794\uB958',bubble:'...'}
   ];
   var previewFrame = 0;
   var speakingIdx = 0;
   var speakTimer = 0;
   var speakDuration = 120;
 
-  function drawIsoChar(cx, cy, ch, isSpeaking, isDark) {
+  function drawIsoChar(ctx, cx, cy, ch, isSpeaking, isDark) {
     var sc = ch.size;
     var bobble = Math.sin(previewFrame * 0.025 + cx * 0.01) * 3;
     var baseAlpha = isDark ? 0.55 : 1.0;
     var bY = cy + bobble; // base Y with bobble
 
     // Ground shadow (isometric ellipse)
-    pCtx.fillStyle = 'rgba(0,0,0,0.1)';
-    pCtx.beginPath();
-    pCtx.ellipse(cx, cy + 26 * sc, 18 * sc, 6 * sc, 0, 0, Math.PI * 2);
-    pCtx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + 26 * sc, 18 * sc, 6 * sc, 0, 0, Math.PI * 2);
+    ctx.fill();
 
     // Leader golden glow
     if (sc >= 1.3) {
-      pCtx.save();
-      var grd = pCtx.createRadialGradient(cx, bY - 6 * sc, 0, cx, bY - 6 * sc, 26 * sc);
+      ctx.save();
+      var grd = ctx.createRadialGradient(cx, bY - 6 * sc, 0, cx, bY - 6 * sc, 26 * sc);
       grd.addColorStop(0, 'rgba(255,213,79,0.35)');
       grd.addColorStop(1, 'rgba(255,213,79,0)');
-      pCtx.fillStyle = grd;
-      pCtx.beginPath();
-      pCtx.arc(cx, bY - 6 * sc, 26 * sc, 0, Math.PI * 2);
-      pCtx.fill();
-      pCtx.restore();
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(cx, bY - 6 * sc, 26 * sc, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
     }
 
-    pCtx.globalAlpha = baseAlpha;
+    ctx.globalAlpha = baseAlpha;
 
     // Legs (two small rods)
-    pCtx.strokeStyle = ch.col;
-    pCtx.lineWidth = 2.5 * sc;
-    pCtx.lineCap = 'round';
+    ctx.strokeStyle = ch.col;
+    ctx.lineWidth = 2.5 * sc;
+    ctx.lineCap = 'round';
     var legSpread = 5 * sc;
     var legTop = bY + 10 * sc;
     var legBot = bY + 20 * sc;
-    pCtx.beginPath();
-    pCtx.moveTo(cx - legSpread, legTop); pCtx.lineTo(cx - legSpread - 1, legBot);
-    pCtx.moveTo(cx + legSpread, legTop); pCtx.lineTo(cx + legSpread + 1, legBot);
-    pCtx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx - legSpread, legTop); ctx.lineTo(cx - legSpread - 1, legBot);
+    ctx.moveTo(cx + legSpread, legTop); ctx.lineTo(cx + legSpread + 1, legBot);
+    ctx.stroke();
 
     // Shoes
-    pCtx.fillStyle = isDark ? '#777' : '#444';
-    pCtx.beginPath();
-    pCtx.ellipse(cx - legSpread - 1, legBot + 1, 4 * sc, 2 * sc, 0, 0, Math.PI * 2);
-    pCtx.fill();
-    pCtx.beginPath();
-    pCtx.ellipse(cx + legSpread + 1, legBot + 1, 4 * sc, 2 * sc, 0, 0, Math.PI * 2);
-    pCtx.fill();
+    ctx.fillStyle = isDark ? '#777' : '#444';
+    ctx.beginPath();
+    ctx.ellipse(cx - legSpread - 1, legBot + 1, 4 * sc, 2 * sc, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + legSpread + 1, legBot + 1, 4 * sc, 2 * sc, 0, 0, Math.PI * 2);
+    ctx.fill();
 
     // Body (rounded torso)
-    pCtx.fillStyle = ch.col;
-    pCtx.beginPath();
-    pCtx.ellipse(cx, bY + 2 * sc, 13 * sc, 14 * sc, 0, 0, Math.PI * 2);
-    pCtx.fill();
+    ctx.fillStyle = ch.col;
+    ctx.beginPath();
+    ctx.ellipse(cx, bY + 2 * sc, 13 * sc, 14 * sc, 0, 0, Math.PI * 2);
+    ctx.fill();
     // Body outline
-    pCtx.strokeStyle = 'rgba(0,0,0,0.12)';
-    pCtx.lineWidth = 1.2;
-    pCtx.stroke();
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
 
     // Arms
-    pCtx.strokeStyle = ch.col;
-    pCtx.lineWidth = 2.5 * sc;
-    pCtx.lineCap = 'round';
+    ctx.strokeStyle = ch.col;
+    ctx.lineWidth = 2.5 * sc;
+    ctx.lineCap = 'round';
     var armWave = Math.sin(previewFrame * 0.04 + cx * 0.02) * 4;
     // Left arm
-    pCtx.beginPath();
-    pCtx.moveTo(cx - 12 * sc, bY - 2 * sc);
-    pCtx.lineTo(cx - 18 * sc, bY + 6 * sc + armWave);
-    pCtx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx - 12 * sc, bY - 2 * sc);
+    ctx.lineTo(cx - 18 * sc, bY + 6 * sc + armWave);
+    ctx.stroke();
     // Right arm
-    pCtx.beginPath();
-    pCtx.moveTo(cx + 12 * sc, bY - 2 * sc);
-    pCtx.lineTo(cx + 18 * sc, bY + 6 * sc - armWave);
-    pCtx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx + 12 * sc, bY - 2 * sc);
+    ctx.lineTo(cx + 18 * sc, bY + 6 * sc - armWave);
+    ctx.stroke();
 
     // Hands (skin)
-    pCtx.fillStyle = '#FDDCB5';
-    pCtx.beginPath();
-    pCtx.arc(cx - 18 * sc, bY + 6 * sc + armWave, 3 * sc, 0, Math.PI * 2);
-    pCtx.fill();
-    pCtx.beginPath();
-    pCtx.arc(cx + 18 * sc, bY + 6 * sc - armWave, 3 * sc, 0, Math.PI * 2);
-    pCtx.fill();
+    ctx.fillStyle = '#FDDCB5';
+    ctx.beginPath();
+    ctx.arc(cx - 18 * sc, bY + 6 * sc + armWave, 3 * sc, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + 18 * sc, bY + 6 * sc - armWave, 3 * sc, 0, Math.PI * 2);
+    ctx.fill();
 
     // Neck
-    pCtx.fillStyle = '#FDDCB5';
-    pCtx.fillRect(cx - 3 * sc, bY - 14 * sc, 6 * sc, 6 * sc);
+    ctx.fillStyle = '#FDDCB5';
+    ctx.fillRect(cx - 3 * sc, bY - 14 * sc, 6 * sc, 6 * sc);
 
     // Head
-    pCtx.fillStyle = '#FDDCB5';
-    pCtx.beginPath();
-    pCtx.arc(cx, bY - 18 * sc, 10 * sc, 0, Math.PI * 2);
-    pCtx.fill();
-    pCtx.strokeStyle = 'rgba(0,0,0,0.06)';
-    pCtx.lineWidth = 0.8;
-    pCtx.stroke();
+    ctx.fillStyle = '#FDDCB5';
+    ctx.beginPath();
+    ctx.arc(cx, bY - 18 * sc, 10 * sc, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
 
     // Hair (top arc, color matches body)
-    pCtx.fillStyle = isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.15)';
-    pCtx.beginPath();
-    pCtx.arc(cx, bY - 20 * sc, 10 * sc, Math.PI, 0);
-    pCtx.fill();
+    ctx.fillStyle = isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.15)';
+    ctx.beginPath();
+    ctx.arc(cx, bY - 20 * sc, 10 * sc, Math.PI, 0);
+    ctx.fill();
 
     // Eyes
-    pCtx.fillStyle = '#1F2937';
+    ctx.fillStyle = '#1F2937';
     var eyeY = bY - 18 * sc;
-    pCtx.beginPath();
-    pCtx.arc(cx - 3.5 * sc, eyeY, 1.5 * sc, 0, Math.PI * 2);
-    pCtx.fill();
-    pCtx.beginPath();
-    pCtx.arc(cx + 3.5 * sc, eyeY, 1.5 * sc, 0, Math.PI * 2);
-    pCtx.fill();
+    ctx.beginPath();
+    ctx.arc(cx - 3.5 * sc, eyeY, 1.5 * sc, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx + 3.5 * sc, eyeY, 1.5 * sc, 0, Math.PI * 2);
+    ctx.fill();
 
     // Mouth (expression varies by type)
-    pCtx.strokeStyle = '#1F2937';
-    pCtx.lineWidth = 1.2 * sc;
-    pCtx.lineCap = 'round';
+    ctx.strokeStyle = '#1F2937';
+    ctx.lineWidth = 1.2 * sc;
+    ctx.lineCap = 'round';
     var mouthY = bY - 14 * sc;
-    pCtx.beginPath();
+    ctx.beginPath();
     if (isDark) {
       // Sad / neutral mouth for Before side
-      pCtx.moveTo(cx - 3 * sc, mouthY);
-      pCtx.quadraticCurveTo(cx, mouthY + 2 * sc, cx + 3 * sc, mouthY);
+      ctx.moveTo(cx - 3 * sc, mouthY);
+      ctx.quadraticCurveTo(cx, mouthY + 2 * sc, cx + 3 * sc, mouthY);
     } else {
       // Happy smile for After side
-      pCtx.moveTo(cx - 3.5 * sc, mouthY - 1);
-      pCtx.quadraticCurveTo(cx, mouthY + 3.5 * sc, cx + 3.5 * sc, mouthY - 1);
+      ctx.moveTo(cx - 3.5 * sc, mouthY - 1);
+      ctx.quadraticCurveTo(cx, mouthY + 3.5 * sc, cx + 3.5 * sc, mouthY - 1);
     }
-    pCtx.stroke();
+    ctx.stroke();
 
     // Label below
-    pCtx.globalAlpha = 0.85;
-    pCtx.font = 'bold 12px system-ui';
-    pCtx.textAlign = 'center';
-    pCtx.fillStyle = isDark ? '#991B1B' : '#166534';
-    pCtx.fillText(ch.label, cx, cy + 46 * sc);
-    pCtx.globalAlpha = 1;
+    ctx.globalAlpha = 0.85;
+    ctx.font = 'bold 12px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = isDark ? '#991B1B' : '#166534';
+    ctx.fillText(ch.label, cx, cy + 46 * sc);
+    ctx.globalAlpha = 1;
 
     // Speech bubble
     if (isSpeaking) {
       var fadeIn = Math.min(1, speakTimer / 15);
-      pCtx.globalAlpha = fadeIn;
-      pCtx.font = 'bold 13px system-ui';
-      var bw = pCtx.measureText(ch.bubble).width + 20;
+      ctx.globalAlpha = fadeIn;
+      ctx.font = 'bold 13px system-ui';
+      var bw = ctx.measureText(ch.bubble).width + 20;
       var bh = 28;
       var bx = cx - bw / 2, by = cy + bobble - 20 * sc - 9 * sc - bh - 8;
       if (bx < 8) bx = 8;
-      if (bx + bw > previewCanvas.width - 8) bx = previewCanvas.width - bw - 8;
+      if (bx + bw > ctx.canvas.width - 8) bx = ctx.canvas.width - bw - 8;
 
       // Rounded bubble
-      pCtx.fillStyle = '#fff';
-      pCtx.shadowColor = 'rgba(0,0,0,0.1)';
-      pCtx.shadowBlur = 6;
+      ctx.fillStyle = '#fff';
+      ctx.shadowColor = 'rgba(0,0,0,0.1)';
+      ctx.shadowBlur = 6;
       var br = 10;
-      pCtx.beginPath();
-      pCtx.moveTo(bx + br, by);
-      pCtx.lineTo(bx + bw - br, by);
-      pCtx.quadraticCurveTo(bx + bw, by, bx + bw, by + br);
-      pCtx.lineTo(bx + bw, by + bh - br);
-      pCtx.quadraticCurveTo(bx + bw, by + bh, bx + bw - br, by + bh);
-      pCtx.lineTo(cx + 5, by + bh);
-      pCtx.lineTo(cx, by + bh + 7);
-      pCtx.lineTo(cx - 5, by + bh);
-      pCtx.lineTo(bx + br, by + bh);
-      pCtx.quadraticCurveTo(bx, by + bh, bx, by + bh - br);
-      pCtx.lineTo(bx, by + br);
-      pCtx.quadraticCurveTo(bx, by, bx + br, by);
-      pCtx.closePath();
-      pCtx.fill();
-      pCtx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.moveTo(bx + br, by);
+      ctx.lineTo(bx + bw - br, by);
+      ctx.quadraticCurveTo(bx + bw, by, bx + bw, by + br);
+      ctx.lineTo(bx + bw, by + bh - br);
+      ctx.quadraticCurveTo(bx + bw, by + bh, bx + bw - br, by + bh);
+      ctx.lineTo(cx + 5, by + bh);
+      ctx.lineTo(cx, by + bh + 7);
+      ctx.lineTo(cx - 5, by + bh);
+      ctx.lineTo(bx + br, by + bh);
+      ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - br);
+      ctx.lineTo(bx, by + br);
+      ctx.quadraticCurveTo(bx, by, bx + br, by);
+      ctx.closePath();
+      ctx.fill();
+      ctx.shadowBlur = 0;
 
-      pCtx.fillStyle = '#1F2937';
-      pCtx.fillText(ch.bubble, bx + bw / 2, by + bh - 8);
-      pCtx.globalAlpha = 1;
+      ctx.fillStyle = '#1F2937';
+      ctx.fillText(ch.bubble, bx + bw / 2, by + bh - 8);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // Particle system for multi-canvas
+  var particles = [];
+  for (var pi = 0; pi < 20; pi++) {
+    particles.push({
+      x: Math.random() * 280, y: Math.random() * 280,
+      vx: (Math.random() - 0.5) * 0.3, vy: -0.2 - Math.random() * 0.3,
+      size: 2 + Math.random() * 4, opacity: 0.05 + Math.random() * 0.1,
+      zone: pi < 8 ? 'before' : (pi < 14 ? 'success' : 'fail')
+    });
+  }
+
+  // Canvases and contexts set up in Slide 1 DOM build below
+  var beforeCtx, successCtx, failCtx;
+
+  function drawBeforeCanvas() {
+    if (!beforeCtx) return;
+    var w = beforeCtx.canvas.width, h = beforeCtx.canvas.height;
+    beforeCtx.clearRect(0, 0, w, h);
+
+    // Draw 'before' zone particles (red, rising, wrapping)
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      if (p.zone !== 'before') continue;
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.y < 0) p.y = h;
+      if (p.x < 0) p.x = w;
+      if (p.x > w) p.x = 0;
+      beforeCtx.globalAlpha = p.opacity;
+      beforeCtx.fillStyle = '#DC2626';
+      beforeCtx.beginPath();
+      beforeCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      beforeCtx.fill();
+    }
+    beforeCtx.globalAlpha = 1;
+
+    // Draw beforeChars
+    var spacing = w / (beforeChars.length + 1);
+    for (var j = 0; j < beforeChars.length; j++) {
+      var cx = spacing * (j + 1);
+      drawIsoChar(beforeCtx, cx, 200, beforeChars[j], speakingIdx === j, true);
+    }
+
+    // Decline polyline
+    beforeCtx.globalAlpha = 0.4;
+    beforeCtx.strokeStyle = '#DC2626';
+    beforeCtx.lineWidth = 2;
+    beforeCtx.beginPath();
+    beforeCtx.moveTo(20, 280);
+    beforeCtx.lineTo(70, 290);
+    beforeCtx.lineTo(140, 295);
+    beforeCtx.lineTo(200, 305);
+    beforeCtx.lineTo(260, 310);
+    beforeCtx.stroke();
+    beforeCtx.globalAlpha = 1;
+
+    // Decline emoji label
+    beforeCtx.font = '14px system-ui';
+    beforeCtx.textAlign = 'center';
+    beforeCtx.fillStyle = '#DC2626';
+    beforeCtx.fillText('\uD83D\uDCC9', 240, 328);
+  }
+
+  function drawSuccessCanvas() {
+    if (!successCtx) return;
+    var w = successCtx.canvas.width, h = successCtx.canvas.height;
+    successCtx.clearRect(0, 0, w, h);
+
+    // Draw 'success' zone particles (green/gold alternating)
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      if (p.zone !== 'success') continue;
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.y < 0) p.y = h;
+      if (p.x < 0) p.x = w;
+      if (p.x > w) p.x = 0;
+      successCtx.globalAlpha = p.opacity;
+      successCtx.fillStyle = i % 2 === 0 ? '#22c55e' : '#FFD54F';
+      successCtx.beginPath();
+      successCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      successCtx.fill();
+    }
+    successCtx.globalAlpha = 1;
+
+    // Draw successChars
+    var spacing = w / (successChars.length + 1);
+    for (var j = 0; j < successChars.length; j++) {
+      var cx = spacing * (j + 1);
+      drawIsoChar(successCtx, cx, 55, successChars[j], speakingIdx === j + 3, false);
+    }
+
+    // Twinkle stars near leader position
+    if (previewFrame % 90 < 30) {
+      var twinkleAlpha = Math.sin((previewFrame % 90) / 30 * Math.PI);
+      var leaderX = spacing * successChars.length;
+      successCtx.globalAlpha = twinkleAlpha * 0.8;
+      successCtx.fillStyle = '#FFD54F';
+      successCtx.font = '10px system-ui';
+      successCtx.textAlign = 'center';
+      successCtx.fillText('\u2728', leaderX - 12, 30);
+      successCtx.fillText('\u2B50', leaderX + 14, 38);
+      successCtx.globalAlpha = 1;
+    }
+  }
+
+  function drawFailCanvas() {
+    if (!failCtx) return;
+    var w = failCtx.canvas.width, h = failCtx.canvas.height;
+    failCtx.clearRect(0, 0, w, h);
+
+    // Draw 'fail' zone particles (falling down, dark red, smaller)
+    for (var i = 0; i < particles.length; i++) {
+      var p = particles[i];
+      if (p.zone !== 'fail') continue;
+      p.x += p.vx;
+      p.y -= p.vy; // negate vy so they fall down
+      if (p.y > h) p.y = 0;
+      if (p.x < 0) p.x = w;
+      if (p.x > w) p.x = 0;
+      failCtx.globalAlpha = p.opacity;
+      failCtx.fillStyle = '#991B1B';
+      failCtx.beginPath();
+      failCtx.arc(p.x, p.y, p.size * 0.7, 0, Math.PI * 2);
+      failCtx.fill();
+    }
+    failCtx.globalAlpha = 1;
+
+    // Draw failChars
+    var spacing = w / (failChars.length + 1);
+    for (var j = 0; j < failChars.length; j++) {
+      var cx = spacing * (j + 1);
+      drawIsoChar(failCtx, cx, 55, failChars[j], speakingIdx === j + 6, true);
     }
   }
 
   function drawPreview() {
-    var w = previewCanvas.width, h = previewCanvas.height;
-    pCtx.clearRect(0, 0, w, h);
-    var midX = w / 2;
-    var charY = 140;
-
-    // Before half — warm red tint
-    pCtx.fillStyle = 'rgba(254,226,226,0.5)';
-    pCtx.fillRect(0, 0, midX - 30, h);
-    // After half — green tint
-    pCtx.fillStyle = 'rgba(220,252,231,0.5)';
-    pCtx.fillRect(midX + 30, 0, w - midX - 30, h);
-
-    // BEFORE label
-    pCtx.font = 'bold 16px system-ui';
-    pCtx.textAlign = 'center';
-    pCtx.fillStyle = '#DC2626';
-    pCtx.fillText('BEFORE', midX / 2, 36);
-    pCtx.font = '12px system-ui';
-    pCtx.fillStyle = '#991B1B';
-    pCtx.fillText('\uBB34\uAE30\uB825\uD55C \uC870\uC9C1', midX / 2, 52);
-
-    // AFTER label
-    pCtx.font = 'bold 16px system-ui';
-    pCtx.fillStyle = '#16A34A';
-    pCtx.fillText('AFTER', midX + (w - midX) / 2, 36);
-    pCtx.font = '12px system-ui';
-    pCtx.fillStyle = '#166534';
-    pCtx.fillText('SKMS \uACBD\uC601 \uC801\uC6A9', midX + (w - midX) / 2, 52);
-
-    // Center SKMS arrow — clean, no glow
-    var arrowPulse = 0.7 + Math.sin(previewFrame * 0.04) * 0.3;
-    var centerY = h / 2 + 4;
-    pCtx.globalAlpha = arrowPulse;
-    pCtx.fillStyle = '#0052A2';
-    pCtx.font = 'bold 36px system-ui';
-    pCtx.textAlign = 'center';
-    pCtx.fillText('\u27A1', midX, centerY + 5);
-    pCtx.font = 'bold 13px system-ui';
-    pCtx.fillText('SKMS', midX, centerY + 24);
-    pCtx.globalAlpha = 1;
-
-    // Left characters (before — faded, small)
-    var leftSpacing = (midX - 80) / 3;
-    for (var i = 0; i < leftChars.length; i++) {
-      var lx = 60 + leftSpacing * i + leftSpacing / 2;
-      drawIsoChar(lx, charY, leftChars[i], speakingIdx === i, true);
-    }
-
-    // Right characters (after — vibrant, bigger)
-    var rightSpacing = (w - midX - 80) / 3;
-    for (var j = 0; j < rightChars.length; j++) {
-      var rx = midX + 60 + rightSpacing * j + rightSpacing / 2;
-      drawIsoChar(rx, charY, rightChars[j], speakingIdx === j + 3, false);
-    }
-
-    // Isometric ground tiles
-    pCtx.globalAlpha = 0.4;
-    pCtx.fillStyle = '#C8E6C9';
-    for (var tx = 0; tx < w; tx += 36) {
-      pCtx.beginPath();
-      pCtx.moveTo(tx + 18, h - 6);
-      pCtx.lineTo(tx + 36, h);
-      pCtx.lineTo(tx + 18, h + 6);
-      pCtx.lineTo(tx, h);
-      pCtx.closePath();
-      pCtx.fill();
-    }
-    pCtx.globalAlpha = 1;
-
+    drawBeforeCanvas();
+    drawSuccessCanvas();
+    drawFailCanvas();
     previewFrame++;
     speakTimer++;
     if (speakTimer > speakDuration) {
       speakTimer = 0;
-      speakingIdx = (speakingIdx + 1) % 6;
+      speakingIdx = (speakingIdx + 1) % 8;
     }
   }
   var previewRAF;
@@ -5878,21 +5944,174 @@ function showOnboarding() {
   var slideContainer = document.createElement('div');
   slideContainer.className = 'onboard-slides';
 
-  // --- SLIDE 1: Hero & Tagline + Scenario Selection ---
+  // --- SLIDE 1: Diverging Paths (Before / SKMS / After) ---
   var s1 = document.createElement('div');
   s1.className = 'onboard-slide active';
 
-  var previewLabel = document.createElement('div');
-  previewLabel.style.cssText = 'font-size:13px;font-weight:700;color:#6B7280;margin-bottom:8px;letter-spacing:0.5px';
-  previewLabel.textContent = '\uD83C\uDFAE SKMS \uACBD\uC601\uC774 \uB9CC\uB4DC\uB294 \uBCC0\uD654';
-  s1.appendChild(previewLabel);
-  s1.appendChild(previewWrap);
+  var s1Label = document.createElement('div');
+  s1Label.style.cssText = 'font-size:13px;font-weight:700;color:#6B7280;margin-bottom:8px;letter-spacing:0.5px;text-align:center';
+  s1Label.textContent = '\uD83C\uDFAE SKMS \uACBD\uC601\uC774 \uB9CC\uB4DC\uB294 \uBCC0\uD654';
+  s1.appendChild(s1Label);
 
-  var scenarioLabel = document.createElement('div');
-  scenarioLabel.style.cssText = 'font-size:13px;font-weight:700;color:#6B7280;margin-bottom:8px;margin-top:4px;letter-spacing:0.5px';
-  scenarioLabel.textContent = '\uD83D\uDCCB \uC2DC\uB098\uB9AC\uC624\uB97C \uC120\uD0DD\uD558\uC138\uC694';
-  s1.appendChild(scenarioLabel);
-  s1.appendChild(scenarios);
+  var layout = document.createElement('div');
+  layout.className = 'slide1-layout';
+
+  // Before column
+  var beforeWrap = document.createElement('div');
+  var beforeTitle = document.createElement('div');
+  beforeTitle.style.cssText = 'color:#DC2626;font-size:14px;font-weight:bold;text-align:center;margin-bottom:2px';
+  beforeTitle.textContent = 'BEFORE';
+  var beforeSub = document.createElement('div');
+  beforeSub.style.cssText = 'color:#991B1B;font-size:10px;text-align:center;margin-bottom:4px';
+  beforeSub.textContent = '\uBB34\uAE30\uB825\uD55C \uC870\uC9C1';
+  var beforeCanvas = document.createElement('canvas');
+  beforeCanvas.width = 280;
+  beforeCanvas.height = 340;
+  beforeCanvas.style.cssText = 'border-radius:12px;background:rgba(254,226,226,0.5);width:100%';
+  beforeWrap.appendChild(beforeTitle);
+  beforeWrap.appendChild(beforeSub);
+  beforeWrap.appendChild(beforeCanvas);
+  layout.appendChild(beforeWrap);
+
+  // SKMS center panel
+  var skmsPanel = document.createElement('div');
+  skmsPanel.className = 'skms-panel';
+  var skmsTurn = document.createElement('div');
+  skmsTurn.style.cssText = 'color:#FFD54F;font-size:10px;font-weight:bold;margin-bottom:4px';
+  skmsTurn.textContent = '\u26A1 YOUR TURN';
+  var skmsTitle = document.createElement('div');
+  skmsTitle.style.cssText = 'color:#60a5fa;font-size:18px;font-weight:bold;margin-bottom:4px';
+  skmsTitle.textContent = 'SKMS';
+  var skmsIcon = document.createElement('div');
+  skmsIcon.style.cssText = 'font-size:28px;margin-bottom:8px';
+  skmsIcon.textContent = '\uD83C\uDFAE';
+  var skmsCopy = document.createElement('div');
+  skmsCopy.style.cssText = 'font-size:12px;color:#e2e8f0;font-weight:700;line-height:1.6';
+  var copyText1 = document.createTextNode('\uB2F9\uC2E0\uC758 \uACBD\uC601\uC774');
+  var copyBr = document.createElement('br');
+  var copyFate = document.createElement('span');
+  copyFate.style.cssText = 'color:#FFD54F;font-size:15px';
+  copyFate.textContent = '\uC6B4\uBA85';
+  var copyText2 = document.createTextNode('\uC744 \uBC14\uAFD9\uB2C8\uB2E4');
+  skmsCopy.appendChild(copyText1);
+  skmsCopy.appendChild(copyBr);
+  skmsCopy.appendChild(copyFate);
+  skmsCopy.appendChild(copyText2);
+  skmsPanel.appendChild(skmsTurn);
+  skmsPanel.appendChild(skmsTitle);
+  skmsPanel.appendChild(skmsIcon);
+  skmsPanel.appendChild(skmsCopy);
+  layout.appendChild(skmsPanel);
+
+  // After area (success + failure)
+  var afterArea = document.createElement('div');
+  afterArea.className = 'after-area';
+
+  var successDiv = document.createElement('div');
+  successDiv.className = 'success-path';
+  var successLabel = document.createElement('div');
+  successLabel.style.cssText = 'color:#22c55e;font-size:11px;font-weight:bold;margin-bottom:4px';
+  successLabel.textContent = '\u2705 SUPEX \uB2EC\uC131';
+  var successCanvas = document.createElement('canvas');
+  successCanvas.width = 140;
+  successCanvas.height = 130;
+  successCanvas.style.cssText = 'width:100%;border-radius:8px';
+  var successCaption = document.createElement('div');
+  successCaption.style.cssText = 'color:#4ade80;font-size:8px;margin-top:4px';
+  successCaption.textContent = '\uC9C1\uC6D0 \uD589\uBCF5 + \uC131\uACFC \uD83D\uDCC8';
+  successDiv.appendChild(successLabel);
+  successDiv.appendChild(successCanvas);
+  successDiv.appendChild(successCaption);
+  afterArea.appendChild(successDiv);
+
+  var failDiv = document.createElement('div');
+  failDiv.className = 'failure-path';
+  var failLabel = document.createElement('div');
+  failLabel.style.cssText = 'color:#ef4444;font-size:11px;font-weight:bold;margin-bottom:4px';
+  failLabel.textContent = '\u274C \uACBD\uC601 \uC2E4\uD328';
+  var failCanvas = document.createElement('canvas');
+  failCanvas.width = 140;
+  failCanvas.height = 130;
+  failCanvas.style.cssText = 'width:100%;border-radius:8px';
+  var failCaption = document.createElement('div');
+  failCaption.style.cssText = 'color:#f87171;font-size:8px;margin-top:4px';
+  failCaption.textContent = '\uC774\uC9C1 \uB7EC\uC2DC + \uD30C\uC0B0 \uD83D\uDC80';
+  failDiv.appendChild(failLabel);
+  failDiv.appendChild(failCanvas);
+  failDiv.appendChild(failCaption);
+  afterArea.appendChild(failDiv);
+
+  layout.appendChild(afterArea);
+
+  // SVG arrow overlay
+  var arrowSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  arrowSvg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none';
+  layout.appendChild(arrowSvg);
+
+  s1.appendChild(layout);
+
+  // Get canvas contexts
+  beforeCtx = beforeCanvas.getContext('2d');
+  successCtx = successCanvas.getContext('2d');
+  failCtx = failCanvas.getContext('2d');
+
+  // SVG arrows (drawn after layout renders)
+  setTimeout(function() {
+    if (!skmsPanel.offsetParent) return;
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var layoutRect = layout.getBoundingClientRect();
+    var skmsRect = skmsPanel.getBoundingClientRect();
+    var successRect = successDiv.getBoundingClientRect();
+    var failRect = failDiv.getBoundingClientRect();
+    var beforeR = beforeWrap.getBoundingClientRect();
+
+    var ox = layoutRect.left, oy = layoutRect.top;
+    arrowSvg.setAttribute('viewBox', '0 0 ' + layoutRect.width + ' ' + layoutRect.height);
+
+    // Defs with 3 markers
+    var defs = document.createElementNS(svgNS, 'defs');
+    [['arrG','#22c55e'],['arrR','#ef4444'],['arrW','#64748b']].forEach(function(m) {
+      var mk = document.createElementNS(svgNS, 'marker');
+      mk.setAttribute('id', m[0]); mk.setAttribute('markerWidth','8'); mk.setAttribute('markerHeight','6');
+      mk.setAttribute('refX','8'); mk.setAttribute('refY','3'); mk.setAttribute('orient','auto');
+      var p = document.createElementNS(svgNS, 'path');
+      p.setAttribute('d','M0,0 L8,3 L0,6'); p.setAttribute('fill', m[1]);
+      mk.appendChild(p); defs.appendChild(mk);
+    });
+    arrowSvg.appendChild(defs);
+
+    // Before → SKMS (dashed line)
+    var bRx = beforeR.right - ox, bCy = beforeR.top - oy + beforeR.height / 2;
+    var sLx = skmsRect.left - ox, sCy = skmsRect.top - oy + skmsRect.height / 2;
+    var line = document.createElementNS(svgNS, 'line');
+    line.setAttribute('x1', bRx); line.setAttribute('y1', bCy);
+    line.setAttribute('x2', sLx); line.setAttribute('y2', sCy);
+    line.setAttribute('stroke','#64748b'); line.setAttribute('stroke-width','1.5');
+    line.setAttribute('stroke-dasharray','4 3'); line.setAttribute('marker-end','url(#arrW)');
+    arrowSvg.appendChild(line);
+
+    // SKMS → Success (curve up, green)
+    var sRx = skmsRect.right - ox;
+    var sTy = skmsRect.top - oy + skmsRect.height * 0.35;
+    var aLx = successRect.left - ox;
+    var aCy = successRect.top - oy + successRect.height / 2;
+    var p1 = document.createElementNS(svgNS, 'path');
+    p1.setAttribute('d', 'M '+sRx+' '+sTy+' Q '+(sRx+aLx)/2+' '+aCy+' '+aLx+' '+aCy);
+    p1.setAttribute('stroke','#22c55e'); p1.setAttribute('stroke-width','2');
+    p1.setAttribute('fill','none'); p1.setAttribute('marker-end','url(#arrG)');
+    arrowSvg.appendChild(p1);
+
+    // SKMS → Failure (curve down, red)
+    var sBty = skmsRect.top - oy + skmsRect.height * 0.65;
+    var fLx = failRect.left - ox;
+    var fCy = failRect.top - oy + failRect.height / 2;
+    var p2 = document.createElementNS(svgNS, 'path');
+    p2.setAttribute('d', 'M '+sRx+' '+sBty+' Q '+(sRx+fLx)/2+' '+fCy+' '+fLx+' '+fCy);
+    p2.setAttribute('stroke','#ef4444'); p2.setAttribute('stroke-width','2');
+    p2.setAttribute('fill','none'); p2.setAttribute('marker-end','url(#arrR)');
+    arrowSvg.appendChild(p2);
+  }, 100);
+
   slides.push(s1);
 
   // --- SLIDE 2: 3-step Game Flow ---
