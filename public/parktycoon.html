@@ -4333,151 +4333,165 @@ function showOnboarding() {
   previewWrap.appendChild(previewCanvas);
   card.appendChild(previewWrap);
 
-  // Animate the preview
+  // Animate the preview — LEFT=Before, CENTER=Arrow, RIGHT=After
   var pCtx = previewCanvas.getContext('2d');
-  var previewChars = [
-    {x:80, type:'disengaged',emoji:'\uD83D\uDE34',bubble:'\uB9E4\uC77C \uB611\uAC19\uC740 \uD558\uB8E8...',col:'#BDBDBD',targetType:'rookie'},
-    {x:250,type:'cynic',     emoji:'\uD83E\uDD14',bubble:'\uB610 \uBCC0\uD558\uB294 \uAC70\uB77C\uACE0?',col:'#78909C',targetType:'ace'},
-    {x:420,type:'rookie',    emoji:'\uD83C\uDF31',bubble:'\uBC30\uC6B0\uACE0 \uC2F6\uC5B4\uC694!',col:'#66BB6A',targetType:'ace'},
-    {x:590,type:'ace',       emoji:'\uD83D\uDD25',bubble:'\uC624\uB298\uB3C4 \uC5F4\uC815\uC801\uC73C\uB85C!',col:'#FF7043',targetType:'leader'},
-    {x:760,type:'leader',    emoji:'\u2B50',bubble:'\uD568\uAED8 \uC131\uC7A5\uD569\uC2DC\uB2E4',col:'#FFD54F',targetType:'leader'},
-    {x:930,type:'ace',       emoji:'\uD83D\uDD25',bubble:'SUPEX \uCD94\uAD6C!',col:'#FF7043',targetType:'leader'}
+  // Left side: Before characters
+  var leftChars = [
+    {emoji:'\uD83D\uDE34',bubble:'\uB9E4\uC77C \uB611\uAC19\uC740 \uD558\uB8E8...',col:'#BDBDBD',label:'\uBB34\uAE30\uB825'},
+    {emoji:'\uD83E\uDD14',bubble:'\uC5F4\uC2EC\uD788 \uD574\uBD24\uC790 \uB2EC\uB77C\uC9C0\uB294 \uAC74 \uC5C6\uC5B4',col:'#78909C',label:'\uB0C9\uC18C\uD30C'},
+    {emoji:'\uD83C\uDF31',bubble:'\uBB50\uBD80\uD130 \uD574\uC57C \uD560\uC9C0 \uBAA8\uB974\uACA0\uC5B4\uC694',col:'#66BB6A',label:'\uC2E0\uC785'}
+  ];
+  // Right side: After characters
+  var rightChars = [
+    {emoji:'\uD83C\uDF31',bubble:'\uB2E4\uC2DC \uD574\uBCFC\uAC8C\uC694! \uC131\uC7A5 \uC911!',col:'#66BB6A',label:'\uD68C\uBCF5'},
+    {emoji:'\uD83D\uDD25',bubble:'\uC5D0\uC774\uC2A4 \uB410\uB2E4! \uC131\uACFC \uB0B4\uACE0 \uC788\uC5B4\uC694',col:'#FF7043',label:'\uC5D0\uC774\uC2A4'},
+    {emoji:'\u2B50',bubble:'SUPEX \uCD94\uAD6C! \uD568\uAED8 \uB2EC\uC131\uD569\uC2DC\uB2E4',col:'#FFD54F',label:'\uB9AC\uB354'}
   ];
   var previewFrame = 0;
-  var previewPhase = 0; // 0=before, 1=transitioning, 2=after
-  var previewTimer = 0;
-  var bubbleAlpha = 1;
+  // Which character is currently speaking (0-2 for left, 3-5 for right, cycles)
+  var speakingIdx = 0;
+  var speakTimer = 0;
+  var speakDuration = 150; // ~2.5 sec per character at 60fps
+
+  function drawChar(cx, cy, ch, isSpeaking) {
+    var bobble = Math.sin(previewFrame * 0.03 + cx * 0.01) * 2;
+    // Shadow
+    pCtx.fillStyle = 'rgba(0,0,0,0.05)';
+    pCtx.beginPath();
+    pCtx.ellipse(cx, cy + 18, 12, 4, 0, 0, Math.PI * 2);
+    pCtx.fill();
+    // Body
+    pCtx.fillStyle = ch.col;
+    pCtx.beginPath();
+    pCtx.arc(cx, cy + bobble, 11, 0, Math.PI * 2);
+    pCtx.fill();
+    pCtx.strokeStyle = 'rgba(0,0,0,0.12)';
+    pCtx.lineWidth = 1.5;
+    pCtx.stroke();
+    // Head
+    pCtx.fillStyle = '#FDDCB5';
+    pCtx.beginPath();
+    pCtx.arc(cx, cy + bobble - 15, 7, 0, Math.PI * 2);
+    pCtx.fill();
+    // Emoji above
+    pCtx.font = '13px serif';
+    pCtx.textAlign = 'center';
+    pCtx.fillText(ch.emoji, cx, cy + bobble - 26);
+    // Label below
+    pCtx.font = '9px system-ui';
+    pCtx.fillStyle = '#6B7280';
+    pCtx.fillText(ch.label, cx, cy + 32);
+    // Speech bubble — only if this char is speaking
+    if (isSpeaking) {
+      var fadeIn = Math.min(1, speakTimer / 20);
+      pCtx.globalAlpha = fadeIn;
+      pCtx.font = '11px system-ui';
+      var bw = pCtx.measureText(ch.bubble).width + 18;
+      var bx = cx - bw / 2, by = cy + bobble - 56;
+      // Clamp to canvas
+      if (bx < 4) bx = 4;
+      if (bx + bw > previewCanvas.width - 4) bx = previewCanvas.width - bw - 4;
+      pCtx.fillStyle = '#fff';
+      pCtx.strokeStyle = '#D1D5DB';
+      pCtx.lineWidth = 1;
+      var br = 8;
+      pCtx.beginPath();
+      pCtx.moveTo(bx + br, by);
+      pCtx.lineTo(bx + bw - br, by);
+      pCtx.quadraticCurveTo(bx + bw, by, bx + bw, by + br);
+      pCtx.lineTo(bx + bw, by + 20 - br);
+      pCtx.quadraticCurveTo(bx + bw, by + 20, bx + bw - br, by + 20);
+      pCtx.lineTo(cx + 4, by + 20);
+      pCtx.lineTo(cx, by + 26);
+      pCtx.lineTo(cx - 4, by + 20);
+      pCtx.lineTo(bx + br, by + 20);
+      pCtx.quadraticCurveTo(bx, by + 20, bx, by + 20 - br);
+      pCtx.lineTo(bx, by + br);
+      pCtx.quadraticCurveTo(bx, by, bx + br, by);
+      pCtx.closePath();
+      pCtx.fill();
+      pCtx.stroke();
+      pCtx.fillStyle = '#1F2937';
+      pCtx.fillText(ch.bubble, bx + bw / 2, by + 14);
+      pCtx.globalAlpha = 1;
+    }
+  }
 
   function drawPreview() {
     var w = previewCanvas.width, h = previewCanvas.height;
     pCtx.clearRect(0, 0, w, h);
 
-    // Subtle grass tiles at bottom
+    var midX = w / 2;
+    var charY = 80;
+
+    // Left zone background
+    pCtx.fillStyle = 'rgba(254,226,226,0.3)';
+    pCtx.fillRect(0, 0, midX - 40, h);
+    // Right zone background
+    pCtx.fillStyle = 'rgba(220,252,231,0.3)';
+    pCtx.fillRect(midX + 40, 0, midX - 40, h);
+
+    // Labels
+    pCtx.font = 'bold 12px system-ui';
+    pCtx.textAlign = 'center';
+    pCtx.fillStyle = '#DC2626';
+    pCtx.fillText('BEFORE', midX / 2, 18);
+    pCtx.font = '10px system-ui';
+    pCtx.fillStyle = '#9CA3AF';
+    pCtx.fillText('\uC704\uAE30\uC758 \uD68C\uC0AC', midX / 2, 32);
+
+    pCtx.font = 'bold 12px system-ui';
+    pCtx.fillStyle = '#16A34A';
+    pCtx.fillText('AFTER', midX + (w - midX) / 2, 18);
+    pCtx.font = '10px system-ui';
+    pCtx.fillStyle = '#9CA3AF';
+    pCtx.fillText('SKMS \uACBD\uC601 \uC801\uC6A9 \uD6C4', midX + (w - midX) / 2, 32);
+
+    // Center arrow
+    var arrowPulse = 0.7 + Math.sin(previewFrame * 0.04) * 0.3;
+    pCtx.globalAlpha = arrowPulse;
+    pCtx.fillStyle = '#0052A2';
+    pCtx.font = 'bold 28px system-ui';
+    pCtx.textAlign = 'center';
+    pCtx.fillText('\u27A1', midX, h / 2 + 8);
+    pCtx.font = '9px system-ui';
+    pCtx.fillStyle = '#0052A2';
+    pCtx.fillText('SKMS', midX, h / 2 + 22);
+    pCtx.globalAlpha = 1;
+
+    // Draw left characters
+    var leftSpacing = (midX - 80) / 3;
+    for (var i = 0; i < leftChars.length; i++) {
+      var lx = 60 + leftSpacing * i + leftSpacing / 2;
+      drawChar(lx, charY, leftChars[i], speakingIdx === i);
+    }
+
+    // Draw right characters
+    var rightSpacing = (w - midX - 80) / 3;
+    for (var j = 0; j < rightChars.length; j++) {
+      var rx = midX + 60 + rightSpacing * j + rightSpacing / 2;
+      drawChar(rx, charY, rightChars[j], speakingIdx === j + 3);
+    }
+
+    // Grass tiles at bottom
     pCtx.fillStyle = '#C8E6C9';
-    for (var tx = 0; tx < w; tx += 40) {
+    for (var tx = 0; tx < w; tx += 36) {
       pCtx.beginPath();
-      pCtx.moveTo(tx + 20, h - 15);
-      pCtx.lineTo(tx + 40, h - 5);
-      pCtx.lineTo(tx + 20, h + 5);
-      pCtx.lineTo(tx, h - 5);
+      pCtx.moveTo(tx + 18, h - 8);
+      pCtx.lineTo(tx + 36, h);
+      pCtx.lineTo(tx + 18, h + 8);
+      pCtx.lineTo(tx, h);
       pCtx.closePath();
       pCtx.fill();
     }
 
-    // Phase label
-    pCtx.font = 'bold 11px system-ui';
-    pCtx.textAlign = 'center';
-    if (previewPhase === 0) {
-      pCtx.fillStyle = '#EF4444';
-      pCtx.fillText('\u26A0 BEFORE \u2014 \uC704\uAE30\uC758 \uD68C\uC0AC', w / 2, 16);
-    } else if (previewPhase === 1) {
-      pCtx.fillStyle = '#0052A2';
-      pCtx.fillText('\u2728 SKMS \uACBD\uC601\uCCB4\uACC4 \uC801\uC6A9 \uC911...', w / 2, 16);
-    } else {
-      pCtx.fillStyle = '#16A34A';
-      pCtx.fillText('\u2705 AFTER \u2014 \uC131\uC7A5\uD558\uB294 \uD68C\uC0AC', w / 2, 16);
-    }
-
-    for (var i = 0; i < previewChars.length; i++) {
-      var ch = previewChars[i];
-      var cx = ch.x, cy = 85;
-      var bobble = Math.sin(previewFrame * 0.05 + i * 1.2) * 3;
-
-      // Shadow
-      pCtx.fillStyle = 'rgba(0,0,0,0.06)';
-      pCtx.beginPath();
-      pCtx.ellipse(cx, cy + 20, 14, 5, 0, 0, Math.PI * 2);
-      pCtx.fill();
-
-      // Determine current visual based on phase
-      var curCol = ch.col;
-      var curEmoji = ch.emoji;
-      var curBubble = ch.bubble;
-      if (previewPhase === 2) {
-        var tc = {disengaged:'#66BB6A',cynic:'#FF7043',rookie:'#FF7043',ace:'#FFD54F',leader:'#FFD54F'};
-        var te = {disengaged:'\uD83C\uDF31',cynic:'\uD83D\uDD25',rookie:'\uD83D\uDD25',ace:'\u2B50',leader:'\u2B50'};
-        var tb = {disengaged:'\uB2E4\uC2DC \uD574\uBCFC\uAC8C\uC694!',cynic:'\uD574\uBCFC \uB9CC\uD558\uB124\uC694!',rookie:'\uC5D0\uC774\uC2A4 \uB410\uB2E4!',ace:'\uB9AC\uB354 \uB410\uB2E4!',leader:'\uD568\uAED8 \uB2EC\uC131!'};
-        curCol = tc[ch.type];
-        curEmoji = te[ch.type];
-        curBubble = tb[ch.type];
-      }
-      if (previewPhase === 1) {
-        // Sparkle effect during transition
-        pCtx.fillStyle = 'rgba(255,184,48,' + (0.3 + Math.sin(previewFrame * 0.1 + i) * 0.2) + ')';
-        pCtx.beginPath();
-        pCtx.arc(cx, cy + bobble - 5, 18, 0, Math.PI * 2);
-        pCtx.fill();
-      }
-
-      // Body
-      pCtx.fillStyle = curCol;
-      pCtx.beginPath();
-      pCtx.arc(cx, cy + bobble, 12, 0, Math.PI * 2);
-      pCtx.fill();
-      pCtx.strokeStyle = 'rgba(0,0,0,0.15)';
-      pCtx.lineWidth = 1.5;
-      pCtx.stroke();
-
-      // Head
-      pCtx.fillStyle = '#FDDCB5';
-      pCtx.beginPath();
-      pCtx.arc(cx, cy + bobble - 16, 8, 0, Math.PI * 2);
-      pCtx.fill();
-
-      // Type emoji
-      pCtx.font = '14px serif';
-      pCtx.textAlign = 'center';
-      pCtx.fillText(curEmoji, cx, cy + bobble - 28);
-
-      // Speech bubble
-      if (bubbleAlpha > 0.1) {
-        pCtx.globalAlpha = bubbleAlpha;
-        var bw = pCtx.measureText(curBubble).width + 16;
-        var bx = cx - bw / 2, by = cy + bobble - 58;
-        pCtx.fillStyle = '#fff';
-        pCtx.strokeStyle = '#E2E8F0';
-        pCtx.lineWidth = 1;
-        // Rounded rect
-        var br = 8;
-        pCtx.beginPath();
-        pCtx.moveTo(bx + br, by);
-        pCtx.lineTo(bx + bw - br, by);
-        pCtx.quadraticCurveTo(bx + bw, by, bx + bw, by + br);
-        pCtx.lineTo(bx + bw, by + 20 - br);
-        pCtx.quadraticCurveTo(bx + bw, by + 20, bx + bw - br, by + 20);
-        pCtx.lineTo(cx + 4, by + 20);
-        pCtx.lineTo(cx, by + 26);
-        pCtx.lineTo(cx - 4, by + 20);
-        pCtx.lineTo(bx + br, by + 20);
-        pCtx.quadraticCurveTo(bx, by + 20, bx, by + 20 - br);
-        pCtx.lineTo(bx, by + br);
-        pCtx.quadraticCurveTo(bx, by, bx + br, by);
-        pCtx.closePath();
-        pCtx.fill();
-        pCtx.stroke();
-        // Text
-        pCtx.fillStyle = '#374151';
-        pCtx.font = '11px system-ui';
-        pCtx.fillText(curBubble, cx, by + 14);
-        pCtx.globalAlpha = 1;
-      }
-    }
-
-    // Arrow between phases
-    if (previewPhase === 1) {
-      pCtx.fillStyle = '#0052A2';
-      pCtx.font = 'bold 20px system-ui';
-      pCtx.textAlign = 'center';
-      var arrowX = previewCanvas.width / 2;
-      pCtx.fillText('\u27A1', arrowX, h / 2 + 25);
-    }
-
     previewFrame++;
-    previewTimer++;
-    // Phase cycling: before(3s) → transition(2s) → after(3s) → loop
-    if (previewTimer > 180 && previewPhase === 0) { previewPhase = 1; previewTimer = 0; bubbleAlpha = 0.5; }
-    if (previewTimer > 120 && previewPhase === 1) { previewPhase = 2; previewTimer = 0; bubbleAlpha = 1; }
-    if (previewTimer > 180 && previewPhase === 2) { previewPhase = 0; previewTimer = 0; bubbleAlpha = 1; }
+    speakTimer++;
+    // Cycle speaking: each character speaks for ~2.5 sec, then next
+    if (speakTimer > speakDuration) {
+      speakTimer = 0;
+      speakingIdx = (speakingIdx + 1) % 6;
+    }
   }
   var previewRAF;
   function animatePreview() { drawPreview(); previewRAF = requestAnimationFrame(animatePreview); }
