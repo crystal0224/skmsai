@@ -5844,23 +5844,6 @@ function showReport() {
   saveBtn.addEventListener('click', function() { captureReport(card); });
   shareRow.appendChild(saveBtn);
 
-  var kakaoBtn = document.createElement('button');
-  kakaoBtn.className = 'report-btn';
-  kakaoBtn.style.cssText = 'background:#FEE500;color:#1A1A1A;flex:1;min-width:100px;';
-  kakaoBtn.textContent = '💬 카카오톡 공유';
-  kakaoBtn.addEventListener('click', function() {
-    var text = getReportText(style, alignment);
-    var url = 'https://skmsai.netlify.app/parktycoon.html';
-    window.open('https://sharer.kakao.com/talk/friends/picker/shortlink?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text), '_blank', 'width=480,height=600');
-  });
-  shareRow.appendChild(kakaoBtn);
-
-  var copyBtn = document.createElement('button');
-  copyBtn.className = 'report-btn';
-  copyBtn.style.cssText = 'background:#F3F4F6;color:#374151;flex:1;min-width:100px;';
-  copyBtn.textContent = '📋 텍스트 복사';
-  copyBtn.addEventListener('click', function() { copyReportText(style, alignment); });
-  shareRow.appendChild(copyBtn);
 
   card.appendChild(shareRow);
 
@@ -5951,29 +5934,32 @@ function captureReport(cardEl) {
   var cx = c.getContext('2d');
   cx.scale(scale, scale);
 
-  // Background
-  cx.fillStyle = '#1a1a2e';
+  // Background — white
+  cx.fillStyle = '#FFFFFF';
   cx.roundRect(0, 0, cw, ch, 16);
   cx.fill();
+  cx.strokeStyle = '#E5E7EB';
+  cx.lineWidth = 1;
+  cx.stroke();
 
   var won = G.gameWon;
   var y = 36;
 
   // Header
-  cx.fillStyle = '#e8e8f0';
+  cx.fillStyle = '#1F2937';
   cx.font = 'bold 20px system-ui';
   cx.textAlign = 'center';
-  cx.fillText((won ? '\u{1F3C6}' : '\u{1F4C9}') + ' \uACBD\uC601 \uC131\uC801\uD45C  ' + G.rating.toFixed(1) + ' \u2B50  Day ' + G.gDay, cw/2, y);
+  cx.fillText((won ? '\u{1F3C6}' : '\u{1F4C9}') + ' 경영 성적표  ' + G.rating.toFixed(1) + ' ⭐  Day ' + G.gDay, cw/2, y);
 
   y += 24;
   cx.font = 'bold 14px system-ui';
-  cx.fillStyle = '#FFB830';
-  cx.fillText(getManagementStyle() + '  |  SKMS \uC815\uD569\uC131 ' + calcSKMSAlignment() + '%', cw/2, y);
+  cx.fillStyle = '#0052A2';
+  cx.fillText(getManagementStyle() + '  |  SKMS 정합성 ' + calcSKMSAlignment() + '%', cw/2, y);
 
   // Stakeholder gauges (3 columns)
   y += 30;
-  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830'; cx.textAlign = 'left';
-  cx.fillText('\u2696\uFE0F \uC774\uD574\uAD00\uACC4\uC790 \uADE0\uD615', 20, y);
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#0052A2'; cx.textAlign = 'left';
+  cx.fillText('⚖️ 이해관계자 균형', 20, y);
   y += 18;
   var gaugeMetrics = [
     {label:'\uD83D\uDC65 \uACE0\uAC1D', val:Math.round(G.custSat), color:'#42A5F5'},
@@ -5984,9 +5970,9 @@ function captureReport(cardEl) {
   for (var gmi = 0; gmi < gaugeMetrics.length; gmi++) {
     var gm = gaugeMetrics[gmi];
     var gx = 20 + gmi * (colW + 10);
-    cx.font = '11px system-ui'; cx.fillStyle = '#aaa'; cx.textAlign = 'center';
+    cx.font = '11px system-ui'; cx.fillStyle = '#6B7280'; cx.textAlign = 'center';
     cx.fillText(gm.label, gx + colW/2, y);
-    cx.fillStyle = 'rgba(255,255,255,0.08)';
+    cx.fillStyle = '#F3F4F6';
     cx.fillRect(gx, y + 4, colW, 10);
     cx.fillStyle = gm.color;
     cx.fillRect(gx, y + 4, colW * gm.val / 100, 10);
@@ -5996,16 +5982,16 @@ function captureReport(cardEl) {
   y += 48;
 
   // Employee stats
-  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830'; cx.textAlign = 'left';
-  cx.fillText('\uD83D\uDC65 \uAD6C\uC131\uC6D0 \uBCC0\uD654', 20, y);
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#0052A2'; cx.textAlign = 'left';
+  cx.fillText('👥 구성원 변화', 20, y);
   y += 18;
-  cx.font = '12px system-ui'; cx.fillStyle = '#e8e8f0';
+  cx.font = '12px system-ui'; cx.fillStyle = '#374151';
   cx.fillText('\uD83D\uDD25 \uC5D0\uC774\uC2A4 ' + G.totalAceTransitions + '\uBA85  |  \uD83D\uDE12\u2192\uD83D\uDD25 \uD68C\uBCF5 ' + G.totalCynicRecoveries + '\uBA85  |  \u2B50 \uB9AC\uB354 ' + G.totalLeaderPromotions + '\uBA85  |  \uD83D\uDC4B \uD1F4\uC0AC ' + G.totalQuits + '\uBA85', 20, y);
 
   // DNA bars
   y += 30;
-  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830'; cx.textAlign = 'left';
-  cx.fillText('\uD83C\uDFAF \uACBD\uC601 DNA', 20, y);
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#0052A2'; cx.textAlign = 'left';
+  cx.fillText('🎯 경영 DNA', 20, y);
   y += 18;
   var dnaCapture = calcDNABreakdown();
   var dnaCaptureKeys = ['human_centered','supex','vwbe','social_value','rational'];
@@ -6013,9 +5999,9 @@ function captureReport(cardEl) {
   var dnaCaptureColors = {human_centered:'#4ade80', supex:'#f59e0b', vwbe:'#60a5fa', social_value:'#26A69A', rational:'#a78bfa'};
   for (var dci = 0; dci < dnaCaptureKeys.length; dci++) {
     var dk = dnaCaptureKeys[dci];
-    cx.font = '11px system-ui'; cx.fillStyle = '#aaa'; cx.textAlign = 'left';
+    cx.font = '11px system-ui'; cx.fillStyle = '#6B7280'; cx.textAlign = 'left';
     cx.fillText(dnaCaptureLabels[dk], 20, y);
-    cx.fillStyle = 'rgba(255,255,255,0.08)';
+    cx.fillStyle = '#F3F4F6';
     cx.fillRect(90, y - 8, cw - 160, 10);
     cx.fillStyle = dnaCaptureColors[dk];
     cx.fillRect(90, y - 8, (cw - 160) * dnaCapture[dk] / 100, 10);
@@ -6028,10 +6014,10 @@ function captureReport(cardEl) {
   var top3Cap = getTop3Choices();
   if (top3Cap.length > 0) {
     y += 10;
-    cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830'; cx.textAlign = 'left';
-    cx.fillText('\uD83C\uDFAF \uD575\uC2EC \uC120\uD0DD TOP 3', 20, y);
+    cx.font = 'bold 12px system-ui'; cx.fillStyle = '#0052A2'; cx.textAlign = 'left';
+    cx.fillText('🎯 핵심 선택 TOP 3', 20, y);
     y += 16;
-    cx.font = '11px system-ui'; cx.fillStyle = '#e8e8f0';
+    cx.font = '11px system-ui'; cx.fillStyle = '#374151';
     for (var t3i = 0; t3i < top3Cap.length; t3i++) {
       var t3c = top3Cap[t3i];
       var hl = t3c.evt.headline;
@@ -6043,14 +6029,14 @@ function captureReport(cardEl) {
 
   // SKMS Quote
   y += 16;
-  cx.font = 'italic 11px system-ui'; cx.fillStyle = 'rgba(255,255,255,0.5)'; cx.textAlign = 'center';
+  cx.font = 'italic 11px system-ui'; cx.fillStyle = '#9CA3AF'; cx.textAlign = 'center';
   cx.fillText('"\uACBD\uC601\uC758 \uAD81\uADF9\uC801 \uBAA9\uC801\uC740 \uC774\uD574\uAD00\uACC4\uC790\uC758 \uD589\uBCF5 \uADF9\uB300\uD654\uC774\uB2E4"', cw/2, y);
   y += 14;
   cx.fillText('\u2014 SKMS 14\uCC28 \uAC1C\uC815\uD310', cw/2, y);
 
   // Watermark
   y += 22;
-  cx.font = '10px system-ui'; cx.fillStyle = 'rgba(255,255,255,0.25)';
+  cx.font = '10px system-ui'; cx.fillStyle = '#D1D5DB';
   cx.fillText('skmsai.netlify.app/parktycoon.html', cw/2, y);
 
   var link = document.createElement('a');
