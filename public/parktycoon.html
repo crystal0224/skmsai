@@ -208,6 +208,19 @@ canvas{display:block;cursor:default}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px}
+
+/* Performance Grade Buttons */
+.perf-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px}
+.perf-name{min-width:80px;font-weight:600}
+.perf-dept{min-width:60px;color:rgba(255,255,255,0.4);font-size:10px}
+.perf-grades{display:flex;gap:3px}
+.perf-grade{width:24px;height:24px;border:1px solid rgba(255,255,255,0.1);border-radius:4px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all .12s}
+.perf-grade:hover{background:rgba(255,255,255,0.1)}
+.perf-grade.selected{border-color:var(--accent);color:var(--accent);background:rgba(255,184,48,0.15)}
+.perf-grade.grade-s.selected{border-color:#4ADE80;color:#4ADE80;background:rgba(74,222,128,0.1)}
+.perf-grade.grade-d.selected{border-color:#F87171;color:#F87171;background:rgba(248,113,113,0.1)}
+.pip-badge{font-size:9px;color:#F87171;font-weight:700;margin-left:4px}
+.perf-row.pip-active{background:rgba(248,113,113,0.08);border-radius:4px;padding-left:4px}
 </style>
 </head>
 <body>
@@ -296,7 +309,9 @@ const SPEECH = {
   after_welfare:            ["\uAD6C\uB0B4\uC2DD\uB2F9 \uC0DD\uACBC\uB2E4!","\uC18C\uC18C\uD558\uC9C0\uB9CC \uAE30\uBD84 \uC88B\uB124"],
   transition_cynic_ace:     ["\uB2E4\uC2DC \uD55C\uBC88 \uC81C\uB300\uB85C \uD574\uBCFC\uAE4C!"],
   transition_ace_cynic:     ["...\uB354 \uC774\uC0C1 \uC758\uBBF8 \uC5C6\uB294 \uAC83 \uAC19\uB2E4"],
-  quitting:                 ["\uC5EC\uAE30\uAE4C\uC9C0\uC778 \uAC83 \uAC19\uC2B5\uB2C8\uB2E4. \uC548\uB155\uD788 \uACC4\uC138\uC694."]
+  quitting:                 ["\uC5EC\uAE30\uAE4C\uC9C0\uC778 \uAC83 \uAC19\uC2B5\uB2C8\uB2E4. \uC548\uB155\uD788 \uACC4\uC138\uC694."],
+  pip_motivated:            ["\uAC1C\uC120 \uAE30\uD68C\uB97C \uBC1B\uC558\uB2E4... \uC5F4\uC2EC\uD788 \uD574\uC57C\uC9C0"],
+  pip_frustrated:           ["PIP \uAE30\uAC04\uC778\uB370 \uBB50\uC744 \uC5B4\uB5BB\uAC8C \uD558\uB77C\uB294 \uAC70\uC57C"]
 };
 
 // ============================================================
@@ -480,11 +495,14 @@ function setupCrisisScenario() {
   placeCell(cx + 6, cy, 'production');
   // Marketing at left
   placeCell(cx - 6, cy, 'marketing');
-  // Employees: 6 disengaged, 4 cynic, 2 rookie
+  // Employees: mixed realistic crisis company
+  // 3 disengaged, 3 cynic, 3 rookie, 2 ace (struggling but not dead), 1 leader (overwhelmed)
   var types = [];
-  for (var i = 0; i < 6; i++) types.push('disengaged');
-  for (var i = 0; i < 4; i++) types.push('cynic');
-  for (var i = 0; i < 2; i++) types.push('rookie');
+  for (var i = 0; i < 3; i++) types.push('disengaged');
+  for (var i = 0; i < 3; i++) types.push('cynic');
+  for (var i = 0; i < 3; i++) types.push('rookie');
+  for (var i = 0; i < 2; i++) types.push('ace');
+  types.push('leader');
   for (var i = 0; i < types.length; i++) {
     spawnWorker(types[i], cx, cy);
   }
@@ -520,7 +538,11 @@ function spawnWorker(type, nearX, nearY) {
     preventQuitDays: 0,
     transitionCooldown: 0,
     assignedDept: null,
-    onboardDays: (type === 'rookie') ? 15 : (type === 'cynic' || type === 'ace' || type === 'leader') ? 5 : 0
+    onboardDays: (type === 'rookie') ? 15 : (type === 'cynic' || type === 'ace' || type === 'leader') ? 5 : 0,
+    perfGrade: null,
+    perfHistory: [],
+    pipActive: false,
+    pipDays: 0
   };
   if (type === 'ace') { w.will = 70; w.capability = 75; w.happiness = 60; }
   if (type === 'leader') { w.will = 80; w.capability = 80; w.happiness = 65; }
@@ -1324,6 +1346,22 @@ function updateWorkers() {
     if (w.preventQuitDays > 0) {
       w.preventQuitDays -= G.gSpeed / 1440;
     }
+
+    // PIP countdown
+    if (w.pipActive && w.pipDays > 0) {
+      w.pipDays -= G.gSpeed / 1440;
+      // Check if improved during PIP
+      if (w.will > 40 && w.capability > 40) {
+        w.pipActive = false;
+        w.pipDays = 0;
+        showToast('\uC9C1\uC6D0 #' + w.id + ' PIP \uC131\uACF5\uC801 \uAC1C\uC120! PIP \uD574\uC81C', 'success');
+      }
+      // PIP expired without improvement
+      if (w.pipDays <= 0 && w.pipActive) {
+        w.pipDays = 0;
+        showPIPExpiryModal(w);
+      }
+    }
   }
 }
 
@@ -1415,6 +1453,13 @@ function assignSpeech(w) {
   // Onboarding speech override
   if (w.onboardDays > 0) {
     w.bubble = '\uC801\uC751 \uC911...';
+    w.bubbleTimer = 120;
+    return;
+  }
+  // PIP speech override
+  if (w.pipActive) {
+    lines = Math.random() < 0.5 ? SPEECH.pip_motivated : SPEECH.pip_frustrated;
+    w.bubble = lines[Math.floor(Math.random() * lines.length)];
     w.bubbleTimer = 120;
     return;
   }
@@ -1589,7 +1634,11 @@ function openHiringPanel() {
           fadeOut: 1, quitting: false,
           preventQuitDays: 0,
           assignedDept: null,
-          onboardDays: (cand.type === 'rookie') ? 15 : (cand.type === 'cynic' || cand.type === 'ace' || cand.type === 'leader') ? 5 : 0
+          onboardDays: (cand.type === 'rookie') ? 15 : (cand.type === 'cynic' || cand.type === 'ace' || cand.type === 'leader') ? 5 : 0,
+          perfGrade: null,
+          perfHistory: [],
+          pipActive: false,
+          pipDays: 0
         };
         G.workers.push(w);
         if (cand.type === 'ace') G.empHap = Math.max(0, G.empHap - 5);
@@ -2103,6 +2152,26 @@ function openMeeting(worker) {
     panel.appendChild(onboardInfo);
   }
 
+  // PIP status display
+  if (worker.pipActive) {
+    var pipInfo = document.createElement('div');
+    pipInfo.style.cssText = 'text-align:center;font-size:11px;color:#F87171;margin-bottom:8px;padding:4px;background:rgba(248,113,113,0.1);border-radius:6px;font-weight:700';
+    pipInfo.textContent = 'PIP \uC9C4\uD589 \uC911 (D-' + Math.ceil(worker.pipDays) + ') \u2014 \uC758\uC695 40+, \uC5ED\uB7C9 40+ \uD544\uC694';
+    panel.appendChild(pipInfo);
+  }
+
+  // Performance grade history
+  if (worker.perfGrade) {
+    var perfInfo = document.createElement('div');
+    perfInfo.style.cssText = 'text-align:center;font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:8px;padding:4px;background:rgba(255,255,255,0.04);border-radius:6px';
+    var historyText = '\uCD5C\uADFC \uC131\uACFC: ' + worker.perfGrade;
+    if (worker.perfHistory && worker.perfHistory.length > 1) {
+      historyText += ' (\uC774\uB825: ' + worker.perfHistory.join('\u2192') + ')';
+    }
+    perfInfo.textContent = historyText;
+    panel.appendChild(perfInfo);
+  }
+
   // Department assignment section
   var deptHeader = document.createElement('div');
   deptHeader.style.cssText = 'font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);margin-bottom:6px;margin-top:4px;letter-spacing:0.5px';
@@ -2281,6 +2350,20 @@ function getMeetingChoices(w) {
       apply: function(w) { if (hasBuilding('academy')) { w.capability = Math.min(100, w.capability + 10); } }
     });
   }
+
+  // PIP consultation choice
+  if (w.pipActive) {
+    choices.push({
+      text: '"\uC131\uACFC\uAC1C\uC120 \uC0C1\uB2F4\uC744 \uD574\uBD05\uC2DC\uB2E4" (PIP)',
+      effect: '\uC758\uC695 +8, \uC5ED\uB7C9 +5',
+      toast: 'PIP \uC0C1\uB2F4 \uC644\uB8CC \u2014 \uAC1C\uC120 \uBC29\uD5A5 \uC81C\uC2DC',
+      apply: function(w) {
+        w.will = Math.min(100, w.will + 8);
+        w.capability = Math.min(100, w.capability + 5);
+      }
+    });
+  }
+
   return choices;
 }
 
@@ -2425,6 +2508,110 @@ function closeEvent() {
 }
 
 // ============================================================
+// PIP EXPIRY MODAL
+// ============================================================
+function showPIPExpiryModal(worker) {
+  sfxEvent();
+  G.gSpeed = 0;
+  var overlay = document.getElementById('event-overlay');
+  while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+
+  var card = document.createElement('div');
+  card.className = 'event-card';
+
+  var tag = document.createElement('div');
+  tag.className = 'event-tag';
+  tag.textContent = '\u26A0 PIP';
+  card.appendChild(tag);
+
+  var headline = document.createElement('div');
+  headline.className = 'event-headline';
+  headline.textContent = '\uC9C1\uC6D0 #' + worker.id + ' PIP \uBBF8\uB2EC\uC131';
+  card.appendChild(headline);
+
+  var desc = document.createElement('div');
+  desc.className = 'event-desc';
+  desc.textContent = '\uC131\uACFC\uAC1C\uC120\uACC4\uD68D(PIP) \uAE30\uAC04\uC774 \uB9CC\uB8CC\uB418\uC5C8\uC73C\uB098 \uAC1C\uC120\uC774 \uD655\uC778\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. (\uC758\uC695: ' + Math.round(worker.will) + ', \uC5ED\uB7C9: ' + Math.round(worker.capability) + ')';
+  card.appendChild(desc);
+
+  var choices = [
+    {
+      text: '\uC7AC\uAD50\uC721 \uAE30\uD68C \uBD80\uC5EC',
+      preview: 'PIP 30\uC77C \uC5F0\uC7A5, $500 \uBE44\uC6A9 (SKMS \uC778\uAC04\uC911\uC2EC)',
+      apply: function() {
+        if (G.money < 500) { showToast('\uC790\uAE08\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4!', 'warn'); return; }
+        G.money -= 500;
+        worker.pipDays = 30;
+        showToast('\uC9C1\uC6D0 #' + worker.id + ' \uC7AC\uAD50\uC721 \uAE30\uD68C \uBD80\uC5EC ($500)', 'info');
+      }
+    },
+    {
+      text: '\uAD8C\uACE0 \uD1B4\uC9C1',
+      preview: '\uC9C1\uC6D0 \uD1B4\uC0AC, \uC804\uC6D0 \uD589\uBCF5 -8, \uD1B4\uC9C1\uAE08 $200',
+      apply: function() {
+        G.money -= 200;
+        worker.quitting = true;
+        worker.bubble = SPEECH.quitting[0];
+        worker.bubbleTimer = 120;
+        G.totalQuits = (G.totalQuits || 0) + 1;
+        var aliveOthers = G.workers.filter(function(ww) { return !ww.quitting && ww.id !== worker.id; });
+        for (var i = 0; i < aliveOthers.length; i++) {
+          aliveOthers[i].happiness = Math.max(0, aliveOthers[i].happiness - 8);
+        }
+        G.empHap = Math.max(0, G.empHap - 8);
+        showToast('\uC9C1\uC6D0 #' + worker.id + ' \uAD8C\uACE0 \uD1B4\uC9C1 \uCC98\uB9AC ($200)', 'warn');
+      }
+    },
+    {
+      text: '\uC804\uD658 \uBC30\uCE58',
+      preview: '\uB2E4\uB978 \uBD80\uC11C\uB85C \uC774\uB3D9, PIP \uD574\uC81C, \uC758\uC695 +5',
+      apply: function() {
+        var depts = G.bldgs.filter(function(b) { var d = DEFS[b.type]; return d && d.cat === 'dept'; });
+        var otherDepts = depts.filter(function(d) {
+          return !(worker.assignedDept && worker.assignedDept.gx === d.gx && worker.assignedDept.gy === d.gy);
+        });
+        if (otherDepts.length === 0) {
+          showToast('\uC804\uD658\uD560 \uC218 \uC788\uB294 \uBD80\uC11C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4!', 'warn');
+          return;
+        }
+        var newDept = otherDepts[Math.floor(Math.random() * otherDepts.length)];
+        worker.assignedDept = {gx: newDept.gx, gy: newDept.gy, type: newDept.type};
+        worker.pipActive = false;
+        worker.pipDays = 0;
+        worker.will = Math.min(100, worker.will + 5);
+        var ddef = DEFS[newDept.type];
+        showToast('\uC9C1\uC6D0 #' + worker.id + ' \u2192 ' + (ddef ? ddef.lbl : newDept.type) + ' \uC804\uD658 \uBC30\uCE58', 'success');
+      }
+    }
+  ];
+
+  for (var c = 0; c < choices.length; c++) {
+    (function(choice) {
+      var btn = document.createElement('button');
+      btn.className = 'event-choice';
+      var textEl = document.createElement('span');
+      textEl.textContent = choice.text;
+      btn.appendChild(textEl);
+      var previewEl = document.createElement('span');
+      previewEl.className = 'preview';
+      previewEl.textContent = choice.preview;
+      btn.appendChild(previewEl);
+      btn.addEventListener('click', function() {
+        choice.apply();
+        overlay.classList.remove('show');
+        G.gSpeed = 1;
+        document.getElementById('btn-speed').textContent = '1x';
+        updateHUD();
+      });
+      card.appendChild(btn);
+    })(choices[c]);
+  }
+
+  overlay.appendChild(card);
+  overlay.classList.add('show');
+}
+
+// ============================================================
 // QUARTERLY STRATEGY MEETING
 // ============================================================
 function showStrategyMeeting() {
@@ -2536,6 +2723,87 @@ function showStrategyMeeting() {
   }
   card.appendChild(sec2);
 
+  // Section 2.5: Performance Evaluation
+  var perfGradeSelections = {};
+  var secPerf = document.createElement('div');
+  secPerf.className = 'strat-section';
+  var hPerf = document.createElement('h4');
+  hPerf.textContent = '\uC131\uACFC \uD3C9\uAC00';
+  secPerf.appendChild(hPerf);
+
+  var perfSub = document.createElement('div');
+  perfSub.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:8px';
+  perfSub.textContent = '\uAD6C\uC131\uC6D0\uBCC4 \uC131\uACFC \uB4F1\uAE09\uC744 \uD3C9\uAC00\uD558\uC138\uC694. \uC790\uB3D9 \uCD94\uCC9C \uB4F1\uAE09\uC774 \uC120\uD0DD\uB418\uC5B4 \uC788\uC2B5\uB2C8\uB2E4.';
+  secPerf.appendChild(perfSub);
+
+  var grades = ['S','A','B','C','D'];
+  var typeNames = {ace:'\uC5D0\uC774\uC2A4', rookie:'\uC2E0\uC785', cynic:'\uC2DC\uB2C8\uD06C', disengaged:'\uBC29\uAD00\uC790', leader:'\uB9AC\uB354'};
+
+  function suggestGrade(w) {
+    if (w.will > 80 && w.capability > 80) return 'S';
+    if (w.will > 60 && w.capability > 60) return 'A';
+    if (w.will > 40 && w.capability > 40) return 'B';
+    if (w.will > 25 || w.capability > 25) return 'C';
+    return 'D';
+  }
+
+  for (var pi = 0; pi < alive.length; pi++) {
+    (function(w, idx) {
+      var suggested = suggestGrade(w);
+      perfGradeSelections[w.id] = suggested;
+
+      var row = document.createElement('div');
+      row.className = 'perf-row' + (w.pipActive ? ' pip-active' : '');
+
+      var tc = EMP_TYPES[w.type] || EMP_TYPES.disengaged;
+      var nameEl = document.createElement('span');
+      nameEl.className = 'perf-name';
+      nameEl.textContent = tc.emoji + ' #' + w.id;
+      row.appendChild(nameEl);
+
+      var deptEl = document.createElement('span');
+      deptEl.className = 'perf-dept';
+      if (w.assignedDept) {
+        var ddef = DEFS[w.assignedDept.type];
+        deptEl.textContent = ddef ? ddef.lbl : w.assignedDept.type;
+      } else {
+        deptEl.textContent = '\uBBF8\uBC30\uC815';
+      }
+      row.appendChild(deptEl);
+
+      if (w.pipActive) {
+        var pipBadge = document.createElement('span');
+        pipBadge.className = 'pip-badge';
+        pipBadge.textContent = 'PIP';
+        row.appendChild(pipBadge);
+      }
+
+      var gradesDiv = document.createElement('div');
+      gradesDiv.className = 'perf-grades';
+
+      for (var gi = 0; gi < grades.length; gi++) {
+        (function(grade) {
+          var gBtn = document.createElement('button');
+          gBtn.className = 'perf-grade grade-' + grade.toLowerCase();
+          if (grade === suggested) gBtn.classList.add('selected');
+          gBtn.textContent = grade;
+          gBtn.addEventListener('click', function() {
+            perfGradeSelections[w.id] = grade;
+            var siblings = gradesDiv.querySelectorAll('.perf-grade');
+            for (var s = 0; s < siblings.length; s++) siblings[s].classList.remove('selected');
+            gBtn.classList.add('selected');
+          });
+          gradesDiv.appendChild(gBtn);
+        })(grades[gi]);
+      }
+      row.appendChild(gradesDiv);
+
+      secPerf.appendChild(row);
+    })(alive[pi], pi);
+  }
+
+  card.appendChild(secPerf);
+
   // Section 3: AI Insights (context-sensitive advice)
   var sec3 = document.createElement('div');
   sec3.className = 'strat-section';
@@ -2615,6 +2883,39 @@ function showStrategyMeeting() {
   closeBtn.className = 'strat-close';
   closeBtn.textContent = '\uD68C\uC758 \uC885\uB8CC \u2014 \uACBD\uC601 \uC7AC\uAC1C';
   closeBtn.addEventListener('click', function() {
+    // Apply performance grade effects
+    var gradeCounts = {S:0, A:0, B:0, C:0, D:0};
+    var aliveNow = G.workers.filter(function(w) { return !w.quitting; });
+    for (var gi = 0; gi < aliveNow.length; gi++) {
+      var w = aliveNow[gi];
+      var grade = perfGradeSelections[w.id];
+      if (!grade) continue;
+      gradeCounts[grade]++;
+      w.perfGrade = grade;
+      if (!w.perfHistory) w.perfHistory = [];
+      w.perfHistory.push(grade);
+      if (grade === 'S') {
+        w.will = Math.min(100, w.will + 10);
+        w.happiness = Math.min(100, w.happiness + 15);
+        G.money -= 50;
+      } else if (grade === 'A') {
+        w.will = Math.min(100, w.will + 5);
+        w.happiness = Math.min(100, w.happiness + 8);
+        G.money -= 30;
+      } else if (grade === 'C') {
+        w.will = Math.max(0, w.will - 5);
+        w.happiness = Math.max(0, w.happiness - 5);
+      } else if (grade === 'D') {
+        w.will = Math.max(0, w.will - 10);
+        w.happiness = Math.max(0, w.happiness - 15);
+        if (!w.pipActive) {
+          w.pipActive = true;
+          w.pipDays = 30;
+        }
+      }
+    }
+    showToast('\uC131\uACFC \uD3C9\uAC00 \uC644\uB8CC: S ' + gradeCounts.S + '\uBA85, A ' + gradeCounts.A + '\uBA85, B ' + gradeCounts.B + '\uBA85, C ' + gradeCounts.C + '\uBA85, D ' + gradeCounts.D + '\uBA85', 'success');
+
     overlay.classList.remove('show');
     G.gSpeed = 1;
     // Save current values for next quarter comparison
