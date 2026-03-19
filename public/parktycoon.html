@@ -43,7 +43,7 @@ canvas{display:block;cursor:default}
 .back-btn:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
 
 /* Build panel */
-.build-panel{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px 10px;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-radius:16px;z-index:20;max-width:96vw}
+.build-panel{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 14px 12px;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-radius:16px;z-index:20;max-width:96vw;max-height:40vh;overflow-y:auto}
 .build-btn{width:60px;height:62px;border:2px solid transparent;border-radius:10px;background:rgba(255,255,255,0.05);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.15s ease-out;position:relative;color:#e8e8f0;font-family:inherit}
 .build-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);transform:translateY(-2px)}
 .build-btn.active{border-color:var(--accent);background:rgba(255,184,48,0.15)}
@@ -1246,47 +1246,47 @@ var bgmActive = false, bgmTimer = null;
 function startBGM() {
   if (!G.audioCtx || bgmActive) return;
   bgmActive = true;
-  // Warm corporate ambient — chord progression: Cmaj7, Fmaj7, Am7, G
-  var chords = [
-    [261, 329, 392, 494],  // Cmaj7
-    [349, 440, 523, 659],  // Fmaj7
-    [220, 261, 329, 392],  // Am7
-    [196, 247, 294, 392],  // G
-  ];
-  var ci = 0, ni = 0;
-  function playNote() {
+  // Upbeat game BGM — pentatonic melody + bass + rhythm
+  var melody = [523,587,659,784,659,587,523,440,523,587,784,880,784,659,587,523];
+  var bass =   [131,131,165,165,175,175,131,131,131,131,165,165,175,175,196,131];
+  var mi = 0, beat = 0;
+  function playBeat() {
     if (!bgmActive) return;
-    var chord = chords[ci];
-    var note = chord[ni % chord.length];
-    // Gentle arpeggio
-    if (G.audioCtx) {
-      var o = G.audioCtx.createOscillator();
-      var g = G.audioCtx.createGain();
-      o.type = 'sine';
-      o.frequency.value = note;
-      g.gain.setValueAtTime(0.018, G.audioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, G.audioCtx.currentTime + 1.2);
-      o.connect(g);
-      g.connect(G.audioCtx.destination);
-      o.start();
-      o.stop(G.audioCtx.currentTime + 1.2);
-      // Soft pad layer (octave below, quieter)
-      var o2 = G.audioCtx.createOscillator();
-      var g2 = G.audioCtx.createGain();
-      o2.type = 'sine';
-      o2.frequency.value = note / 2;
-      g2.gain.setValueAtTime(0.008, G.audioCtx.currentTime);
-      g2.gain.exponentialRampToValueAtTime(0.001, G.audioCtx.currentTime + 2.0);
-      o2.connect(g2);
-      g2.connect(G.audioCtx.destination);
-      o2.start();
-      o2.stop(G.audioCtx.currentTime + 2.0);
+    var t = G.audioCtx.currentTime;
+    // Melody (triangle wave — retro game feel)
+    var o = G.audioCtx.createOscillator();
+    var g = G.audioCtx.createGain();
+    o.type = 'triangle';
+    o.frequency.value = melody[mi % melody.length];
+    g.gain.setValueAtTime(0.025, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    o.connect(g); g.connect(G.audioCtx.destination);
+    o.start(t); o.stop(t + 0.4);
+    // Bass (sine, octave below)
+    var ob = G.audioCtx.createOscillator();
+    var gb = G.audioCtx.createGain();
+    ob.type = 'sine';
+    ob.frequency.value = bass[mi % bass.length];
+    gb.gain.setValueAtTime(0.015, t);
+    gb.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    ob.connect(gb); gb.connect(G.audioCtx.destination);
+    ob.start(t); ob.stop(t + 0.55);
+    // Light percussion on even beats
+    if (beat % 2 === 0) {
+      var noise = G.audioCtx.createOscillator();
+      var ng = G.audioCtx.createGain();
+      noise.type = 'square';
+      noise.frequency.value = 80;
+      ng.gain.setValueAtTime(0.008, t);
+      ng.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+      noise.connect(ng); ng.connect(G.audioCtx.destination);
+      noise.start(t); noise.stop(t + 0.06);
     }
-    ni++;
-    if (ni >= chord.length) { ni = 0; ci = (ci + 1) % chords.length; }
-    bgmTimer = setTimeout(playNote, 450 + Math.random() * 100);
+    mi++;
+    beat++;
+    bgmTimer = setTimeout(playBeat, 280 + Math.random() * 40);
   }
-  playNote();
+  playBeat();
 }
 function stopBGM() { bgmActive = false; if (bgmTimer) clearTimeout(bgmTimer); }
 
@@ -6361,7 +6361,7 @@ function showOnboarding() {
 
   function drawIsoChar(ctx, cx, cy, ch, isSpeaking, isDark) {
     var sc = ch.size;
-    var bobble = Math.sin(previewFrame * 0.025 + cx * 0.01) * 3;
+    var bobble = Math.sin(previewFrame * 0.012 + cx * 0.01) * 2;
     var baseAlpha = isDark ? 0.55 : 1.0;
     var bY = cy + bobble; // base Y with bobble
 
@@ -6412,16 +6412,13 @@ function showOnboarding() {
     ctx.beginPath();
     ctx.ellipse(cx, bY + 2 * sc, 13 * sc, 14 * sc, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Body outline
-    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
+    // (body outline removed for cleaner look)
 
     // Arms
     ctx.strokeStyle = ch.col;
     ctx.lineWidth = 2.5 * sc;
     ctx.lineCap = 'round';
-    var armWave = Math.sin(previewFrame * 0.04 + cx * 0.02) * 4;
+    var armWave = Math.sin(previewFrame * 0.02 + cx * 0.01) * 3;
     // Left arm
     ctx.beginPath();
     ctx.moveTo(cx - 12 * sc, bY - 2 * sc);
@@ -6451,9 +6448,7 @@ function showOnboarding() {
     ctx.beginPath();
     ctx.arc(cx, bY - 18 * sc, 10 * sc, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.06)';
-    ctx.lineWidth = 0.8;
-    ctx.stroke();
+    // (head outline removed for cleaner look)
 
     // Hair (top arc, color matches body)
     ctx.fillStyle = isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,0,0,0.15)';
@@ -6659,11 +6654,12 @@ function showOnboarding() {
     drawBeforeCanvas();
     drawSuccessCanvas();
     drawFailCanvas();
+    drawScenarioCanvases();
     previewFrame++;
     speakTimer++;
     if (speakTimer > speakDuration) {
       speakTimer = 0;
-      speakingIdx = (speakingIdx + 1) % 9;
+      speakingIdx = (speakingIdx + 1) % 16;
     }
   }
   var previewRAF;
@@ -6859,26 +6855,39 @@ function showOnboarding() {
   scRow.style.cssText = 'display:flex;gap:16px;margin-bottom:16px';
 
   // Helper: build game card
+  // Scenario card canvas draw functions
+  var scCanvases = [];
+  function drawScenarioCanvases() {
+    for (var si = 0; si < scCanvases.length; si++) {
+      var sc = scCanvases[si];
+      var ctx = sc.ctx, w = sc.canvas.width, h = sc.canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      var spacing = w / (sc.chars.length + 1);
+      for (var ci = 0; ci < sc.chars.length; ci++) {
+        var cx = spacing * (ci + 1);
+        drawIsoChar(ctx, cx, sc.charY, sc.chars[ci], speakingIdx === sc.speakOffset + ci, sc.isDark);
+      }
+    }
+  }
+
   function buildScenarioCard(config) {
     var card = document.createElement('div');
     card.className = 'sc-card-new' + (config.active ? ' active' : '');
 
-    // Art area (gradient + big icon + atmosphere)
+    // Art area with canvas mini scene
     var art = document.createElement('div');
     art.className = 'sc-art';
     art.style.background = config.gradient;
 
-    var bigIcon = document.createElement('div');
-    bigIcon.style.cssText = 'font-size:64px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.15));z-index:1';
-    bigIcon.textContent = config.icon;
-    art.appendChild(bigIcon);
+    var scCanvas = document.createElement('canvas');
+    scCanvas.width = 260;
+    scCanvas.height = 160;
+    scCanvas.style.cssText = 'width:100%;height:100%';
+    art.appendChild(scCanvas);
 
-    // Atmosphere emoji (scattered decorative)
-    for (var ai = 0; ai < config.atmosphere.length; ai++) {
-      var atm = document.createElement('span');
-      atm.style.cssText = 'position:absolute;font-size:' + (16 + Math.random() * 12) + 'px;opacity:0.25;' + config.atmosphere[ai];
-      art.appendChild(atm);
-    }
+    // Register for animation
+    var scCtx = scCanvas.getContext('2d');
+    scCanvases.push({canvas: scCanvas, ctx: scCtx, chars: config.chars, charY: config.charY || 70, isDark: config.isDark || false, speakOffset: config.speakOffset || 0});
 
     // Difficulty badge
     var badge = document.createElement('div');
@@ -6905,45 +6914,38 @@ function showOnboarding() {
     return card;
   }
 
-  // Scenario 1: 위기의 회사
+  // Scenario 1: 위기의 회사 — crisis characters
   var sc1 = buildScenarioCard({
     active: true,
-    icon: '\uD83D\uDD25',
     title: '\uC704\uAE30\uC758 \uD68C\uC0AC',
     desc: '\uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 CEO\uB85C \uBD80\uC784\uD558\uC5EC \uC870\uC9C1\uC744 \uC0B4\uB824\uB77C!',
     difficulty: '\u2605\u2605\u2605 HARD',
-    gradient: 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 40%, #FCA5A5 100%)',
-    badgeBg: 'rgba(255,255,255,0.7)', badgeColor: '#DC2626',
-    atmosphere: [
-      'top:15%;left:12%',
-      'bottom:20%;right:15%',
-      'top:40%;right:25%'
-    ].map(function(pos,i){return pos + ';transform:rotate(' + (i*30-20) + 'deg)'})
+    gradient: 'linear-gradient(180deg, #FEE2E2 0%, #FECACA 100%)',
+    badgeBg: 'rgba(255,255,255,0.75)', badgeColor: '#DC2626',
+    chars: [
+      {col:'#BDBDBD',size:0.6,label:'\uBB34\uAE30\uB825',bubble:'\uD798\uB4E4\uB2E4...'},
+      {col:'#78909C',size:0.7,label:'\uB0C9\uC18C\uD30C',bubble:'\uD574\uBD24\uC790...'},
+      {col:'#66BB6A',size:0.5,label:'\uC2E0\uC785',bubble:'\uBB50\uBD80\uD130...'}
+    ],
+    charY: 70, isDark: true, speakOffset: 10
   });
-  // Add atmosphere emoji content
-  var atms1 = sc1.querySelectorAll('.sc-art span');
-  var atm1Icons = ['\uD83D\uDCC9','\uD83D\uDCA8','\u26A0\uFE0F'];
-  for(var a1=0;a1<atms1.length;a1++) atms1[a1].textContent = atm1Icons[a1]||'';
   scRow.appendChild(sc1);
 
-  // Scenario 2: AI 혁신 시대
+  // Scenario 2: AI 혁신 시대 — mixed team with cynics
   var sc2 = buildScenarioCard({
     active: false,
-    icon: '\uD83E\uDD16',
     title: 'AI \uD601\uC2E0 \uC2DC\uB300',
     desc: '\uBCC0\uD654\uD558\uAE30 \uC2EB\uC5B4\uD558\uB294 \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785\uD558\uC5EC \uCD08\uC77C\uB958 \uAE30\uC5C5\uC73C\uB85C!',
     difficulty: '\u2605\u2605\u2606 NORMAL',
-    gradient: 'linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 40%, #93C5FD 100%)',
-    badgeBg: 'rgba(255,255,255,0.7)', badgeColor: '#2563EB',
-    atmosphere: [
-      'top:12%;right:18%',
-      'bottom:25%;left:12%',
-      'top:50%;left:30%'
-    ].map(function(pos,i){return pos + ';transform:rotate(' + (i*25-15) + 'deg)'})
+    gradient: 'linear-gradient(180deg, #DBEAFE 0%, #BFDBFE 100%)',
+    badgeBg: 'rgba(255,255,255,0.75)', badgeColor: '#2563EB',
+    chars: [
+      {col:'#FF7043',size:0.7,label:'\uC5D0\uC774\uC2A4',bubble:'\uBCC0\uD654\uD560\uAE4C?'},
+      {col:'#78909C',size:0.65,label:'\uC2DC\uB2C8\uD06C',bubble:'\uB610 \uBCC0\uD558\uB294 \uAC70\uC57C?'},
+      {col:'#66BB6A',size:0.55,label:'\uC2E0\uC785',bubble:'AI \uBC30\uC6B0\uACE0 \uC2F6\uC5B4\uC694!'}
+    ],
+    charY: 70, isDark: false, speakOffset: 13
   });
-  var atms2 = sc2.querySelectorAll('.sc-art span');
-  var atm2Icons = ['\u2699\uFE0F','\uD83D\uDCA1','\uD83D\uDE80'];
-  for(var a2=0;a2<atms2.length;a2++) atms2[a2].textContent = atm2Icons[a2]||'';
   scRow.appendChild(sc2);
 
   s2.appendChild(scRow);
