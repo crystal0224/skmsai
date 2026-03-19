@@ -518,7 +518,9 @@ function spawnWorker(type, nearX, nearY) {
     quitting: false,
     fadeOut: 1,
     preventQuitDays: 0,
-    transitionCooldown: 0
+    transitionCooldown: 0,
+    assignedDept: null,
+    onboardDays: (type === 'rookie') ? 15 : (type === 'cynic' || type === 'ace' || type === 'leader') ? 5 : 0
   };
   if (type === 'ace') { w.will = 70; w.capability = 75; w.happiness = 60; }
   if (type === 'leader') { w.will = 80; w.capability = 80; w.happiness = 65; }
@@ -890,6 +892,7 @@ function drawWorker(w) {
   var tc = EMP_TYPES[w.type] || EMP_TYPES.disengaged;
   var sizeM = tc.size;
   var alpha = w.fadeOut;
+  if (w.onboardDays > 0) alpha *= 0.7; // onboarding transparency
 
   // Shadow on ground
   ctx.fillStyle = 'rgba(0,0,0,' + (0.15 * alpha) + ')';
@@ -1110,15 +1113,28 @@ function dayTick() {
     var def = DEFS[G.bldgs[i].type];
     if (def && def.rev > 0) rev += def.rev;
   }
-  // Employee multiplier
+  // Employee multiplier (only assigned workers contribute revenue)
   var empMult = 0;
   var aliveWorkers = G.workers.filter(function(w) { return !w.quitting; });
-  for (var i = 0; i < aliveWorkers.length; i++) {
-    var tc = EMP_TYPES[aliveWorkers[i].type];
-    empMult += tc ? tc.revMult : 0.5;
+  var assignedWorkers = aliveWorkers.filter(function(w) { return w.assignedDept; });
+  for (var i = 0; i < assignedWorkers.length; i++) {
+    var tc = EMP_TYPES[assignedWorkers[i].type];
+    var rm = tc ? tc.revMult : 0.5;
+    if (assignedWorkers[i].onboardDays > 0) rm *= 0.5; // onboarding halved productivity
+    empMult += rm;
   }
-  if (aliveWorkers.length > 0) empMult /= aliveWorkers.length;
+  if (assignedWorkers.length > 0) empMult /= assignedWorkers.length;
   else empMult = 0;
+
+  // Onboarding countdown
+  for (var i = 0; i < aliveWorkers.length; i++) {
+    if (aliveWorkers[i].onboardDays > 0) {
+      aliveWorkers[i].onboardDays--;
+      if (aliveWorkers[i].onboardDays <= 0) {
+        showToast('\uC9C1\uC6D0 #' + aliveWorkers[i].id + ' \uC218\uC2B5 \uC644\uB8CC! \uC815\uC2DD \uBC30\uCE58\uB418\uC5C8\uC2B5\uB2C8\uB2E4', 'success');
+      }
+    }
+  }
 
   rev = Math.round(rev * empMult * G.revPenalty);
   if (policyActive('rewards')) rev = Math.round(rev * 1.1);
@@ -1276,6 +1292,32 @@ function updateWorkers() {
       w.bubbleTimer = 120;
       sfxQuit();
       G.totalQuits++;
+
+      // Knowledge transfer penalty on departure
+      if (w.assignedDept) {
+        var quitDept = w.assignedDept;
+        var capPenalty = (w.type === 'leader') ? 15 : (w.type === 'ace') ? 10 : 5 + Math.floor(Math.random() * 6);
+        var willPenalty = (w.type === 'leader') ? 10 : 0;
+        // Academy or documentation halves the penalty
+        if (hasBuilding('academy')) { capPenalty = Math.ceil(capPenalty * 0.5); willPenalty = Math.ceil(willPenalty * 0.5); }
+        var deptDef = DEFS[quitDept.type];
+        var deptName = deptDef ? deptDef.lbl : quitDept.type;
+        var affected = 0;
+        for (var k = 0; k < G.workers.length; k++) {
+          var co = G.workers[k];
+          if (co === w || co.quitting) continue;
+          if (co.assignedDept && co.assignedDept.gx === quitDept.gx && co.assignedDept.gy === quitDept.gy) {
+            co.capability = Math.max(0, co.capability - capPenalty);
+            if (willPenalty > 0) co.will = Math.max(0, co.will - willPenalty);
+            co.bubble = '\uACBD\uD5D8 \uB9CE\uC740 \uBD84\uC774 \uB5A0\uB098\uB2C8 \uBD88\uC548\uD558\uB2E4...';
+            co.bubbleTimer = 150;
+            affected++;
+          }
+        }
+        if (affected > 0) {
+          showToast('\uD575\uC2EC \uC778\uC7AC \uD1F4\uC0AC! ' + deptName + ' \uC5ED\uB7C9 \uD558\uB77D', 'warn');
+        }
+      }
     }
 
     // Prevent quit countdown (per day in dayTick is approximate, use ticks)
@@ -1287,23 +1329,37 @@ function updateWorkers() {
 
 function pickNewTarget(w) {
   var hx = Math.floor(GRID / 2), hy = Math.floor(GRID / 2);
-  // Pick a random building to visit
-  var targets = G.bldgs.filter(function(b) { return b.type !== 'corridor' && b.type !== 'tree'; });
-  if (targets.length === 0) {
-    w.stateTimer = 120;
+
+  // If assigned to a department, pathfind there
+  if (w.assignedDept) {
+    var deptGx = w.assignedDept.gx;
+    var deptGy = w.assignedDept.gy;
+    // Go to adjacent corridor of dept (offset by 1 toward center)
+    var adjX = deptGx + (deptGx > hx ? -1 : deptGx < hx ? 1 : 0);
+    var adjY = deptGy + (deptGy > hy ? -1 : deptGy < hy ? 1 : 0);
+    var path = bfsPath(w.x, w.y, adjX, adjY);
+    if (path.length > 0) {
+      w.path = path;
+      w.pathIdx = 0;
+      w.stateTimer = 200 + Math.random() * 200;
+    } else {
+      // Fallback: go directly to dept
+      path = bfsPath(w.x, w.y, deptGx, deptGy);
+      if (path.length > 0) { w.path = path; w.pathIdx = 0; }
+      w.stateTimer = 200 + Math.random() * 200;
+    }
     return;
   }
-  var t = targets[Math.floor(Math.random() * targets.length)];
-  var path = bfsPath(w.x, w.y, t.gx, t.gy);
+
+  // Unassigned workers stay near HQ
+  var nearHqX = hx + Math.floor(Math.random() * 3) - 1;
+  var nearHqY = hy + Math.floor(Math.random() * 3) - 1;
+  var path = bfsPath(w.x, w.y, nearHqX, nearHqY);
   if (path.length > 0) {
     w.path = path;
     w.pathIdx = 0;
-    w.stateTimer = 300 + Math.random() * 300;
-  } else {
-    // Wander near current position
-    w.stateTimer = 120;
-    w.path = [];
   }
+  w.stateTimer = 120 + Math.random() * 120;
 }
 
 function attemptTransition(w) {
@@ -1356,6 +1412,12 @@ function attemptTransition(w) {
 
 function assignSpeech(w) {
   var lines = null;
+  // Onboarding speech override
+  if (w.onboardDays > 0) {
+    w.bubble = '\uC801\uC751 \uC911...';
+    w.bubbleTimer = 120;
+    return;
+  }
   if (w.type === 'disengaged') {
     if (G.welfareJustBuilt) lines = SPEECH.after_welfare;
     else if (hasBuilding('academy')) lines = SPEECH.disengaged_academy;
@@ -1525,7 +1587,9 @@ function openHiringPanel() {
           bubble: '', bubbleTimer: 0,
           dept: null,
           fadeOut: 1, quitting: false,
-          preventQuitDays: 0
+          preventQuitDays: 0,
+          assignedDept: null,
+          onboardDays: (cand.type === 'rookie') ? 15 : (cand.type === 'cynic' || cand.type === 'ace' || cand.type === 'leader') ? 5 : 0
         };
         G.workers.push(w);
         if (cand.type === 'ace') G.empHap = Math.max(0, G.empHap - 5);
@@ -2018,6 +2082,75 @@ function openMeeting(worker) {
     stats.appendChild(sd);
   }
   panel.appendChild(stats);
+
+  // Current assignment display
+  var assignInfo = document.createElement('div');
+  assignInfo.style.cssText = 'text-align:center;font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:8px;padding:6px;background:rgba(255,255,255,0.04);border-radius:6px';
+  if (worker.assignedDept) {
+    var deptDef = DEFS[worker.assignedDept.type];
+    assignInfo.textContent = '\uD604\uC7AC \uBC30\uC815: ' + (deptDef ? deptDef.lbl : worker.assignedDept.type);
+  } else {
+    assignInfo.textContent = '\uBBF8\uBC30\uC815 (\uC218\uC775 \uAE30\uC5EC \uC5C6\uC74C)';
+    assignInfo.style.color = '#F87171';
+  }
+  panel.appendChild(assignInfo);
+
+  // Onboarding status display
+  if (worker.onboardDays > 0) {
+    var onboardInfo = document.createElement('div');
+    onboardInfo.style.cssText = 'text-align:center;font-size:11px;color:#60A5FA;margin-bottom:8px;padding:4px;background:rgba(96,165,250,0.1);border-radius:6px';
+    onboardInfo.textContent = '\uC218\uC2B5 \uC911 (D-' + worker.onboardDays + ')';
+    panel.appendChild(onboardInfo);
+  }
+
+  // Department assignment section
+  var deptHeader = document.createElement('div');
+  deptHeader.style.cssText = 'font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);margin-bottom:6px;margin-top:4px;letter-spacing:0.5px';
+  deptHeader.textContent = '\uBD80\uC11C \uBC30\uC815';
+  panel.appendChild(deptHeader);
+
+  var depts = G.bldgs.filter(function(b) { var d = DEFS[b.type]; return d && d.cat === 'dept'; });
+  if (depts.length === 0) {
+    var noDept = document.createElement('div');
+    noDept.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:10px';
+    noDept.textContent = '\uAC74\uC124\uB41C \uBD80\uC11C\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4';
+    panel.appendChild(noDept);
+  } else {
+    for (var di = 0; di < depts.length; di++) {
+      (function(dept) {
+        var ddef = DEFS[dept.type];
+        var assignedCount = G.workers.filter(function(ww) {
+          return !ww.quitting && ww.assignedDept && ww.assignedDept.gx === dept.gx && ww.assignedDept.gy === dept.gy;
+        }).length;
+        var dBtn = document.createElement('button');
+        dBtn.className = 'meeting-choice';
+        var isCurrentDept = worker.assignedDept && worker.assignedDept.gx === dept.gx && worker.assignedDept.gy === dept.gy;
+        var dText = document.createElement('span');
+        dText.textContent = (ddef ? ddef.emoji + ' ' + ddef.lbl : dept.type) + ' (' + assignedCount + '\uBA85)';
+        dBtn.appendChild(dText);
+        if (isCurrentDept) {
+          dBtn.style.borderColor = 'var(--accent)';
+          dBtn.style.background = 'rgba(255,184,48,0.12)';
+        }
+        var dEff = document.createElement('span');
+        dEff.className = 'effect';
+        dEff.textContent = isCurrentDept ? '\uD604\uC7AC \uBC30\uC815\uB428' : '\uC774 \uBD80\uC11C\uB85C \uBC30\uC815';
+        dBtn.appendChild(dEff);
+        dBtn.addEventListener('click', function() {
+          sfxClick();
+          worker.assignedDept = {gx: dept.gx, gy: dept.gy, type: dept.type};
+          showToast('\uC9C1\uC6D0 #' + worker.id + ' \u2192 ' + (ddef ? ddef.lbl : dept.type) + ' \uBC30\uC815 \uC644\uB8CC', 'success');
+          closeMeeting();
+        });
+        panel.appendChild(dBtn);
+      })(depts[di]);
+    }
+  }
+
+  // Separator
+  var sep = document.createElement('div');
+  sep.style.cssText = 'height:1px;background:rgba(255,255,255,0.08);margin:10px 0';
+  panel.appendChild(sep);
 
   // Choices
   var choices = getMeetingChoices(worker);
