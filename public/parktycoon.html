@@ -6803,7 +6803,12 @@ function showOnboarding() {
 
   var skmsCopy = document.createElement('div');
   skmsCopy.style.cssText = 'font-size:13px;color:#4B5563;font-weight:600;line-height:1.8';
-  skmsCopy.textContent = '\uB2F9\uC2E0\uC758 \uACBD\uC601\uC774 \uC6B4\uBA85\uC744 \uBC14\uAFC0\uB2C8\uB2E4';
+  var copyLine1 = document.createTextNode('\uB2F9\uC2E0\uC758 \uACBD\uC601\uC774');
+  var copyBr = document.createElement('br');
+  var copyLine2 = document.createTextNode('\uC6B4\uBA85\uC744 \uBC14\uAFD5\uB2C8\uB2E4');
+  skmsCopy.appendChild(copyLine1);
+  skmsCopy.appendChild(copyBr);
+  skmsCopy.appendChild(copyLine2);
 
   skmsPanel.appendChild(skmsTurn);
   skmsPanel.appendChild(skmsTitle);
