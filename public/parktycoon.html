@@ -1019,6 +1019,48 @@ function startBGM() {
 }
 function stopBGM() { bgmActive = false; if (bgmTimer) clearTimeout(bgmTimer); }
 
+// --- Onboarding BGM (slower, dreamier) ---
+var onbBgmActive = false, onbBgmTimer = null;
+function startOnboardingBGM() {
+  if (!G.audioCtx || onbBgmActive) return;
+  onbBgmActive = true;
+  var chords = [
+    [261, 329, 392, 494],  // Cmaj7
+    [349, 440, 523, 659],  // Fmaj7
+    [220, 261, 329, 392],  // Am7
+    [196, 247, 294, 392],  // G
+  ];
+  var ci = 0, ni = 0;
+  function playNote() {
+    if (!onbBgmActive) return;
+    var chord = chords[ci];
+    var note = chord[ni % chord.length];
+    if (G.audioCtx) {
+      var o = G.audioCtx.createOscillator();
+      var g = G.audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = note;
+      g.gain.setValueAtTime(0.012, G.audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, G.audioCtx.currentTime + 1.8);
+      o.connect(g); g.connect(G.audioCtx.destination);
+      o.start(); o.stop(G.audioCtx.currentTime + 1.8);
+      var o2 = G.audioCtx.createOscillator();
+      var g2 = G.audioCtx.createGain();
+      o2.type = 'sine';
+      o2.frequency.value = note / 2;
+      g2.gain.setValueAtTime(0.006, G.audioCtx.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.001, G.audioCtx.currentTime + 2.5);
+      o2.connect(g2); g2.connect(G.audioCtx.destination);
+      o2.start(); o2.stop(G.audioCtx.currentTime + 2.5);
+    }
+    ni++;
+    if (ni >= chord.length) { ni = 0; ci = (ci + 1) % chords.length; }
+    onbBgmTimer = setTimeout(playNote, 600 + Math.random() * 150);
+  }
+  playNote();
+}
+function stopOnboardingBGM() { onbBgmActive = false; if (onbBgmTimer) clearTimeout(onbBgmTimer); }
+
 // ============================================================
 // CANVAS SETUP
 // ============================================================
