@@ -44,7 +44,7 @@ canvas{display:block;cursor:default}
 
 /* Build panel */
 .build-panel{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 14px 12px;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-radius:16px;z-index:20;max-width:96vw;max-height:45vh;overflow-y:auto}
-.build-btn{width:60px;height:62px;border:2px solid transparent;border-radius:10px;background:rgba(255,255,255,0.05);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.15s ease-out;position:relative;color:#e8e8f0;font-family:inherit}
+.build-btn{width:60px;height:72px;border:2px solid transparent;border-radius:10px;background:rgba(255,255,255,0.05);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.15s ease-out;position:relative;color:#e8e8f0;font-family:inherit;margin-top:6px}
 .build-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);transform:translateY(-2px)}
 .build-btn.active{border-color:var(--accent);background:rgba(255,184,48,0.15)}
 .build-btn .icon{font-size:22px}
@@ -498,7 +498,9 @@ const DEFS = {
   cafeteria:  {cost:600,   rev:0,  upkeep:3,  sz:1, col:'#FFF3E0', lbl:'Cafeteria',     emoji:'\u{1F37D}', cat:'facility', height:18, metric:'emp', metricAmt:0.03},
   wellness:   {cost:800,   rev:0,  upkeep:4,  sz:1, col:'#E8F5E9', lbl:'Wellness',      emoji:'\u{1F3CB}', cat:'facility', height:20, metric:'emp', metricAmt:0.04},
   academy:    {cost:1500,  rev:0,  upkeep:6,  sz:2, col:'#FFF9C4', lbl:'Academy',       emoji:'\u{1F4DA}', cat:'facility', height:28, metric:'emp', metricAmt:0.03},
-  tree:       {cost:80,    rev:0,  upkeep:0,  sz:1, col:'#8BC34A', lbl:'Tree',          emoji:'\u{1F333}', cat:'deco',  height:0}
+  tree:       {cost:80,    rev:0,  upkeep:0,  sz:1, col:'#8BC34A', lbl:'Tree',          emoji:'\u{1F333}', cat:'deco',  height:0},
+  parking:    {cost:400,   rev:0,  upkeep:2,  sz:1, col:'#CFD8DC', lbl:'Parking',       emoji:'\u{1F17F}', cat:'facility', height:6,  metric:'cust', metricAmt:0.02},
+  lounge:     {cost:700,   rev:0,  upkeep:3,  sz:1, col:'#E1BEE7', lbl:'Lounge',        emoji:'\u{2615}',  cat:'facility', height:16, metric:'emp',  metricAmt:0.04}
 };
 
 // ============================================================
@@ -3049,6 +3051,7 @@ function buildBuildPanel() {
     var mgmtRow = document.createElement('div');
     mgmtRow.style.cssText = 'display:flex;gap:5px;overflow-x:auto;max-width:90vw;';
     var mgmtItems = [
+      {emoji: '\u{1F464}', label: '\uCC44\uC6A9', fn: openHiringPanel},
       {emoji: '\u{1F4CB}', label: '\uC131\uACFC\uD3C9\uAC00', fn: openPerfPanel},
       {emoji: '\u{1F4B0}', label: '\uBCF4\uC0C1\uAD00\uB9AC', fn: openCompPanel},
       {emoji: '\u{1F4CA}', label: '\uC778\uB825\uD604\uD669', fn: openWorkforcePanel}
@@ -3083,8 +3086,8 @@ function buildBuildPanel() {
   var btnRow = document.createElement('div');
   btnRow.style.cssText = 'display:flex;gap:5px;overflow-x:auto;max-width:90vw;';
 
-  var orgTypes = ['corridor', 'production', 'rnd', 'planning', 'hr', 'marketing', 'social'];
-  var facTypes = ['cafeteria', 'wellness', 'academy', 'tree'];
+  var orgTypes = ['production', 'rnd', 'planning', 'hr', 'marketing', 'social'];
+  var facTypes = ['corridor', 'cafeteria', 'wellness', 'academy', 'parking', 'lounge', 'tree'];
   var types = G.activeTab === 'org' ? orgTypes : facTypes;
 
   for (var i = 0; i < types.length; i++) {
@@ -3123,27 +3126,7 @@ function buildBuildPanel() {
     })(types[i]);
   }
 
-  // Hiring button (org tab only)
-  if (G.activeTab === 'org') {
-    var hireBtn = document.createElement('button');
-    hireBtn.className = 'build-btn';
-    var hIco = document.createElement('span');
-    hIco.className = 'icon';
-    hIco.textContent = '\u{1F464}';
-    hireBtn.appendChild(hIco);
-    var hLbl = document.createElement('span');
-    hLbl.className = 'label';
-    hLbl.textContent = '채용';
-    hireBtn.appendChild(hLbl);
-    hireBtn.addEventListener('click', function() {
-      initAudio(); sfxClick();
-      G.selTool = null; canvas.style.cursor = 'default';
-      var btns = bp.querySelectorAll('.build-btn');
-      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
-      openHiringPanel();
-    });
-    btnRow.appendChild(hireBtn);
-  }
+  // (Hiring moved to mgmt tab)
 
   // Bulldoze button (both tabs)
   var bullBtn = document.createElement('button');
