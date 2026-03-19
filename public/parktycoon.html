@@ -723,6 +723,13 @@ function drawTile(gx, gy) {
   ctx.strokeStyle = 'rgba(0,0,0,' + (0.03 + (1 - d) * 0.06) + ')';
   ctx.lineWidth = 0.5;
   ctx.stroke();
+  // In build mode, show a subtle dot on empty tiles to indicate buildable
+  if (G.selTool && !G.grid[gy][gx]) {
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    ctx.arc(sx, sy + th / 2, 2 * G.zm, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function drawBuilding(gx, gy, cell) {
@@ -2707,7 +2714,8 @@ function handleClick(cx, cy) {
 function placeBuild(gx, gy, type) {
   if (G.grid[gy][gx]) {
     sfxErr();
-    showToast('\uC774\uBBF8 \uAC74\uBB3C\uC774 \uC788\uC2B5\uB2C8\uB2E4!', 'warn');
+    var existing = DEFS[G.grid[gy][gx].type];
+    showToast('\uC774\uBBF8 ' + (existing ? existing.lbl : '\uAC74\uBB3C') + '\uC774(\uAC00) \uC788\uC2B5\uB2C8\uB2E4. \uBE48 \uD0C0\uC77C\uC5D0 \uBC30\uCE58\uD558\uC138\uC694!', 'warn');
     return;
   }
   var def = DEFS[type];
