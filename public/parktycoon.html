@@ -6297,6 +6297,15 @@ function gameLoop(ts) {
 // INITIALIZATION
 // ============================================================
 function showOnboarding() {
+  try { _showOnboardingInner(); } catch(e) {
+    var ov = document.getElementById('onboard-overlay');
+    var err = document.createElement('pre');
+    err.style.cssText = 'color:red;background:#fff;padding:20px;margin:20px;font-size:12px;max-width:90vw;overflow:auto;z-index:999';
+    err.textContent = 'Onboarding Error: ' + e.message + '\n' + e.stack;
+    ov.appendChild(err);
+  }
+}
+function _showOnboardingInner() {
   G.gSpeed = 0; // Pause until player starts
   var overlay = document.getElementById('onboard-overlay');
   while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
