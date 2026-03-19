@@ -749,7 +749,11 @@ function createInitialState() {
     strikeActive: false,
     strikeDays: 0,
     // Event queue for raise/strike modals
-    pendingModals: []
+    pendingModals: [],
+    // SKMS event tracking & follow-ups
+    skmsChoices: [],
+    pendingFollowups: [],
+    compStrategy: null
   };
   // Init grid
   state.grid = [];
@@ -6289,7 +6293,7 @@ canvas.addEventListener('touchend', function(e) {
 function saveGame() {
   try {
     var save = {
-      v: 2, scenario: G.scenario, money: G.money,
+      v: 3, scenario: G.scenario, money: G.money,
       gDay: G.gDay, gTime: G.gTime,
       custSat: G.custSat, empHap: G.empHap, socVal: G.socVal,
       rating: G.rating, ratingBonus: G.ratingBonus || 0,
@@ -6302,6 +6306,9 @@ function saveGame() {
       totalQuits: G.totalQuits,
       totalLeaderPromotions: G.totalLeaderPromotions,
       choiceLog: (G.choiceLog || []).slice(-10),
+      skmsChoices: (G.skmsChoices || []).slice(-20),
+      pendingFollowups: G.pendingFollowups || [],
+      compStrategy: G.compStrategy || null,
       bldgs: G.bldgs.map(function(b) { return {t: b.type, x: b.gx, y: b.gy}; }),
       workers: G.workers.filter(function(w) { return !w.quitting; }).map(function(w) {
         return {id: w.id, t: w.type, w: Math.round(w.will), c: Math.round(w.capability),
@@ -6320,7 +6327,7 @@ function hasSavedGame() {
     var d = localStorage.getItem('skms_save');
     if (!d) return null;
     var s = JSON.parse(d);
-    if (s.v !== 2) return null;
+    if (s.v !== 2 && s.v !== 3) return null;
     return s;
   } catch (e) { return null; }
 }
@@ -6341,6 +6348,9 @@ function loadGame(save) {
   G.totalQuits = save.totalQuits || 0;
   G.totalLeaderPromotions = save.totalLeaderPromotions || 0;
   G.choiceLog = save.choiceLog || [];
+  G.skmsChoices = save.skmsChoices || [];
+  G.pendingFollowups = save.pendingFollowups || [];
+  G.compStrategy = save.compStrategy || null;
   // Rebuild grid
   for (var y = 0; y < GRID; y++) for (var x = 0; x < GRID; x++) G.grid[y][x] = null;
   var cx = Math.floor(GRID / 2), cy = Math.floor(GRID / 2);
