@@ -6654,7 +6654,7 @@ function showOnboarding() {
     drawBeforeCanvas();
     drawSuccessCanvas();
     drawFailCanvas();
-    drawScenarioCanvases();
+    if (typeof drawScenarioCanvases === 'function') drawScenarioCanvases();
     previewFrame++;
     speakTimer++;
     if (speakTimer > speakDuration) {
