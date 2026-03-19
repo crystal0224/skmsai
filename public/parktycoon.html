@@ -175,7 +175,12 @@ canvas{display:block;cursor:default}
 .report-card{background:#fff;border:1px solid #E2E8F0;border-radius:16px;max-width:700px;width:95vw;padding:28px 24px;color:#1F2937;margin:auto 0;flex-shrink:0;box-shadow:0 20px 60px rgba(0,0,0,0.12)}
 .report-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#0052A2;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:inherit}
 .report-btn:hover{opacity:0.85}
-.rpt-header{width:100%;text-align:center;padding:20px;margin-bottom:16px;border-radius:12px;background:linear-gradient(135deg,#EBF2FA,#F0F7FF);border:1px solid #DBEAFE}
+.rpt-header{width:100%;text-align:center;padding:28px 20px 22px;margin-bottom:16px;border-radius:16px;background:linear-gradient(145deg,#0A1628,#0F2847);border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden}
+.rpt-header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 60%,rgba(255,184,48,0.08) 0%,transparent 50%);pointer-events:none}
+.rpt-header .rpt-icon{font-size:48px;display:block;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(255,184,48,0.3))}
+.rpt-header .rpt-main-title{font-size:28px;font-weight:900;letter-spacing:-1px;color:#fff;margin-bottom:2px}
+.rpt-header .rpt-rating-big{font-size:36px;font-weight:900;color:#FBBF24;margin:4px 0}
+.rpt-header .rpt-subtitle{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:8px}
 .rpt-section-title{font-size:13px;font-weight:700;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .rpt-gauges{display:flex;gap:12px;justify-content:space-between;margin-bottom:16px}
 .rpt-gauge-col{flex:1;text-align:center}
@@ -246,7 +251,7 @@ canvas{display:block;cursor:default}
 .play-strip .strip-chip{flex:1;background:#fff;padding:12px 10px;border-radius:10px;font-size:11px;color:#1F2937;font-weight:600;text-align:center;box-shadow:0 2px 8px rgba(0,82,162,0.08);border:1px solid rgba(0,82,162,0.08);line-height:1.4;display:flex;flex-direction:column;align-items:center;gap:4px}
 .play-strip .strip-arrow{color:#0052A2;font-size:16px;font-weight:800;display:flex;align-items:center}
 .difficulty-badge{margin-top:4px;padding:3px 10px;border-radius:5px;font-size:9px;font-weight:600}
-.onboard-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(24px);border:none;border-radius:24px;width:1060px;max-width:97vw;max-height:80vh;overflow-y:auto;padding:24px 44px 36px;color:#1F2937;box-shadow:0 25px 80px rgba(0,0,0,0.1),0 0 0 1px rgba(0,0,0,0.03);animation:slideUp .6s cubic-bezier(0.16,1,0.3,1) forwards}
+.onboard-card{background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(24px);border:none;border-radius:24px;width:1060px;max-width:94vw;max-height:78vh;overflow-y:auto;padding:20px 28px 28px;color:#1F2937;box-shadow:0 25px 80px rgba(0,0,0,0.1),0 0 0 1px rgba(0,0,0,0.03);animation:slideUp .6s cubic-bezier(0.16,1,0.3,1) forwards}
 .sc-visual{display:flex;align-items:center;gap:16px}
 .sc-visual svg{flex-shrink:0}
 .sc-visual-text{flex:1}
@@ -254,9 +259,9 @@ canvas{display:block;cursor:default}
 .onboard-preview canvas{width:100%;height:100%;display:block}
 .onboard-card::-webkit-scrollbar{width:3px}
 .onboard-card::-webkit-scrollbar-thumb{background:rgba(255,184,48,0.2);border-radius:2px}
-.onboard-slides{position:relative;width:100%;min-height:400px}
+.onboard-slides{position:relative;width:100%;min-height:320px}
 .onboard-slide{display:none;animation:fadeIn .3s ease-out}
-.onboard-slide.active{display:flex;flex-direction:column;justify-content:center;min-height:400px}
+.onboard-slide.active{display:flex;flex-direction:column;justify-content:center;min-height:320px}
 .onboard-nav{display:flex;justify-content:center;gap:8px;margin-top:20px;align-items:center}
 .onboard-dot{width:10px;height:10px;border-radius:50%;background:#D1D5DB;border:none;cursor:pointer;transition:all .2s;padding:0}
 .onboard-dot.active{background:#0052A2;transform:scale(1.2)}
@@ -338,7 +343,7 @@ canvas{display:block;cursor:default}
   .dept-sections{flex-direction:column}
   .dept-card{width:95vw;padding:16px}
   .minimap{width:100px;height:75px;bottom:70px}
-  .onboard-card{width:95vw;padding:20px 16px}
+  .onboard-card{width:95vw;max-height:75vh;padding:16px 12px 20px}
   .onboard-flow{flex-direction:column}.onboard-flow-arrow{justify-content:center;transform:rotate(90deg)}
   .slide1-layout{flex-direction:column;gap:12px}
   .slide1-before,.slide1-after{flex:none;width:100%}
@@ -507,11 +512,11 @@ const DEFS = {
 // EMPLOYEE TYPE CONFIG
 // ============================================================
 const EMP_TYPES = {
-  ace:        {color:'#FF7043', speed:2.2, saturation:1.0, size:1.1,  revMult:1.5, emoji:'🔥'},
-  rookie:     {color:'#66BB6A', speed:1.2, saturation:0.9, size:0.9,  revMult:0.5, emoji:'🌱'},
-  cynic:      {color:'#78909C', speed:0.8, saturation:0.6, size:0.9,  revMult:1.0, emoji:'😒'},
-  disengaged: {color:'#BDBDBD', speed:0.3, saturation:0.2, size:0.7,  revMult:0.2, emoji:'😴'},
-  leader:     {color:'#FFD54F', speed:1.5, saturation:1.0, size:1.5,  revMult:1.2, emoji:'⭐'}
+  ace:        {color:'#FF7043', speed:1.4, saturation:1.0, size:1.1,  revMult:1.5, emoji:'🔥'},
+  rookie:     {color:'#66BB6A', speed:0.8, saturation:0.9, size:0.9,  revMult:0.5, emoji:'🌱'},
+  cynic:      {color:'#78909C', speed:0.5, saturation:0.6, size:0.9,  revMult:1.0, emoji:'😒'},
+  disengaged: {color:'#BDBDBD', speed:0.2, saturation:0.2, size:0.7,  revMult:0.2, emoji:'😴'},
+  leader:     {color:'#FFD54F', speed:1.0, saturation:1.0, size:1.5,  revMult:1.2, emoji:'⭐'}
 };
 
 // ============================================================
@@ -736,6 +741,124 @@ const EVENTS = [
       {text:'\uC5F0\uBD09 \uC778\uC0C1\uC73C\uB85C \uBC29\uC5B4', preview:'\uBE44\uC6A9 -$3000, \uC9C1\uC6D0\uD589\uBCF5 +10\n\uB2E8\uAE30 \uC720\uC9C0\uB294 \uAC00\uB2A5\uD558\uC9C0\uB9CC \uBE44\uC6A9 \uBD80\uB2F4', skmsTag:'rational', apply:function(G){G.money-=3000;G.empHap=Math.min(100,G.empHap+10);}},
       {text:'AI \uD611\uC5C5 \uBB38\uD654 \uAD6C\uCD95', preview:'\uBE44\uC6A9 -$1500, \uC9C1\uC6D0\uD589\uBCF5 +15\n\uC6B0\uB9AC\uB9CC\uC758 AI \uD65C\uC6A9 \uBB38\uD654\uB85C \uCC28\uBCC4\uD654', skmsTag:'human_centered', apply:function(G){G.money-=1500;G.empHap=Math.min(100,G.empHap+15);G.custSat=Math.min(100,G.custSat+5);}}
     ]
+  },
+  // === SKMS PRINCIPLE EVENTS (13 new) ===
+  {
+    id:'bottom_up_proposal', headline:'바닥에서 올라온 제안 — 신입의 프로세스 개선안',
+    desc:'입사 3개월 차 신입 직원이 현장 프로세스 개선안을 직접 작성해 제출했습니다. 내용은 참신하지만 기존 팀의 반발이 예상됩니다.',
+    choices:[
+      {text:'공개 발표 기회 부여', preview:'구성원행복 +12, 패기 +8\n자발적 참여 문화 촉진', skmsTag:'vwbe', apply:function(G){G.empHap=Math.min(100,G.empHap+12);G.courage=clamp(0,100,G.courage+8);G.vwbeLevel=clamp(0,100,G.vwbeLevel+5);}},
+      {text:'검토 후 조용히 반영', preview:'고객만족 +5, 협력 +5\n실질 개선은 되지만 동기부여 약함', skmsTag:'rational', apply:function(G){G.custSat=Math.min(100,G.custSat+5);G.coordination=clamp(0,100,G.coordination+5);}},
+      {text:'경험 부족 — 나중에 다시', preview:'구성원행복 -10, 신뢰 -8\n도전 의욕 꺾임', apply:function(G){G.empHap=Math.max(0,G.empHap-10);G.trust=clamp(0,100,G.trust-8);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'failed_project_leader', headline:'실패한 프로젝트의 팀장 — 도전의 대가',
+    desc:'6개월간 추진한 신사업 프로젝트가 실패했습니다. 담당 팀장은 최선을 다했지만 시장 타이밍이 맞지 않았습니다. 어떻게 대응하시겠습니까?',
+    choices:[
+      {text:'도전을 인정하고 새 기회 부여', preview:'구성원행복 +10, 패기 +12, 신뢰 +8\nSKMS: 실패를 두려워하지 않는 패기', skmsTag:'vwbe', delayed:{days:5,followupId:'failed_leader_comeback'}, apply:function(G){G.empHap=Math.min(100,G.empHap+10);G.courage=clamp(0,100,G.courage+12);G.trust=clamp(0,100,G.trust+8);}},
+      {text:'성과 책임 추궁 + 인사 불이익', preview:'구성원행복 -15, 패기 -10\n단기 규율은 되지만 도전 회피 만연', apply:function(G){G.empHap=Math.max(0,G.empHap-15);G.courage=clamp(0,100,G.courage-10);G.trust=clamp(0,100,G.trust-8);G.pressureCount++;}},
+      {text:'조용히 다른 부서로 전배', preview:'변화 없음\n문제를 피하는 것은 해결이 아님', apply:function(G){G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'silent_meeting', headline:'아무도 손 안 드는 회의 — 침묵의 벽',
+    desc:'중요 전략회의에서 임원이 의견을 물었지만 아무도 발언하지 않습니다. 조직 내 심리적 안전감이 부족한 징후입니다.',
+    choices:[
+      {text:'익명 의견 수렴 + 소그룹 토론', preview:'신뢰 +10, VWBE +8, 협력 +5\n안전한 소통 채널 확보', skmsTag:'human_centered', apply:function(G){G.trust=clamp(0,100,G.trust+10);G.vwbeLevel=clamp(0,100,G.vwbeLevel+8);G.coordination=clamp(0,100,G.coordination+5);}},
+      {text:'리더가 먼저 솔직한 의견 공유', preview:'신뢰 +8, 패기 +5\n리더의 솔선수범', skmsTag:'vwbe', apply:function(G){G.trust=clamp(0,100,G.trust+8);G.courage=clamp(0,100,G.courage+5);}},
+      {text:'회의 종료 후 개별 지시', preview:'협력 -5, 신뢰 -5\n소통 단절 심화', apply:function(G){G.coordination=clamp(0,100,G.coordination-5);G.trust=clamp(0,100,G.trust-5);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'overtime_culture', headline:'야근이 미덕인가 — 성과 vs 근무 시간',
+    desc:'부서장이 야근을 많이 하는 직원을 높이 평가합니다. 실제 성과와 무관하게 근무 시간으로 평가하는 문화가 퍼지고 있습니다.',
+    choices:[
+      {text:'성과 기반 평가 체계 도입', preview:'비용 -$1000, 구성원행복 +15\nVWBE: 자발적 두뇌활용 환경 조성', skmsTag:'vwbe', apply:function(G){G.money-=1000;G.empHap=Math.min(100,G.empHap+15);G.vwbeLevel=clamp(0,100,G.vwbeLevel+8);}},
+      {text:'워라밸 가이드라인 배포', preview:'구성원행복 +5\n형식적 대응, 근본 변화 부족', skmsTag:'rational', apply:function(G){G.empHap=Math.min(100,G.empHap+5);}},
+      {text:'현 체계 유지 (관행 존중)', preview:'구성원행복 -10, 시니크 1명 전환\n무기력 확산', apply:function(G){G.empHap=Math.max(0,G.empHap-10);convertRandom(G,'rookie','cynic',1);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'supplier_pressure', headline:'납품사 단가 인하 요구 — 수익 vs 파트너 행복',
+    desc:'원가 절감을 위해 핵심 납품사에 15% 단가 인하를 요구할 수 있습니다. 하지만 납품사 직원들의 처우가 악화될 수 있습니다.',
+    choices:[
+      {text:'공동 혁신 프로그램 제안', preview:'비용 -$1500, 고객만족 +8, 사회가치 +12\n상생 파트너십', skmsTag:'social_value', apply:function(G){G.money-=1500;G.custSat=Math.min(100,G.custSat+8);G.socVal=Math.min(100,G.socVal+12);G.coordination=clamp(0,100,G.coordination+5);}},
+      {text:'10% 인하 협상 (타협점)', preview:'고객만족 +3, 사회가치 -5\n단기 이익 확보', skmsTag:'rational', apply:function(G){G.custSat=Math.min(100,G.custSat+3);G.socVal=Math.max(0,G.socVal-5);G.money+=800;}},
+      {text:'15% 전액 인하 강행', preview:'수익 +$2000, 사회가치 -15, 신뢰 -8\n이해관계자 행복 훼손', apply:function(G){G.money+=2000;G.socVal=Math.max(0,G.socVal-15);G.trust=clamp(0,100,G.trust-8);G.pressureCount++;}}
+    ]
+  },
+  {
+    id:'factory_relocation', headline:'공장 이전 vs 지역 고용 — 효율과 사회적 책임',
+    desc:'해외 이전 시 운영비 40% 절감 가능하지만, 지역 사회 300개 일자리가 사라집니다. 지역 주민들의 반발이 예상됩니다.',
+    choices:[
+      {text:'지역 스마트 팩토리 전환', preview:'비용 -$3000, 사회가치 +20, 고객만족 +5\n혁신 + 고용 유지 동시 추구', skmsTag:'social_value', apply:function(G){G.money-=3000;G.socVal=Math.min(100,G.socVal+20);G.custSat=Math.min(100,G.custSat+5);G.trust=clamp(0,100,G.trust+5);}},
+      {text:'단계적 이전 + 전직 지원', preview:'비용 -$1000, 사회가치 +5\n타협안이지만 근본 해결 아님', skmsTag:'rational', apply:function(G){G.money-=1000;G.socVal=Math.min(100,G.socVal+5);}},
+      {text:'즉시 해외 이전', preview:'수익 +$3000, 사회가치 -20, 구성원행복 -10\n효율은 오르지만 신뢰 붕괴', apply:function(G){G.money+=3000;G.socVal=Math.max(0,G.socVal-20);G.empHap=Math.max(0,G.empHap-10);G.pressureCount++;}}
+    ]
+  },
+  {
+    id:'quarter_vs_rnd', headline:'분기 실적 vs 장기 R&D — 시간의 저울질',
+    desc:'이번 분기 실적 목표 달성이 빠듯합니다. R&D 예산을 줄이면 단기 실적은 맞출 수 있지만, 2년 후 경쟁력이 위험합니다.',
+    choices:[
+      {text:'R&D 유지 + 혁신 투자', preview:'비용 -$2000, 고객만족 +10(지연)\nSUPEX: 장기 생존 조건 확보', skmsTag:'supex', delayed:{days:5,followupId:'rnd_payoff'}, apply:function(G){G.money-=2000;}},
+      {text:'R&D 30% 삭감으로 실적 달성', preview:'수익 +$1500, 고객만족 -5(지연)\n단기는 무사하지만 미래 위협', apply:function(G){G.money+=1500;G.delayedCust=-5;G.delayedCustDays=10;}},
+      {text:'R&D 인력 일부 현업 투입', preview:'수익 +$500, 구성원행복 -8\n전문가를 잡무에 투입', apply:function(G){G.money+=500;G.empHap=Math.max(0,G.empHap-8);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'leader_first', headline:'리더가 먼저 — 위기 시 솔선수범',
+    desc:'갑작스런 대규모 클레임 사태. 현장이 혼란에 빠졌습니다. CEO로서 어떻게 하시겠습니까?',
+    choices:[
+      {text:'직접 현장 투입 + 고객 대면', preview:'고객만족 +15, 신뢰 +12, 구성원행복 +8\n리더의 솔선수범이 조직을 움직인다', skmsTag:'human_centered', apply:function(G){G.custSat=Math.min(100,G.custSat+15);G.trust=clamp(0,100,G.trust+12);G.empHap=Math.min(100,G.empHap+8);G.courage=clamp(0,100,G.courage+5);}},
+      {text:'담당 임원에게 전권 위임', preview:'고객만족 +5, 협력 +3\n시스템적 대응', skmsTag:'rational', apply:function(G){G.custSat=Math.min(100,G.custSat+5);G.coordination=clamp(0,100,G.coordination+3);}},
+      {text:'보고 체계 통해 원격 지휘', preview:'고객만족 -5, 신뢰 -8\n현장과 동떨어진 리더십', apply:function(G){G.custSat=Math.max(0,G.custSat-5);G.trust=clamp(0,100,G.trust-8);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'together_apart', headline:'따로 또 같이 — 자회사 간 협력 제안',
+    desc:'유관 자회사에서 공동 프로젝트를 제안했습니다. 시너지가 기대되지만 자원 배분과 성과 공유가 복잡해집니다.',
+    choices:[
+      {text:'공동 TF 구성 + 성과 공유', preview:'비용 -$1000, 협력 +15, 고객만족 +8\n코디네이션 경영의 실천', skmsTag:'rational', apply:function(G){G.money-=1000;G.coordination=clamp(0,100,G.coordination+15);G.custSat=Math.min(100,G.custSat+8);}},
+      {text:'기술만 공유하고 독립 추진', preview:'고객만족 +3, 협력 +3\n제한적 협력', apply:function(G){G.custSat=Math.min(100,G.custSat+3);G.coordination=clamp(0,100,G.coordination+3);}},
+      {text:'우리만의 역량으로 단독 추진', preview:'변화 없음\n협력 기회 상실', apply:function(G){G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'successor_development', headline:'후계자 육성 — 에이스의 다음 단계',
+    desc:'가장 뛰어난 에이스 직원이 리더 역할을 맡을 준비가 되었습니다. 하지만 본인은 현장 전문가로 남고 싶어합니다.',
+    choices:[
+      {text:'리더십 개발 프로그램 + 본인 의사 존중', preview:'구성원행복 +10, 에이스→리더 전환\nVWBE: 자발적 성장 지원', skmsTag:'vwbe', condition:function(G){return G.workers.some(function(w){return w.type==='ace';});}, apply:function(G){G.empHap=Math.min(100,G.empHap+10);convertRandom(G,'ace','leader',1);G.totalLeaderPromotions++;G.trust=clamp(0,100,G.trust+5);}},
+      {text:'전문가 트랙 신설 (dual ladder)', preview:'구성원행복 +8, 고객만족 +5\n다양한 성장 경로 제공', skmsTag:'human_centered', apply:function(G){G.empHap=Math.min(100,G.empHap+8);G.custSat=Math.min(100,G.custSat+5);}},
+      {text:'리더 발령 강행', preview:'구성원행복 -10, 신뢰 -8\n의사 무시는 동기부여 파괴', apply:function(G){G.empHap=Math.max(0,G.empHap-10);G.trust=clamp(0,100,G.trust-8);convertRandom(G,'ace','leader',1);G.pressureCount++;}}
+    ]
+  },
+  {
+    id:'better_company_event', headline:'Better Company 도전 — 혁신 목표 공모',
+    desc:'구성원들에게 회사를 더 좋게 만들 아이디어를 공모합니다. 참여율이 높으면 조직 활력이 올라갑니다.',
+    choices:[
+      {text:'전사 아이디어 공모전 개최', preview:'비용 -$800, VWBE +10, 패기 +8, 구성원행복 +8\n자발적 참여 문화', skmsTag:'vwbe', apply:function(G){G.money-=800;G.vwbeLevel=clamp(0,100,G.vwbeLevel+10);G.courage=clamp(0,100,G.courage+8);G.empHap=Math.min(100,G.empHap+8);}},
+      {text:'부서별 개선 과제 할당', preview:'협력 +5, 고객만족 +3\n체계적이지만 자발성 부족', skmsTag:'rational', apply:function(G){G.coordination=clamp(0,100,G.coordination+5);G.custSat=Math.min(100,G.custSat+3);}},
+      {text:'바쁘니까 다음에', preview:'VWBE -5, 패기 -5\n도전 기회 상실', apply:function(G){G.vwbeLevel=clamp(0,100,G.vwbeLevel-5);G.courage=clamp(0,100,G.courage-5);G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'innovation_dilemma', headline:'혁신의 딜레마 — 파괴적 vs 점진적',
+    desc:'기술팀이 기존 제품을 완전히 대체하는 혁신 제품을 개발했습니다. 출시하면 기존 매출이 잠식되지만, 안 하면 경쟁사에 뒤처집니다.',
+    choices:[
+      {text:'과감한 전환 — SUPEX 추구', preview:'비용 -$2500, 고객만족 +15(지연), 패기 +10\n최고를 향한 도전', skmsTag:'supex', delayed:{days:5,followupId:'innovation_success'}, apply:function(G){G.money-=2500;G.courage=clamp(0,100,G.courage+10);}},
+      {text:'기존 + 신규 병행 전략', preview:'비용 -$1500, 고객만족 +5\n안전하지만 분산 리스크', skmsTag:'rational', apply:function(G){G.money-=1500;G.custSat=Math.min(100,G.custSat+5);}},
+      {text:'기존 제품에 집중', preview:'고객만족 -10(지연)\n안주는 후퇴의 시작', apply:function(G){G.delayedCust=-10;G.delayedCustDays=8;G.ignoreCount++;}}
+    ]
+  },
+  {
+    id:'global_opportunity', headline:'글로벌 진출 — 해외 시장의 문을 두드리다',
+    desc:'동남아 시장에 진출할 기회가 왔습니다. 현지 파트너와 합작하면 리스크는 줄지만, 단독 진출이면 수익이 더 큽니다.',
+    choices:[
+      {text:'현지 파트너 합작 — 상생 모델', preview:'비용 -$2000, 사회가치 +12, 고객만족 +8, 협력 +8\n이해관계자와 함께 성장', skmsTag:'social_value', apply:function(G){G.money-=2000;G.socVal=Math.min(100,G.socVal+12);G.custSat=Math.min(100,G.custSat+8);G.coordination=clamp(0,100,G.coordination+8);}},
+      {text:'단독 진출 — 독자 역량 구축', preview:'비용 -$3500, 고객만족 +15, 패기 +5\n리스크 크지만 보상도 큼', skmsTag:'supex', apply:function(G){G.money-=3500;G.custSat=Math.min(100,G.custSat+15);G.courage=clamp(0,100,G.courage+5);}},
+      {text:'아직 시기상조 — 내수 집중', preview:'변화 없음\n기회비용 발생', apply:function(G){G.ignoreCount++;}}
+    ]
   }
 ];
 
@@ -801,10 +924,32 @@ var FOLLOWUP_EVENTS = {
   },
   quiet_quit_exodus: {
     id: 'quiet_quit_exodus',
-    headline: '\uC870\uC6A9\uD55C \uD1F4\uC0AC \uC2DC\uC791',
-    body: '\uBC29\uCE58\uB41C \uBB34\uAE30\uB825\uC774 \uC2E4\uC81C \uD1F4\uC0AC\uB85C \uC774\uC5B4\uC84C\uC2B5\uB2C8\uB2E4. 2\uBA85\uC774 \uB5A0\uB0AC\uC2B5\uB2C8\uB2E4.',
+    headline: '조용한 퇴사 시작',
+    body: '방치된 무기력이 실제 퇴사로 이어졌습니다. 2명이 떠났습니다.',
     effects: {quitCount: 2},
     sourceEvent: 'quiet_quitting'
+  },
+  // New followups for SKMS principle events
+  failed_leader_comeback: {
+    id: 'failed_leader_comeback',
+    headline: '실패 팀장의 화려한 복귀',
+    body: '도전을 인정받은 팀장이 새 프로젝트에서 혁신적 성과를 냈습니다. 실패 경험이 자산이 되었습니다.',
+    effects: {custSat: 10, courage: 5},
+    sourceEvent: 'failed_project_leader'
+  },
+  rnd_payoff: {
+    id: 'rnd_payoff',
+    headline: 'R&D 투자 결실',
+    body: '장기 R&D 투자가 신제품으로 이어졌습니다. 시장에서 큰 호응을 얻고 있습니다.',
+    effects: {custSat: 10, money: 1500},
+    sourceEvent: 'quarter_vs_rnd'
+  },
+  innovation_success: {
+    id: 'innovation_success',
+    headline: '혁신 제품 시장 반응 폭발',
+    body: '과감한 전환이 성공했습니다. 새 제품이 시장을 리드하며 기존 고객도 전환 중입니다.',
+    effects: {custSat: 15, money: 2000},
+    sourceEvent: 'innovation_dilemma'
   }
 };
 
@@ -1643,29 +1788,25 @@ function drawWorker(w) {
   ctx.arc(sx + 6.5 * z * sm, sy + 1 * z * sm - armWave, 1.2 * z * sm, 0, Math.PI * 2);
   ctx.fill();
 
-  // PIP red dashed border (around torso)
+  // PIP indicator: subtle red tint on torso (no dashed circle)
   if (w.pipActive) {
     ctx.save();
-    ctx.setLineDash([2 * z, 2 * z]);
-    ctx.strokeStyle = '#F87171';
-    ctx.lineWidth = 1.2 * z;
+    ctx.globalAlpha = 0.25 * alpha;
+    ctx.fillStyle = '#F87171';
     ctx.beginPath();
-    ctx.ellipse(sx, sy - 2 * z * sm, 6 * z * sm, 7 * z * sm, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.ellipse(sx, sy - 2 * z * sm, 5 * z * sm, 5.5 * z * sm, 0, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
 
-  // Onboarding blue dashed border
+  // Onboarding indicator: subtle blue tint (no dashed circle)
   if (w.onboardDays > 0 && !w.pipActive) {
     ctx.save();
-    ctx.setLineDash([2 * z, 2 * z]);
-    ctx.strokeStyle = '#60A5FA';
-    ctx.lineWidth = 1.2 * z;
+    ctx.globalAlpha = 0.18 * alpha;
+    ctx.fillStyle = '#60A5FA';
     ctx.beginPath();
-    ctx.ellipse(sx, sy - 2 * z * sm, 6 * z * sm, 7 * z * sm, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.ellipse(sx, sy - 2 * z * sm, 5 * z * sm, 5.5 * z * sm, 0, 0, Math.PI * 2);
+    ctx.fill();
     ctx.restore();
   }
 
@@ -2050,6 +2191,33 @@ function dayTick() {
   }
   if (G.gDay % 15 === 1) G.stratShownThisQ = false;
 
+  // --- Better Company quarterly goal ---
+  if (G.gDay > 5 && G.gDay % 15 === 5 && !G.quarterGoal) {
+    showBetterCompanyGoal();
+  }
+  if (G.quarterGoal) {
+    var metricVal = G.quarterGoal.metric === 'empHap' ? G.empHap
+      : G.quarterGoal.metric === 'custSat' ? G.custSat : G.socVal;
+    if (metricVal >= G.quarterGoal.target) {
+      G.quarterProgress++;
+      if (G.quarterProgress >= 5) {
+        G.money += G.quarterGoal.reward;
+        G.ratingBonus = (G.ratingBonus || 0) + 0.2;
+        showToast('🎯 Better Company 목표 달성! +$' + G.quarterGoal.reward + ' +⭐0.2', 'success');
+        G.quarterGoal = null;
+        G.quarterProgress = 0;
+      }
+    } else {
+      G.quarterProgress = Math.max(0, G.quarterProgress - 1);
+    }
+    // Timeout: next quarter (15 days) resets
+    if (G.gDay % 15 === 4 && G.quarterGoal) {
+      showToast('📋 Better Company 목표 미달성 — 다음 기회에', 'warn');
+      G.quarterGoal = null;
+      G.quarterProgress = 0;
+    }
+  }
+
   // --- Labor tension ---
   if (G.empHap < 20) G.laborTension = Math.min(100, G.laborTension + 5);
   else if (G.empHap < 30) G.laborTension = Math.min(100, G.laborTension + 2);
@@ -2209,6 +2377,21 @@ function updateWorkers() {
       } else {
         w.x += (dx / dist) * spd;
         w.y += (dy / dist) * spd;
+      }
+    }
+
+    // Anti-crowding: nudge away from nearby workers
+    var sepDist = 0.35;
+    for (var si = 0; si < G.workers.length; si++) {
+      var other = G.workers[si];
+      if (other === w || other.quitting) continue;
+      var sdx = w.x - other.x, sdy = w.y - other.y;
+      var sd2 = sdx * sdx + sdy * sdy;
+      if (sd2 > 0 && sd2 < sepDist * sepDist) {
+        var sd = Math.sqrt(sd2);
+        var push = (sepDist - sd) * 0.02;
+        w.x += (sdx / sd) * push;
+        w.y += (sdy / sd) * push;
       }
     }
 
@@ -2890,18 +3073,23 @@ function buildTopBar() {
   // Money
   var ms = createStat('money', '$', 'hud-money', '15,000');
   ms.classList.add('money');
+  ms.title = '회사 자금 — 수익에서 인건비·유지비를 뺀 잔액';
   tb.appendChild(ms);
 
   // Workers
-  tb.appendChild(createStat('', '\u{1F464}', 'hud-workers', '12'));
+  var ws = createStat('', '\u{1F464}', 'hud-workers', '12');
+  ws.title = '현재 재직 중인 구성원 수';
+  tb.appendChild(ws);
 
   // Rating
   var rs = createStat('rating', '\u2B50', 'hud-rating', '1.2');
   rs.classList.add('rating');
+  rs.title = '기업 평판 (0~5) — 이벤트 선택과 정책 활성화에 따라 변동';
   tb.appendChild(rs);
 
   var winStat = document.createElement('div');
   winStat.className = 'stat';
+  winStat.title = '승리 조건 달성 카운트 — 목표 일수 동안 조건 유지 시 승리';
   var winIcon = document.createElement('span');
   winIcon.textContent = '\u{1F3AF}';
   winStat.appendChild(winIcon);
@@ -2913,10 +3101,24 @@ function buildTopBar() {
   winStat.appendChild(winVal);
   tb.appendChild(winStat);
 
+  // Better Company goal indicator
+  var goalStat = document.createElement('div');
+  goalStat.className = 'stat';
+  goalStat.id = 'hud-goal';
+  goalStat.style.cssText = 'display:none;font-size:11px;cursor:pointer';
+  goalStat.title = 'Better Company 분기 목표';
+  tb.appendChild(goalStat);
+
   // Metrics
-  tb.appendChild(createStatColored('\u{1F465}', 'hud-cust', '25', 'cust'));
-  tb.appendChild(createStatColored('\u{1F49A}', 'hud-emp', '18', 'emp'));
-  tb.appendChild(createStatColored('\u{1F30D}', 'hud-soc', '10', 'soc'));
+  var custEl = createStatColored('\u{1F465}', 'hud-cust', '25', 'cust');
+  custEl.title = '고객만족도 (0~100) — 품질, 혁신, 서비스 수준 반영';
+  tb.appendChild(custEl);
+  var empEl = createStatColored('\u{1F49A}', 'hud-emp', '18', 'emp');
+  empEl.title = '구성원행복 (0~100) — 복지, 소통, 성장 기회가 핵심';
+  tb.appendChild(empEl);
+  var socEl = createStatColored('\u{1F30D}', 'hud-soc', '10', 'soc');
+  socEl.title = '사회적가치 (0~100) — ESG, 지역사회 기여, 윤리경영';
+  tb.appendChild(socEl);
 
   // Labor tension indicator
   var laborStat = document.createElement('div');
@@ -3022,6 +3224,18 @@ function updateHUD() {
       : (G.rating >= 3.0);
     winEl.textContent = winMet ? Math.floor(G.winDays) + '/' + winTarget + 'd' : '-';
   }
+  // Better Company goal indicator
+  var goalEl = document.getElementById('hud-goal');
+  if (goalEl) {
+    if (G.quarterGoal) {
+      var goalEmoji = G.quarterGoal.metric === 'empHap' ? '💚' : G.quarterGoal.metric === 'custSat' ? '👥' : '🌍';
+      goalEl.textContent = goalEmoji + G.quarterProgress + '/5';
+      goalEl.style.display = '';
+      goalEl.title = 'Better Company 목표: ' + G.quarterGoal.metric + ' ≥ ' + G.quarterGoal.target + ' (' + G.quarterProgress + '/5일)';
+    } else {
+      goalEl.style.display = 'none';
+    }
+  }
   updateHistoryProfile();
 }
 
@@ -3067,7 +3281,8 @@ function buildBuildPanel() {
       {emoji: '\u{1F4CA}', label: '\uC778\uB825\uD604\uD669', fn: openWorkforcePanel},
       {emoji: '\u{1F3DB}\uFE0F', label: '\uD0C0\uC6B4\uD640', fn: openTownHallPanel},
       {emoji: '\u{1F525}', label: '\uC758\uC695\uAD00\uB9AC', fn: openMotivationPanel},
-      {emoji: '\u{1F3AF}', label: '\uC870\uC9C1\uBB38\uD654', fn: openCulturePanel}
+      {emoji: '\u{1F3AF}', label: '조직문화', fn: openCulturePanel},
+      {emoji: '\u{1F4D6}', label: 'SKMS', fn: openSKMSGuide}
     ];
     for (var mi = 0; mi < mgmtItems.length; mi++) {
       (function(item) {
@@ -4011,6 +4226,187 @@ function openCulturePanel() {
   quote.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.35);padding:10px 0 4px;text-align:center;font-style:italic;border-top:1px solid rgba(255,255,255,0.08);margin-top:8px';
   quote.textContent = '"\uAC15\uD558\uACE0 \uC6B0\uC218\uD55C \uAE30\uC5C5\uBB38\uD654\uB97C \uAD6C\uCD95\uD558\uACE0 \uC9C0\uC18D\uC801\uC73C\uB85C \uC9C4\uD654\uC2DC\uD0A4\uB294 \uAC83\uC740 \uACBD\uC7C1\uB825\uC758 \uC6D0\uCC9C" \u2014 SKMS 2020';
   panel.appendChild(quote);
+
+  panel.classList.add('open');
+}
+
+// ============================================================
+// BETTER COMPANY QUARTERLY GOAL
+// ============================================================
+function showBetterCompanyGoal() {
+  if (G.eventActive || G.quarterGoal) return;
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center';
+  var modal = document.createElement('div');
+  modal.style.cssText = 'background:var(--hud-bg);backdrop-filter:blur(16px);border:1px solid var(--hud-border);border-radius:14px;padding:24px;max-width:420px;width:90vw;color:#e8e8f0';
+
+  var title = document.createElement('div');
+  title.style.cssText = 'font-size:16px;font-weight:800;color:var(--accent);margin-bottom:4px';
+  title.textContent = '🏢 Better Company 분기 목표';
+  modal.appendChild(title);
+
+  var desc = document.createElement('div');
+  desc.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:12px;line-height:1.5';
+  desc.textContent = '다음 분기의 집중 방향을 선택하세요. 목표 달성 5일 유지 시 보상!';
+  modal.appendChild(desc);
+
+  var goals = [
+    {emoji: '💚', label: '구성원 행복 집중', metric: 'empHap', target: 70, desc: '구성원행복 70+ 유지 5일'},
+    {emoji: '👥', label: '고객 가치 집중', metric: 'custSat', target: 70, desc: '고객만족 70+ 유지 5일'},
+    {emoji: '🌍', label: '사회적 가치 집중', metric: 'socVal', target: 60, desc: '사회가치 60+ 유지 5일'}
+  ];
+  for (var gi = 0; gi < goals.length; gi++) {
+    (function(goal) {
+      var btn = document.createElement('button');
+      btn.style.cssText = 'display:block;width:100%;margin:6px 0;padding:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e8e8f0;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s';
+      var emo = document.createElement('span');
+      emo.style.fontSize = '18px';
+      emo.textContent = goal.emoji + ' ';
+      btn.appendChild(emo);
+      var bold = document.createElement('b');
+      bold.style.fontSize = '13px';
+      bold.textContent = goal.label;
+      btn.appendChild(bold);
+      btn.appendChild(document.createElement('br'));
+      var sub = document.createElement('span');
+      sub.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.5)';
+      sub.textContent = goal.desc + ' → 보상 $2000 + ⭐0.2';
+      btn.appendChild(sub);
+      btn.addEventListener('mouseenter', function() { btn.style.background = 'rgba(255,184,48,0.15)'; btn.style.borderColor = 'rgba(255,184,48,0.3)'; });
+      btn.addEventListener('mouseleave', function() { btn.style.background = 'rgba(255,255,255,0.06)'; btn.style.borderColor = 'rgba(255,255,255,0.1)'; });
+      btn.addEventListener('click', function() {
+        G.quarterGoal = {metric: goal.metric, target: goal.target, reward: 2000};
+        G.quarterProgress = 0;
+        showToast(goal.emoji + ' ' + goal.label + ' 목표 설정 완료!', 'info');
+        overlay.remove();
+        saveGame();
+      });
+      modal.appendChild(btn);
+    })(goals[gi]);
+  }
+
+  var skipBtn = document.createElement('button');
+  skipBtn.style.cssText = 'display:block;width:100%;margin-top:8px;padding:8px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:rgba(255,255,255,0.4);cursor:pointer;font-size:11px;font-family:inherit';
+  skipBtn.textContent = '이번 분기는 건너뛰기';
+  skipBtn.addEventListener('click', function() { overlay.remove(); });
+  modal.appendChild(skipBtn);
+
+  var quote = document.createElement('div');
+  quote.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.3);margin-top:10px;font-style:italic;text-align:center';
+  quote.textContent = '"Better Company 목표를 반복적으로 달성하면서 SUPEX Company를 구현" — SKMS 2020';
+  modal.appendChild(quote);
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
+// ============================================================
+// SKMS PHILOSOPHY GUIDE
+// ============================================================
+function openSKMSGuide() {
+  closeMgmtPanel();
+  var panel = document.getElementById('mgmt-panel');
+  if (!panel) return;
+  while (panel.firstChild) panel.removeChild(panel.firstChild);
+
+  var title = document.createElement('div');
+  title.style.cssText = 'font-size:14px;font-weight:800;color:var(--accent);margin-bottom:10px';
+  title.textContent = '📖 SKMS 경영 원칙 가이드';
+  panel.appendChild(title);
+
+  var tabs = [
+    {id: 'human', label: '인간중심', quote: 'SK 경영의 궁극적 목적은 구성원의 행복이다.', source: 'SKMS 14차 (2020)', metrics: [{label: '구성원행복', val: Math.round(G.empHap)}, {label: '신뢰도', val: G.trust}], meaning: '복지 시설 건설, 1:1 면담, 공정 보상 → 구성원행복·신뢰 상승'},
+    {id: 'supex', label: 'SUPEX', quote: '최고의 경쟁력을 보유하고 장기적 생존 조건을 확보하는 것이 SUPEX 추구의 목표이다.', source: 'SKMS 10차 (1998)', metrics: [{label: '고객만족', val: Math.round(G.custSat)}, {label: '기업평판', val: G.rating.toFixed(1)}], meaning: 'R&D 투자, SUPEX 정책 활성화, 혁신 이벤트 선택 → 고객만족·평판 상승'},
+    {id: 'vwbe', label: 'VWBE', quote: '자발적·의욕적 두뇌활용(VWBE)이 곧 패기이다.', source: 'SKMS 14차 (2020)', metrics: [{label: 'VWBE 수준', val: G.vwbeLevel}, {label: '패기도', val: G.courage}], meaning: 'VWBE 문화 정책, 도전 과제, 자기주도 환경 → VWBE·패기 상승'},
+    {id: 'social', label: '사회가치', quote: '이해관계자 행복을 위해 회사가 창출하는 모든 가치가 사회적 가치이다.', source: 'SKMS 14차 (2020)', metrics: [{label: '사회가치', val: Math.round(G.socVal)}, {label: '협력도', val: G.coordination}], meaning: 'ESG 투자, 지역 봉사, 윤리경영 정책 → 사회가치·협력 상승'}
+  ];
+
+  var tabBar = document.createElement('div');
+  tabBar.style.cssText = 'display:flex;gap:4px;margin-bottom:10px';
+  var activeTab = tabs[0].id;
+
+  function renderGuideContent() {
+    var existing = panel.querySelector('.skms-guide-body');
+    if (existing) existing.remove();
+
+    var body = document.createElement('div');
+    body.className = 'skms-guide-body';
+
+    var tab = null;
+    for (var fi = 0; fi < tabs.length; fi++) { if (tabs[fi].id === activeTab) { tab = tabs[fi]; break; } }
+    if (!tab) return;
+
+    var quoteEl = document.createElement('div');
+    quoteEl.style.cssText = 'font-size:12px;color:rgba(255,255,255,0.7);padding:10px;background:rgba(255,184,48,0.08);border-radius:8px;border-left:3px solid var(--accent);margin-bottom:8px;line-height:1.5;font-style:italic';
+    quoteEl.textContent = '"' + tab.quote + '"';
+    var src = document.createElement('div');
+    src.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.35);margin-top:4px;font-style:normal';
+    src.textContent = '— ' + tab.source;
+    quoteEl.appendChild(src);
+    body.appendChild(quoteEl);
+
+    var metricRow = document.createElement('div');
+    metricRow.style.cssText = 'display:flex;gap:8px;margin-bottom:8px';
+    for (var mi = 0; mi < tab.metrics.length; mi++) {
+      var m = tab.metrics[mi];
+      var mc = document.createElement('div');
+      mc.style.cssText = 'flex:1;background:rgba(255,255,255,0.05);border-radius:8px;padding:8px;text-align:center';
+      var mlbl = document.createElement('div');
+      mlbl.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.5)';
+      mlbl.textContent = m.label;
+      mc.appendChild(mlbl);
+      var mval = document.createElement('div');
+      mval.style.cssText = 'font-size:18px;font-weight:800;color:var(--accent)';
+      mval.textContent = m.val;
+      mc.appendChild(mval);
+      metricRow.appendChild(mc);
+    }
+    body.appendChild(metricRow);
+
+    var meaningEl = document.createElement('div');
+    meaningEl.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.6);padding:8px;background:rgba(255,255,255,0.04);border-radius:6px;line-height:1.5';
+    var gameIcon = document.createElement('span');
+    gameIcon.textContent = '🎮 ';
+    meaningEl.appendChild(gameIcon);
+    var gameBold = document.createElement('b');
+    gameBold.textContent = '게임에서의 의미: ';
+    meaningEl.appendChild(gameBold);
+    meaningEl.appendChild(document.createTextNode(tab.meaning));
+    body.appendChild(meaningEl);
+
+    panel.appendChild(body);
+  }
+
+  for (var ti = 0; ti < tabs.length; ti++) {
+    (function(tab) {
+      var tbtn = document.createElement('button');
+      tbtn.style.cssText = 'flex:1;padding:6px 0;border:1px solid rgba(255,255,255,0.08);border-radius:8px;background:' + (activeTab === tab.id ? 'rgba(255,184,48,0.15)' : 'rgba(255,255,255,0.04)') + ';color:' + (activeTab === tab.id ? '#FFB830' : 'rgba(255,255,255,0.5)') + ';font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;text-align:center';
+      if (activeTab === tab.id) tbtn.style.borderColor = 'rgba(255,184,48,0.3)';
+      tbtn.textContent = tab.label;
+      tbtn.addEventListener('click', function() {
+        activeTab = tab.id;
+        var allBtns = tabBar.querySelectorAll('button');
+        for (var bi = 0; bi < allBtns.length; bi++) {
+          allBtns[bi].style.background = 'rgba(255,255,255,0.04)';
+          allBtns[bi].style.color = 'rgba(255,255,255,0.5)';
+          allBtns[bi].style.borderColor = 'rgba(255,255,255,0.08)';
+        }
+        tbtn.style.background = 'rgba(255,184,48,0.15)';
+        tbtn.style.color = '#FFB830';
+        tbtn.style.borderColor = 'rgba(255,184,48,0.3)';
+        renderGuideContent();
+      });
+      tabBar.appendChild(tbtn);
+    })(tabs[ti]);
+  }
+  panel.appendChild(tabBar);
+  renderGuideContent();
+
+  var closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'display:block;width:100%;margin-top:8px;padding:6px;background:none;border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:rgba(255,255,255,0.4);cursor:pointer;font-size:11px;font-family:inherit';
+  closeBtn.textContent = '닫기';
+  closeBtn.addEventListener('click', closeMgmtPanel);
+  panel.appendChild(closeBtn);
 
   panel.classList.add('open');
 }
@@ -5475,41 +5871,42 @@ function showReport() {
   var alignment = calcSKMSAlignment();
   var dna = calcDNABreakdown();
 
-  // === HEADER CARD ===
+  // === HEADER CARD (high-impact dark design) ===
   var header = document.createElement('div');
   header.className = 'rpt-header';
-  header.style.borderTop = G.gameWon ? '3px solid #4ade80' : '3px solid #f87171';
-  var row1 = document.createElement('div');
-  row1.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:8px';
-  var icon1 = document.createElement('span');
-  icon1.style.fontSize = '28px';
-  icon1.textContent = G.gameWon ? '\u{1F3C6}' : '\u{1F4C9}';
-  row1.appendChild(icon1);
-  var titleEl = document.createElement('span');
-  titleEl.style.cssText = 'font-size:20px;font-weight:800;color:var(--accent)';
-  titleEl.textContent = '\uACBD\uC601 \uC131\uC801\uD45C';
-  row1.appendChild(titleEl);
-  var ratingEl = document.createElement('span');
-  ratingEl.style.cssText = 'font-size:14px;font-weight:700;color:#FBBF24';
-  ratingEl.textContent = G.rating.toFixed(1) + ' \u2B50';
-  row1.appendChild(ratingEl);
-  var dayEl = document.createElement('span');
-  dayEl.style.cssText = 'font-size:12px;color:rgba(255,255,255,0.5)';
-  dayEl.textContent = 'Day ' + G.gDay;
-  row1.appendChild(dayEl);
-  header.appendChild(row1);
 
-  var row2 = document.createElement('div');
-  row2.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap';
-  var badge = document.createElement('span');
-  badge.style.cssText = 'display:inline-block;padding:4px 14px;border-radius:12px;background:rgba(255,184,48,0.15);color:#FFB830;font-size:13px;font-weight:800';
-  badge.textContent = style;
-  row2.appendChild(badge);
-  var alignEl = document.createElement('span');
-  alignEl.style.cssText = 'font-size:12px;color:rgba(255,255,255,0.6)';
-  alignEl.textContent = 'SKMS \uC815\uD569\uC131 ' + alignment + '%';
-  row2.appendChild(alignEl);
-  header.appendChild(row2);
+  var icon1 = document.createElement('span');
+  icon1.className = 'rpt-icon';
+  icon1.textContent = G.gameWon ? '\u{1F3C6}' : '\u{1F4C9}';
+  header.appendChild(icon1);
+
+  var mainTitle = document.createElement('div');
+  mainTitle.className = 'rpt-main-title';
+  mainTitle.textContent = G.gameWon ? 'SUPEX Company 달성!' : '경영 성적표';
+  header.appendChild(mainTitle);
+
+  var ratingBig = document.createElement('div');
+  ratingBig.className = 'rpt-rating-big';
+  ratingBig.textContent = G.rating.toFixed(1) + ' ⭐';
+  header.appendChild(ratingBig);
+
+  var subtitle = document.createElement('div');
+  subtitle.className = 'rpt-subtitle';
+  subtitle.textContent = 'Day ' + G.gDay + ' · ' + style + ' · SKMS 정합성 ' + alignment + '%';
+  header.appendChild(subtitle);
+
+  var badgeRow = document.createElement('div');
+  badgeRow.style.cssText = 'display:flex;gap:8px;justify-content:center;flex-wrap:wrap';
+  var resultBadge = document.createElement('span');
+  resultBadge.style.cssText = 'display:inline-block;padding:5px 16px;border-radius:20px;font-size:12px;font-weight:800;' + (G.gameWon ? 'background:rgba(74,222,128,0.2);color:#4ade80;border:1px solid rgba(74,222,128,0.3)' : 'background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.3)');
+  resultBadge.textContent = G.gameWon ? '🎉 승리' : '📉 게임 오버';
+  badgeRow.appendChild(resultBadge);
+  var styleBadge = document.createElement('span');
+  styleBadge.style.cssText = 'display:inline-block;padding:5px 16px;border-radius:20px;background:rgba(255,184,48,0.15);color:#FFB830;font-size:12px;font-weight:800;border:1px solid rgba(255,184,48,0.2)';
+  styleBadge.textContent = style;
+  badgeRow.appendChild(styleBadge);
+  header.appendChild(badgeRow);
+
   card.appendChild(header);
 
   // === STAKEHOLDER GAUGES ===
@@ -7295,7 +7692,7 @@ function showOnboarding() {
   s3.appendChild(playGrid);
 
   var meaningText = document.createElement('div');
-  meaningText.style.cssText = 'text-align:center;font-size:12px;color:#9CA3AF;margin-top:8px;opacity:0;animation:fadeInUp 0.4s ease-out 0.6s forwards';
+  meaningText.style.cssText = 'text-align:center;font-size:17px;font-weight:800;color:#1F2937;margin-top:14px;opacity:0;animation:fadeInUp 0.4s ease-out 0.6s forwards;line-height:1.6;letter-spacing:-0.3px';
   meaningText.textContent = '사람을 키우고, 조직을 세우고, 위기 속에서 원칙을 지키는 것. 그것이 진짜 경영입니다.';
   s3.appendChild(meaningText);
 
