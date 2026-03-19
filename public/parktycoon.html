@@ -978,7 +978,17 @@ function createInitialState() {
     skmsChoices: [],
     pendingFollowups: [],
     compStrategy: null,
-    emojiReactions: []
+    emojiReactions: [],
+    // SKMS culture stats (shown in 조직문화 진단 panel)
+    vwbeLevel: 20,
+    trust: 30,
+    courage: 20,
+    coordination: 25,
+    // Better Company quarterly goal
+    quarterGoal: null,
+    quarterProgress: 0,
+    // Town hall
+    lastTownHall: 0
   };
   // Init grid
   state.grid = [];
@@ -4354,6 +4364,13 @@ function showEventModal(evt) {
               G.pendingFollowups.push({triggerDay: G.gDay + choice.delayed.days, event: followup});
             }
           }
+          // Auto-update SKMS culture stats based on choice tag
+          if (choice.skmsTag === 'human_centered') { G.trust = clamp(0, 100, G.trust + 3); G.vwbeLevel = clamp(0, 100, G.vwbeLevel + 2); }
+          else if (choice.skmsTag === 'vwbe') { G.vwbeLevel = clamp(0, 100, G.vwbeLevel + 5); G.courage = clamp(0, 100, G.courage + 3); }
+          else if (choice.skmsTag === 'supex') { G.courage = clamp(0, 100, G.courage + 5); G.coordination = clamp(0, 100, G.coordination + 2); }
+          else if (choice.skmsTag === 'social_value') { G.trust = clamp(0, 100, G.trust + 3); G.coordination = clamp(0, 100, G.coordination + 2); }
+          else if (choice.skmsTag === 'rational') { G.coordination = clamp(0, 100, G.coordination + 2); }
+          if (!choice.skmsTag) { G.trust = clamp(0, 100, G.trust - 5); G.courage = clamp(0, 100, G.courage - 3); }
           addHistoryEntry(G.currentEvent.headline, choice.text, '\uD83D\uDCF0');
           closeEvent();
           updateHUD();
@@ -4398,6 +4415,9 @@ function autoPickWorst() {
       }
     }
   }
+  // Timeout penalty: trust and courage drop
+  G.trust = clamp(0, 100, G.trust - 8);
+  G.courage = clamp(0, 100, G.courage - 5);
   flashScreen('negative');
   showWorkerReactions('\uD83D\uDE30');
   closeEvent();
@@ -7200,6 +7220,13 @@ function saveGame() {
       skmsChoices: (G.skmsChoices || []).slice(-20),
       pendingFollowups: G.pendingFollowups || [],
       compStrategy: G.compStrategy || null,
+      vwbeLevel: G.vwbeLevel,
+      trust: G.trust,
+      courage: G.courage,
+      coordination: G.coordination,
+      quarterGoal: G.quarterGoal,
+      quarterProgress: G.quarterProgress,
+      lastTownHall: G.lastTownHall,
       bldgs: G.bldgs.map(function(b) { return {t: b.type, x: b.gx, y: b.gy}; }),
       workers: G.workers.filter(function(w) { return !w.quitting; }).map(function(w) {
         return {id: w.id, t: w.type, w: Math.round(w.will), c: Math.round(w.capability),
@@ -7242,6 +7269,13 @@ function loadGame(save) {
   G.skmsChoices = save.skmsChoices || [];
   G.pendingFollowups = save.pendingFollowups || [];
   G.compStrategy = save.compStrategy || null;
+  G.vwbeLevel = save.vwbeLevel || 20;
+  G.trust = save.trust || 30;
+  G.courage = save.courage || 20;
+  G.coordination = save.coordination || 25;
+  G.quarterGoal = save.quarterGoal || null;
+  G.quarterProgress = save.quarterProgress || 0;
+  G.lastTownHall = save.lastTownHall || 0;
   G.emojiReactions = [];
   // Rebuild grid
   for (var y = 0; y < GRID; y++) for (var x = 0; x < GRID; x++) G.grid[y][x] = null;
