@@ -353,6 +353,17 @@ canvas{display:block;cursor:default}
 .perf-confirm-btn:hover{background:rgba(74,222,128,0.2)}
 .perf-confirm-btn:disabled{opacity:0.3;cursor:not-allowed;color:rgba(255,255,255,0.3);border-color:rgba(255,255,255,0.1);background:rgba(255,255,255,0.03)}
 .perf-warning{font-size:10px;color:#fbbf24;text-align:center;padding:4px 0}
+.comp-cards{display:flex;gap:8px;padding:4px 0}
+.comp-card{flex:1;padding:12px 10px;border:1px solid rgba(255,255,255,0.08);border-radius:10px;background:rgba(255,255,255,0.03);cursor:pointer;transition:all .15s;text-align:center}
+.comp-card:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15)}
+.comp-card.active{border-color:rgba(255,184,48,0.4);background:rgba(255,184,48,0.08)}
+.comp-card.disabled{opacity:0.5;cursor:not-allowed}
+.comp-card-icon{font-size:24px;margin-bottom:6px}
+.comp-card-name{font-size:12px;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:4px}
+.comp-card-desc{font-size:9px;color:rgba(255,255,255,0.4);line-height:1.4;white-space:pre-line}
+.comp-card-badge{display:inline-block;padding:2px 6px;background:rgba(255,184,48,0.15);color:#FFB830;border-radius:4px;font-size:8px;font-weight:700;margin-top:6px}
+.comp-footer{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);font-size:11px;color:rgba(255,255,255,0.5)}
+.comp-readonly-notice{text-align:center;padding:8px;font-size:10px;color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.02);border-radius:6px;margin-bottom:8px}
 .mgmt-stat{display:flex;justify-content:space-between;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.04)}
 .mgmt-stat .k{color:rgba(255,255,255,0.5)}
 .mgmt-stat .v{font-weight:700}
@@ -691,6 +702,74 @@ var SKMS_INSIGHTS = [
    quote: '"\uAD6C\uC131\uC6D0\uC758 \uC5ED\uB7C9 \uBC1C\uC804\uC740 \uAC1C\uC778\uC758 \uD589\uBCF5\uACFC \uD68C\uC0AC\uC758 SUPEX \uCD94\uAD6C\uB97C \uB3D9\uC2DC\uC5D0 \uB2EC\uC131\uD558\uB294 \uD575\uC2EC \uACBD\uB85C"',
    quoteSrc: 'SKMS',
    verdict: 'pass'}
+];
+
+// ============================================================
+// COMPENSATION STRATEGIES
+// ============================================================
+var COMP_STRATEGIES = [
+  {
+    id: 'performance',
+    name: '\uC131\uACFC\uC5F0\uB3D9\uD615',
+    icon: '\uD83C\uDFAF',
+    desc: 'S/A\uB4F1\uAE09: \uBCF4\uB108\uC2A4 $80/$40\nC/D\uB4F1\uAE09: \uB3D9\uACB0\n\uC5D0\uC774\uC2A4 \uC720\uC9C0\u2191, \uC2DC\uB2C8\uD06C \uBD88\uB9CC\u2191',
+    skmsLink: 'SUPEX \uCD94\uAD6C',
+    apply: function(G) {
+      var workers = getAliveWorkers();
+      for (var i = 0; i < workers.length; i++) {
+        var w = workers[i];
+        var grade = w.perfGrade || 'B';
+        if (grade === 'S') {
+          G.money -= 80;
+          w.will = clamp(0, 100, w.will + 5);
+          w.happiness = clamp(0, 100, w.happiness + 3);
+        } else if (grade === 'A') {
+          G.money -= 40;
+          w.will = clamp(0, 100, w.will + 3);
+          w.happiness = clamp(0, 100, w.happiness + 2);
+        } else if (grade === 'C') {
+          w.will = clamp(0, 100, w.will - 3);
+        } else if (grade === 'D') {
+          w.will = clamp(0, 100, w.will - 5);
+          w.happiness = clamp(0, 100, w.happiness - 5);
+        }
+      }
+    }
+  },
+  {
+    id: 'equal',
+    name: '\uADE0\uB4F1\uBD84\uBC30\uD615',
+    icon: '\u2696\uFE0F',
+    desc: '\uC804\uC6D0 \uC758\uC695+3, \uD589\uBCF5+5\n\uC870\uC9C1 \uC548\uC815\u2191\n\uC5D0\uC774\uC2A4 \uC774\uD0C8 \uC704\uD5D8(10%/\uBD84\uAE30)',
+    skmsLink: '\uC778\uAC04\uC911\uC2EC',
+    apply: function(G) {
+      var workers = getAliveWorkers();
+      for (var i = 0; i < workers.length; i++) {
+        var w = workers[i];
+        w.will = clamp(0, 100, w.will + 3);
+        w.happiness = clamp(0, 100, w.happiness + 5);
+        if (w.type === 'ace' && Math.random() < 0.1) {
+          w.quitCountdown = w.quitCountdown || 30;
+          showToast('\u26A0\uFE0F \uC5D0\uC774\uC2A4 #' + w.id + ' \uC774\uD0C8 \uC870\uC9D0!', 'warn');
+        }
+      }
+    }
+  },
+  {
+    id: 'growth',
+    name: '\uC5ED\uB7C9\uD22C\uC790\uD615',
+    icon: '\uD83C\uDF31',
+    desc: '\uC804\uC6D0 \uC5ED\uB7C9+8, \uBCF4\uB108\uC2A4 \uC5C6\uC74C\n\uC7A5\uAE30 \uC131\uC7A5\u2191, \uB2E8\uAE30 \uB9CC\uC871\u2193',
+    skmsLink: 'VWBE',
+    apply: function(G) {
+      var workers = getAliveWorkers();
+      for (var i = 0; i < workers.length; i++) {
+        var w = workers[i];
+        w.capability = clamp(0, 100, w.capability + 8);
+        w.happiness = clamp(0, 100, w.happiness - 3);
+      }
+    }
+  }
 ];
 
 // ============================================================
@@ -1712,6 +1791,17 @@ function dayTick() {
       G.custSat = Math.min(100, G.custSat + G.delayedCust);
       G.delayedCust = 0;
       showToast('\uD601\uC2E0 \uD22C\uC790 \uD6A8\uACFC \uBC1C\uC0DD! \uACE0\uAC1D\uB9CC\uC871 +', 'success');
+    }
+  }
+
+  // Ongoing compensation strategy effects (quarterly check)
+  if (G.compStrategy === 'equal' && G.gDay % 30 === 0 && G.gDay > 1) {
+    var aliveForComp = getAliveWorkers();
+    for (var ci = 0; ci < aliveForComp.length; ci++) {
+      if (aliveForComp[ci].type === 'ace' && Math.random() < 0.1) {
+        aliveForComp[ci].quitCountdown = aliveForComp[ci].quitCountdown || 30;
+        showToast('\u26A0\uFE0F \uC5D0\uC774\uC2A4 #' + aliveForComp[ci].id + ' \uADE0\uB4F1\uBD84\uBC30\uC5D0 \uBD88\uB9CC \u2014 \uC774\uD0C8 \uC704\uD5D8!', 'warn');
+      }
     }
   }
 
@@ -3178,74 +3268,85 @@ function openCompPanel() {
     return;
   }
 
-  var MULTIPLIERS = [
-    {label: '\uC778\uC0C1 1.1x', mult: 1.1},
-    {label: '\uC778\uC0C1 1.2x', mult: 1.2},
-    {label: '\uC778\uC0C1 1.3x', mult: 1.3},
-    {label: '\uB3D9\uACB0', mult: null}
-  ];
+  var isQuarterDay = (G.gDay % 30 === 0);
+  var canChange = isQuarterDay || !G.compStrategy;
 
-  var totalCost = 0;
-  var baseSal = 50;
-
-  for (var i = 0; i < workers.length; i++) {
-    (function(w) {
-      var tc = EMP_TYPES[w.type] || EMP_TYPES.disengaged;
-      var row = document.createElement('div');
-      row.className = 'mgmt-row';
-
-      var idSpan = document.createElement('span');
-      idSpan.style.cssText = 'min-width:36px;font-weight:700';
-      idSpan.textContent = tc.emoji + '#' + w.id;
-      row.appendChild(idSpan);
-
-      var typeSpan = document.createElement('span');
-      typeSpan.style.cssText = 'min-width:60px;color:rgba(255,255,255,0.5)';
-      typeSpan.textContent = w.type;
-      row.appendChild(typeSpan);
-
-      var salSpan = document.createElement('span');
-      salSpan.style.cssText = 'min-width:50px;font-weight:700;font-size:10px';
-      salSpan.textContent = (w.salaryLevel || 1).toFixed(2) + 'x';
-      row.appendChild(salSpan);
-
-      var btnGroup = document.createElement('div');
-      btnGroup.style.cssText = 'display:flex;gap:3px;margin-left:auto';
-      for (var mi = 0; mi < MULTIPLIERS.length; mi++) {
-        (function(m) {
-          var btn = document.createElement('button');
-          btn.className = 'salary-btn';
-          btn.textContent = m.label;
-          btn.addEventListener('click', function() {
-            if (m.mult === null) {
-              showToast('#' + w.id + ' \uC5F0\uBD09 \uB3D9\uACB0', 'info');
-              openCompPanel();
-              return;
-            }
-            var newLevel = m.mult;
-            if (newLevel > 1.3) {
-              showToast('\u26A0 \uB0B4\uBD80 \uD615\uD3C9\uC131 \uC8FC\uC758', 'warn');
-            }
-            w.salaryLevel = newLevel;
-            w.will = clamp(0, 100, w.will + Math.round((newLevel - 1) * 20));
-            w.happiness = clamp(0, 100, w.happiness + Math.round((newLevel - 1) * 15));
-            showToast('#' + w.id + ' \uC5F0\uBD09 \u2192 ' + newLevel.toFixed(1) + 'x', 'success');
-            openCompPanel();
-          });
-          btnGroup.appendChild(btn);
-        })(MULTIPLIERS[mi]);
-      }
-      row.appendChild(btnGroup);
-      panel.appendChild(row);
-      totalCost += Math.round(baseSal * (w.salaryLevel || 1));
-    })(workers[i]);
+  // Read-only notice when not quarter day and strategy already set
+  if (!canChange) {
+    var nextQ = G.gDay + (30 - (G.gDay % 30));
+    var notice = document.createElement('div');
+    notice.className = 'comp-readonly-notice';
+    notice.textContent = '\uC804\uB7B5 \uBCC0\uACBD\uC740 \uBD84\uAE30 \uD68C\uC758(\uB9E4 30\uC77C)\uC5D0\uC11C\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4. \uB2E4\uC74C \uD68C\uC758: Day ' + nextQ;
+    panel.appendChild(notice);
   }
 
-  // Total cost footer
+  // Strategy cards container
+  var cardsContainer = document.createElement('div');
+  cardsContainer.className = 'comp-cards';
+
+  for (var si = 0; si < COMP_STRATEGIES.length; si++) {
+    (function(strat) {
+      var card = document.createElement('div');
+      card.className = 'comp-card';
+      var isActive = G.compStrategy === strat.id;
+      if (isActive) card.classList.add('active');
+      if (!canChange) card.classList.add('disabled');
+
+      // Icon
+      var iconEl = document.createElement('div');
+      iconEl.className = 'comp-card-icon';
+      iconEl.textContent = strat.icon;
+      card.appendChild(iconEl);
+
+      // Name
+      var nameEl = document.createElement('div');
+      nameEl.className = 'comp-card-name';
+      nameEl.textContent = strat.name;
+      card.appendChild(nameEl);
+
+      // Description
+      var descEl = document.createElement('div');
+      descEl.className = 'comp-card-desc';
+      descEl.textContent = strat.desc;
+      card.appendChild(descEl);
+
+      // SKMS link subtitle
+      var skmsEl = document.createElement('div');
+      skmsEl.style.cssText = 'font-size:8px;color:rgba(255,255,255,0.25);margin-top:4px';
+      skmsEl.textContent = 'SKMS: ' + strat.skmsLink;
+      card.appendChild(skmsEl);
+
+      // Active badge
+      if (isActive) {
+        var badge = document.createElement('div');
+        badge.className = 'comp-card-badge';
+        badge.textContent = '\uD604\uC7AC \uC801\uC6A9 \uC911';
+        card.appendChild(badge);
+      }
+
+      // Click handler
+      if (canChange) {
+        card.addEventListener('click', function() {
+          showCompConfirmDialog(strat);
+        });
+      }
+
+      cardsContainer.appendChild(card);
+    })(COMP_STRATEGIES[si]);
+  }
+
+  panel.appendChild(cardsContainer);
+
+  // Footer: total monthly labor cost
+  var baseSal = 50;
+  var totalCost = 0;
+  for (var fi = 0; fi < workers.length; fi++) {
+    totalCost += Math.round(baseSal * (workers[fi].salaryLevel || 1));
+  }
   var footer = document.createElement('div');
-  footer.style.cssText = 'margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;font-size:12px';
+  footer.className = 'comp-footer';
+  footer.style.cssText += ';display:flex;justify-content:space-between';
   var costLabel = document.createElement('span');
-  costLabel.style.color = 'rgba(255,255,255,0.5)';
   costLabel.textContent = '\uC6D4 \uCD1D \uC778\uAC74\uBE44';
   footer.appendChild(costLabel);
   var costVal = document.createElement('span');
@@ -3254,7 +3355,87 @@ function openCompPanel() {
   footer.appendChild(costVal);
   panel.appendChild(footer);
 
+  // SKMS connection note
+  if (G.compStrategy) {
+    var currentStrat = null;
+    for (var cs = 0; cs < COMP_STRATEGIES.length; cs++) {
+      if (COMP_STRATEGIES[cs].id === G.compStrategy) { currentStrat = COMP_STRATEGIES[cs]; break; }
+    }
+    if (currentStrat) {
+      var skmsNote = document.createElement('div');
+      skmsNote.style.cssText = 'font-size:9px;color:rgba(255,255,255,0.25);text-align:center;margin-top:6px';
+      skmsNote.textContent = 'SKMS \uC5F0\uACB0: ' + currentStrat.skmsLink + ' \u2014 "' + currentStrat.name + '"';
+      panel.appendChild(skmsNote);
+    }
+  }
+
   panel.classList.add('open');
+}
+
+function showCompConfirmDialog(strat) {
+  // Create overlay
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:200;display:flex;align-items:center;justify-content:center';
+
+  var dialog = document.createElement('div');
+  dialog.style.cssText = 'background:#1a1a2e;border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:20px;max-width:320px;width:90%;text-align:center;color:#fff;font-family:inherit';
+
+  var title = document.createElement('div');
+  title.style.cssText = 'font-size:20px;margin-bottom:8px';
+  title.textContent = strat.icon;
+  dialog.appendChild(title);
+
+  var msg = document.createElement('div');
+  msg.style.cssText = 'font-size:12px;margin-bottom:16px;line-height:1.5;color:rgba(255,255,255,0.7)';
+  msg.textContent = "'" + strat.name + "' \uC804\uB7B5\uC744 \uC801\uC6A9\uD558\uC2DC\uACA0\uC2B5\uB2C8\uAE4C?\n\uAE30\uC874 \uAC1C\uC778\uBCC4 \uC5F0\uBD09\uC740 1.0x\uB85C \uB9AC\uC14B\uB429\uB2C8\uB2E4.";
+  msg.style.whiteSpace = 'pre-line';
+  dialog.appendChild(msg);
+
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:8px;justify-content:center';
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.style.cssText = 'padding:8px 20px;border:1px solid rgba(255,255,255,0.15);border-radius:6px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);font-size:12px;cursor:pointer;font-family:inherit';
+  cancelBtn.textContent = '\uCDE8\uC18C';
+  cancelBtn.addEventListener('click', function() {
+    document.body.removeChild(overlay);
+  });
+  btnRow.appendChild(cancelBtn);
+
+  var okBtn = document.createElement('button');
+  okBtn.style.cssText = 'padding:8px 20px;border:1px solid rgba(255,184,48,0.4);border-radius:6px;background:rgba(255,184,48,0.15);color:#FFB830;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit';
+  okBtn.textContent = '\uC801\uC6A9';
+  okBtn.addEventListener('click', function() {
+    document.body.removeChild(overlay);
+
+    // Set strategy
+    G.compStrategy = strat.id;
+
+    // Reset all workers' salary levels
+    var workers = getAliveWorkers();
+    for (var ri = 0; ri < workers.length; ri++) {
+      workers[ri].salaryLevel = 1.0;
+    }
+
+    // Apply strategy effects
+    strat.apply(G);
+
+    showToast('\uBCF4\uC0C1 \uC804\uB7B5: ' + strat.icon + ' ' + strat.name + ' \uC801\uC6A9\uB428', 'success');
+    closeMgmtPanel();
+    updateHUD();
+    saveGame();
+  });
+  btnRow.appendChild(okBtn);
+
+  dialog.appendChild(btnRow);
+  overlay.appendChild(dialog);
+
+  // Close on overlay click (outside dialog)
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) document.body.removeChild(overlay);
+  });
+
+  document.body.appendChild(overlay);
 }
 
 function openWorkforcePanel() {
