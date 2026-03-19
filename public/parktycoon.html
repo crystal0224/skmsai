@@ -224,7 +224,7 @@ canvas{display:block;cursor:default}
 @keyframes bounceIn{0%{transform:translateY(30px);opacity:0}60%{transform:translateY(-6px);opacity:1}100%{transform:translateY(0);opacity:1}}
 @keyframes shakeIn{0%{transform:translateX(-8px);opacity:0}25%{transform:translateX(6px)}50%{transform:translateX(-4px);opacity:1}75%{transform:translateX(2px)}100%{transform:translateX(0)}}
 @keyframes twinkle{0%,100%{opacity:0}50%{opacity:1}}
-.slide1-layout{display:flex;align-items:center;justify-content:center;gap:24px;width:100%;padding:0}
+.slide1-layout{display:flex;align-items:center;justify-content:center;gap:40px;width:100%;padding:0}
 .slide1-before,.slide1-after{flex:1;display:flex;flex-direction:column;max-width:280px}
 .slide1-center{flex:0 0 180px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
 .slide1-col-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:4px}
@@ -232,7 +232,7 @@ canvas{display:block;cursor:default}
 .slide1-flow-arrow{color:#D1D5DB;font-size:18px;position:absolute;top:50%;transform:translateY(-50%)}
 .slide1-flow-arrow.left{left:-14px}
 .slide1-flow-arrow.right{right:-14px}
-.skms-panel{width:100%;background:linear-gradient(180deg,#FFF8F1,#FFF1E3);border-radius:16px;padding:20px 14px;border:1px solid rgba(234,88,12,0.15);text-align:center;position:relative}
+.skms-panel{width:100%;background:transparent;border:none;padding:20px 8px;text-align:center}
 .after-area{display:flex;flex-direction:column;gap:8px;flex:1}
 .success-path{flex:1;background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:12px;padding:10px;text-align:center}
 .failure-path{flex:1;background:linear-gradient(135deg,#FEF2F2,#FFF1F2);border-radius:12px;padding:10px;text-align:center}
@@ -6339,20 +6339,19 @@ function showOnboarding() {
 
   // Character data — 3 Before, 4 Success, 3 Fail
   var beforeChars = [
-    {col:'#BDBDBD',size:0.7,label:'\uBB34\uAE30\uB825',bubble:'\uB9E4\uC77C \uB611\uAC19\uC740 \uD558\uB8E8...'},
-    {col:'#78909C',size:0.8,label:'\uB0C9\uC18C\uD30C',bubble:'\uD574\uBD24\uC790 \uB2EC\uB77C\uC9C0\uB294 \uAC74 \uC5C6\uC5B4'},
-    {col:'#66BB6A',size:0.6,label:'\uC2E0\uC785',bubble:'\uBB50\uBD80\uD130 \uD574\uC57C \uD560\uC9C0...'}
+    {col:'#BDBDBD',size:0.7,label:'\uBB34\uAE30\uB825',bubble:'\uB9E4\uC77C \uB611\uAC19\uC740 \uD558\uB8E8...', sad:true},
+    {col:'#78909C',size:0.8,label:'\uB0C9\uC18C\uD30C',bubble:'\uD574\uBD24\uC790 \uB2EC\uB77C\uC9C0\uB294 \uAC74 \uC5C6\uC5B4', sad:true},
+    {col:'#66BB6A',size:0.6,label:'\uC2E0\uC785',bubble:'\uBB50\uBD80\uD130 \uD574\uC57C \uD560\uC9C0...', sad:true}
   ];
   var successChars = [
-    {col:'#66BB6A',size:0.6,label:'\uD68C\uBCF5',bubble:'\uB2E4\uC2DC \uD574\uBCFC\uAC8C\uC694!'},
-    {col:'#FF7043',size:0.6,label:'\uC5D0\uC774\uC2A4',bubble:'\uC131\uACFC \uB0B4\uACE0 \uC788\uC5B4\uC694!'},
-    {col:'#FFD54F',size:0.7,label:'\uB9AC\uB354',bubble:'SUPEX \uCD94\uAD6C!'},
-    {col:'#4FC3F7',size:0.55,label:'\uC131\uC7A5',bubble:'\uBC30\uC6B0\uACE0 \uC788\uC5B4\uC694!'}
+    {col:'#66BB6A',size:0.55,label:'\uC2E0\uC785\u2192\uD68C\uBCF5',bubble:'\uB2E4\uC2DC \uD574\uBCFC\uAC8C\uC694!'},
+    {col:'#FF7043',size:0.65,label:'\uC5D0\uC774\uC2A4',bubble:'\uC131\uACFC \uB0B4\uACE0 \uC788\uC5B4\uC694!'},
+    {col:'#FFD54F',size:0.75,label:'\uB9AC\uB354\uB85C \uC131\uC7A5',bubble:'SUPEX \uCD94\uAD6C!'}
   ];
   var failChars = [
-    {col:'#BDBDBD',size:0.55,label:'\uD1F4\uC0AC',bubble:'\uB354\uB294 \uBABB\uD558\uACA0\uC5B4\uC694...'},
-    {col:'#9E9E9E',size:0.5,label:'\uC794\uB958',bubble:'...'},
-    {col:'#B0BEC5',size:0.5,label:'\uBC88\uC544\uC6C3',bubble:'\uD798\uB4E4\uC5B4\uC694...'}
+    {col:'#BDBDBD',size:0.55,label:'\uD1F4\uC0AC',bubble:'\uB354\uB294 \uBABB\uD558\uACA0\uC5B4\uC694...', sad:true},
+    {col:'#9E9E9E',size:0.5,label:'\uC794\uB958',bubble:'...', sad:true},
+    {col:'#B0BEC5',size:0.5,label:'\uBC88\uC544\uC6C3',bubble:'\uD798\uB4E4\uC5B4\uC694...', sad:true}
   ];
   var previewFrame = 0;
   var speakingIdx = 0;
@@ -6787,37 +6786,19 @@ function showOnboarding() {
   skmsPanel.className = 'skms-panel';
 
   var skmsTurn = document.createElement('div');
-  skmsTurn.style.cssText = 'color:#EA580C;font-size:10px;font-weight:800;letter-spacing:1.5px;margin-bottom:6px';
-  skmsTurn.textContent = '\u26A1 YOUR TURN';
+  skmsTurn.style.cssText = 'color:#9CA3AF;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px';
+  skmsTurn.textContent = 'YOUR TURN';
 
   var skmsTitle = document.createElement('div');
-  skmsTitle.style.cssText = 'color:#9A3412;font-size:22px;font-weight:900;margin-bottom:4px;letter-spacing:-0.5px';
+  skmsTitle.style.cssText = 'color:#1F2937;font-size:28px;font-weight:900;margin-bottom:12px;letter-spacing:-1px;line-height:1';
   skmsTitle.textContent = 'SKMS';
 
-  var skmsIcon = document.createElement('div');
-  skmsIcon.style.cssText = 'font-size:32px;margin-bottom:8px';
-  skmsIcon.textContent = '\uD83C\uDFAE';
-
-  var transformRow = document.createElement('div');
-  transformRow.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;font-size:16px';
-  var trSad = document.createElement('span');
-  trSad.style.cssText = 'opacity:0.6;filter:grayscale(0.5)';
-  trSad.textContent = '\uD83D\uDE1E';
-  var trArrow = document.createElement('span');
-  trArrow.style.cssText = 'color:#EA580C;font-size:12px;font-weight:900';
-  trArrow.textContent = '\u2192';
-  var trHappy = document.createElement('span');
-  trHappy.textContent = '\uD83D\uDE0A';
-  transformRow.appendChild(trSad);
-  transformRow.appendChild(trArrow);
-  transformRow.appendChild(trHappy);
-
   var skmsCopy = document.createElement('div');
-  skmsCopy.style.cssText = 'font-size:12px;color:#78350F;font-weight:700;line-height:1.6';
+  skmsCopy.style.cssText = 'font-size:13px;color:#6B7280;font-weight:500;line-height:1.7';
   var copyText1 = document.createTextNode('\uB2F9\uC2E0\uC758 \uACBD\uC601\uC774');
   var copyBr = document.createElement('br');
   var copyFate = document.createElement('span');
-  copyFate.style.cssText = 'color:#EA580C;font-size:16px;font-weight:900';
+  copyFate.style.cssText = 'color:#1F2937;font-size:18px;font-weight:900;letter-spacing:-0.5px';
   copyFate.textContent = '\uC6B4\uBA85';
   var copyText2 = document.createTextNode('\uC744 \uBC14\uAFD9\uB2C8\uB2E4');
   skmsCopy.appendChild(copyText1);
@@ -6827,8 +6808,6 @@ function showOnboarding() {
 
   skmsPanel.appendChild(skmsTurn);
   skmsPanel.appendChild(skmsTitle);
-  skmsPanel.appendChild(skmsIcon);
-  skmsPanel.appendChild(transformRow);
   skmsPanel.appendChild(skmsCopy);
   centerCol.appendChild(skmsPanel);
   layout.appendChild(centerCol);
