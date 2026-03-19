@@ -224,17 +224,18 @@ canvas{display:block;cursor:default}
 @keyframes bounceIn{0%{transform:translateY(30px);opacity:0}60%{transform:translateY(-6px);opacity:1}100%{transform:translateY(0);opacity:1}}
 @keyframes shakeIn{0%{transform:translateX(-8px);opacity:0}25%{transform:translateX(6px)}50%{transform:translateX(-4px);opacity:1}75%{transform:translateX(2px)}100%{transform:translateX(0)}}
 @keyframes twinkle{0%,100%{opacity:0}50%{opacity:1}}
-.slide1-layout{display:flex;align-items:flex-start;justify-content:center;gap:0;width:100%;position:relative;padding:0}
-.slide1-before{flex:3;display:flex;flex-direction:column;align-items:center}
-.slide1-center{flex:0 0 180px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8px;align-self:center}
-.slide1-after{flex:4;display:flex;flex-direction:column;align-items:center}
-.slide1-col-title{font-size:13px;font-weight:800;text-align:center;margin-bottom:2px}
-.slide1-col-sub{font-size:10px;text-align:center;margin-bottom:6px;color:#6B7280}
-.skms-panel{width:100%;background:linear-gradient(180deg,#FFF7ED,#FFF1E6);border-radius:14px;padding:18px 14px;border:2px solid rgba(234,88,12,0.25);text-align:center;box-shadow:0 4px 20px rgba(234,88,12,0.1);position:relative;overflow:hidden}
-.skms-panel::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,rgba(234,88,12,0.06) 0%,transparent 70%);pointer-events:none}
-.after-area{width:100%;display:flex;flex-direction:column;gap:6px}
-.success-path{background:rgba(34,197,94,0.05);border:1.5px solid rgba(34,197,94,0.18);border-radius:10px;padding:6px;text-align:center}
-.failure-path{background:rgba(220,38,38,0.04);border:1.5px solid rgba(220,38,38,0.10);border-radius:10px;padding:6px;text-align:center}
+.slide1-layout{display:flex;align-items:stretch;gap:12px;width:100%;padding:0}
+.slide1-before,.slide1-after{flex:1;display:flex;flex-direction:column}
+.slide1-center{flex:0 0 160px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.slide1-col-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:4px}
+.slide1-col-sub{font-size:10px;text-align:center;margin-bottom:8px;color:#9CA3AF;font-weight:500}
+.slide1-flow-arrow{color:#D1D5DB;font-size:18px;position:absolute;top:50%;transform:translateY(-50%)}
+.slide1-flow-arrow.left{left:-14px}
+.slide1-flow-arrow.right{right:-14px}
+.skms-panel{width:100%;background:linear-gradient(180deg,#FFF8F1,#FFF1E3);border-radius:16px;padding:20px 14px;border:1px solid rgba(234,88,12,0.15);text-align:center;position:relative}
+.after-area{display:flex;flex-direction:column;gap:8px;flex:1}
+.success-path{flex:1;background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:12px;padding:10px;text-align:center}
+.failure-path{flex:1;background:linear-gradient(135deg,#FEF2F2,#FFF1F2);border-radius:12px;padding:10px;text-align:center}
 .sc-card-new{flex:1;padding:20px;border-radius:12px;border:2px solid #E2E8F0;background:#FAFAFA;cursor:pointer;transition:all .2s ease-out;display:flex;flex-direction:column;align-items:center;gap:8px}
 .sc-card-new:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
 .sc-card-new.active{border-color:#0052A2;background:linear-gradient(135deg,#EBF2FA,#F0F7FF);box-shadow:0 4px 20px rgba(0,82,162,0.12)}
@@ -340,7 +341,8 @@ canvas{display:block;cursor:default}
   .onboard-flow{flex-direction:column}.onboard-flow-arrow{justify-content:center;transform:rotate(90deg)}
   .slide1-layout{flex-direction:column;gap:12px}
   .slide1-before,.slide1-after{flex:none;width:100%}
-  .slide1-center{flex:none;width:100%}
+  .slide1-center{flex:none;width:100%;padding:0 10%}
+  .slide1-flow-arrow{display:none}
   .skms-panel{width:80%;margin:0 auto}
   .event-card{width:92vw;padding:20px 16px}
   .strat-card{width:95vw;padding:20px 16px}
@@ -6521,7 +6523,7 @@ function showOnboarding() {
 
     // Draw beforeChars — centered, staggered Y
     var spacing = w / (beforeChars.length + 1);
-    var yPositions = [90, 100, 95];
+    var yPositions = [110, 120, 115];
     for (var j = 0; j < beforeChars.length; j++) {
       var cx = spacing * (j + 1);
       drawIsoChar(beforeCtx, cx, yPositions[j], beforeChars[j], speakingIdx === j, true);
@@ -6690,13 +6692,14 @@ function showOnboarding() {
   var slideContainer = document.createElement('div');
   slideContainer.className = 'onboard-slides';
 
-  // --- SLIDE 1: Diverging Paths (Before / SKMS / After) ---
+  // --- SLIDE 1: Editorial Triptych (Before / SKMS / After) ---
   var s1 = document.createElement('div');
   s1.className = 'onboard-slide active';
+  s1.style.animation = 'fadeIn 0.5s ease-out';
 
   var s1Label = document.createElement('div');
-  s1Label.style.cssText = 'font-size:13px;font-weight:700;color:#6B7280;margin-bottom:8px;letter-spacing:0.5px;text-align:center';
-  s1Label.textContent = '\uD83C\uDFAE SKMS \uACBD\uC601\uC774 \uB9CC\uB4DC\uB294 \uBCC0\uD654';
+  s1Label.style.cssText = 'font-size:14px;font-weight:700;color:#6B7280;margin-bottom:12px;letter-spacing:0.5px;text-align:center';
+  s1Label.innerHTML = '\uD83C\uDFAE SKMS \uACBD\uC601\uC774 \uB9CC\uB4DC\uB294 \uBCC0\uD654';
   s1.appendChild(s1Label);
 
   var layout = document.createElement('div');
@@ -6714,16 +6717,26 @@ function showOnboarding() {
   beforeSub.textContent = '\uBB34\uAE30\uB825\uD55C \uC870\uC9C1';
   var beforeCanvas = document.createElement('canvas');
   beforeCanvas.width = 240;
-  beforeCanvas.height = 200;
-  beforeCanvas.style.cssText = 'border-radius:10px;background:rgba(254,226,226,0.25);width:100%';
+  beforeCanvas.height = 240;
+  beforeCanvas.style.cssText = 'border-radius:12px;background:rgba(254,226,226,0.18);width:100%;flex:1';
   beforeWrap.appendChild(beforeTitle);
   beforeWrap.appendChild(beforeSub);
   beforeWrap.appendChild(beforeCanvas);
   layout.appendChild(beforeWrap);
 
-  // SKMS center column
+  // SKMS center column with CSS flow arrows
   var centerCol = document.createElement('div');
   centerCol.className = 'slide1-center';
+
+  var arrowLeft = document.createElement('span');
+  arrowLeft.className = 'slide1-flow-arrow left';
+  arrowLeft.textContent = '\u2192';
+  centerCol.appendChild(arrowLeft);
+
+  var arrowRight = document.createElement('span');
+  arrowRight.className = 'slide1-flow-arrow right';
+  arrowRight.textContent = '\u2192';
+  centerCol.appendChild(arrowRight);
 
   var skmsPanel = document.createElement('div');
   skmsPanel.className = 'skms-panel';
@@ -6740,7 +6753,6 @@ function showOnboarding() {
   skmsIcon.style.cssText = 'font-size:32px;margin-bottom:8px';
   skmsIcon.textContent = '\uD83C\uDFAE';
 
-  // Transformation arrows: 😞 → ⚡ → 😊
   var transformRow = document.createElement('div');
   transformRow.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:10px;font-size:16px';
   var trSad = document.createElement('span');
@@ -6794,14 +6806,14 @@ function showOnboarding() {
   var successDiv = document.createElement('div');
   successDiv.className = 'success-path';
   var successLabel = document.createElement('div');
-  successLabel.style.cssText = 'color:#22c55e;font-size:11px;font-weight:bold;margin-bottom:4px';
+  successLabel.style.cssText = 'color:#16a34a;font-size:10px;font-weight:800;letter-spacing:0.5px;margin-bottom:4px';
   successLabel.textContent = '\u2705 SUPEX \uB2EC\uC131';
   var successCanvas = document.createElement('canvas');
-  successCanvas.width = 300;
-  successCanvas.height = 120;
+  successCanvas.width = 240;
+  successCanvas.height = 110;
   successCanvas.style.cssText = 'width:100%;border-radius:8px';
   var successCaption = document.createElement('div');
-  successCaption.style.cssText = 'color:#4ade80;font-size:8px;margin-top:4px';
+  successCaption.style.cssText = 'color:#22c55e;font-size:9px;margin-top:4px;font-weight:500';
   successCaption.textContent = '\uC9C1\uC6D0 \uD589\uBCF5 + \uC131\uACFC \uD83D\uDCC8';
   successDiv.appendChild(successLabel);
   successDiv.appendChild(successCanvas);
@@ -6811,14 +6823,14 @@ function showOnboarding() {
   var failDiv = document.createElement('div');
   failDiv.className = 'failure-path';
   var failLabel = document.createElement('div');
-  failLabel.style.cssText = 'color:#ef4444;font-size:11px;font-weight:bold;margin-bottom:4px';
+  failLabel.style.cssText = 'color:#dc2626;font-size:10px;font-weight:800;letter-spacing:0.5px;margin-bottom:4px';
   failLabel.textContent = '\u274C \uACBD\uC601 \uC2E4\uD328';
   var failCanvas = document.createElement('canvas');
-  failCanvas.width = 300;
-  failCanvas.height = 120;
+  failCanvas.width = 240;
+  failCanvas.height = 110;
   failCanvas.style.cssText = 'width:100%;border-radius:8px';
   var failCaption = document.createElement('div');
-  failCaption.style.cssText = 'color:#f87171;font-size:8px;margin-top:4px';
+  failCaption.style.cssText = 'color:#ef4444;font-size:9px;margin-top:4px;font-weight:500';
   failCaption.textContent = '\uC774\uC9C1 \uB7EC\uC2DC + \uD30C\uC0B0 \uD83D\uDC80';
   failDiv.appendChild(failLabel);
   failDiv.appendChild(failCanvas);
@@ -6828,89 +6840,12 @@ function showOnboarding() {
 
   layout.appendChild(afterCol);
 
-  // SVG arrow overlay
-  var arrowSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  arrowSvg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none';
-  layout.appendChild(arrowSvg);
-
   s1.appendChild(layout);
 
   // Get canvas contexts
   beforeCtx = beforeCanvas.getContext('2d');
   successCtx = successCanvas.getContext('2d');
   failCtx = failCanvas.getContext('2d');
-
-  // SVG arrows (drawn after entrance animations finish)
-  setTimeout(function() {
-    if (!skmsPanel.offsetParent) return;
-    var svgNS = 'http://www.w3.org/2000/svg';
-    var layoutRect = layout.getBoundingClientRect();
-    var skmsRect = skmsPanel.getBoundingClientRect();
-    var successRect = successDiv.getBoundingClientRect();
-    var failRect = failDiv.getBoundingClientRect();
-    var beforeR = beforeWrap.getBoundingClientRect();
-
-    var ox = layoutRect.left, oy = layoutRect.top;
-    var lw = layoutRect.width, lh = layoutRect.height;
-    arrowSvg.setAttribute('viewBox', '0 0 ' + lw + ' ' + lh);
-
-    // Defs with markers
-    var defs = document.createElementNS(svgNS, 'defs');
-    [['arrG','#22c55e'],['arrR','#ef4444'],['arrW','#9CA3AF']].forEach(function(m) {
-      var mk = document.createElementNS(svgNS, 'marker');
-      mk.setAttribute('id', m[0]); mk.setAttribute('markerWidth','6'); mk.setAttribute('markerHeight','5');
-      mk.setAttribute('refX','6'); mk.setAttribute('refY','2.5'); mk.setAttribute('orient','auto');
-      var p = document.createElementNS(svgNS, 'path');
-      p.setAttribute('d','M0,0 L6,2.5 L0,5'); p.setAttribute('fill', m[1]);
-      mk.appendChild(p); defs.appendChild(mk);
-    });
-    arrowSvg.appendChild(defs);
-
-    // Before → SKMS (short dashed)
-    var bRx = beforeR.right - ox;
-    var bCy = beforeR.top - oy + beforeR.height * 0.5;
-    var sLx = skmsRect.left - ox;
-    var sCy = skmsRect.top - oy + skmsRect.height * 0.5;
-    var line = document.createElementNS(svgNS, 'line');
-    line.setAttribute('x1', bRx); line.setAttribute('y1', bCy);
-    line.setAttribute('x2', sLx); line.setAttribute('y2', sCy);
-    line.setAttribute('stroke','#9CA3AF'); line.setAttribute('stroke-width','1.5');
-    line.setAttribute('stroke-dasharray','3 3'); line.setAttribute('marker-end','url(#arrW)');
-    arrowSvg.appendChild(line);
-
-    // SKMS → Success (smooth curve to center of success card)
-    var sRx = skmsRect.right - ox;
-    var sTy = skmsRect.top - oy + skmsRect.height * 0.35;
-    var aLx = successRect.left - ox;
-    var aCy = successRect.top - oy + successRect.height * 0.5;
-    var cpx = sRx + (aLx - sRx) * 0.5;
-    var p1 = document.createElementNS(svgNS, 'path');
-    p1.setAttribute('d', 'M '+sRx+' '+sTy+' C '+cpx+' '+sTy+' '+cpx+' '+aCy+' '+aLx+' '+aCy);
-    p1.setAttribute('stroke','#22c55e'); p1.setAttribute('stroke-width','1.5');
-    p1.setAttribute('fill','none'); p1.setAttribute('marker-end','url(#arrG)');
-    p1.setAttribute('opacity','0.7');
-    arrowSvg.appendChild(p1);
-
-    // SKMS → Failure (smooth curve to center of fail card)
-    var sBty = skmsRect.top - oy + skmsRect.height * 0.65;
-    var fLx = failRect.left - ox;
-    var fCy = failRect.top - oy + failRect.height * 0.5;
-    var cpx2 = sRx + (fLx - sRx) * 0.5;
-    var p2 = document.createElementNS(svgNS, 'path');
-    p2.setAttribute('d', 'M '+sRx+' '+sBty+' C '+cpx2+' '+sBty+' '+cpx2+' '+fCy+' '+fLx+' '+fCy);
-    p2.setAttribute('stroke','#ef4444'); p2.setAttribute('stroke-width','1.5');
-    p2.setAttribute('fill','none'); p2.setAttribute('marker-end','url(#arrR)');
-    p2.setAttribute('opacity','0.7');
-    arrowSvg.appendChild(p2);
-  }, 1600);
-
-  // Entrance animations (staggered)
-  beforeWrap.style.opacity = '0';
-  beforeWrap.style.animation = 'fadeInUp 0.6s ease-out 0.2s forwards';
-  centerCol.style.opacity = '0';
-  centerCol.style.animation = 'fadeInUp 0.5s ease-out 0.5s forwards';
-  afterCol.style.opacity = '0';
-  afterCol.style.animation = 'bounceIn 0.6s ease-out 0.8s forwards';
 
   slides.push(s1);
 
