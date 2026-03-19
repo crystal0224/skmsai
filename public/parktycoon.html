@@ -6986,18 +6986,10 @@ function showOnboarding() {
   }
   s3.appendChild(playGrid);
 
-  // Meaning text at bottom — two lines, emphasized
-  var meaningWrap = document.createElement('div');
-  meaningWrap.style.cssText = 'text-align:center;max-width:520px;margin:0 auto;padding:16px 20px;border-radius:12px;background:linear-gradient(135deg,rgba(0,82,162,0.04),rgba(0,82,162,0.08));border:1px solid rgba(0,82,162,0.1);opacity:0;animation:fadeInUp 0.5s ease-out 0.6s forwards';
-  var mLine1 = document.createElement('div');
-  mLine1.style.cssText = 'font-size:14px;font-weight:900;color:#1F2937;line-height:1.6;margin-bottom:4px';
-  mLine1.textContent = '사람을 키우고, 조직을 세우고, 위기 속에서 원칙을 지키는 것.';
-  var mLine2 = document.createElement('div');
-  mLine2.style.cssText = 'font-size:13px;color:#6B7280;font-weight:500';
-  mLine2.textContent = '그것이 진짜 경영입니다.';
-  meaningWrap.appendChild(mLine1);
-  meaningWrap.appendChild(mLine2);
-  s3.appendChild(meaningWrap);
+  var meaningText = document.createElement('div');
+  meaningText.style.cssText = 'text-align:center;font-size:12px;color:#9CA3AF;margin-top:8px;opacity:0;animation:fadeInUp 0.4s ease-out 0.6s forwards';
+  meaningText.textContent = '사람을 키우고, 조직을 세우고, 위기 속에서 원칙을 지키는 것. 그것이 진짜 경영입니다.';
+  s3.appendChild(meaningText);
 
 
   slides.push(s3);
