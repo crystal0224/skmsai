@@ -5380,6 +5380,19 @@ function showOnboarding() {
   var overlay = document.getElementById('onboard-overlay');
   while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
 
+  // BGM: start on first user interaction (browser autoplay policy)
+  var onbBgmStarted = false;
+  function tryStartOnbBGM() {
+    if (onbBgmStarted) return;
+    onbBgmStarted = true;
+    initAudio();
+    startOnboardingBGM();
+    overlay.removeEventListener('click', tryStartOnbBGM);
+    overlay.removeEventListener('touchstart', tryStartOnbBGM);
+  }
+  overlay.addEventListener('click', tryStartOnbBGM);
+  overlay.addEventListener('touchstart', tryStartOnbBGM);
+
   var selectedScenario = 1;
 
   // Hero title above the card
@@ -5764,6 +5777,7 @@ function showOnboarding() {
     continueBtn.style.cssText = 'flex:1;padding:14px;border:none;border-radius:12px;background:var(--green);color:#1a1a2e;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:transform .15s,opacity .15s;';
     continueBtn.textContent = '\uC774\uC5B4\uD558\uAE30 \u2014 Day ' + saveInfo.gDay + ', $' + saveInfo.money + ', \u2B50' + (saveInfo.rating || 1).toFixed(1);
     continueBtn.addEventListener('click', function() {
+      stopOnboardingBGM();
       initAudio();
       startBGM();
       G = createInitialState();
@@ -5803,6 +5817,7 @@ function showOnboarding() {
     pendingContBtn.style.cssText = 'background:#60A5FA;margin-bottom:8px;';
     pendingContBtn.textContent = '\u25B6 \uC774\uC5B4\uD558\uAE30 \u2014 Day ' + sv.gDay + ', $' + sv.money.toLocaleString() + ', \u2B50' + (sv.rating || 1).toFixed(1);
     pendingContBtn.addEventListener('click', function() {
+      stopOnboardingBGM();
       initAudio(); startBGM(); sfxPlace();
       G = createInitialState();
       loadGame(sv);
@@ -5819,6 +5834,7 @@ function showOnboarding() {
   startBtn.className = 'onboard-start';
   startBtn.textContent = '\uD83C\uDFAC \uACBD\uC601 \uC2DC\uC791!';
   startBtn.addEventListener('click', function() {
+    stopOnboardingBGM();
     initAudio(); startBGM(); sfxPlace();
     clearSave();
     G = createInitialState();
@@ -6137,6 +6153,7 @@ function showOnboarding() {
 
   // Start game function (shared by nav button and start button)
   function startNewGame() {
+    stopOnboardingBGM();
     initAudio(); startBGM(); sfxPlace();
     clearSave();
     G = createInitialState();
@@ -6187,6 +6204,7 @@ function showOnboarding() {
     navContBtn.style.cssText = 'background:var(--green);color:#1a1a2e;font-weight:800;display:none;';
     navContBtn.textContent = '\u25B6 \uC774\uC5B4\uD558\uAE30 Day ' + saveInfo.gDay;
     navContBtn.addEventListener('click', function() {
+      stopOnboardingBGM();
       initAudio(); startBGM();
       G = createInitialState();
       loadGame(saveInfo);
