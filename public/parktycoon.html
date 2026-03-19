@@ -696,6 +696,43 @@ const EVENTS = [
       {text:'\uCD95\uC18C \uBC1C\uD45C + \uB0B4\uBD80 \uC870\uC0AC', preview:'\uBE44\uC6A9 -$500, \uACE0\uAC1D -5\n\uBC1C\uAC01\uB418\uBA74 \uB354 \uD070 \uD0C0\uACA9', apply:function(G){G.money-=500;G.custSat=Math.max(0,G.custSat-5);if(Math.random()<0.5){G.custSat=Math.max(0,G.custSat-20);showToast('\uC740\uD3D0 \uC2DC\uB3C4\uAC00 \uBC1C\uAC01\uB418\uC5C8\uC2B5\uB2C8\uB2E4!','warn');}}},
       {text:'\uC724\uB9AC \uACBD\uC601 \uAE30\uBC18 \uB300\uC751 (\uC724\uB9AC\uACBD\uC601 \uD544\uC694)', preview:'\uBE44\uC6A9 -$2000, \uACE0\uAC1D +5\n\uC0AC\uC804 \uB9E4\uB274\uC5BC\uB85C \uC2E0\uC18D \uB300\uC751', skmsTag:'rational', reqPolicy:'ethics', apply:function(G){G.money-=2000;G.custSat=Math.min(100,G.custSat+5);G.socVal=Math.min(100,G.socVal+10);}}
     ]
+  },
+  // === AI SCENARIO EXCLUSIVE EVENTS (scenarioOnly:2) ===
+  {
+    id:'ai_pilot', headline:'AI \uD30C\uC77C\uB7FF \uD504\uB85C\uC81D\uD2B8 \uC81C\uC548', scenarioOnly:2,
+    desc:'\uAE30\uC220\uD300\uC5D0\uC11C AI \uD30C\uC77C\uB7FF\uC744 \uC81C\uC548\uD588\uC2B5\uB2C8\uB2E4. \uC5B4\uB5A4 \uBC29\uC2DD\uC73C\uB85C \uC2DC\uC791\uD560\uAE4C\uC694?',
+    choices:[
+      {text:'\uC18C\uADDC\uBAA8 PoC (\uD55C \uBD80\uC11C)', preview:'\uBE44\uC6A9 -$1000, \uACE0\uAC1D +5\n\uC548\uC804\uD558\uAC8C \uC2DC\uC791, \uC131\uACFC \uD655\uC778 \uD6C4 \uD655\uB300', skmsTag:'rational', delayed:{days:5,followupId:'ai_poc_success'}, apply:function(G){G.money-=1000;G.custSat=Math.min(100,G.custSat+5);}},
+      {text:'\uC804\uC0AC \uB3D9\uC2DC \uB3C4\uC785', preview:'\uBE44\uC6A9 -$4000, \uACE0\uAC1D +15, \uC9C1\uC6D0\uD589\uBCF5 -15\n\uBE60\uB974\uC9C0\uB9CC \uBCC0\uD654 \uC800\uD56D \uC2EC\uD568', apply:function(G){G.money-=4000;G.custSat=Math.min(100,G.custSat+15);G.empHap=Math.max(0,G.empHap-15);G.laborTension=Math.min(100,G.laborTension+10);}},
+      {text:'AI \uCC54\uD53C\uC5B8 \uC721\uC131 (VWBE \uD544\uC694)', preview:'\uBE44\uC6A9 -$2000, \uC9C1\uC6D0\uD589\uBCF5 +10, \uACE0\uAC1D +10\n\uC790\uBC1C\uC801 \uD655\uC0B0, \uB0B4\uBD80 \uC804\uBB38\uAC00 \uC721\uC131', skmsTag:'vwbe', reqPolicy:'vwbe', apply:function(G){G.money-=2000;G.empHap=Math.min(100,G.empHap+10);G.custSat=Math.min(100,G.custSat+10);}}
+    ]
+  },
+  {
+    id:'ai_resistance', headline:'\uD604\uC7A5 AI \uB3C4\uC785 \uC800\uD56D', scenarioOnly:2,
+    desc:'\uBCC0\uD654\uB97C \uC2EB\uC5B4\uD558\uB294 \uC2DC\uB2C8\uC5B4 \uC9C1\uC6D0\uB4E4\uC774 AI \uB3C4\uC785\uC5D0 \uACF5\uAC1C\uC801\uC73C\uB85C \uBC18\uB300\uD558\uACE0 \uC788\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'1:1 \uBA74\uB2F4\uC73C\uB85C \uBD88\uC548 \uD574\uC18C', preview:'\uC9C1\uC6D0\uD589\uBCF5 +10\n\uAC1C\uC778\uBCC4 AI \uD65C\uC6A9 \uBC29\uC548 \uD568\uAED8 \uC124\uACC4', skmsTag:'human_centered', apply:function(G){G.empHap=Math.min(100,G.empHap+10);}},
+      {text:'AI \uC131\uACFC \uC0AC\uB840 \uACF5\uC720\uD68C', preview:'\uBE44\uC6A9 -$500, \uC9C1\uC6D0\uD589\uBCF5 +5, \uC2DC\uB2C8\uD06C 1\uBA85 \uC804\uD658\n\uC131\uACF5 \uC0AC\uB840\uB85C \uB9C8\uC74C\uC744 \uB3CC\uB9BC', skmsTag:'supex', apply:function(G){G.money-=500;G.empHap=Math.min(100,G.empHap+5);convertRandom(G,'cynic','rookie',1);}},
+      {text:'\uC131\uACFC\uAE09\uC73C\uB85C \uAC15\uC81C \uC801\uC6A9', preview:'\uACE0\uAC1D +10, \uC9C1\uC6D0\uD589\uBCF5 -20\n\uB2E8\uAE30 \uC131\uACFC \uC62C\uB9AC\uC9C0\uB9CC \uC774\uD0C8 \uC704\uD5D8', apply:function(G){G.custSat=Math.min(100,G.custSat+10);G.empHap=Math.max(0,G.empHap-20);G.pressureCount++;G.laborTension=Math.min(100,G.laborTension+8);}}
+    ]
+  },
+  {
+    id:'ai_ethics', headline:'AI \uC724\uB9AC \uB17C\uB780 \u2014 \uACE0\uAC1D \uB370\uC774\uD130 \uD65C\uC6A9 \uBC94\uC704', scenarioOnly:2,
+    desc:'AI \uBAA8\uB378 \uD559\uC2B5\uC5D0 \uACE0\uAC1D \uB370\uC774\uD130\uB97C \uC5B4\uB514\uAE4C\uC9C0 \uC4F8 \uC218 \uC788\uB294\uC9C0 \uB17C\uB780\uC774 \uBC88\uC9C0\uACE0 \uC788\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'\uC624\uD508 AI \uC6D0\uCE59 \uC218\uB9BD', preview:'\uBE44\uC6A9 -$1000, \uC0AC\uD68C\uAC00\uCE58 +15, \uACE0\uAC1D +5\n\uD22C\uBA85\uD55C AI \uC6D0\uCE59\uC73C\uB85C \uC2E0\uB8B0 \uD655\uBCF4', skmsTag:'social_value', apply:function(G){G.money-=1000;G.socVal=Math.min(100,G.socVal+15);G.custSat=Math.min(100,G.custSat+5);}},
+      {text:'\uCD5C\uB300\uD55C \uD65C\uC6A9 (\uC218\uC775 \uC6B0\uC120)', preview:'\uACE0\uAC1D +15, \uC0AC\uD68C\uAC00\uCE58 -10\n\uB2E8\uAE30 \uC131\uACFC\uC5D0 \uC720\uB9AC\uD558\uC9C0\uB9CC \uB9AC\uC2A4\uD06C', apply:function(G){G.custSat=Math.min(100,G.custSat+15);G.socVal=Math.max(0,G.socVal-10);}},
+      {text:'AI \uC724\uB9AC\uC704\uC6D0\uD68C \uAD6C\uC131 (\uC724\uB9AC\uACBD\uC601 \uD544\uC694)', preview:'\uBE44\uC6A9 -$1500, \uC0AC\uD68C\uAC00\uCE58 +20, \uACE0\uAC1D +10\n\uB0B4\uBD80 \uAC80\uC99D + \uC678\uBD80 \uC2E0\uB8B0', skmsTag:'rational', reqPolicy:'ethics', apply:function(G){G.money-=1500;G.socVal=Math.min(100,G.socVal+20);G.custSat=Math.min(100,G.custSat+10);}}
+    ]
+  },
+  {
+    id:'ai_talent_war', headline:'AI \uC778\uC7AC \uC7C1\uD0C8\uC804 \u2014 \uACBD\uC7C1\uC0AC \uC2A4\uCE74\uC6B0\uD305', scenarioOnly:2,
+    desc:'AI \uC778\uC7AC \uBD80\uC871\uC774 \uC2EC\uAC01\uD569\uB2C8\uB2E4. \uACBD\uC7C1\uC0AC\uB4E4\uC774 \uC6B0\uB9AC \uAE30\uC220\uD300\uC744 \uB178\uB9AC\uACE0 \uC788\uC2B5\uB2C8\uB2E4.',
+    choices:[
+      {text:'AI \uC778\uC7AC \uC721\uC131 \uD504\uB85C\uADF8\uB7A8 (\uAD50\uC721\uC6D0 \uD544\uC694)', preview:'\uBE44\uC6A9 -$2500, \uB8E8\uD0A4 2\uBA85\u2192\uC5D0\uC774\uC2A4\n\uB0B4\uBD80 \uC778\uC7AC\uB85C AI \uC5ED\uB7C9 \uD655\uBCF4', skmsTag:'vwbe', reqBuilding:'academy', apply:function(G){G.money-=2500;convertRandom(G,'rookie','ace',2);}},
+      {text:'\uC5F0\uBD09 \uC778\uC0C1\uC73C\uB85C \uBC29\uC5B4', preview:'\uBE44\uC6A9 -$3000, \uC9C1\uC6D0\uD589\uBCF5 +10\n\uB2E8\uAE30 \uC720\uC9C0\uB294 \uAC00\uB2A5\uD558\uC9C0\uB9CC \uBE44\uC6A9 \uBD80\uB2F4', skmsTag:'rational', apply:function(G){G.money-=3000;G.empHap=Math.min(100,G.empHap+10);}},
+      {text:'AI \uD611\uC5C5 \uBB38\uD654 \uAD6C\uCD95', preview:'\uBE44\uC6A9 -$1500, \uC9C1\uC6D0\uD589\uBCF5 +15\n\uC6B0\uB9AC\uB9CC\uC758 AI \uD65C\uC6A9 \uBB38\uD654\uB85C \uCC28\uBCC4\uD654', skmsTag:'human_centered', apply:function(G){G.money-=1500;G.empHap=Math.min(100,G.empHap+15);G.custSat=Math.min(100,G.custSat+5);}}
+    ]
   }
 ];
 
@@ -751,6 +788,13 @@ var FOLLOWUP_EVENTS = {
     body: '1:1 \uBA74\uB2F4\uACFC \uCEE4\uB9AC\uC5B4 \uACBD\uB85C \uC81C\uC2DC\uAC00 \uD6A8\uACFC\uB97C \uBCF4\uAE30 \uC2DC\uC791\uD588\uC2B5\uB2C8\uB2E4.',
     effects: {convertRookie: 1},
     sourceEvent: 'quiet_quitting'
+  },
+  ai_poc_success: {
+    id: 'ai_poc_success',
+    headline: 'AI \uD30C\uC77C\uB7FF \uC131\uACF5 \u2014 \uD655\uB300 \uB17C\uC758',
+    body: '\uC18C\uADDC\uBAA8 PoC\uAC00 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4. \uD300\uC774 \uC790\uC2E0\uAC10\uC744 \uC5BB\uC5B4 \uB2E4\uB978 \uBD80\uC11C\uB3C4 \uAD00\uC2EC\uC744 \uBCF4\uC774\uACE0 \uC788\uC2B5\uB2C8\uB2E4.',
+    effects: {custSat: 8, empHap: 5},
+    sourceEvent: 'ai_pilot'
   },
   quiet_quit_exodus: {
     id: 'quiet_quit_exodus',
@@ -4193,10 +4237,16 @@ function getMeetingChoices(w) {
 function triggerRandomEvent() {
   if (G.eventActive || G.gameOver) return;
   // Pick unused event, or cycle
-  var available = EVENTS.filter(function(e) { return G.usedEvents.indexOf(e.id) === -1; });
+  var available = EVENTS.filter(function(e) {
+    if (G.usedEvents.indexOf(e.id) !== -1) return false;
+    if (e.scenarioOnly && e.scenarioOnly !== G.scenario) return false;
+    return true;
+  });
   if (available.length === 0) {
     G.usedEvents = [];
-    available = EVENTS.slice();
+    available = EVENTS.filter(function(e) {
+      return !e.scenarioOnly || e.scenarioOnly === G.scenario;
+    });
   }
   var evt = available[Math.floor(Math.random() * available.length)];
   G.usedEvents.push(evt.id);
