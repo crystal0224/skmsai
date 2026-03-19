@@ -284,6 +284,7 @@ canvas{display:block;cursor:default}
   .event-card{width:92vw;padding:20px 16px}
   .strat-card{width:95vw;padding:20px 16px}
   .hire-panel{width:95vw;bottom:80px}
+  .mgmt-panel{width:95vw;bottom:80px}
   .tutorial{bottom:75px;max-width:300px;font-size:11px}
   .speed-btn{min-width:44px;min-height:44px}
   .policy-toggle{min-width:44px;min-height:44px}
@@ -291,7 +292,26 @@ canvas{display:block;cursor:default}
   .meeting-choice{min-height:44px}
   .event-choice{min-height:44px}
   .hire-btn{min-height:44px}
+  .mgmt-grade-btn{min-width:28px;min-height:28px}
+  .salary-btn{min-height:28px}
 }
+
+/* Management panels */
+.mgmt-panel{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);width:600px;max-width:95vw;max-height:55vh;overflow-y:auto;background:var(--hud-bg);backdrop-filter:blur(16px);border:1px solid var(--hud-border);border-radius:14px;padding:20px;z-index:28;display:none}
+.mgmt-panel.open{display:block}
+.mgmt-title{font-size:15px;font-weight:800;color:var(--accent);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.mgmt-close{background:none;border:none;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer}
+.mgmt-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:11px}
+.mgmt-row:hover{background:rgba(255,255,255,0.03)}
+.mgmt-bar{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;flex:1;max-width:60px}
+.mgmt-bar-fill{height:100%;border-radius:2px}
+.mgmt-grade-btn{width:22px;height:22px;border:1px solid rgba(255,255,255,0.1);border-radius:4px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .12s;display:flex;align-items:center;justify-content:center}
+.mgmt-grade-btn:hover{background:rgba(255,255,255,0.1)}
+.mgmt-stat{display:flex;justify-content:space-between;padding:4px 0;font-size:11px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.mgmt-stat .k{color:rgba(255,255,255,0.5)}
+.mgmt-stat .v{font-weight:700}
+.salary-btn{padding:3px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:4px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-size:9px;cursor:pointer;font-family:inherit;transition:all .12s}
+.salary-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
 </style>
 </head>
 <body>
@@ -305,6 +325,7 @@ canvas{display:block;cursor:default}
   <div class="policy-toggle" id="policy-toggle"></div>
   <div class="policy-panel" id="policy-panel"></div>
   <div class="hire-panel" id="hire-panel"></div>
+  <div class="mgmt-panel" id="mgmt-panel"></div>
   <div class="meeting-panel" id="meeting-panel"></div>
   <div class="event-overlay" id="event-overlay"></div>
   <div class="meeting-overlay" id="strat-overlay"></div>
@@ -2223,7 +2244,48 @@ function buildBuildPanel() {
   facTab.addEventListener('click', function() { G.activeTab = 'fac'; G.selTool = null; canvas.style.cursor = 'default'; buildBuildPanel(); });
   tabBar.appendChild(facTab);
 
+  var mgmtTab = document.createElement('button');
+  mgmtTab.className = 'tab-btn' + (G.activeTab === 'mgmt' ? ' active' : '');
+  mgmtTab.textContent = '\u{1F4CA} \uACBD\uC601\uAD00\uB9AC';
+  mgmtTab.addEventListener('click', function() { G.activeTab = 'mgmt'; G.selTool = null; canvas.style.cursor = 'default'; buildBuildPanel(); });
+  tabBar.appendChild(mgmtTab);
+
   bp.appendChild(tabBar);
+
+  // Management tab — show mgmt buttons instead of build buttons
+  if (G.activeTab === 'mgmt') {
+    var mgmtRow = document.createElement('div');
+    mgmtRow.style.cssText = 'display:flex;gap:5px;overflow-x:auto;max-width:90vw;';
+    var mgmtItems = [
+      {emoji: '\u{1F4CB}', label: '\uC131\uACFC\uD3C9\uAC00', fn: openPerfPanel},
+      {emoji: '\u{1F4B0}', label: '\uBCF4\uC0C1\uAD00\uB9AC', fn: openCompPanel},
+      {emoji: '\u{1F4CA}', label: '\uC778\uB825\uD604\uD669', fn: openWorkforcePanel}
+    ];
+    for (var mi = 0; mi < mgmtItems.length; mi++) {
+      (function(item) {
+        var b = document.createElement('button');
+        b.className = 'build-btn';
+        var ico = document.createElement('span');
+        ico.className = 'icon';
+        ico.textContent = item.emoji;
+        b.appendChild(ico);
+        var lbl = document.createElement('span');
+        lbl.className = 'label';
+        lbl.textContent = item.label;
+        b.appendChild(lbl);
+        b.addEventListener('click', function() {
+          initAudio(); sfxClick();
+          G.selTool = null; canvas.style.cursor = 'default';
+          document.getElementById('hire-panel').classList.remove('open');
+          document.getElementById('meeting-panel').classList.remove('open');
+          item.fn();
+        });
+        mgmtRow.appendChild(b);
+      })(mgmtItems[mi]);
+    }
+    bp.appendChild(mgmtRow);
+    return;
+  }
 
   // Buttons row
   var btnRow = document.createElement('div');
@@ -2312,6 +2374,326 @@ function buildBuildPanel() {
   btnRow.appendChild(bullBtn);
 
   bp.appendChild(btnRow);
+}
+
+// ============================================================
+// MANAGEMENT PANELS (Performance / Compensation / Workforce)
+// ============================================================
+function closeMgmtPanel() {
+  document.getElementById('mgmt-panel').classList.remove('open');
+}
+
+function getAliveWorkers() {
+  return G.workers.filter(function(w) { return !w.quitting && w.fadeOut > 0.5; });
+}
+
+function makeMgmtHeader(panel, titleText) {
+  while (panel.firstChild) panel.removeChild(panel.firstChild);
+  var hdr = document.createElement('div');
+  hdr.className = 'mgmt-title';
+  var t = document.createElement('span');
+  t.textContent = titleText;
+  hdr.appendChild(t);
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'mgmt-close';
+  closeBtn.textContent = '\u2715';
+  closeBtn.addEventListener('click', closeMgmtPanel);
+  hdr.appendChild(closeBtn);
+  panel.appendChild(hdr);
+}
+
+function makeMiniBar(value, maxVal, color) {
+  var bar = document.createElement('div');
+  bar.className = 'mgmt-bar';
+  var fill = document.createElement('div');
+  fill.className = 'mgmt-bar-fill';
+  fill.style.width = Math.round(Math.min(100, (value / maxVal) * 100)) + '%';
+  fill.style.background = color;
+  bar.appendChild(fill);
+  return bar;
+}
+
+function openPerfPanel() {
+  closeMgmtPanel();
+  var panel = document.getElementById('mgmt-panel');
+  makeMgmtHeader(panel, '\u{1F4CB} \uC131\uACFC\uD3C9\uAC00');
+
+  var workers = getAliveWorkers();
+  if (workers.length === 0) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.4);padding:12px 0;text-align:center';
+    empty.textContent = '\uAD6C\uC131\uC6D0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4';
+    panel.appendChild(empty);
+    panel.classList.add('open');
+    return;
+  }
+
+  var GRADES = [
+    {g:'S', will:10, hap:15, bonus:50},
+    {g:'A', will:5, hap:8, bonus:30},
+    {g:'B', will:0, hap:0, bonus:0},
+    {g:'C', will:-5, hap:-5, bonus:0},
+    {g:'D', will:-10, hap:-15, bonus:0, pip:true}
+  ];
+
+  for (var i = 0; i < workers.length; i++) {
+    (function(w) {
+      var tc = EMP_TYPES[w.type] || EMP_TYPES.disengaged;
+      var row = document.createElement('div');
+      row.className = 'mgmt-row';
+
+      // ID + emoji
+      var idSpan = document.createElement('span');
+      idSpan.style.cssText = 'min-width:36px;font-weight:700';
+      idSpan.textContent = tc.emoji + '#' + w.id;
+      row.appendChild(idSpan);
+
+      // Dept
+      var deptSpan = document.createElement('span');
+      deptSpan.style.cssText = 'min-width:50px;color:rgba(255,255,255,0.5)';
+      if (w.assignedDept) {
+        var ddef = DEFS[w.assignedDept.type];
+        deptSpan.textContent = ddef ? ddef.lbl : '-';
+      } else {
+        deptSpan.textContent = '\uBBF8\uBC30\uCE58';
+      }
+      row.appendChild(deptSpan);
+
+      // Will bar
+      row.appendChild(makeMiniBar(w.will, 100, '#FFB830'));
+      // Capability bar
+      row.appendChild(makeMiniBar(w.capability, 100, '#42A5F5'));
+      // Happiness bar
+      row.appendChild(makeMiniBar(w.happiness, 100, '#66BB6A'));
+
+      // Current grade
+      var gradeSpan = document.createElement('span');
+      gradeSpan.style.cssText = 'min-width:20px;text-align:center;font-weight:700;font-size:10px';
+      gradeSpan.textContent = w.perfGrade || '-';
+      row.appendChild(gradeSpan);
+
+      // Grade buttons
+      var gradeGroup = document.createElement('div');
+      gradeGroup.style.cssText = 'display:flex;gap:3px;margin-left:auto';
+      for (var gi = 0; gi < GRADES.length; gi++) {
+        (function(grade) {
+          var btn = document.createElement('button');
+          btn.className = 'mgmt-grade-btn';
+          btn.textContent = grade.g;
+          if (w.perfGrade === grade.g) {
+            btn.style.background = 'rgba(255,184,48,0.2)';
+            btn.style.borderColor = 'rgba(255,184,48,0.4)';
+            btn.style.color = '#FFB830';
+          }
+          btn.addEventListener('click', function() {
+            w.perfGrade = grade.g;
+            if (!w.perfHistory) w.perfHistory = [];
+            w.perfHistory.push(grade.g);
+            w.will = clamp(0, 100, w.will + grade.will);
+            w.happiness = clamp(0, 100, w.happiness + grade.hap);
+            if (grade.bonus > 0) {
+              G.money += grade.bonus;
+            }
+            if (grade.pip) {
+              w.pipActive = true;
+              w.pipDays = 30;
+            }
+            var msg = '#' + w.id + ' \u2192 ' + grade.g + '\uB4F1\uAE09';
+            if (grade.will > 0) msg += ' (\uC758\uC695+' + grade.will + ', \uD589\uBCF5+' + grade.hap + ', $' + grade.bonus + ')';
+            else if (grade.will < 0) msg += ' (\uC758\uC695' + grade.will + ', \uD589\uBCF5' + grade.hap + ')';
+            if (grade.pip) msg += ' \u26A0 PIP \uBC1C\uB839';
+            showToast(msg, grade.will >= 0 ? 'success' : 'warn');
+            openPerfPanel();
+          });
+          gradeGroup.appendChild(btn);
+        })(GRADES[gi]);
+      }
+      row.appendChild(gradeGroup);
+      panel.appendChild(row);
+    })(workers[i]);
+  }
+
+  panel.classList.add('open');
+}
+
+function openCompPanel() {
+  closeMgmtPanel();
+  var panel = document.getElementById('mgmt-panel');
+  makeMgmtHeader(panel, '\u{1F4B0} \uBCF4\uC0C1\uAD00\uB9AC');
+
+  var workers = getAliveWorkers();
+  if (workers.length === 0) {
+    var empty = document.createElement('div');
+    empty.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.4);padding:12px 0;text-align:center';
+    empty.textContent = '\uAD6C\uC131\uC6D0\uC774 \uC5C6\uC2B5\uB2C8\uB2E4';
+    panel.appendChild(empty);
+    panel.classList.add('open');
+    return;
+  }
+
+  var MULTIPLIERS = [
+    {label: '\uC778\uC0C1 1.1x', mult: 1.1},
+    {label: '\uC778\uC0C1 1.2x', mult: 1.2},
+    {label: '\uC778\uC0C1 1.3x', mult: 1.3},
+    {label: '\uB3D9\uACB0', mult: null}
+  ];
+
+  var totalCost = 0;
+  var baseSal = 50;
+
+  for (var i = 0; i < workers.length; i++) {
+    (function(w) {
+      var tc = EMP_TYPES[w.type] || EMP_TYPES.disengaged;
+      var row = document.createElement('div');
+      row.className = 'mgmt-row';
+
+      var idSpan = document.createElement('span');
+      idSpan.style.cssText = 'min-width:36px;font-weight:700';
+      idSpan.textContent = tc.emoji + '#' + w.id;
+      row.appendChild(idSpan);
+
+      var typeSpan = document.createElement('span');
+      typeSpan.style.cssText = 'min-width:60px;color:rgba(255,255,255,0.5)';
+      typeSpan.textContent = w.type;
+      row.appendChild(typeSpan);
+
+      var salSpan = document.createElement('span');
+      salSpan.style.cssText = 'min-width:50px;font-weight:700;font-size:10px';
+      salSpan.textContent = (w.salaryLevel || 1).toFixed(2) + 'x';
+      row.appendChild(salSpan);
+
+      var btnGroup = document.createElement('div');
+      btnGroup.style.cssText = 'display:flex;gap:3px;margin-left:auto';
+      for (var mi = 0; mi < MULTIPLIERS.length; mi++) {
+        (function(m) {
+          var btn = document.createElement('button');
+          btn.className = 'salary-btn';
+          btn.textContent = m.label;
+          btn.addEventListener('click', function() {
+            if (m.mult === null) {
+              showToast('#' + w.id + ' \uC5F0\uBD09 \uB3D9\uACB0', 'info');
+              openCompPanel();
+              return;
+            }
+            var newLevel = m.mult;
+            if (newLevel > 1.3) {
+              showToast('\u26A0 \uB0B4\uBD80 \uD615\uD3C9\uC131 \uC8FC\uC758', 'warn');
+            }
+            w.salaryLevel = newLevel;
+            w.will = clamp(0, 100, w.will + Math.round((newLevel - 1) * 20));
+            w.happiness = clamp(0, 100, w.happiness + Math.round((newLevel - 1) * 15));
+            showToast('#' + w.id + ' \uC5F0\uBD09 \u2192 ' + newLevel.toFixed(1) + 'x', 'success');
+            openCompPanel();
+          });
+          btnGroup.appendChild(btn);
+        })(MULTIPLIERS[mi]);
+      }
+      row.appendChild(btnGroup);
+      panel.appendChild(row);
+      totalCost += Math.round(baseSal * (w.salaryLevel || 1));
+    })(workers[i]);
+  }
+
+  // Total cost footer
+  var footer = document.createElement('div');
+  footer.style.cssText = 'margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);display:flex;justify-content:space-between;font-size:12px';
+  var costLabel = document.createElement('span');
+  costLabel.style.color = 'rgba(255,255,255,0.5)';
+  costLabel.textContent = '\uC6D4 \uCD1D \uC778\uAC74\uBE44';
+  footer.appendChild(costLabel);
+  var costVal = document.createElement('span');
+  costVal.style.cssText = 'font-weight:800;color:#FFB830';
+  costVal.textContent = '$' + totalCost + '/day';
+  footer.appendChild(costVal);
+  panel.appendChild(footer);
+
+  panel.classList.add('open');
+}
+
+function openWorkforcePanel() {
+  closeMgmtPanel();
+  var panel = document.getElementById('mgmt-panel');
+  makeMgmtHeader(panel, '\u{1F4CA} \uC778\uB825\uD604\uD669');
+
+  var workers = getAliveWorkers();
+
+  function addStat(label, value) {
+    var row = document.createElement('div');
+    row.className = 'mgmt-stat';
+    var k = document.createElement('span');
+    k.className = 'k';
+    k.textContent = label;
+    row.appendChild(k);
+    var v = document.createElement('span');
+    v.className = 'v';
+    v.textContent = value;
+    row.appendChild(v);
+    panel.appendChild(row);
+  }
+
+  // Section: Type breakdown
+  var secTitle1 = document.createElement('div');
+  secTitle1.style.cssText = 'font-size:12px;font-weight:700;margin:8px 0 4px;color:rgba(255,255,255,0.7)';
+  secTitle1.textContent = '\u{1F465} \uC720\uD615\uBCC4 \uD604\uD669';
+  panel.appendChild(secTitle1);
+
+  var typeNames = {ace: '\u{1F525} Ace', rookie: '\u{1F331} Rookie', cynic: '\u{1F612} Cynic', disengaged: '\u{1F634} Disengaged', leader: '\u{2B50} Leader'};
+  var types = ['ace', 'rookie', 'cynic', 'disengaged', 'leader'];
+  for (var ti = 0; ti < types.length; ti++) {
+    var cnt = workers.filter(function(w) { return w.type === types[ti]; }).length;
+    addStat(typeNames[types[ti]], cnt + '\uBA85');
+  }
+
+  // Section: Department breakdown
+  var secTitle2 = document.createElement('div');
+  secTitle2.style.cssText = 'font-size:12px;font-weight:700;margin:12px 0 4px;color:rgba(255,255,255,0.7)';
+  secTitle2.textContent = '\u{1F3E2} \uBD80\uC11C\uBCC4 \uD604\uD669';
+  panel.appendChild(secTitle2);
+
+  var deptBldgs = G.bldgs.filter(function(b) { return DEFS[b.type] && DEFS[b.type].cat === 'dept'; });
+  for (var di = 0; di < deptBldgs.length; di++) {
+    var dept = deptBldgs[di];
+    var ddef = DEFS[dept.type];
+    var assigned = workers.filter(function(w) {
+      return w.assignedDept && w.assignedDept.gx === dept.gx && w.assignedDept.gy === dept.gy;
+    }).length;
+    addStat(ddef.emoji + ' ' + ddef.lbl + ' (' + dept.gx + ',' + dept.gy + ')', assigned + '\uBA85');
+  }
+
+  var unassigned = workers.filter(function(w) { return !w.assignedDept; }).length;
+  addStat('\uBBF8\uBC30\uCE58', unassigned + '\uBA85');
+
+  // Section: Averages & Stats
+  var secTitle3 = document.createElement('div');
+  secTitle3.style.cssText = 'font-size:12px;font-weight:700;margin:12px 0 4px;color:rgba(255,255,255,0.7)';
+  secTitle3.textContent = '\u{1F4C8} \uC8FC\uC694 \uC9C0\uD45C';
+  panel.appendChild(secTitle3);
+
+  if (workers.length > 0) {
+    var sumW = 0, sumC = 0, sumH = 0;
+    var pipCnt = 0, onbCnt = 0;
+    for (var si = 0; si < workers.length; si++) {
+      sumW += workers[si].will;
+      sumC += workers[si].capability;
+      sumH += workers[si].happiness;
+      if (workers[si].pipActive) pipCnt++;
+      if (workers[si].onboardDays > 0) onbCnt++;
+    }
+    addStat('\uD3C9\uADE0 \uC758\uC695 (Will)', (sumW / workers.length).toFixed(1));
+    addStat('\uD3C9\uADE0 \uC5ED\uB7C9 (Capability)', (sumC / workers.length).toFixed(1));
+    addStat('\uD3C9\uADE0 \uD589\uBCF5 (Happiness)', (sumH / workers.length).toFixed(1));
+    addStat('PIP \uC9C4\uD589 \uC911', pipCnt + '\uBA85');
+    addStat('\uC628\uBCF4\uB529 \uC911', onbCnt + '\uBA85');
+  }
+
+  // Turnover
+  var totalHired = G.workerID || 0;
+  var turnover = totalHired > 0 ? ((G.totalQuits || 0) / totalHired * 100).toFixed(1) : '0.0';
+  addStat('\uD1FC\uC0AC\uC728 (\uCD1D \uD1FC\uC0AC/' + '\uCD1D \uCC44\uC6A9)', turnover + '%');
+  addStat('\uCD1D \uD1FC\uC0AC', (G.totalQuits || 0) + '\uBA85');
+  addStat('\uCD1D \uCC44\uC6A9', totalHired + '\uBA85');
+
+  panel.classList.add('open');
 }
 
 // ============================================================
@@ -4177,6 +4559,7 @@ document.addEventListener('keydown', function(e) {
   }
   if (e.key === 'Escape') {
     document.getElementById('hire-panel').classList.remove('open');
+    document.getElementById('mgmt-panel').classList.remove('open');
   }
 });
 
@@ -4906,6 +5289,7 @@ mobileCSS.textContent = '@media(max-width:768px){'
   + '.event-card{width:92vw;padding:18px 14px}'
   + '.strat-card{width:95vw;padding:18px 14px}'
   + '.hire-panel{width:95vw;bottom:70px}'
+  + '.mgmt-panel{width:95vw;bottom:70px}'
   + '.tutorial{bottom:68px;max-width:280px;font-size:10px}'
   + '.onboard-card{width:96vw;padding:18px 14px}'
   + '.onboard-grid{grid-template-columns:repeat(2,1fr)}'
