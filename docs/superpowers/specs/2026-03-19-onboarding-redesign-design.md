@@ -83,10 +83,20 @@ div.onboard-slide.active (Slide 1)
 - 화살표 끝: marker-end (삼각형 6x4)
 - 좌표는 JS에서 DOM 요소의 offsetLeft/offsetTop으로 동적 계산
 
-**애니메이션**:
+**애니메이션 (생동감 강화)**:
 - 기존 캐릭터 bobble + 말풍선 순환 유지 (requestAnimationFrame 루프)
 - SKMS 패널: CSS `@keyframes skms-pulse { 0%,100% { box-shadow: 0 0 20px rgba(0,82,162,0.2) } 50% { box-shadow: 0 0 40px rgba(0,82,162,0.5) } }` duration `2.5s infinite`
 - Before→SKMS 화살표: 점선 dash (stroke-dasharray: 4 3), 색상 #64748b
+- **배경 파티클**: 캔버스 뒤에 떠다니는 작은 원 15~20개 (opacity 0.05~0.15, 크기 2~6px, 느린 상승 + 좌우 사인파 드리프트). Before 쪽은 회색/붉은 파티클, After 성공 쪽은 초록/골드 파티클, 실패 쪽은 붉은 파티클
+- **캐릭터 입장 애니메이션**: 슬라이드 진입 시 캐릭터들이 아래에서 위로 fade-in (stagger 0.1s 간격). Before는 느리게(0.8s), After 성공은 탄력있게(bounce easing), After 실패는 흔들리며(shake) 등장
+- **성공 경로 반짝임**: 성공 캐릭터 리더(#FFD54F) 주변에 작은 별 파티클 3~4개가 간헐적으로 반짝임 (twinkle, 2~3초 주기)
+- **실패 경로 낙하**: 실패 캐릭터 위에 작은 빗금/먼지 파티클이 느리게 떨어짐
+
+**BGM (온보딩 중 재생)**:
+- 브라우저 자동재생 정책: 사용자 첫 클릭/터치 시 `initAudio()` + 온보딩 전용 BGM 시작
+- 온보딩 오버레이에 `click` 이벤트 리스너 추가 (한 번만 실행): 클릭 시 `initAudio()` 호출 후 온보딩 BGM 시작
+- **온보딩 전용 BGM**: 기존 `startBGM()`의 코드 진행(Cmaj7→Fmaj7→Am7→G)을 재사용하되, 볼륨을 더 낮게 (gain 0.012), 템포를 더 느리게 (interval 600~700ms) 하여 몽환적/기대감 있는 분위기
+- 게임 시작 시 온보딩 BGM → 게임 BGM으로 자연스럽게 전환 (stopBGM → startBGM)
 
 ### Page 2 — "시나리오 선택" (시나리오 중심 + 하단 플레이 요약)
 
