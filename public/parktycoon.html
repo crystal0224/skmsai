@@ -5834,17 +5834,17 @@ function calcSKMSAlignment() {
 // TUTORIAL
 // ============================================================
 var TUTORIAL_STEPS = [
-  '\uD558\uB2E8 [\uD83C\uDFE2 \uC870\uC9C1] \uD0ED\uC5D0\uC11C HR \uBD80\uC11C\uB97C \uC124\uB9BD\uD558\uC138\uC694. \uBCF5\uB3C4 \uC5F0\uACB0 \uD544\uC218!',
-  '[\uD83C\uDFD7 \uC2DC\uC124] \uD0ED\uC73C\uB85C \uC804\uD658\uD558\uC5EC \uAD6C\uB0B4\uC2DD\uB2F9\uC744 \uBC30\uCE58\uD558\uC138\uC694.',
-  '[\uD83C\uDFE2 \uC870\uC9C1] \uD0ED\uC758 \uD83D\uDC64\uCC44\uC6A9 \uBC84\uD2BC\uC73C\uB85C \uCCAB \uC778\uC7AC\uB97C \uCC44\uC6A9\uD558\uC138\uC694!',
-  '\uC624\uB978\uCABD \uC815\uCC45 \uD328\uB110\uC744 \uC5F4\uACE0 \uCCAB SKMS \uC815\uCC45\uC744 \uD65C\uC131\uD654\uD558\uC138\uC694.'
+  '\u2460 \uD558\uB2E8 \uBA54\uB274\uC5D0\uC11C \uBD80\uC11C\uB97C \uACE8\uB77C \uBE48 \uD0C0\uC77C\uC5D0 \uBC30\uCE58\uD558\uC138\uC694 (HR \uCD94\uCC9C!)',
+  '\u2461 \uC2DC\uC124\u00B7\uD658\uACBD \uD0ED\uC73C\uB85C \uBC14\uAFD0 \uAD6C\uB0B4\uC2DD\uB2F9\uC744 \uC9C0\uC5B4\uC8FC\uC138\uC694',
+  '\u2462 \uACBD\uC601\uAD00\uB9AC \uD0ED\uC758 \uCC44\uC6A9 \uBC84\uD2BC\uC73C\uB85C \uC9C1\uC6D0\uC744 \uBBD1\uC73C\uC138\uC694!',
+  '\u2463 \uC624\uB978\uCABD \uC0C1\uB2E8 \uACBD\uC601 \uC815\uCC45 \uBC84\uD2BC\uC744 \uB20C\uB7EC \uCCAB \uC815\uCC45\uC744 \uCF1C\uC138\uC694'
 ];
 
 var TUTORIAL_STEPS_S2 = [
-  'AI Lab(R&D \uBD80\uC11C)\uB97C \uAC15\uD654\uD558\uC138\uC694. \uAE30\uC874 \uAD6C\uC131\uC6D0\uC758 \uBD88\uC548\uC5D0 \uC8FC\uC758!',
-  '\uAD50\uC721\uC6D0\uC744 \uC138\uC6B0\uACE0 \uB9AC\uC2A4\uD0AC\uB9C1 \uD504\uB85C\uADF8\uB7A8\uC744 \uC2DC\uC791\uD558\uC138\uC694.',
-  'VWBE \uBB38\uD654\uB97C \uD65C\uC131\uD654\uD558\uC5EC AI\uC640 \uC778\uAC04\uC774 \uACF5\uC874\uD558\uB294 \uD658\uACBD\uC744 \uB9CC\uB4DC\uC138\uC694.',
-  '\uBAA8\uB4E0 \uC774\uD574\uAD00\uACC4\uC790 \uC9C0\uD45C\uB97C \uB192\uC740 \uC218\uC900(\uACE0\uAC1D75+, \uAD6C\uC131\uC6D065+, \uC0AC\uD68C60+)\uC73C\uB85C \uC720\uC9C0\uD558\uC138\uC694.'
+  '\u2460 R&D \uBD80\uC11C\uB97C \uAC15\uD654\uD558\uC138\uC694 \u2014 AI \uD601\uC2E0\uC758 \uAE30\uBC18!',
+  '\u2461 \uC2DC\uC124 \uD0ED\uC5D0\uC11C \uAD50\uC721\uC6D0\uC744 \uC9C0\uC5B4 \uC9C1\uC6D0 \uB9AC\uC2A4\uD0AC\uB9C1\uC744 \uC2DC\uC791\uD558\uC138\uC694',
+  '\u2462 \uACBD\uC601 \uC815\uCC45\uC5D0\uC11C VWBE \uBB38\uD654\uB97C \uCF1C\uC138\uC694 \u2014 AI\uC640 \uC0AC\uB78C\uC774 \uD568\uAED8!',
+  '\u2463 \uBAA9\uD45C: \uACE0\uAC1D 75+ / \uC9C1\uC6D0 65+ / \uC0AC\uD68C 60+ \uC720\uC9C0\uD558\uBA74 \uC2B9\uB9AC!'
 ];
 
 function showTutorial() {
@@ -6096,13 +6096,25 @@ function handleClick(cx, cy) {
     return;
   }
 
-  // Click on department building?
-  if (G.grid[gy] && G.grid[gy][gx]) {
+  // Click on department building? (check 2x2 area — any tile of a dept building)
+  var clickedBldg = null;
+  for (var bi = 0; bi < G.bldgs.length; bi++) {
+    var b = G.bldgs[bi];
+    var bd = DEFS[b.type];
+    if (!bd || bd.cat !== 'dept') continue;
+    var sz = bd.sz || 1;
+    if (gx >= b.gx && gx < b.gx + sz && gy >= b.gy && gy < b.gy + sz) {
+      clickedBldg = b;
+      break;
+    }
+  }
+  if (clickedBldg) {
+    openDeptPanel(clickedBldg);
+  } else if (G.grid[gy] && G.grid[gy][gx]) {
     var bType = G.grid[gy][gx].type;
     var bDef = DEFS[bType];
-    if (bDef && bDef.cat === 'dept') {
-      var bldg = G.bldgs.find(function(b) { return b.gx === gx && b.gy === gy; });
-      if (bldg) openDeptPanel(bldg);
+    if (bDef && (bDef.cat === 'facility' || bDef.cat === 'deco')) {
+      showToast(bDef.emoji + ' ' + bDef.lbl, 'info');
     }
   }
 }
