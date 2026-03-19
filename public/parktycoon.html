@@ -289,7 +289,8 @@ const POLICIES = [
   {id:'vwbe',       name:'VWBE Culture',            nameKo:'VWBE \uBB38\uD654',                         cost:1500, time:20, prereqs:['hr','wellness'], desc:'Cynic recovery enabled, emp+6', empBonus:6, custBonus:0, socBonus:3},
   {id:'socialval',  name:'Social Value Mgmt',       nameKo:'\uC0AC\uD68C\uC801 \uAC00\uCE58 \uACBD\uC601', cost:1200, time:15, prereqs:['social'], desc:'Social value +10/tick', empBonus:0, custBonus:2, socBonus:10},
   {id:'ethics',     name:'Ethics Management',       nameKo:'\uC724\uB9AC \uACBD\uC601',                 cost:1000, time:15, prereqs:[], desc:'Prevents negative events, soc+4', empBonus:1, custBonus:1, socBonus:4},
-  {id:'skmanship',  name:'SK-Manship',              nameKo:'SK-Manship',                                 cost:3000, time:30, prereqs:['supex','vwbe'], desc:'All metrics +5/tick, ultimate culture', empBonus:5, custBonus:5, socBonus:5}
+  {id:'skmanship',  name:'SK-Manship',              nameKo:'SK-Manship',                                 cost:3000, time:30, prereqs:['supex','vwbe'], desc:'All metrics +5/tick, ultimate culture', empBonus:5, custBonus:5, socBonus:5},
+  {id:'council',    name:'Works Council',           nameKo:'\uB178\uC0AC\uD611\uC758\uD68C',             cost:800,  time:15, prereqs:['hr'], desc:'Labor tension -2/day, early warning', empBonus:3, custBonus:0, socBonus:2}
 ];
 
 // ============================================================
@@ -311,7 +312,10 @@ const SPEECH = {
   transition_ace_cynic:     ["...\uB354 \uC774\uC0C1 \uC758\uBBF8 \uC5C6\uB294 \uAC83 \uAC19\uB2E4"],
   quitting:                 ["\uC5EC\uAE30\uAE4C\uC9C0\uC778 \uAC83 \uAC19\uC2B5\uB2C8\uB2E4. \uC548\uB155\uD788 \uACC4\uC138\uC694."],
   pip_motivated:            ["\uAC1C\uC120 \uAE30\uD68C\uB97C \uBC1B\uC558\uB2E4... \uC5F4\uC2EC\uD788 \uD574\uC57C\uC9C0"],
-  pip_frustrated:           ["PIP \uAE30\uAC04\uC778\uB370 \uBB50\uC744 \uC5B4\uB5BB\uAC8C \uD558\uB77C\uB294 \uAC70\uC57C"]
+  pip_frustrated:           ["PIP \uAE30\uAC04\uC778\uB370 \uBB50\uC744 \uC5B4\uB5BB\uAC8C \uD558\uB77C\uB294 \uAC70\uC57C"],
+  equity_complaint:         ["\uAC19\uC740 \uC77C\uC744 \uD558\uB294\uB370 \uC65C \uAE09\uC5EC\uAC00 \uB2E4\uB974\uC8E0?"],
+  strike_active:            ["\uD30C\uC5C5 \uC911!"],
+  raise_happy:              ["\uC5F0\uBD09 \uC778\uC0C1 \uAC10\uC0AC\uD569\uB2C8\uB2E4!"]
 };
 
 // ============================================================
@@ -387,7 +391,7 @@ const EVENTS = [
     choices:[
       {text:'\uB300\uD654 (\uC218\uD3C9\uC801 \uC18C\uD1B5 \uD544\uC694)', preview:'\uC9C1\uC6D0\uD589\uBCF5 +10', reqPolicy:'horizontal', apply:function(G){G.empHap=Math.min(100,G.empHap+10);}},
       {text:'\uC591\uBCF4', preview:'\uD68C\uC0AC\uB3C8 -$2000, \uC9C1\uC6D0\uD589\uBCF5 +5', apply:function(G){G.money-=2000;G.empHap=Math.min(100,G.empHap+5);}},
-      {text:'\uC5B5\uC555', preview:'\uC9C1\uC6D0\uD589\uBCF5 -25, 3\uBA85 \uC2DC\uB2C8\uD06C\uD654', apply:function(G){G.empHap=Math.max(0,G.empHap-25);convertRandom(G,'ace','cynic',1);convertRandom(G,'rookie','cynic',2);G.pressureCount++;}}
+      {text:'\uC5B5\uC555', preview:'\uC9C1\uC6D0\uD589\uBCF5 -25, 3\uBA85 \uC2DC\uB2C8\uD06C\uD654', apply:function(G){G.empHap=Math.max(0,G.empHap-25);convertRandom(G,'ace','cynic',1);convertRandom(G,'rookie','cynic',2);G.pressureCount++;G.laborTension=Math.min(100,G.laborTension+5);}}
     ]
   },
   {
@@ -464,7 +468,14 @@ function createInitialState() {
     hireCandidates: [],
     hireRefreshCost: 200,
     // Audio
-    audioCtx: null, bgmStarted: false
+    audioCtx: null, bgmStarted: false,
+    // Labor relations
+    laborTension: 0,
+    hasWorksCouncil: false,
+    strikeActive: false,
+    strikeDays: 0,
+    // Event queue for raise/strike modals
+    pendingModals: []
   };
   // Init grid
   state.grid = [];
@@ -542,7 +553,9 @@ function spawnWorker(type, nearX, nearY) {
     perfGrade: null,
     perfHistory: [],
     pipActive: false,
-    pipDays: 0
+    pipDays: 0,
+    salaryLevel: 1,
+    lastRaiseDay: 0
   };
   if (type === 'ace') { w.will = 70; w.capability = 75; w.happiness = 60; }
   if (type === 'leader') { w.will = 80; w.capability = 80; w.happiness = 65; }
@@ -1147,6 +1160,8 @@ function dayTick() {
   }
   if (assignedWorkers.length > 0) empMult /= assignedWorkers.length;
   else empMult = 0;
+  // Labor tension slowdown (-20% at tension 60+)
+  if (G.laborTension >= 60) empMult *= 0.8;
 
   // Onboarding countdown
   for (var i = 0; i < aliveWorkers.length; i++) {
@@ -1163,6 +1178,9 @@ function dayTick() {
   if (policyActive('coordination')) rev = Math.round(rev * 1.15);
   rev += 40; // HQ base revenue
 
+  // Strike: no revenue
+  if (G.strikeActive) rev = 0;
+
   var expenses = 0;
   for (var i = 0; i < G.bldgs.length; i++) {
     var def = DEFS[G.bldgs[i].type];
@@ -1170,7 +1188,8 @@ function dayTick() {
   }
   for (var j = 0; j < aliveWorkers.length; j++) {
     var salMap = {ace:6, rookie:3, cynic:4, disengaged:2, leader:8};
-    expenses += salMap[aliveWorkers[j].type] || 3;
+    var baseSal = salMap[aliveWorkers[j].type] || 3;
+    expenses += Math.round(baseSal * (aliveWorkers[j].salaryLevel || 1));
   }
 
   G.money += rev - expenses;
@@ -1202,6 +1221,68 @@ function dayTick() {
     setTimeout(function() { showStrategyMeeting(); }, 500);
   }
   if (G.gDay % 30 === 1) G.stratShownThisQ = false;
+
+  // --- Labor tension ---
+  if (G.empHap < 20) G.laborTension = Math.min(100, G.laborTension + 5);
+  else if (G.empHap < 30) G.laborTension = Math.min(100, G.laborTension + 2);
+  if (G.empHap > 60) G.laborTension = Math.max(0, G.laborTension - 1);
+  if (G.hasWorksCouncil) G.laborTension = Math.max(0, G.laborTension - 2);
+  if (policyActive('horizontal')) G.laborTension = Math.max(0, G.laborTension - 1);
+
+  // Labor tension thresholds
+  if (G.laborTension >= 30 && G.laborTension < 32) {
+    showToast('\uB178\uC0AC \uAC08\uB4F1 \uC870\uC9D0\uC774 \uBCF4\uC785\uB2C8\uB2E4', 'warn');
+  }
+  // Strike check at 80+
+  if (G.laborTension >= 80 && !G.strikeActive && !G.eventActive && Math.random() < 0.4) {
+    showStrikeEvent();
+  }
+
+  // Strike countdown
+  if (G.strikeActive) {
+    G.strikeDays--;
+    if (G.strikeDays <= 0) {
+      G.strikeActive = false;
+      showToast('\uD30C\uC5C5\uC774 \uC885\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4', 'success');
+    }
+  }
+
+  // --- Salary raise requests (aces and leaders, every 20-40 days) ---
+  for (var ri = 0; ri < aliveWorkers.length; ri++) {
+    var rw = aliveWorkers[ri];
+    if (rw.type !== 'ace' && rw.type !== 'leader') continue;
+    if ((G.gDay - (rw.lastRaiseDay || 0)) < 25) continue;
+    if (Math.random() > 0.015) continue; // ~30% over 20 days ≈ 1.5% per day
+    // Queue raise request
+    G.pendingModals.push({type: 'raise', workerId: rw.id});
+  }
+
+  // --- Internal equity complaint ---
+  for (var ei = 0; ei < aliveWorkers.length; ei++) {
+    var ew = aliveWorkers[ei];
+    if ((ew.salaryLevel || 1) > 1.3) {
+      // Check if same-type workers at 1.0 exist
+      var sameTypeWorkers = aliveWorkers.filter(function(ww) {
+        return ww.id !== ew.id && ww.type === ew.type && (ww.salaryLevel || 1) <= 1.0 && !ww.quitting;
+      });
+      if (sameTypeWorkers.length > 0 && Math.random() < 0.03) {
+        var complainer = sameTypeWorkers[Math.floor(Math.random() * sameTypeWorkers.length)];
+        complainer.bubble = SPEECH.equity_complaint[0];
+        complainer.bubbleTimer = 200;
+        complainer.happiness = Math.max(0, complainer.happiness - 5);
+        G.empHap = Math.max(0, G.empHap - 5);
+      }
+    }
+  }
+
+  // Process pending modals (one at a time)
+  if (!G.eventActive && G.pendingModals.length > 0) {
+    var pending = G.pendingModals.shift();
+    if (pending.type === 'raise') {
+      var raiseWorker = G.workers.find(function(ww) { return ww.id === pending.workerId && !ww.quitting; });
+      if (raiseWorker) showRaiseRequest(raiseWorker);
+    }
+  }
 
   // Update HUD after economy
   updateHUD();
@@ -1259,6 +1340,12 @@ function updateWorkers() {
         }
       }
       continue;
+    }
+
+    // Strike speech
+    if (G.strikeActive && !w.bubble) {
+      w.bubble = SPEECH.strike_active[0];
+      w.bubbleTimer = 300;
     }
 
     // Speech cooldown
@@ -1345,6 +1432,19 @@ function updateWorkers() {
     // Prevent quit countdown (per day in dayTick is approximate, use ticks)
     if (w.preventQuitDays > 0) {
       w.preventQuitDays -= G.gSpeed / 1440;
+    }
+
+    // Quit timer (from rejected raise)
+    if (w.quitTimer > 0) {
+      w.quitTimer -= G.gSpeed / 1440;
+      if (w.quitTimer <= 0 && !w.quitting && w.preventQuitDays <= 0) {
+        w.quitting = true;
+        w.bubble = SPEECH.quitting[0];
+        w.bubbleTimer = 120;
+        sfxQuit();
+        G.totalQuits++;
+        G.laborTension = Math.min(100, G.laborTension + 8);
+      }
     }
 
     // PIP countdown
@@ -1638,7 +1738,9 @@ function openHiringPanel() {
           perfGrade: null,
           perfHistory: [],
           pipActive: false,
-          pipDays: 0
+          pipDays: 0,
+          salaryLevel: 1,
+          lastRaiseDay: 0
         };
         G.workers.push(w);
         if (cand.type === 'ace') G.empHap = Math.max(0, G.empHap - 5);
@@ -1677,6 +1779,7 @@ function updatePolicies() {
     if (G.activatingPolicies[pid] <= 0) {
       delete G.activatingPolicies[pid];
       G.activePolicies[pid] = true;
+      if (pid === 'council') G.hasWorksCouncil = true;
       sfxPolicy();
       showToast(POLICIES.find(function(p){return p.id===pid;}).nameKo + ' \uD65C\uC131\uD654!', 'success');
       renderPolicyPanel();
@@ -1766,6 +1869,25 @@ function buildTopBar() {
   tb.appendChild(createStatColored('\u{1F49A}', 'hud-emp', '18', 'emp'));
   tb.appendChild(createStatColored('\u{1F30D}', 'hud-soc', '10', 'soc'));
 
+  // Labor tension indicator
+  var laborStat = document.createElement('div');
+  laborStat.className = 'stat';
+  laborStat.id = 'hud-labor-stat';
+  laborStat.style.display = 'none';
+  var laborIcon = document.createElement('span');
+  laborIcon.textContent = '\u26A1';
+  laborStat.appendChild(laborIcon);
+  var laborLabel = document.createElement('span');
+  laborLabel.textContent = '\uB178\uC0AC ';
+  laborLabel.style.fontSize = '10px';
+  laborStat.appendChild(laborLabel);
+  var laborVal = document.createElement('span');
+  laborVal.className = 'val';
+  laborVal.id = 'hud-labor';
+  laborVal.textContent = '0%';
+  laborStat.appendChild(laborVal);
+  tb.appendChild(laborStat);
+
   // Time
   var td = document.createElement('div');
   td.className = 'time-display';
@@ -1824,6 +1946,18 @@ function updateHUD() {
   if (el) el.textContent = Math.round(G.empHap);
   el = document.getElementById('hud-soc');
   if (el) el.textContent = Math.round(G.socVal);
+  // Labor tension HUD
+  var laborStat = document.getElementById('hud-labor-stat');
+  var laborVal = document.getElementById('hud-labor');
+  if (laborStat && laborVal) {
+    if (G.laborTension > 20) {
+      laborStat.style.display = '';
+      laborVal.textContent = Math.round(G.laborTension) + '%';
+      laborVal.style.color = G.laborTension > 50 ? '#F87171' : '#FFB830';
+    } else {
+      laborStat.style.display = 'none';
+    }
+  }
   el = document.getElementById('hud-day');
   if (el) el.textContent = 'Day ' + G.gDay;
   el = document.getElementById('hud-clock');
@@ -2158,6 +2292,14 @@ function openMeeting(worker) {
     pipInfo.style.cssText = 'text-align:center;font-size:11px;color:#F87171;margin-bottom:8px;padding:4px;background:rgba(248,113,113,0.1);border-radius:6px;font-weight:700';
     pipInfo.textContent = 'PIP \uC9C4\uD589 \uC911 (D-' + Math.ceil(worker.pipDays) + ') \u2014 \uC758\uC695 40+, \uC5ED\uB7C9 40+ \uD544\uC694';
     panel.appendChild(pipInfo);
+  }
+
+  // Salary level display
+  if (worker.salaryLevel && worker.salaryLevel > 1) {
+    var salInfo = document.createElement('div');
+    salInfo.style.cssText = 'text-align:center;font-size:11px;color:#FFB830;margin-bottom:8px;padding:4px;background:rgba(255,184,48,0.1);border-radius:6px';
+    salInfo.textContent = '\uC5F0\uBD09 \uC218\uC900: ' + worker.salaryLevel.toFixed(2) + 'x';
+    panel.appendChild(salInfo);
   }
 
   // Performance grade history
@@ -2559,6 +2701,7 @@ function showPIPExpiryModal(worker) {
           aliveOthers[i].happiness = Math.max(0, aliveOthers[i].happiness - 8);
         }
         G.empHap = Math.max(0, G.empHap - 8);
+        G.laborTension = Math.min(100, G.laborTension + 8);
         showToast('\uC9C1\uC6D0 #' + worker.id + ' \uAD8C\uACE0 \uD1B4\uC9C1 \uCC98\uB9AC ($200)', 'warn');
       }
     },
@@ -2598,6 +2741,215 @@ function showPIPExpiryModal(worker) {
       btn.appendChild(previewEl);
       btn.addEventListener('click', function() {
         choice.apply();
+        overlay.classList.remove('show');
+        G.gSpeed = 1;
+        document.getElementById('btn-speed').textContent = '1x';
+        updateHUD();
+      });
+      card.appendChild(btn);
+    })(choices[c]);
+  }
+
+  overlay.appendChild(card);
+  overlay.classList.add('show');
+}
+
+// ============================================================
+// SALARY RAISE REQUEST MODAL
+// ============================================================
+function showRaiseRequest(worker) {
+  if (G.eventActive) {
+    G.pendingModals.push({type: 'raise', workerId: worker.id});
+    return;
+  }
+  sfxEvent();
+  G.gSpeed = 0;
+  G.eventActive = true;
+  var overlay = document.getElementById('event-overlay');
+  while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+
+  var card = document.createElement('div');
+  card.className = 'event-card';
+
+  var tag = document.createElement('div');
+  tag.className = 'event-tag';
+  tag.textContent = '\uD83D\uDCCB \uC5F0\uBD09 \uD611\uC0C1';
+  card.appendChild(tag);
+
+  var headline = document.createElement('div');
+  headline.className = 'event-headline';
+  var typeNames = {ace:'\uC5D0\uC774\uC2A4', leader:'\uB9AC\uB354'};
+  headline.textContent = '\uC5F0\uBD09 \uD611\uC0C1 \uC694\uCCAD';
+  card.appendChild(headline);
+
+  var currentLevel = (worker.salaryLevel || 1);
+  var requestLevel = Math.round((currentLevel + 0.3) * 100) / 100;
+  var counterLevel = Math.round((currentLevel + 0.15) * 100) / 100;
+
+  var desc = document.createElement('div');
+  desc.className = 'event-desc';
+  desc.textContent = '\uC9C1\uC6D0 #' + worker.id + ' (' + (typeNames[worker.type] || worker.type) + ')\uAC00 \uC5F0\uBD09 \uC778\uC0C1\uC744 \uC694\uCCAD\uD569\uB2C8\uB2E4.\n\uD604\uC7AC \uC5F0\uBD09 \uC218\uC900: ' + currentLevel.toFixed(1) + 'x \u2192 \uC694\uCCAD: ' + requestLevel.toFixed(1) + 'x';
+  card.appendChild(desc);
+
+  var choices = [
+    {
+      text: '\uC218\uB77D',
+      preview: '\uAE09\uC5EC +30%, \uD589\uBCF5 +20, \uC758\uC695 +10, \uB2E4\uB978 \uC9C1\uC6D0 \uD589\uBCF5 -3',
+      apply: function() {
+        worker.salaryLevel = requestLevel;
+        worker.lastRaiseDay = G.gDay;
+        worker.happiness = Math.min(100, worker.happiness + 20);
+        worker.will = Math.min(100, worker.will + 10);
+        worker.bubble = SPEECH.raise_happy[0];
+        worker.bubbleTimer = 150;
+        // Other workers may feel inequity
+        var others = G.workers.filter(function(ww) { return !ww.quitting && ww.id !== worker.id; });
+        for (var i = 0; i < others.length; i++) {
+          others[i].happiness = Math.max(0, others[i].happiness - 3);
+        }
+        G.empHap = Math.max(0, G.empHap - 3);
+        showToast('\uC9C1\uC6D0 #' + worker.id + ' \uC5F0\uBD09 ' + requestLevel.toFixed(1) + 'x \uC2B9\uC778', 'success');
+      }
+    },
+    {
+      text: '\uAC70\uC808',
+      preview: '\uD589\uBCF5 -15, 30\uC77C \uB0B4 \uD1B4\uC0AC \uAC00\uB2A5\uC131 60%',
+      apply: function() {
+        worker.happiness = Math.max(0, worker.happiness - 15);
+        worker.lastRaiseDay = G.gDay;
+        // 60% chance quit within 30 days
+        if (Math.random() < 0.6) {
+          worker.quitTimer = 30;
+          worker.preventQuitDays = 0;
+        }
+        showToast('\uC9C1\uC6D0 #' + worker.id + ' \uC5F0\uBD09 \uC694\uCCAD \uAC70\uC808', 'warn');
+      }
+    },
+    {
+      text: '\uCE74\uC6B4\uD130 \uC81C\uC548 ' + counterLevel.toFixed(2) + 'x',
+      preview: '\uAE09\uC5EC +15%, \uD589\uBCF5 +8',
+      apply: function() {
+        worker.salaryLevel = counterLevel;
+        worker.lastRaiseDay = G.gDay;
+        worker.happiness = Math.min(100, worker.happiness + 8);
+        showToast('\uC9C1\uC6D0 #' + worker.id + ' \uC5F0\uBD09 ' + counterLevel.toFixed(2) + 'x \uD569\uC758', 'info');
+      }
+    }
+  ];
+
+  for (var c = 0; c < choices.length; c++) {
+    (function(choice) {
+      var btn = document.createElement('button');
+      btn.className = 'event-choice';
+      var textEl = document.createElement('span');
+      textEl.textContent = choice.text;
+      btn.appendChild(textEl);
+      var previewEl = document.createElement('span');
+      previewEl.className = 'preview';
+      previewEl.textContent = choice.preview;
+      btn.appendChild(previewEl);
+      btn.addEventListener('click', function() {
+        choice.apply();
+        G.eventActive = false;
+        overlay.classList.remove('show');
+        G.gSpeed = 1;
+        document.getElementById('btn-speed').textContent = '1x';
+        updateHUD();
+      });
+      card.appendChild(btn);
+    })(choices[c]);
+  }
+
+  overlay.appendChild(card);
+  overlay.classList.add('show');
+}
+
+// ============================================================
+// STRIKE EVENT MODAL
+// ============================================================
+function showStrikeEvent() {
+  if (G.eventActive) return;
+  sfxEvent();
+  G.gSpeed = 0;
+  G.eventActive = true;
+  var overlay = document.getElementById('event-overlay');
+  while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+
+  var card = document.createElement('div');
+  card.className = 'event-card';
+
+  var tag = document.createElement('div');
+  tag.className = 'event-tag';
+  tag.textContent = '\uD83D\uDEA8 \uD30C\uC5C5';
+  card.appendChild(tag);
+
+  var headline = document.createElement('div');
+  headline.className = 'event-headline';
+  headline.textContent = '\uD30C\uC5C5 \uBC1C\uC0DD!';
+  card.appendChild(headline);
+
+  var desc = document.createElement('div');
+  desc.className = 'event-desc';
+  desc.textContent = '\uAD6C\uC131\uC6D0\uB4E4\uC774 \uD30C\uC5C5\uC5D0 \uB3CC\uC785\uD588\uC2B5\uB2C8\uB2E4.';
+  card.appendChild(desc);
+
+  var dialogCost = G.hasWorksCouncil ? 1500 : 3000;
+
+  var choices = [
+    {
+      text: '\uB300\uD654\uB85C \uD574\uACB0',
+      preview: '$' + dialogCost + ' \uBE44\uC6A9, \uB178\uC0AC\uAC08\uB4F1 20\uC73C\uB85C, \uD589\uBCF5 +15' + (G.hasWorksCouncil ? ' (\uB178\uC0AC\uD611\uC758\uD68C \uD560\uC778)' : ''),
+      apply: function() {
+        if (G.money < dialogCost) { showToast('\uC790\uAE08\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4!', 'warn'); return; }
+        G.money -= dialogCost;
+        G.laborTension = 20;
+        G.empHap = Math.min(100, G.empHap + 15);
+        G.strikeActive = false;
+        G.strikeDays = 0;
+        showToast('\uB300\uD654\uB85C \uD30C\uC5C5 \uD574\uACB0 (-$' + dialogCost + ')', 'success');
+      }
+    },
+    {
+      text: '\uAC15\uACBD \uB300\uC751',
+      preview: '\uB178\uC0AC\uAC08\uB4F1 +20, \uD589\uBCF5 -20, 3\uBA85 \uC5D0\uC774\uC2A4\u2192\uC2DC\uB2C8\uD06C',
+      apply: function() {
+        G.laborTension = Math.min(100, G.laborTension + 20);
+        G.empHap = Math.max(0, G.empHap - 20);
+        convertRandom(G, 'ace', 'cynic', 3);
+        G.strikeActive = true;
+        G.strikeDays = 3;
+        showToast('\uAC15\uACBD \uB300\uC751! \uD30C\uC5C5 3\uC77C \uC9C0\uC18D', 'warn');
+      }
+    },
+    {
+      text: '\uC804\uBA74 \uC591\uBCF4',
+      preview: '$5000 \uBE44\uC6A9, \uB178\uC0AC\uAC08\uB4F1 = 0, \uD589\uBCF5 +25',
+      apply: function() {
+        if (G.money < 5000) { showToast('\uC790\uAE08\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4!', 'warn'); return; }
+        G.money -= 5000;
+        G.laborTension = 0;
+        G.empHap = Math.min(100, G.empHap + 25);
+        G.strikeActive = false;
+        G.strikeDays = 0;
+        showToast('\uC804\uBA74 \uC591\uBCF4\uB85C \uD30C\uC5C5 \uD574\uACB0 (-$5000)', 'success');
+      }
+    }
+  ];
+
+  for (var c = 0; c < choices.length; c++) {
+    (function(choice) {
+      var btn = document.createElement('button');
+      btn.className = 'event-choice';
+      var textEl = document.createElement('span');
+      textEl.textContent = choice.text;
+      btn.appendChild(textEl);
+      var previewEl = document.createElement('span');
+      previewEl.className = 'preview';
+      previewEl.textContent = choice.preview;
+      btn.appendChild(previewEl);
+      btn.addEventListener('click', function() {
+        choice.apply();
+        G.eventActive = false;
         overlay.classList.remove('show');
         G.gSpeed = 1;
         document.getElementById('btn-speed').textContent = '1x';
@@ -2831,6 +3183,8 @@ function showStrategyMeeting() {
 
   if (G.rating >= 2.5) insights.push({ text: '\uD68C\uC0AC\uAC00 \uC548\uC815\uB418\uACE0 \uC788\uC2B5\uB2C8\uB2E4! \uBCC4\uC810 3.0\uC744 30\uC77C \uC720\uC9C0\uD558\uBA74 \uC2B9\uB9AC\uD569\uB2C8\uB2E4. \uADE0\uD615 \uC7A1\uD78C \uC131\uC7A5\uC744 \uC774\uC5B4\uAC00\uC138\uC694.', priority: 'low' });
 
+  if (G.laborTension > 40) insights.push({ text: '\uB178\uC0AC \uAC08\uB4F1\uC774 \uC2EC\uD654\uB418\uACE0 \uC788\uC2B5\uB2C8\uB2E4. <strong>\uB178\uC0AC\uD611\uC758\uD68C</strong> \uC815\uCC45 \uB3C4\uC785\uC744 \uAC80\uD1A0\uD558\uC138\uC694.', priority: 'high' });
+
   if (insights.length === 0) insights.push({ text: '\uC804\uBC18\uC801\uC73C\uB85C \uC591\uD638\uD569\uB2C8\uB2E4. \uD604\uC7AC \uC804\uB7B5\uC744 \uC720\uC9C0\uD558\uBA74\uC11C \uBD80\uC871\uD55C \uC9C0\uD45C\uC5D0 \uC9D1\uC911\uD558\uC138\uC694.', priority: 'low' });
 
   for (var n = 0; n < insights.length; n++) {
@@ -2912,6 +3266,7 @@ function showStrategyMeeting() {
           w.pipActive = true;
           w.pipDays = 30;
         }
+        G.laborTension = Math.min(100, G.laborTension + 3);
       }
     }
     showToast('\uC131\uACFC \uD3C9\uAC00 \uC644\uB8CC: S ' + gradeCounts.S + '\uBA85, A ' + gradeCounts.A + '\uBA85, B ' + gradeCounts.B + '\uBA85, C ' + gradeCounts.C + '\uBA85, D ' + gradeCounts.D + '\uBA85', 'success');
