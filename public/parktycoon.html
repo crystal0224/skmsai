@@ -5829,23 +5829,6 @@ function showOnboarding() {
     });
   }
 
-  // Start button
-  var startBtn = document.createElement('button');
-  startBtn.className = 'onboard-start';
-  startBtn.textContent = '\uD83C\uDFAC \uACBD\uC601 \uC2DC\uC791!';
-  startBtn.addEventListener('click', function() {
-    stopOnboardingBGM();
-    initAudio(); startBGM(); sfxPlace();
-    clearSave();
-    G = createInitialState();
-    if (selectedScenario === 2) { setupAIScenario(); } else { setupCrisisScenario(); }
-    buildTopBar(); buildControlsHUD(); buildHistoryPanel(); buildBuildPanel(); buildPolicyToggle(); renderPolicyPanel(); centerCamera(); updateHUD();
-    if(previewRAF)cancelAnimationFrame(previewRAF);overlay.removeChild(card); overlay.remove();
-    G.gSpeed = 1;
-    var sb = document.getElementById('btn-speed'); if (sb) sb.textContent = '1x';
-    showTutorial();
-  });
-
   // ── Build 2 slides ──
   var slides = [];
   var currentSlide = 0;
