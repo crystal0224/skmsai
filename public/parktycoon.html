@@ -87,6 +87,34 @@ canvas{display:block;cursor:default}
 .pol-progress{height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:4px;overflow:hidden}
 .pol-progress-bar{height:100%;background:var(--blue);border-radius:2px;transition:width .3s}
 
+/* Tab bar */
+.tab-bar{display:flex;gap:4px;margin-bottom:8px;width:100%}
+.tab-btn{flex:1;padding:6px 0;border:1px solid rgba(255,255,255,0.08);border-radius:8px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;text-align:center}
+.tab-btn:hover{background:rgba(255,255,255,0.08)}
+.tab-btn.active{background:rgba(255,184,48,0.15);border-color:rgba(255,184,48,0.3);color:#FFB830}
+
+/* Hire panel */
+.hire-panel{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);width:520px;max-width:94vw;max-height:60vh;overflow-y:auto;background:var(--hud-bg);backdrop-filter:blur(16px);border:1px solid var(--hud-border);border-radius:14px;padding:20px;z-index:28;display:none}
+.hire-panel.open{display:block}
+.hire-title{font-size:15px;font-weight:800;color:var(--accent);margin-bottom:4px}
+.hire-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:14px}
+.hire-card{display:flex;gap:14px;align-items:flex-start;padding:12px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;transition:all .15s}
+.hire-card:hover{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.12)}
+.hire-portrait{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.hire-info{flex:1;min-width:0}
+.hire-name{font-weight:700;font-size:13px;margin-bottom:2px}
+.hire-desc{font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px;font-style:italic}
+.hire-stats{display:flex;gap:12px;font-size:11px;margin-bottom:6px}
+.hire-stats span{color:rgba(255,255,255,0.6)}
+.hire-stats strong{color:#e8e8f0}
+.hire-warn{font-size:10px;color:#F87171;margin-bottom:4px}
+.hire-btn{padding:5px 14px;border:none;border-radius:6px;background:var(--accent);color:#1a1a2e;font-weight:700;font-size:11px;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.hire-btn:hover{opacity:0.85}
+.hire-refresh{display:block;width:100%;padding:8px;border:1px dashed rgba(255,255,255,0.15);border-radius:8px;background:none;color:rgba(255,255,255,0.4);font-size:11px;cursor:pointer;font-family:inherit;text-align:center;transition:all .15s;margin-top:4px}
+.hire-refresh:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
+.hire-close{position:absolute;top:10px;right:14px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:18px;cursor:pointer;transition:color .15s}
+.hire-close:hover{color:#fff}
+
 /* Meeting panel */
 .meeting-panel{position:fixed;right:0;top:0;width:320px;height:100%;background:var(--hud-bg);backdrop-filter:blur(16px);border-left:1px solid var(--hud-border);z-index:30;transform:translateX(340px);transition:transform .3s ease;padding:24px 20px;overflow-y:auto}
 .meeting-panel.open{transform:translateX(0)}
@@ -192,6 +220,7 @@ canvas{display:block;cursor:default}
   <div class="tutorial" id="tutorial"></div>
   <div class="policy-toggle" id="policy-toggle"></div>
   <div class="policy-panel" id="policy-panel"></div>
+  <div class="hire-panel" id="hire-panel"></div>
   <div class="meeting-panel" id="meeting-panel"></div>
   <div class="event-overlay" id="event-overlay"></div>
   <div class="meeting-overlay" id="strat-overlay"></div>
@@ -414,6 +443,11 @@ function createInitialState() {
     spawnTimer: 0,
     // Welfare built flag (for speech)
     welfareJustBuilt: false, welfareTimer: 0,
+    // Tabs
+    activeTab: 'org',
+    // Hiring
+    hireCandidates: [],
+    hireRefreshCost: 200,
     // Audio
     audioCtx: null, bgmStarted: false
   };
@@ -1044,12 +1078,12 @@ function gameTick() {
   // Worker AI
   updateWorkers();
 
-  // Spawn timer
-  G.spawnTimer += G.gSpeed;
-  if (G.spawnTimer > 600) { // every ~10 game-minutes
-    G.spawnTimer = 0;
-    maybeSpawnWorker();
-  }
+  // Spawn timer (disabled — workers now come from hiring panel)
+  // G.spawnTimer += G.gSpeed;
+  // if (G.spawnTimer > 600) {
+  //   G.spawnTimer = 0;
+  //   maybeSpawnWorker();
+  // }
 
   // Policy activation
   updatePolicies();
@@ -1120,6 +1154,9 @@ function dayTick() {
       showToast('\uD601\uC2E0 \uD22C\uC790 \uD6A8\uACFC \uBC1C\uC0DD! \uACE0\uAC1D\uB9CC\uC871 +', 'success');
     }
   }
+
+  // Auto-refresh hiring candidates every 30 days
+  if (G.gDay % 30 === 0) generateCandidates();
 
   // Quarterly strategy meeting (every 30 days)
   if (G.gDay > 1 && G.gDay % 30 === 0 && !G.stratShownThisQ) {
@@ -1353,6 +1390,172 @@ function maybeSpawnWorker() {
   showToast('\uC0C8 \uC9C1\uC6D0\uC774 \uC785\uC0AC\uD588\uC2B5\uB2C8\uB2E4! (' + type + ')', 'info');
 }
 
+// ============================================================
+// HIRING SYSTEM
+// ============================================================
+var HIRE_NAMES = ['김','이','박','최','정','강','조','윤','장','임','한','오','서','신','권','황','안','송','전','홍'];
+var HIRE_DESCS = {
+  rookie: ['열정은 있지만 경험이 부족합니다','배우고 싶은 마음이 큰 신입입니다','빠르게 성장할 잠재력이 보입니다'],
+  cynic: ['실력은 좋은데 전 직장에서 지쳤다네요','능력은 검증됐지만 의욕이 낮습니다','경험이 풍부하지만 냉소적입니다'],
+  ace: ['업계에서 인정받는 인재입니다','즉시 전력감, 단 몸값이 높습니다','열정과 실력을 겸비한 핵심 인재'],
+  leader: ['10년차 팀장급, 조직을 이끌 수 있습니다','리더십이 검증된 시니어입니다','팀 문화를 바꿀 수 있는 인물입니다']
+};
+var HIRE_COSTS = {rookie: 150, cynic: 350, ace: 800, leader: 1200};
+
+function generateCandidates() {
+  var candidates = [];
+  candidates.push(makeCandidate('rookie'));
+  candidates.push(makeCandidate('rookie'));
+  candidates.push(makeCandidate('cynic'));
+  if (Math.random() < 0.5) candidates.push(makeCandidate('ace'));
+  if (Math.random() < 0.2) candidates.push(makeCandidate('leader'));
+  if (hasBuilding('hr')) {
+    candidates.push(makeCandidate(Math.random() < 0.4 ? 'ace' : 'rookie'));
+  }
+  G.hireCandidates = candidates;
+}
+
+function makeCandidate(type) {
+  var descs = HIRE_DESCS[type];
+  var tc = EMP_TYPES[type];
+  var baseCap = type === 'ace' ? 70+Math.random()*20 : type === 'leader' ? 75+Math.random()*15 : type === 'cynic' ? 60+Math.random()*20 : 20+Math.random()*25;
+  var baseWill = type === 'ace' ? 65+Math.random()*20 : type === 'leader' ? 75+Math.random()*15 : type === 'rookie' ? 60+Math.random()*25 : 20+Math.random()*20;
+  return {
+    name: HIRE_NAMES[Math.random()*HIRE_NAMES.length|0] + 'OO',
+    type: type,
+    cost: HIRE_COSTS[type],
+    desc: descs[Math.random()*descs.length|0],
+    capability: Math.round(baseCap),
+    will: Math.round(baseWill),
+    emoji: tc.emoji,
+    color: tc.color
+  };
+}
+
+function openHiringPanel() {
+  if (G.hireCandidates.length === 0) generateCandidates();
+  var panel = document.getElementById('hire-panel');
+  while (panel.firstChild) panel.removeChild(panel.firstChild);
+  panel.style.position = 'fixed';
+
+  var closeBtn = document.createElement('button');
+  closeBtn.className = 'hire-close';
+  closeBtn.textContent = '\u00D7';
+  closeBtn.addEventListener('click', function() { panel.classList.remove('open'); });
+  panel.appendChild(closeBtn);
+
+  var title = document.createElement('div');
+  title.className = 'hire-title';
+  title.textContent = '\u{1F4CB} 채용 후보';
+  panel.appendChild(title);
+
+  var sub = document.createElement('div');
+  sub.className = 'hire-sub';
+  sub.textContent = '후보를 선택하여 채용하세요. HR 부서가 있으면 더 좋은 인재가 나타납니다.';
+  panel.appendChild(sub);
+
+  for (var i = 0; i < G.hireCandidates.length; i++) {
+    (function(cand, idx) {
+      var card = document.createElement('div');
+      card.className = 'hire-card';
+
+      var portrait = document.createElement('div');
+      portrait.className = 'hire-portrait';
+      portrait.style.background = cand.color;
+      portrait.textContent = cand.emoji;
+      card.appendChild(portrait);
+
+      var info = document.createElement('div');
+      info.className = 'hire-info';
+
+      var nameRow = document.createElement('div');
+      nameRow.className = 'hire-name';
+      nameRow.textContent = cand.emoji + ' ' + cand.name + ' (' + (cand.type === 'rookie' ? '신입' : cand.type === 'cynic' ? '경력직' : cand.type === 'ace' ? '에이스' : '리더급') + ')  $' + cand.cost;
+      info.appendChild(nameRow);
+
+      var desc = document.createElement('div');
+      desc.className = 'hire-desc';
+      desc.textContent = '"' + cand.desc + '"';
+      info.appendChild(desc);
+
+      var stats = document.createElement('div');
+      stats.className = 'hire-stats';
+      var capSpan = document.createElement('span');
+      capSpan.textContent = '역량 ';
+      var capVal = document.createElement('strong');
+      capVal.textContent = cand.capability;
+      capSpan.appendChild(capVal);
+      stats.appendChild(capSpan);
+      var willSpan = document.createElement('span');
+      willSpan.textContent = '의욕 ';
+      var willVal = document.createElement('strong');
+      willVal.textContent = cand.will;
+      willSpan.appendChild(willVal);
+      stats.appendChild(willSpan);
+      info.appendChild(stats);
+
+      if (cand.type === 'ace' || cand.type === 'leader') {
+        var warn = document.createElement('div');
+        warn.className = 'hire-warn';
+        warn.textContent = cand.type === 'ace' ? '\u26A0 외부 영입 시 기존 구성원 행복 -5' : '\u26A0 외부 리더 영입 시 기존 리더와 갈등 가능';
+        info.appendChild(warn);
+      }
+
+      var hireBtn = document.createElement('button');
+      hireBtn.className = 'hire-btn';
+      hireBtn.textContent = '채용 $' + cand.cost;
+      if (G.money < cand.cost) {
+        hireBtn.style.opacity = '0.4';
+        hireBtn.style.cursor = 'not-allowed';
+      }
+      hireBtn.addEventListener('click', function() {
+        if (G.money < cand.cost) { showToast('자금이 부족합니다!', 'warn'); sfxErr(); return; }
+        G.money -= cand.cost;
+        sfxPlace();
+        var cx = Math.floor(GRID / 2), cy = Math.floor(GRID / 2);
+        G.workerID++;
+        var w = {
+          id: G.workerID,
+          x: cx + (Math.random() - 0.5), y: cy + (Math.random() - 0.5),
+          type: cand.type,
+          will: cand.will, capability: cand.capability,
+          happiness: 50, hunger: 0,
+          path: [], pathIdx: 0,
+          state: 'idle', stateTimer: 0,
+          bubble: '', bubbleTimer: 0,
+          dept: null,
+          fadeOut: 1, quitting: false,
+          preventQuitDays: 0
+        };
+        G.workers.push(w);
+        if (cand.type === 'ace') G.empHap = Math.max(0, G.empHap - 5);
+        if (cand.type === 'leader') G.empHap = Math.max(0, G.empHap - 3);
+        G.hireCandidates.splice(idx, 1);
+        showToast(cand.name + ' 채용 완료! (' + cand.type + ')', 'success');
+        openHiringPanel();
+      });
+      info.appendChild(hireBtn);
+
+      card.appendChild(info);
+      panel.appendChild(card);
+    })(G.hireCandidates[i], i);
+  }
+
+  var refreshBtn = document.createElement('button');
+  refreshBtn.className = 'hire-refresh';
+  refreshBtn.textContent = '\u{1F504} 다른 후보 보기 (-$' + G.hireRefreshCost + ')';
+  refreshBtn.addEventListener('click', function() {
+    if (G.money < G.hireRefreshCost) { showToast('자금이 부족합니다!', 'warn'); sfxErr(); return; }
+    G.money -= G.hireRefreshCost;
+    sfxClick();
+    generateCandidates();
+    openHiringPanel();
+  });
+  panel.appendChild(refreshBtn);
+
+  panel.classList.add('open');
+}
+
 function updatePolicies() {
   var keys = Object.keys(G.activatingPolicies);
   for (var i = 0; i < keys.length; i++) {
@@ -1532,50 +1735,111 @@ function buildBuildPanel() {
   var bp = document.getElementById('build-panel');
   while (bp.firstChild) bp.removeChild(bp.firstChild);
 
-  var tools = Object.keys(DEFS).concat(['bulldoze']);
-  for (var t = 0; t < tools.length; t++) {
+  // Tab bar
+  var tabBar = document.createElement('div');
+  tabBar.className = 'tab-bar';
+
+  var orgTab = document.createElement('button');
+  orgTab.className = 'tab-btn' + (G.activeTab === 'org' ? ' active' : '');
+  orgTab.textContent = '\u{1F3E2} 조직\u00B7거버넌스';
+  orgTab.addEventListener('click', function() { G.activeTab = 'org'; G.selTool = null; canvas.style.cursor = 'default'; buildBuildPanel(); });
+  tabBar.appendChild(orgTab);
+
+  var facTab = document.createElement('button');
+  facTab.className = 'tab-btn' + (G.activeTab === 'fac' ? ' active' : '');
+  facTab.textContent = '\u{1F3D7} 시설\u00B7환경';
+  facTab.addEventListener('click', function() { G.activeTab = 'fac'; G.selTool = null; canvas.style.cursor = 'default'; buildBuildPanel(); });
+  tabBar.appendChild(facTab);
+
+  bp.appendChild(tabBar);
+
+  // Buttons row
+  var btnRow = document.createElement('div');
+  btnRow.style.cssText = 'display:flex;gap:5px;';
+
+  var orgTypes = ['corridor', 'production', 'rnd', 'planning', 'hr', 'marketing', 'social'];
+  var facTypes = ['cafeteria', 'wellness', 'academy', 'tree'];
+  var types = G.activeTab === 'org' ? orgTypes : facTypes;
+
+  for (var i = 0; i < types.length; i++) {
     (function(toolType) {
+      var def = DEFS[toolType];
       var b = document.createElement('button');
-      b.className = 'build-btn';
+      b.className = 'build-btn' + (G.selTool === toolType ? ' active' : '');
 
       var ico = document.createElement('span');
       ico.className = 'icon';
-      ico.textContent = toolType === 'bulldoze' ? '\u{1F5D1}' : (DEFS[toolType] ? DEFS[toolType].emoji : '');
+      ico.textContent = def.emoji;
       b.appendChild(ico);
 
       var lbl = document.createElement('span');
       lbl.className = 'label';
-      lbl.textContent = toolType === 'bulldoze' ? 'Bulldoze' : (DEFS[toolType] ? DEFS[toolType].lbl : toolType);
+      lbl.textContent = def.lbl;
       b.appendChild(lbl);
 
-      if (DEFS[toolType]) {
-        var d = DEFS[toolType];
-        b.title = d.lbl + ' ($' + d.cost + ') \u2014 ' + (d.cat === 'dept' ? '\uBD80\uC11C' : d.cat === 'facility' ? '\uC2DC\uC124' : '\uC7A5\uC2DD') + (d.rev > 0 ? ', \uC218\uC775 $' + d.rev + '/day' : '') + (d.metric ? ', ' + (d.metric === 'cust' ? '\uACE0\uAC1D\u2191' : d.metric === 'emp' ? '\uAD6C\uC131\uC6D0\u2191' : '\uC0AC\uD68C\u2191') : '');
-        var cost = document.createElement('span');
-        cost.className = 'cost';
-        cost.textContent = '$' + d.cost;
-        b.appendChild(cost);
-      }
+      var cost = document.createElement('span');
+      cost.className = 'cost';
+      cost.textContent = '$' + def.cost;
+      b.appendChild(cost);
+
+      b.title = def.lbl + ' ($' + def.cost + ') \u2014 ' + (def.cat === 'dept' ? '\uBD80\uC11C' : def.cat === 'facility' ? '\uC2DC\uC124' : '\uC7A5\uC2DD') + (def.rev > 0 ? ', \uC218\uC775 $' + def.rev + '/day' : '') + (def.metric ? ', ' + (def.metric === 'cust' ? '\uACE0\uAC1D\u2191' : def.metric === 'emp' ? '\uAD6C\uC131\uC6D0\u2191' : '\uC0AC\uD68C\u2191') : '');
 
       b.addEventListener('click', function() {
         initAudio(); startBGM(); sfxClick();
         var btns = bp.querySelectorAll('.build-btn');
-        for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
-        if (G.selTool === toolType) {
-          G.selTool = null;
-          canvas.style.cursor = 'default';
-        } else {
-          G.selTool = toolType;
-          b.classList.add('active');
-          canvas.style.cursor = 'crosshair';
-        }
-        // Close meeting if open
-        closeMeeting();
+        for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+        if (G.selTool === toolType) { G.selTool = null; canvas.style.cursor = 'default'; }
+        else { G.selTool = toolType; b.classList.add('active'); canvas.style.cursor = 'crosshair'; }
+        // Close hiring panel if open
+        document.getElementById('hire-panel').classList.remove('open');
       });
-
-      bp.appendChild(b);
-    })(tools[t]);
+      btnRow.appendChild(b);
+    })(types[i]);
   }
+
+  // Hiring button (org tab only)
+  if (G.activeTab === 'org') {
+    var hireBtn = document.createElement('button');
+    hireBtn.className = 'build-btn';
+    var hIco = document.createElement('span');
+    hIco.className = 'icon';
+    hIco.textContent = '\u{1F464}';
+    hireBtn.appendChild(hIco);
+    var hLbl = document.createElement('span');
+    hLbl.className = 'label';
+    hLbl.textContent = '채용';
+    hireBtn.appendChild(hLbl);
+    hireBtn.addEventListener('click', function() {
+      initAudio(); sfxClick();
+      G.selTool = null; canvas.style.cursor = 'default';
+      var btns = bp.querySelectorAll('.build-btn');
+      for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+      openHiringPanel();
+    });
+    btnRow.appendChild(hireBtn);
+  }
+
+  // Bulldoze button (both tabs)
+  var bullBtn = document.createElement('button');
+  bullBtn.className = 'build-btn' + (G.selTool === 'bulldoze' ? ' active' : '');
+  var bIco = document.createElement('span');
+  bIco.className = 'icon';
+  bIco.textContent = '\u{1F5D1}';
+  bullBtn.appendChild(bIco);
+  var bLbl = document.createElement('span');
+  bLbl.className = 'label';
+  bLbl.textContent = 'Delete';
+  bullBtn.appendChild(bLbl);
+  bullBtn.addEventListener('click', function() {
+    initAudio(); sfxClick();
+    var btns = bp.querySelectorAll('.build-btn');
+    for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+    if (G.selTool === 'bulldoze') { G.selTool = null; canvas.style.cursor = 'default'; }
+    else { G.selTool = 'bulldoze'; bullBtn.classList.add('active'); canvas.style.cursor = 'crosshair'; }
+  });
+  btnRow.appendChild(bullBtn);
+
+  bp.appendChild(btnRow);
 }
 
 // ============================================================
@@ -2800,6 +3064,9 @@ document.addEventListener('keydown', function(e) {
   if (e.ctrlKey && e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
     e.preventDefault();
     redoAction();
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('hire-panel').classList.remove('open');
   }
 });
 
