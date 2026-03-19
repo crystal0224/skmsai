@@ -242,6 +242,46 @@ canvas{display:block;cursor:default}
 .perf-grade.grade-d.selected{border-color:#F87171;color:#F87171;background:rgba(248,113,113,0.1)}
 .pip-badge{font-size:9px;color:#F87171;font-weight:700;margin-left:4px}
 .perf-row.pip-active{background:rgba(248,113,113,0.08);border-radius:4px;padding-left:4px}
+
+/* Rankings overlay */
+.rank-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:55;display:none;align-items:center;justify-content:center}
+.rank-overlay.show{display:flex}
+.rank-card{background:var(--hud-bg);backdrop-filter:blur(16px);border:1px solid var(--hud-border);border-radius:14px;width:600px;max-width:95vw;max-height:80vh;overflow-y:auto;padding:24px;color:#e8e8f0}
+.rank-title{font-size:18px;font-weight:800;color:var(--accent);text-align:center;margin-bottom:16px}
+.rank-table{width:100%;border-collapse:collapse;font-size:11px}
+.rank-table th{text-align:left;padding:6px 8px;border-bottom:2px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);font-size:10px;text-transform:uppercase;letter-spacing:0.5px}
+.rank-table td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.rank-table .current{background:rgba(255,184,48,0.1)}
+.rank-table .won{color:var(--green)}
+.rank-table .lost{color:var(--red)}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .topbar{padding:6px 10px;gap:6px;font-size:10px}
+  .topbar .logo{font-size:13px}
+  .topbar .stat{padding:2px 6px;font-size:10px}
+  .build-panel{bottom:10px;padding:6px 8px;border-radius:12px}
+  .build-btn{width:48px;height:50px;min-width:44px;min-height:44px}
+  .build-btn .icon{font-size:18px}
+  .build-btn .label{font-size:7px}
+  .build-btn .cost{font-size:8px}
+  .tab-btn{font-size:9px;padding:4px 0;min-height:44px}
+  .policy-panel{width:220px;font-size:10px}
+  .meeting-panel{width:280px}
+  .minimap{width:100px;height:75px;bottom:70px}
+  .onboard-card{width:95vw;padding:20px 16px}
+  .onboard-flow-step{min-width:80px;padding:8px 6px}
+  .event-card{width:92vw;padding:20px 16px}
+  .strat-card{width:95vw;padding:20px 16px}
+  .hire-panel{width:95vw;bottom:80px}
+  .tutorial{bottom:75px;max-width:300px;font-size:11px}
+  .speed-btn{min-width:44px;min-height:44px}
+  .policy-toggle{min-width:44px;min-height:44px}
+  .pol-item{min-height:44px}
+  .meeting-choice{min-height:44px}
+  .event-choice{min-height:44px}
+  .hire-btn{min-height:44px}
+}
 </style>
 </head>
 <body>
@@ -260,6 +300,7 @@ canvas{display:block;cursor:default}
   <div class="meeting-overlay" id="strat-overlay"></div>
   <div class="report-overlay" id="report-overlay"></div>
   <div class="onboard-overlay" id="onboard-overlay"></div>
+  <div class="rank-overlay" id="rank-overlay"></div>
 </div>
 <script>
 "use strict";
@@ -581,6 +622,8 @@ function createInitialState() {
     hireRefreshCost: 200,
     // Audio
     audioCtx: null, bgmStarted: false,
+    // Scenario
+    scenario: 1,
     // Labor relations
     laborTension: 0,
     hasWorksCouncil: false,
@@ -629,6 +672,43 @@ function setupCrisisScenario() {
   for (var i = 0; i < types.length; i++) {
     spawnWorker(types[i], cx, cy);
   }
+}
+
+// ============================================================
+// SCENARIO 2: AI INNOVATION ERA
+// ============================================================
+function setupAIScenario() {
+  var cx = Math.floor(GRID / 2), cy = Math.floor(GRID / 2);
+  G.grid[cy][cx] = {type:'hq'};
+  // Well-established company: more corridors, more departments
+  for (var i = 1; i <= 6; i++) {
+    placeCell(cx + i, cy, 'corridor');
+    placeCell(cx - i, cy, 'corridor');
+    placeCell(cx, cy + i, 'corridor');
+    placeCell(cx, cy - i, 'corridor');
+  }
+  // Existing departments
+  placeCell(cx + 7, cy, 'production');
+  placeCell(cx - 7, cy, 'marketing');
+  placeCell(cx, cy + 7, 'hr');
+  placeCell(cx, cy - 7, 'rnd');
+  placeCell(cx + 4, cy + 3, 'planning');
+  // Facilities
+  placeCell(cx - 3, cy + 3, 'cafeteria');
+  placeCell(cx + 3, cy - 3, 'wellness');
+  // Starting money and metrics — stable company
+  G.money = 20000;
+  G.custSat = 60; G.empHap = 55; G.socVal = 45;
+  // Mixed team: 4 ace, 3 rookie, 2 cynic, 1 leader, 2 disengaged
+  var types = ['ace','ace','ace','ace','rookie','rookie','rookie','cynic','cynic','leader','disengaged','disengaged'];
+  for (var i = 0; i < types.length; i++) {
+    spawnWorker(types[i], cx, cy);
+  }
+  // Some policies already active
+  G.activePolicies['rewards'] = true;
+  G.activePolicies['ojt'] = true;
+  // Scenario-specific
+  G.scenario = 2;
 }
 
 function placeCell(x, y, type) {
@@ -1905,6 +1985,8 @@ function checkWinLose() {
   if (G.money <= 0) {
     G.gameOver = true;
     G.gameWon = false;
+    saveRanking();
+    clearSave();
     showReport();
     return;
   }
@@ -1913,19 +1995,40 @@ function checkWinLose() {
   if (alive.length === 0 && G.gDay > 2) {
     G.gameOver = true;
     G.gameWon = false;
+    saveRanking();
+    clearSave();
     showReport();
     return;
   }
-  // Win: rating >= 3.0 for 30 days
-  if (G.rating >= 3.0) {
-    G.winDays += G.gSpeed / 1440;
-    if (G.winDays >= 30) {
-      G.gameOver = true;
-      G.gameWon = true;
-      showReport();
+  // Win conditions depend on scenario
+  if (G.scenario === 2) {
+    // Scenario 2: all metrics >= thresholds for 20 days
+    if (G.custSat >= 75 && G.empHap >= 65 && G.socVal >= 60 && G.rating >= 4.0) {
+      G.winDays += G.gSpeed / 1440;
+      if (G.winDays >= 20) {
+        G.gameOver = true;
+        G.gameWon = true;
+        saveRanking();
+        clearSave();
+        showReport();
+      }
+    } else {
+      G.winDays = Math.max(0, G.winDays - G.gSpeed / 1440 * 0.5);
     }
   } else {
-    G.winDays = Math.max(0, G.winDays - G.gSpeed / 1440 * 0.5);
+    // Scenario 1: rating >= 3.0 for 30 days
+    if (G.rating >= 3.0) {
+      G.winDays += G.gSpeed / 1440;
+      if (G.winDays >= 30) {
+        G.gameOver = true;
+        G.gameWon = true;
+        saveRanking();
+        clearSave();
+        showReport();
+      }
+    } else {
+      G.winDays = Math.max(0, G.winDays - G.gSpeed / 1440 * 0.5);
+    }
   }
 }
 
@@ -2717,6 +2820,7 @@ function showEventModal(evt) {
           G.choiceLog.push({event: G.currentEvent.id, choice: idx});
           closeEvent();
           updateHUD();
+          saveGame();
         });
       }
 
@@ -3848,19 +3952,27 @@ var TUTORIAL_STEPS = [
   '\uC624\uB978\uCABD \uC815\uCC45 \uD328\uB110\uC744 \uC5F4\uACE0 \uCCAB SKMS \uC815\uCC45\uC744 \uD65C\uC131\uD654\uD558\uC138\uC694.'
 ];
 
+var TUTORIAL_STEPS_S2 = [
+  'AI Lab(R&D \uBD80\uC11C)\uB97C \uAC15\uD654\uD558\uC138\uC694. \uAE30\uC874 \uAD6C\uC131\uC6D0\uC758 \uBD88\uC548\uC5D0 \uC8FC\uC758!',
+  '\uAD50\uC721\uC6D0\uC744 \uC138\uC6B0\uACE0 \uB9AC\uC2A4\uD0AC\uB9C1 \uD504\uB85C\uADF8\uB7A8\uC744 \uC2DC\uC791\uD558\uC138\uC694.',
+  'VWBE \uBB38\uD654\uB97C \uD65C\uC131\uD654\uD558\uC5EC AI\uC640 \uC778\uAC04\uC774 \uACF5\uC874\uD558\uB294 \uD658\uACBD\uC744 \uB9CC\uB4DC\uC138\uC694.',
+  '\uBAA8\uB4E0 \uC774\uD574\uAD00\uACC4\uC790 \uC9C0\uD45C\uB97C \uB192\uC740 \uC218\uC900(\uACE0\uAC1D75+, \uAD6C\uC131\uC6D065+, \uC0AC\uD68C60+)\uC73C\uB85C \uC720\uC9C0\uD558\uC138\uC694.'
+];
+
 function showTutorial() {
-  if (G.tutDone || G.tutStep >= TUTORIAL_STEPS.length) return;
+  var steps = G.scenario === 2 ? TUTORIAL_STEPS_S2 : TUTORIAL_STEPS;
+  if (G.tutDone || G.tutStep >= steps.length) return;
   var el = document.getElementById('tutorial');
   while (el.firstChild) el.removeChild(el.firstChild);
 
   var step = document.createElement('div');
   step.className = 'step';
-  step.textContent = 'Step ' + (G.tutStep + 1) + '/' + TUTORIAL_STEPS.length;
+  step.textContent = 'Step ' + (G.tutStep + 1) + '/' + steps.length;
   el.appendChild(step);
 
   var msg = document.createElement('div');
   msg.className = 'msg';
-  msg.textContent = TUTORIAL_STEPS[G.tutStep];
+  msg.textContent = steps[G.tutStep];
   el.appendChild(msg);
 
   var dismiss = document.createElement('div');
@@ -3868,7 +3980,8 @@ function showTutorial() {
   dismiss.textContent = '\uC54C\uACA0\uC2B5\uB2C8\uB2E4 \u2192';
   dismiss.addEventListener('click', function() {
     G.tutStep++;
-    if (G.tutStep >= TUTORIAL_STEPS.length) {
+    var curSteps = G.scenario === 2 ? TUTORIAL_STEPS_S2 : TUTORIAL_STEPS;
+    if (G.tutStep >= curSteps.length) {
       G.tutDone = true;
       el.classList.remove('show');
     } else {
@@ -3997,6 +4110,7 @@ function placeBuild(gx, gy, type) {
     }
 
   sfxPlace();
+  saveGame();
 
   // Check welfare buildings for speech trigger
   if (type === 'cafeteria' || type === 'wellness') {
@@ -4136,6 +4250,8 @@ function showOnboarding() {
   var overlay = document.getElementById('onboard-overlay');
   while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
 
+  var selectedScenario = 1;
+
   var card = document.createElement('div');
   card.className = 'onboard-card';
 
@@ -4155,15 +4271,67 @@ function showOnboarding() {
   sub.textContent = 'SK\uACBD\uC601\uCCB4\uACC4\uB97C \uCCB4\uD5D8\uD558\uB294 \uACBD\uC601 \uC2DC\uBBAC\uB808\uC774\uC158';
   card.appendChild(sub);
 
-  // Scenario briefing
-  var scenario = document.createElement('div');
-  scenario.className = 'onboard-scenario';
-  var warn = document.createElement('span');
-  warn.className = 'warn';
-  warn.textContent = '\u26A0 \uC2DC\uB098\uB9AC\uC624: \uC704\uAE30\uC758 \uD68C\uC0AC';
-  scenario.appendChild(warn);
-  scenario.appendChild(document.createTextNode('\uB2F9\uC2E0\uC740 \uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 \uC0C8 CEO\uB85C \uBD80\uC784\uD588\uC2B5\uB2C8\uB2E4. \uAD6C\uC131\uC6D0 12\uBA85 \uC911 \uC5D0\uC774\uC2A4\uB294 0\uBA85, \uC790\uAE08\uC740 $25,000. \uC870\uC9C1\uACFC \uC2DC\uC124\uC744 \uAC16\uCD94\uACE0 \uC778\uC7AC\uB97C \uCC44\uC6A9\uD558\uC5EC \uBCC4\uC810 3.0\uC744 30\uC77C \uC720\uC9C0\uD558\uBA74 \uC2B9\uB9AC\uD569\uB2C8\uB2E4.'));
-  card.appendChild(scenario);
+  // Continue button if save exists
+  if (hasSavedGame()) {
+    var saveInfo = getSaveInfo();
+    var continueRow = document.createElement('div');
+    continueRow.style.cssText = 'display:flex;gap:8px;margin-bottom:16px;';
+
+    var continueBtn = document.createElement('button');
+    continueBtn.style.cssText = 'flex:1;padding:14px;border:none;border-radius:12px;background:var(--green);color:#1a1a2e;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:transform .15s,opacity .15s;';
+    continueBtn.textContent = '\uC774\uC5B4\uD558\uAE30 \u2014 Day ' + saveInfo.day + ', $' + saveInfo.money + ', \u2B50' + saveInfo.rating;
+    continueBtn.addEventListener('click', function() {
+      initAudio();
+      startBGM();
+      G = createInitialState();
+      if (loadGame()) {
+        overlay.removeChild(card);
+        overlay.remove();
+        buildTopBar();
+        buildBuildPanel();
+        buildPolicyToggle();
+        renderPolicyPanel();
+        centerCamera();
+        updateHUD();
+        G.gSpeed = 1;
+        var sBtn = document.getElementById('btn-speed');
+        if (sBtn) sBtn.textContent = '1x';
+      }
+    });
+    continueRow.appendChild(continueBtn);
+
+    var newGameLabel = document.createElement('button');
+    newGameLabel.style.cssText = 'padding:14px 20px;border:1px solid var(--hud-border);border-radius:12px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s;';
+    newGameLabel.textContent = '\uC0C8 \uAC8C\uC784';
+    newGameLabel.addEventListener('click', function() {
+      clearSave();
+      continueRow.style.display = 'none';
+    });
+    continueRow.appendChild(newGameLabel);
+
+    card.appendChild(continueRow);
+  }
+
+  // Scenario briefing — dynamic based on selection
+  var scenarioBrief = document.createElement('div');
+  scenarioBrief.className = 'onboard-scenario';
+
+  function updateBriefing() {
+    while (scenarioBrief.firstChild) scenarioBrief.removeChild(scenarioBrief.firstChild);
+    var warn = document.createElement('span');
+    warn.className = 'warn';
+    if (selectedScenario === 1) {
+      warn.textContent = '\u26A0 \uC2DC\uB098\uB9AC\uC624: \uC704\uAE30\uC758 \uD68C\uC0AC';
+      scenarioBrief.appendChild(warn);
+      scenarioBrief.appendChild(document.createTextNode('\uB2F9\uC2E0\uC740 \uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 \uC0C8 CEO\uB85C \uBD80\uC784\uD588\uC2B5\uB2C8\uB2E4. \uAD6C\uC131\uC6D0 12\uBA85 \uC911 \uC5D0\uC774\uC2A4\uB294 0\uBA85, \uC790\uAE08\uC740 $25,000. \uC870\uC9C1\uACFC \uC2DC\uC124\uC744 \uAC16\uCD94\uACE0 \uC778\uC7AC\uB97C \uCC44\uC6A9\uD558\uC5EC \uBCC4\uC810 3.0\uC744 30\uC77C \uC720\uC9C0\uD558\uBA74 \uC2B9\uB9AC\uD569\uB2C8\uB2E4.'));
+    } else {
+      warn.textContent = '\u{1F916} \uC2DC\uB098\uB9AC\uC624: \uC548\uC815\uB41C \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785\uD558\uB77C';
+      scenarioBrief.appendChild(warn);
+      scenarioBrief.appendChild(document.createTextNode('\uB2F9\uC2E0\uC758 \uD68C\uC0AC\uB294 \uC548\uC815\uC801\uC774\uC9C0\uB9CC \uC131\uC7A5\uC774 \uC815\uCCB4\uB418\uC5C8\uC2B5\uB2C8\uB2E4. AI\uB97C \uB3C4\uC785\uD558\uBA74\uC11C \uAD6C\uC131\uC6D0\uC758 \uBD88\uC548\uC744 \uAD00\uB9AC\uD558\uACE0, \uB9AC\uC2A4\uD0AC\uB9C1\uC73C\uB85C \uD601\uC2E0\uACFC \uC0AC\uB78C \uC911\uC2EC\uC758 \uADE0\uD615\uC744 \uCC3E\uC73C\uC138\uC694. \uBAA8\uB4E0 \uC774\uD574\uAD00\uACC4\uC790 \uC9C0\uD45C\uB97C \uB192\uC740 \uC218\uC900\uC73C\uB85C \uB04C\uC5B4\uC62C\uB9AC\uBA74 \uC2B9\uB9AC\uD569\uB2C8\uB2E4.'));
+    }
+  }
+  updateBriefing();
+  card.appendChild(scenarioBrief);
 
   // Scenario selection
   var scenarios = document.createElement('div');
@@ -4171,6 +4339,7 @@ function showOnboarding() {
 
   var sc1 = document.createElement('div');
   sc1.className = 'onboard-scenario-card active';
+  sc1.style.cursor = 'pointer';
   var sc1badge = document.createElement('span');
   sc1badge.className = 'sc-badge';
   sc1badge.style.color = '#F87171';
@@ -4187,10 +4356,11 @@ function showOnboarding() {
   scenarios.appendChild(sc1);
 
   var sc2 = document.createElement('div');
-  sc2.className = 'onboard-scenario-card locked';
+  sc2.className = 'onboard-scenario-card';
+  sc2.style.cursor = 'pointer';
   var sc2badge = document.createElement('span');
   sc2badge.className = 'sc-badge';
-  sc2badge.style.color = 'rgba(255,255,255,0.3)';
+  sc2badge.style.color = '#60A5FA';
   sc2badge.textContent = '\uC2DC\uB098\uB9AC\uC624 2';
   sc2.appendChild(sc2badge);
   var sc2title = document.createElement('div');
@@ -4199,13 +4369,30 @@ function showOnboarding() {
   sc2.appendChild(sc2title);
   var sc2desc = document.createElement('div');
   sc2desc.className = 'sc-desc';
-  sc2desc.textContent = 'AI \uD601\uC2E0 \uC2DC\uB300\uC758 \uACBD\uC601\uC790\uB85C\uC11C \uAE30\uC220\uACFC \uC778\uAC04\uC758 \uADE0\uD615\uC744 \uCC3E\uC544\uB77C.';
+  sc2desc.textContent = '\uC548\uC815\uB41C \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785. \uAD6C\uC131\uC6D0 12\uBA85, \uC5D0\uC774\uC2A4 4\uBA85, \uC790\uAE08 $20,000. \uBAA8\uB4E0 \uC9C0\uD45C \uACE0\uC218\uC900 20\uC77C \uC720\uC9C0\uD558\uBA74 \uC2B9\uB9AC!';
   sc2.appendChild(sc2desc);
-  var lockLabel = document.createElement('div');
-  lockLabel.className = 'lock-label';
-  lockLabel.textContent = '\uD83D\uDD12 Coming Soon';
-  sc2.appendChild(lockLabel);
   scenarios.appendChild(sc2);
+
+  function selectScenario(num) {
+    selectedScenario = num;
+    if (num === 1) {
+      sc1.className = 'onboard-scenario-card active';
+      sc2.className = 'onboard-scenario-card';
+      sc1badge.textContent = '\u25B6 \uC2DC\uB098\uB9AC\uC624 1';
+      sc2badge.textContent = '\uC2DC\uB098\uB9AC\uC624 2';
+    } else {
+      sc1.className = 'onboard-scenario-card';
+      sc2.className = 'onboard-scenario-card active';
+      sc2.style.borderColor = 'rgba(96,165,250,0.3)';
+      sc2.style.background = 'rgba(96,165,250,0.06)';
+      sc1badge.textContent = '\uC2DC\uB098\uB9AC\uC624 1';
+      sc2badge.textContent = '\u25B6 \uC2DC\uB098\uB9AC\uC624 2';
+    }
+    updateBriefing();
+  }
+
+  sc1.addEventListener('click', function() { selectScenario(1); });
+  sc2.addEventListener('click', function() { selectScenario(2); });
 
   card.appendChild(scenarios);
 
@@ -4272,17 +4459,39 @@ function showOnboarding() {
   card.appendChild(controls);
 
   // Start button
+  // Continue button (if save exists)
+  if (G._pendingSave) {
+    var sv = G._pendingSave;
+    var contBtn = document.createElement('button');
+    contBtn.className = 'onboard-start';
+    contBtn.style.cssText = 'background:#60A5FA;margin-bottom:8px;';
+    contBtn.textContent = '\u{25B6} \uC774\uC5B4\uD558\uAE30 \u2014 Day ' + sv.gDay + ', $' + sv.money.toLocaleString() + ', \u2B50' + (sv.rating || 1).toFixed(1);
+    contBtn.addEventListener('click', function() {
+      initAudio(); startBGM(); sfxPlace();
+      G = createInitialState();
+      loadGame(sv);
+      buildTopBar(); buildBuildPanel(); buildPolicyToggle(); renderPolicyPanel(); centerCamera(); updateHUD();
+      overlay.removeChild(card); overlay.remove();
+      G.gSpeed = 1;
+      var sb = document.getElementById('btn-speed'); if (sb) sb.textContent = '1x';
+      showToast('Day ' + G.gDay + '\uBD80\uD130 \uC774\uC5B4\uC11C \uD50C\uB808\uC774\uD569\uB2C8\uB2E4.', 'success');
+    });
+    card.appendChild(contBtn);
+  }
+
+  // New game button
   var startBtn = document.createElement('button');
   startBtn.className = 'onboard-start';
-  startBtn.textContent = '\u{1F3AC} \uACBD\uC601 \uC2DC\uC791!';
+  startBtn.textContent = '\u{1F3AC} \uC0C8 \uAC8C\uC784 \uC2DC\uC791!';
   startBtn.addEventListener('click', function() {
-    initAudio();
-    startBGM();
-    sfxPlace();
-    overlay.removeChild(card);
-    overlay.remove();
+    initAudio(); startBGM(); sfxPlace();
+    clearSave();
+    G = createInitialState();
+    if (selectedScenario === 2) { setupAIScenario(); } else { setupCrisisScenario(); }
+    buildTopBar(); buildBuildPanel(); buildPolicyToggle(); renderPolicyPanel(); centerCamera(); updateHUD();
+    overlay.removeChild(card); overlay.remove();
     G.gSpeed = 1;
-    document.getElementById('btn-speed').textContent = '1x';
+    var sb = document.getElementById('btn-speed'); if (sb) sb.textContent = '1x';
     showTutorial();
   });
   card.appendChild(startBtn);
@@ -4290,8 +4499,215 @@ function showOnboarding() {
   overlay.appendChild(card);
 }
 
+// ============================================================
+// MOBILE TOUCH SUPPORT
+// ============================================================
+var touchDragStart = null, touchCamStart = null, lastPinchDist = 0;
+canvas.addEventListener('touchstart', function(e) {
+  e.preventDefault(); initAudio();
+  if (e.touches.length === 1) {
+    var t = e.touches[0];
+    G.mouseX = t.clientX; G.mouseY = t.clientY;
+    var g = toGrd(t.clientX, t.clientY);
+    G.mouseGX = g.x; G.mouseGY = g.y;
+    touchDragStart = {x: t.clientX, y: t.clientY};
+    touchCamStart = {x: G.camX, y: G.camY};
+  }
+}, {passive: false});
+
+canvas.addEventListener('touchmove', function(e) {
+  e.preventDefault();
+  if (e.touches.length === 2) {
+    var dx = e.touches[0].clientX - e.touches[1].clientX;
+    var dy = e.touches[0].clientY - e.touches[1].clientY;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    if (lastPinchDist > 0) {
+      var scale = dist / lastPinchDist;
+      var oldZm = G.zm;
+      G.zm = clamp(0.3, 3, G.zm * scale);
+      var mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      var my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      G.camX = mx - (mx - G.camX) * (G.zm / oldZm);
+      G.camY = my - (my - G.camY) * (G.zm / oldZm);
+    }
+    lastPinchDist = dist;
+    touchDragStart = null;
+    return;
+  }
+  if (e.touches.length === 1 && touchDragStart) {
+    var t = e.touches[0];
+    G.mouseX = t.clientX; G.mouseY = t.clientY;
+    var g = toGrd(t.clientX, t.clientY);
+    G.mouseGX = g.x; G.mouseGY = g.y;
+    G.camX = touchCamStart.x + (t.clientX - touchDragStart.x);
+    G.camY = touchCamStart.y + (t.clientY - touchDragStart.y);
+  }
+}, {passive: false});
+
+canvas.addEventListener('touchend', function(e) {
+  lastPinchDist = 0;
+  if (touchDragStart && e.changedTouches.length === 1) {
+    var t = e.changedTouches[0];
+    var dx = Math.abs(t.clientX - touchDragStart.x);
+    var dy = Math.abs(t.clientY - touchDragStart.y);
+    if (dx < 10 && dy < 10) {
+      handleClick(t.clientX, t.clientY);
+    }
+  }
+  touchDragStart = null;
+}, {passive: false});
+
+// ============================================================
+// LOCALSTORAGE SAVE / LOAD
+// ============================================================
+function saveGame() {
+  try {
+    var save = {
+      v: 2, scenario: G.scenario, money: G.money,
+      gDay: G.gDay, gTime: G.gTime,
+      custSat: G.custSat, empHap: G.empHap, socVal: G.socVal,
+      rating: G.rating, ratingBonus: G.ratingBonus || 0,
+      laborTension: G.laborTension || 0,
+      winDays: G.winDays || 0,
+      activePolicies: G.activePolicies,
+      ignoreCount: G.ignoreCount, pressureCount: G.pressureCount,
+      totalAceTransitions: G.totalAceTransitions,
+      totalCynicRecoveries: G.totalCynicRecoveries,
+      totalQuits: G.totalQuits,
+      totalLeaderPromotions: G.totalLeaderPromotions,
+      choiceLog: (G.choiceLog || []).slice(-10),
+      bldgs: G.bldgs.map(function(b) { return {t: b.type, x: b.gx, y: b.gy}; }),
+      workers: G.workers.filter(function(w) { return !w.quitting; }).map(function(w) {
+        return {id: w.id, t: w.type, w: Math.round(w.will), c: Math.round(w.capability),
+                h: Math.round(w.happiness), ad: w.assignedDept, sl: w.salaryLevel || 1,
+                pg: w.perfGrade, ph: w.perfHistory || [], pip: w.pipActive || false,
+                ob: w.onboardDays || 0};
+      }),
+      ts: Date.now()
+    };
+    localStorage.setItem('skms_save', JSON.stringify(save));
+  } catch (e) { /* quota exceeded or private mode */ }
+}
+
+function hasSavedGame() {
+  try {
+    var d = localStorage.getItem('skms_save');
+    if (!d) return null;
+    var s = JSON.parse(d);
+    if (s.v !== 2) return null;
+    return s;
+  } catch (e) { return null; }
+}
+
+function loadGame(save) {
+  G.scenario = save.scenario || 1;
+  G.money = save.money;
+  G.gDay = save.gDay; G.gTime = save.gTime;
+  G.custSat = save.custSat; G.empHap = save.empHap; G.socVal = save.socVal;
+  G.rating = save.rating; G.ratingBonus = save.ratingBonus || 0;
+  G.laborTension = save.laborTension || 0;
+  G.winDays = save.winDays || 0;
+  G.activePolicies = save.activePolicies || {};
+  G.ignoreCount = save.ignoreCount || 0;
+  G.pressureCount = save.pressureCount || 0;
+  G.totalAceTransitions = save.totalAceTransitions || 0;
+  G.totalCynicRecoveries = save.totalCynicRecoveries || 0;
+  G.totalQuits = save.totalQuits || 0;
+  G.totalLeaderPromotions = save.totalLeaderPromotions || 0;
+  G.choiceLog = save.choiceLog || [];
+  // Rebuild grid
+  for (var y = 0; y < GRID; y++) for (var x = 0; x < GRID; x++) G.grid[y][x] = null;
+  var cx = Math.floor(GRID / 2), cy = Math.floor(GRID / 2);
+  G.grid[cy][cx] = {type: 'hq'};
+  G.bldgs = [];
+  for (var i = 0; i < save.bldgs.length; i++) {
+    var b = save.bldgs[i];
+    if (inBounds(b.x, b.y)) {
+      G.grid[b.y][b.x] = {type: b.t};
+      G.bldgs.push({type: b.t, gx: b.x, gy: b.y});
+    }
+  }
+  // Restore workers
+  G.workers = [];
+  for (var j = 0; j < save.workers.length; j++) {
+    var wd = save.workers[j];
+    G.workerID++;
+    G.workers.push({
+      id: wd.id || G.workerID,
+      x: cx + (Math.random() - 0.5) * 2, y: cy + (Math.random() - 0.5) * 2,
+      type: wd.t, will: wd.w, capability: wd.c, happiness: wd.h,
+      path: [], pathIdx: 0, state: 'idle', stateTimer: 0,
+      bubble: '', bubbleTimer: 0, dept: null,
+      assignedDept: wd.ad || null,
+      fadeOut: 1, quitting: false, preventQuitDays: 0,
+      onboardDays: wd.ob || 0, hunger: 0,
+      salaryLevel: wd.sl || 1, lastRaiseDay: 0, quitTimer: 0,
+      perfGrade: wd.pg || null, perfHistory: wd.ph || [],
+      pipActive: wd.pip || false, pipDays: 0
+    });
+  }
+}
+
+function clearSave() {
+  try { localStorage.removeItem('skms_save'); } catch (e) {}
+}
+
+function saveRanking() {
+  try {
+    var list = JSON.parse(localStorage.getItem('skms_ranks') || '[]');
+    list.push({
+      d: new Date().toISOString().slice(0, 10),
+      sc: G.scenario, won: G.gameWon,
+      day: G.gDay, r: G.rating,
+      a: calcSKMSAlignment(), st: getManagementStyle(),
+      c: Math.round(G.custSat), e: Math.round(G.empHap), s: Math.round(G.socVal),
+      q: G.totalQuits, ac: G.totalAceTransitions
+    });
+    if (list.length > 20) list = list.slice(-20);
+    localStorage.setItem('skms_ranks', JSON.stringify(list));
+  } catch (e) {}
+}
+
+// Auto-save every 30 seconds
+setInterval(function() { if (!G.gameOver && G.gSpeed > 0) saveGame(); }, 30000);
+
+// ============================================================
+// MOBILE CSS (inject via JS to keep it together)
+// ============================================================
+var mobileCSS = document.createElement('style');
+mobileCSS.textContent = '@media(max-width:768px){'
+  + '.topbar{padding:6px 10px;gap:6px}'
+  + '.topbar .logo{font-size:12px}'
+  + '.topbar .stat{padding:2px 5px;font-size:9px}'
+  + '.build-panel{bottom:8px;padding:6px 8px;border-radius:10px}'
+  + '.build-btn{width:46px;height:48px;min-width:46px;min-height:48px}'
+  + '.build-btn .icon{font-size:16px}'
+  + '.build-btn .label{font-size:6px}'
+  + '.build-btn .cost{font-size:7px}'
+  + '.tab-btn{font-size:9px;padding:4px 0;min-height:32px}'
+  + '.policy-panel{width:200px;font-size:10px}'
+  + '.meeting-panel{width:260px;padding:16px 12px}'
+  + '.minimap{width:90px;height:68px;bottom:66px}'
+  + '.event-card{width:92vw;padding:18px 14px}'
+  + '.strat-card{width:95vw;padding:18px 14px}'
+  + '.hire-panel{width:95vw;bottom:70px}'
+  + '.tutorial{bottom:68px;max-width:280px;font-size:10px}'
+  + '.onboard-card{width:96vw;padding:18px 14px}'
+  + '.onboard-flow-step{min-width:72px;padding:6px 4px}'
+  + '.report-card{width:95vw;padding:24px 16px}'
+  + '}';
+document.head.appendChild(mobileCSS);
+
+// ============================================================
+// INIT
+// ============================================================
 function init() {
-  setupCrisisScenario();
+  var save = hasSavedGame();
+  if (save) {
+    // Show continue option in onboarding
+    G._pendingSave = save;
+  }
+  setupCrisisScenario(); // default, may be overridden by load
   buildTopBar();
   buildBuildPanel();
   buildPolicyToggle();
