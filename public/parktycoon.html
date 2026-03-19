@@ -229,9 +229,9 @@ canvas{display:block;cursor:default}
 .slide1-center{flex:0 0 180px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
 .slide1-col-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:4px}
 .slide1-col-sub{font-size:10px;text-align:center;margin-bottom:8px;color:#9CA3AF;font-weight:500}
-.slide1-flow-arrow{color:#D1D5DB;font-size:18px;position:absolute;top:50%;transform:translateY(-50%)}
-.slide1-flow-arrow.left{left:-14px}
-.slide1-flow-arrow.right{right:-14px}
+.slide1-flow-arrow{font-size:22px;position:absolute;top:50%;transform:translateY(-50%);background:linear-gradient(180deg,#9CA3AF,#D1D5DB);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 2px 4px rgba(0,0,0,0.08);filter:drop-shadow(0 1px 2px rgba(0,0,0,0.06))}
+.slide1-flow-arrow.left{left:-20px}
+.slide1-flow-arrow.right{right:-20px}
 .skms-panel{width:100%;background:transparent;border:none;padding:20px 8px;text-align:center}
 .after-area{display:flex;flex-direction:column;gap:8px;flex:1}
 .success-path{flex:1;background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:12px;padding:10px;text-align:center}
@@ -6794,17 +6794,8 @@ function showOnboarding() {
   skmsTitle.textContent = 'SKMS';
 
   var skmsCopy = document.createElement('div');
-  skmsCopy.style.cssText = 'font-size:13px;color:#6B7280;font-weight:500;line-height:1.7';
-  var copyText1 = document.createTextNode('\uB2F9\uC2E0\uC758 \uACBD\uC601\uC774');
-  var copyBr = document.createElement('br');
-  var copyFate = document.createElement('span');
-  copyFate.style.cssText = 'color:#1F2937;font-size:18px;font-weight:900;letter-spacing:-0.5px';
-  copyFate.textContent = '\uC6B4\uBA85';
-  var copyText2 = document.createTextNode('\uC744 \uBC14\uAFD9\uB2C8\uB2E4');
-  skmsCopy.appendChild(copyText1);
-  skmsCopy.appendChild(copyBr);
-  skmsCopy.appendChild(copyFate);
-  skmsCopy.appendChild(copyText2);
+  skmsCopy.style.cssText = 'font-size:13px;color:#4B5563;font-weight:600;line-height:1.8';
+  skmsCopy.textContent = '\uB2F9\uC2E0\uC758 \uACBD\uC601\uC774 \uC6B4\uBA85\uC744 \uBC14\uAFD9\uB2C8\uB2E4';
 
   skmsPanel.appendChild(skmsTurn);
   skmsPanel.appendChild(skmsTitle);
@@ -6829,36 +6820,28 @@ function showOnboarding() {
 
   var successDiv = document.createElement('div');
   successDiv.className = 'success-path';
-  var successLabel = document.createElement('div');
-  successLabel.style.cssText = 'color:#16a34a;font-size:10px;font-weight:800;letter-spacing:0.5px;margin-bottom:4px';
-  successLabel.textContent = '\u2705 SUPEX \uB2EC\uC131';
+  var successCaption = document.createElement('div');
+  successCaption.style.cssText = 'font-size:10px;font-weight:700;color:#374151;margin-bottom:6px;text-align:center';
+  successCaption.textContent = '\u2705 SUPEX \uB2EC\uC131 \u2014 \uC9C1\uC6D0 \uD589\uBCF5 + \uC131\uACFC \uD83D\uDCC8';
   var successCanvas = document.createElement('canvas');
   successCanvas.width = 240;
-  successCanvas.height = 110;
+  successCanvas.height = 100;
   successCanvas.style.cssText = 'width:100%;border-radius:8px';
-  var successCaption = document.createElement('div');
-  successCaption.style.cssText = 'color:#22c55e;font-size:9px;margin-top:4px;font-weight:500';
-  successCaption.textContent = '\uC9C1\uC6D0 \uD589\uBCF5 + \uC131\uACFC \uD83D\uDCC8';
-  successDiv.appendChild(successLabel);
-  successDiv.appendChild(successCanvas);
   successDiv.appendChild(successCaption);
+  successDiv.appendChild(successCanvas);
   afterArea.appendChild(successDiv);
 
   var failDiv = document.createElement('div');
   failDiv.className = 'failure-path';
-  var failLabel = document.createElement('div');
-  failLabel.style.cssText = 'color:#dc2626;font-size:10px;font-weight:800;letter-spacing:0.5px;margin-bottom:4px';
-  failLabel.textContent = '\u274C \uACBD\uC601 \uC2E4\uD328';
+  var failCaption = document.createElement('div');
+  failCaption.style.cssText = 'font-size:10px;font-weight:700;color:#374151;margin-bottom:6px;text-align:center';
+  failCaption.textContent = '\u274C \uACBD\uC601 \uC2E4\uD328 \u2014 \uC774\uC9C1 \uB7EC\uC2DC + \uD30C\uC0B0 \uD83D\uDC80';
   var failCanvas = document.createElement('canvas');
   failCanvas.width = 240;
-  failCanvas.height = 110;
+  failCanvas.height = 100;
   failCanvas.style.cssText = 'width:100%;border-radius:8px';
-  var failCaption = document.createElement('div');
-  failCaption.style.cssText = 'color:#ef4444;font-size:9px;margin-top:4px;font-weight:500';
-  failCaption.textContent = '\uC774\uC9C1 \uB7EC\uC2DC + \uD30C\uC0B0 \uD83D\uDC80';
-  failDiv.appendChild(failLabel);
-  failDiv.appendChild(failCanvas);
   failDiv.appendChild(failCaption);
+  failDiv.appendChild(failCanvas);
   afterArea.appendChild(failDiv);
   afterCol.appendChild(afterArea);
 
