@@ -236,9 +236,12 @@ canvas{display:block;cursor:default}
 .after-area{display:flex;flex-direction:column;gap:8px;flex:1}
 .success-path{flex:1;background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:12px;padding:10px;text-align:center}
 .failure-path{flex:1;background:linear-gradient(135deg,#FEF2F2,#FFF1F2);border-radius:12px;padding:10px;text-align:center}
-.sc-card-new{flex:1;padding:20px;border-radius:12px;border:2px solid #E2E8F0;background:#FAFAFA;cursor:pointer;transition:all .2s ease-out;display:flex;flex-direction:column;align-items:center;gap:8px}
-.sc-card-new:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
-.sc-card-new.active{border-color:#0052A2;background:linear-gradient(135deg,#EBF2FA,#F0F7FF);box-shadow:0 4px 20px rgba(0,82,162,0.12)}
+.sc-card-new{flex:1;padding:0;border-radius:16px;border:2px solid #E2E8F0;cursor:pointer;transition:all .25s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;overflow:hidden;min-height:280px;position:relative}
+.sc-card-new:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 12px 32px rgba(0,0,0,0.1)}
+.sc-card-new.active{border-color:#0052A2;box-shadow:0 8px 28px rgba(0,82,162,0.15)}
+.sc-card-new .sc-art{flex:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.sc-card-new .sc-info{padding:16px 18px;background:#fff;border-top:1px solid rgba(0,0,0,0.04)}
+.sc-card-new .sc-difficulty{position:absolute;top:10px;right:10px;padding:3px 10px;border-radius:20px;font-size:9px;font-weight:700;backdrop-filter:blur(8px)}
 .play-strip{display:flex;flex-direction:column;gap:10px;padding:16px 18px;border-radius:14px;background:linear-gradient(135deg,#F0F7FF,#EBF2FA);border:1px solid rgba(0,82,162,0.12);margin-top:12px}
 .play-strip .strip-label{font-size:18px;font-weight:900;color:#0052A2;text-align:center;letter-spacing:-0.3px}
 .play-strip .strip-steps{display:flex;gap:8px;flex:1;justify-content:center;align-items:stretch}
@@ -6820,27 +6823,19 @@ function showOnboarding() {
 
   var successDiv = document.createElement('div');
   successDiv.className = 'success-path';
-  var successCaption = document.createElement('div');
-  successCaption.style.cssText = 'font-size:10px;font-weight:700;color:#374151;margin-bottom:6px;text-align:center';
-  successCaption.textContent = '\u2705 SUPEX \uB2EC\uC131 \u2014 \uC9C1\uC6D0 \uD589\uBCF5 + \uC131\uACFC \uD83D\uDCC8';
   var successCanvas = document.createElement('canvas');
   successCanvas.width = 240;
-  successCanvas.height = 100;
+  successCanvas.height = 110;
   successCanvas.style.cssText = 'width:100%;border-radius:8px';
-  successDiv.appendChild(successCaption);
   successDiv.appendChild(successCanvas);
   afterArea.appendChild(successDiv);
 
   var failDiv = document.createElement('div');
   failDiv.className = 'failure-path';
-  var failCaption = document.createElement('div');
-  failCaption.style.cssText = 'font-size:10px;font-weight:700;color:#374151;margin-bottom:6px;text-align:center';
-  failCaption.textContent = '\u274C \uACBD\uC601 \uC2E4\uD328 \u2014 \uC774\uC9C1 \uB7EC\uC2DC + \uD30C\uC0B0 \uD83D\uDC80';
   var failCanvas = document.createElement('canvas');
   failCanvas.width = 240;
-  failCanvas.height = 100;
+  failCanvas.height = 110;
   failCanvas.style.cssText = 'width:100%;border-radius:8px';
-  failDiv.appendChild(failCaption);
   failDiv.appendChild(failCanvas);
   afterArea.appendChild(failDiv);
   afterCol.appendChild(afterArea);
@@ -6860,72 +6855,109 @@ function showOnboarding() {
   var s2 = document.createElement('div');
   s2.className = 'onboard-slide';
 
-  var s2title = document.createElement('div');
-  s2title.style.cssText = 'font-size:20px;font-weight:900;text-align:center;color:#1F2937;margin-bottom:16px;letter-spacing:-0.5px';
-  s2title.textContent = '\uD83D\uDCCB \uC2DC\uB098\uB9AC\uC624\uB97C \uC120\uD0DD\uD558\uC138\uC694';
-  s2.appendChild(s2title);
-
   var scRow = document.createElement('div');
-  scRow.style.cssText = 'display:flex;gap:12px;margin-bottom:12px';
+  scRow.style.cssText = 'display:flex;gap:16px;margin-bottom:16px';
+
+  // Helper: build game card
+  function buildScenarioCard(config) {
+    var card = document.createElement('div');
+    card.className = 'sc-card-new' + (config.active ? ' active' : '');
+
+    // Art area (gradient + big icon + atmosphere)
+    var art = document.createElement('div');
+    art.className = 'sc-art';
+    art.style.background = config.gradient;
+
+    var bigIcon = document.createElement('div');
+    bigIcon.style.cssText = 'font-size:64px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.15));z-index:1';
+    bigIcon.textContent = config.icon;
+    art.appendChild(bigIcon);
+
+    // Atmosphere emoji (scattered decorative)
+    for (var ai = 0; ai < config.atmosphere.length; ai++) {
+      var atm = document.createElement('span');
+      atm.style.cssText = 'position:absolute;font-size:' + (16 + Math.random() * 12) + 'px;opacity:0.25;' + config.atmosphere[ai];
+      art.appendChild(atm);
+    }
+
+    // Difficulty badge
+    var badge = document.createElement('div');
+    badge.className = 'sc-difficulty';
+    badge.style.cssText += ';background:' + config.badgeBg + ';color:' + config.badgeColor;
+    badge.textContent = config.difficulty;
+    art.appendChild(badge);
+
+    card.appendChild(art);
+
+    // Info footer
+    var info = document.createElement('div');
+    info.className = 'sc-info';
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:16px;font-weight:900;color:#1F2937;margin-bottom:4px';
+    title.textContent = config.title;
+    var desc = document.createElement('div');
+    desc.style.cssText = 'font-size:11px;color:#6B7280;line-height:1.5';
+    desc.textContent = config.desc;
+    info.appendChild(title);
+    info.appendChild(desc);
+    card.appendChild(info);
+
+    return card;
+  }
 
   // Scenario 1: 위기의 회사
-  var sc1 = document.createElement('div');
-  sc1.className = 'sc-card-new active';
-  sc1.style.background = 'linear-gradient(180deg, rgba(248,113,113,0.12), rgba(248,113,113,0.04))';
-  var sc1Icon = document.createElement('div');
-  sc1Icon.style.cssText = 'font-size:32px';
-  sc1Icon.textContent = '\uD83D\uDD25';
-  sc1.appendChild(sc1Icon);
-  var sc1Title = document.createElement('div');
-  sc1Title.style.cssText = 'font-size:13px;font-weight:800;color:#f87171';
-  sc1Title.textContent = '\uC704\uAE30\uC758 \uD68C\uC0AC';
-  sc1.appendChild(sc1Title);
-  var sc1Desc = document.createElement('div');
-  sc1Desc.style.cssText = 'font-size:10px;color:#4B5563;text-align:center;line-height:1.5';
-  sc1Desc.textContent = '\uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 CEO\uB85C \uBD80\uC784\uD558\uC5EC \uC870\uC9C1\uC744 \uC0B4\uB824\uB77C!';
-  sc1.appendChild(sc1Desc);
-  var sc1Badge = document.createElement('div');
-  sc1Badge.className = 'difficulty-badge';
-  sc1Badge.style.cssText = 'background:rgba(248,113,113,0.12);color:#f87171';
-  sc1Badge.textContent = '\uB09C\uC774\uB3C4: \u2605\u2605\u2605';
-  sc1.appendChild(sc1Badge);
+  var sc1 = buildScenarioCard({
+    active: true,
+    icon: '\uD83D\uDD25',
+    title: '\uC704\uAE30\uC758 \uD68C\uC0AC',
+    desc: '\uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 CEO\uB85C \uBD80\uC784\uD558\uC5EC \uC870\uC9C1\uC744 \uC0B4\uB824\uB77C!',
+    difficulty: '\u2605\u2605\u2605 HARD',
+    gradient: 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 40%, #FCA5A5 100%)',
+    badgeBg: 'rgba(255,255,255,0.7)', badgeColor: '#DC2626',
+    atmosphere: [
+      'top:15%;left:12%',
+      'bottom:20%;right:15%',
+      'top:40%;right:25%'
+    ].map(function(pos,i){return pos + ';transform:rotate(' + (i*30-20) + 'deg)'})
+  });
+  // Add atmosphere emoji content
+  var atms1 = sc1.querySelectorAll('.sc-art span');
+  var atm1Icons = ['\uD83D\uDCC9','\uD83D\uDCA8','\u26A0\uFE0F'];
+  for(var a1=0;a1<atms1.length;a1++) atms1[a1].textContent = atm1Icons[a1]||'';
   scRow.appendChild(sc1);
 
   // Scenario 2: AI 혁신 시대
-  var sc2 = document.createElement('div');
-  sc2.className = 'sc-card-new';
-  sc2.style.background = 'linear-gradient(180deg, rgba(96,165,250,0.12), rgba(96,165,250,0.04))';
-  var sc2Icon = document.createElement('div');
-  sc2Icon.style.cssText = 'font-size:32px';
-  sc2Icon.textContent = '\uD83E\uDD16';
-  sc2.appendChild(sc2Icon);
-  var sc2Title = document.createElement('div');
-  sc2Title.style.cssText = 'font-size:13px;font-weight:800;color:#60a5fa';
-  sc2Title.textContent = 'AI \uD601\uC2E0 \uC2DC\uB300';
-  sc2.appendChild(sc2Title);
-  var sc2Desc = document.createElement('div');
-  sc2Desc.style.cssText = 'font-size:10px;color:#4B5563;text-align:center;line-height:1.5';
-  sc2Desc.textContent = '\uBCC0\uD654\uD558\uAE30 \uC2EB\uC5B4\uD558\uB294 \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785\uD558\uC5EC \uCD08\uC77C\uB958 \uAE30\uC5C5\uC73C\uB85C!';
-  sc2.appendChild(sc2Desc);
-  var sc2Badge = document.createElement('div');
-  sc2Badge.className = 'difficulty-badge';
-  sc2Badge.style.cssText = 'background:rgba(96,165,250,0.12);color:#60a5fa';
-  sc2Badge.textContent = '\uB09C\uC774\uB3C4: \u2605\u2605\u2606';
-  sc2.appendChild(sc2Badge);
+  var sc2 = buildScenarioCard({
+    active: false,
+    icon: '\uD83E\uDD16',
+    title: 'AI \uD601\uC2E0 \uC2DC\uB300',
+    desc: '\uBCC0\uD654\uD558\uAE30 \uC2EB\uC5B4\uD558\uB294 \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785\uD558\uC5EC \uCD08\uC77C\uB958 \uAE30\uC5C5\uC73C\uB85C!',
+    difficulty: '\u2605\u2605\u2606 NORMAL',
+    gradient: 'linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 40%, #93C5FD 100%)',
+    badgeBg: 'rgba(255,255,255,0.7)', badgeColor: '#2563EB',
+    atmosphere: [
+      'top:12%;right:18%',
+      'bottom:25%;left:12%',
+      'top:50%;left:30%'
+    ].map(function(pos,i){return pos + ';transform:rotate(' + (i*25-15) + 'deg)'})
+  });
+  var atms2 = sc2.querySelectorAll('.sc-art span');
+  var atm2Icons = ['\u2699\uFE0F','\uD83D\uDCA1','\uD83D\uDE80'];
+  for(var a2=0;a2<atms2.length;a2++) atms2[a2].textContent = atm2Icons[a2]||'';
   scRow.appendChild(sc2);
 
   s2.appendChild(scRow);
 
-  // selectScenario toggles active class
+  // Title at bottom
+  var s2title = document.createElement('div');
+  s2title.style.cssText = 'font-size:14px;font-weight:700;text-align:center;color:#9CA3AF;letter-spacing:0.5px';
+  s2title.textContent = '\uC2DC\uB098\uB9AC\uC624\uB97C \uC120\uD0DD\uD558\uC138\uC694';
+  s2.appendChild(s2title);
+
   function selectScenario(num) {
     selectedScenario = num;
-    if (num === 1) {
-      sc1.className = 'sc-card-new active';
-      sc2.className = 'sc-card-new';
-    } else {
-      sc1.className = 'sc-card-new';
-      sc2.className = 'sc-card-new active';
-    }
+    sc1.className = num === 1 ? 'sc-card-new active' : 'sc-card-new';
+    sc2.className = num === 2 ? 'sc-card-new active' : 'sc-card-new';
   }
   sc1.addEventListener('click', function() { selectScenario(1); });
   sc2.addEventListener('click', function() { selectScenario(2); });
@@ -6942,9 +6974,9 @@ function showOnboarding() {
   s3.appendChild(s3title);
 
   var playSteps = [
-    {icon:'\uD83C\uDFE2',title:'\uC870\uC9C1 \uC138\uC6B0\uAE30',items:['\uBD80\uC11C \uBC30\uCE58 \uBC0F \uC0DD\uC131','\uC2DC\uC124 \uAC74\uC124 (Wellness, R&D \uB4F1)','\uC815\uCC45 \uD65C\uC131\uD654 (VWBE, \uC0AC\uD68C\uAC00\uCE58 \uB4F1)'],color:'#0052A2',bg:'#EBF2FA'},
-    {icon:'\uD83D\uDC65',title:'\uC0AC\uB78C \uD0A4\uC6B0\uAE30',items:['\uC778\uC7AC \uCC44\uC6A9 \uBC0F \uBC30\uCE58','\uC131\uACFC\uD3C9\uAC00 (S/A/B/C/D \uAC15\uC81C\uBC30\uBD84)','\uBCF4\uC0C1 \uC804\uB7B5 \uC120\uD0DD'],color:'#059669',bg:'#ECFDF5'},
-    {icon:'\u26A1',title:'\uC704\uAE30 \uB118\uAE30\uAE30',items:['\uB79C\uB364 \uC774\uBCA4\uD2B8 \uB300\uC751 (SKMS \uC120\uD0DD\uC9C0)','\uD6C4\uC18D \uC774\uBCA4\uD2B8 \uACB0\uACFC \uD655\uC778','\uC774\uD574\uAD00\uACC4\uC790 3\uADE0\uD615 \uC720\uC9C0'],color:'#D97706',bg:'#FFFBEB'}
+    {icon:'\uD83C\uDFE2',title:'\uD68C\uC0AC\uB97C \uB9CC\uB4E4\uC5B4\uC694',items:['\uBD80\uC11C\uB97C \uB9CC\uB4E4\uACE0 \uC0AC\uBB34\uC2E4\uC744 \uBC30\uCE58\uD574\uC694','\uAD6C\uB0B4\uC2DD\uB2F9, \uD5EC\uC2A4\uC7A5 \uAC19\uC740 \uBCF5\uC9C0\uC2DC\uC124\uC744 \uC9C0\uC5B4\uC694','\uACBD\uC601 \uC815\uCC45\uC744 \uD65C\uC131\uD654\uD574\uC11C \uC870\uC9C1 \uBB38\uD654\uB97C \uBC14\uAFD4\uC694'],color:'#0052A2',bg:'#EBF2FA'},
+    {icon:'\uD83D\uDC65',title:'\uC0AC\uB78C\uC744 \uD0A4\uC6CC\uC694',items:['\uC778\uC7AC\uB97C \uCC44\uC6A9\uD558\uACE0 \uC801\uC7AC\uC801\uC18C\uC5D0 \uBC30\uCE58\uD574\uC694','\uC131\uACFC\uB97C \uD3C9\uAC00\uD558\uACE0 \uACF5\uC815\uD558\uAC8C \uB4F1\uAE09\uC744 \uB9E4\uACA8\uC694','\uBCF4\uC0C1 \uBC29\uC2DD\uC744 \uC815\uD574\uC11C \uC9C1\uC6D0\uC758 \uC758\uC695\uC744 \uB192\uC5EC\uC694'],color:'#059669',bg:'#ECFDF5'},
+    {icon:'\u26A1',title:'\uC704\uAE30\uB97C \uB118\uACA8\uC694',items:['\uB728\uAE08\uC5C6\uC774 \uD130\uC9C0\uB294 \uC774\uBCA4\uD2B8\uC5D0 \uC9C0\uD61C\uB86D\uAC8C \uB300\uC751\uD574\uC694','\uC120\uD0DD\uC758 \uACB0\uACFC\uAC00 \uBA70\uCE60 \uD6C4 \uB3CC\uC544\uC640\uC694','\uACE0\uAC1D\u00B7\uC9C1\uC6D0\u00B7\uC0AC\uD68C \uC138 \uAC00\uC9C0 \uADE0\uD615\uC744 \uC9C0\uCF1C\uC694'],color:'#D97706',bg:'#FFFBEB'}
   ];
   var playGrid = document.createElement('div');
   playGrid.style.cssText = 'display:flex;gap:14px;margin-bottom:16px';
@@ -6976,11 +7008,6 @@ function showOnboarding() {
   }
   s3.appendChild(playGrid);
 
-  // Controls hint
-  var ctrlHint = document.createElement('div');
-  ctrlHint.className = 'onboard-controls';
-  ctrlHint.innerHTML = '<span>\uD83D\uDDB1\uFE0F \uD074\uB9AD</span> \uC774\uB3D9/\uBC30\uCE58 <span>\u2328\uFE0F Space</span> \uC77C\uC2DC\uC815\uC9C0 <span>\u2328\uFE0F 1~3</span> \uC18D\uB3C4 \uC870\uC808';
-  s3.appendChild(ctrlHint);
 
   slides.push(s3);
 
