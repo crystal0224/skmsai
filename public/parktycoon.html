@@ -172,24 +172,43 @@ canvas{display:block;cursor:default}
 /* Report card */
 .report-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:50;display:none;align-items:center;justify-content:center;overflow-y:auto;padding:20px}
 .report-overlay.show{display:flex}
-.report-card{background:var(--hud-bg);backdrop-filter:blur(16px);border:1px solid var(--hud-border);border-radius:16px;width:480px;max-width:95vw;padding:32px 28px;color:#e8e8f0}
-.report-title{font-size:22px;font-weight:800;color:var(--accent);text-align:center;margin-bottom:6px}
-.report-subtitle{font-size:12px;text-align:center;color:rgba(255,255,255,0.5);margin-bottom:20px}
-.report-section{margin-bottom:16px}
-.report-section h4{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.08)}
-.report-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:12px}
-.report-bar{height:8px;border-radius:4px;background:rgba(255,255,255,0.08);flex:1;margin:0 10px;overflow:hidden}
-.report-bar-fill{height:100%;border-radius:4px;transition:width .5s}
-.report-check{font-size:12px;padding:3px 0}
-.report-quote{font-style:italic;text-align:center;padding:16px;color:rgba(255,255,255,0.6);font-size:12px;line-height:1.6;border:1px solid rgba(255,255,255,0.06);border-radius:8px;margin-bottom:16px}
+.report-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.08);border-radius:12px;max-width:700px;width:95vw;padding:28px 24px;color:#e8e8f0}
 .report-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--accent);color:#1a1a2e;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:inherit}
 .report-btn:hover{opacity:0.85}
-.skms-quote{border-left:3px solid var(--accent);padding:8px 12px;margin:6px 0;font-size:11px;background:rgba(255,184,48,0.05);border-radius:0 6px 6px 0}
-.skms-quote .src{font-style:italic;color:rgba(255,255,255,0.4);font-size:10px;display:block;margin-top:4px}
-.skms-verdict{font-size:11px;padding:3px 0;display:flex;align-items:center;gap:6px}
-.choice-log-item{font-size:11px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
-.choice-log-event{color:var(--accent);font-weight:600}
-.choice-log-choice{color:rgba(255,255,255,0.7)}
+.rpt-header{width:100%;text-align:center;padding:20px;margin-bottom:16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06)}
+.rpt-section-title{font-size:13px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.rpt-gauges{display:flex;gap:12px;justify-content:space-between;margin-bottom:16px}
+.rpt-gauge-col{flex:1;text-align:center}
+.rpt-gauge-col .gauge-label{font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px}
+.rpt-gauge-col .gauge-icon{font-size:18px;display:block;margin-bottom:4px}
+.rpt-gauge-col .gauge-bar{height:10px;border-radius:5px;background:rgba(255,255,255,0.08);overflow:hidden;margin-bottom:6px}
+.rpt-gauge-col .gauge-fill{height:100%;border-radius:5px;transition:width .5s}
+.rpt-gauge-col .gauge-val{font-size:20px;font-weight:800}
+.rpt-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.rpt-stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:12px;border-radius:10px;text-align:center}
+.rpt-stat-number{font-size:24px;font-weight:800}
+.rpt-stat-label{font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px}
+.num-up{color:#4ade80}
+.num-down{color:#f87171}
+.num-neutral{color:rgba(255,255,255,0.6)}
+.rpt-top3-row{display:flex;gap:8px;overflow-x:auto;margin-bottom:16px;padding-bottom:4px}
+.rpt-top3-card{min-width:140px;flex:1;padding:12px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06)}
+.rpt-top3-card .t3-headline{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rpt-top3-card .t3-choice{font-size:11px;color:rgba(255,255,255,0.7);margin-bottom:4px}
+.rpt-top3-card .t3-effect{font-size:10px;color:rgba(255,255,255,0.4)}
+.rpt-coaching-card{background:rgba(255,255,255,0.03);border-left:3px solid;padding:14px;border-radius:0 10px 10px 0;margin-bottom:10px}
+.coaching-good{border-left-color:#4ade80}
+.coaching-bad{border-left-color:#f59e0b}
+.coaching-next{border-left-color:#60a5fa}
+.rpt-coaching-card .coaching-title{font-size:12px;font-weight:700;margin-bottom:6px}
+.rpt-coaching-card .coaching-body{font-size:11px;color:rgba(255,255,255,0.7);line-height:1.5}
+.rpt-quote{font-style:italic;color:rgba(255,255,255,0.5);font-size:11px;margin-top:8px}
+.rpt-source{color:rgba(255,255,255,0.3);font-size:10px;display:block;margin-top:4px}
+.rpt-dna-bar{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:11px}
+.rpt-dna-bar .dna-label{min-width:60px;color:rgba(255,255,255,0.6)}
+.rpt-dna-bar .dna-track{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,0.08);overflow:hidden}
+.rpt-dna-bar .dna-fill{height:100%;border-radius:4px;transition:width .5s}
+.rpt-dna-bar .dna-val{min-width:30px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 
 /* Onboarding overlay */
 .onboard-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#E8F5E9 0%,#FFF8E1 50%,#E3F2FD 100%);z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;animation:fadeIn .5s cubic-bezier(0.16,1,0.3,1) forwards}
@@ -411,6 +430,17 @@ canvas{display:block;cursor:default}
 .dept-worker .dw-stats{font-size:10px;color:rgba(255,255,255,0.5)}
 .dept-close{position:absolute;top:12px;right:12px;background:none;border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all .15s}
 .dept-close:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
+
+/* Screen flash overlay */
+#screen-flash{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;opacity:0;z-index:55;transition:opacity 0.3s ease-out}
+#screen-flash.positive{background:rgba(34,197,94,0.15);opacity:1}
+#screen-flash.negative{background:rgba(220,38,38,0.15);opacity:1}
+
+/* Gauge delta animations */
+.gauge-delta{position:absolute;font-size:13px;font-weight:800;pointer-events:none;animation:gaugeFloatUp 1.5s ease-out forwards;z-index:100;white-space:nowrap}
+.gauge-delta.positive{color:#4ade80}
+.gauge-delta.negative{color:#f87171}
+@keyframes gaugeFloatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-24px)}}
 </style>
 </head>
 <body>
@@ -421,6 +451,7 @@ canvas{display:block;cursor:default}
   <div class="build-panel" id="build-panel"></div>
   <div class="minimap"><canvas id="minimap" width="140" height="105"></canvas></div>
   <div class="toast" id="toast"></div>
+  <div id="screen-flash"></div>
   <div class="tutorial" id="tutorial"></div>
   <div class="policy-toggle" id="policy-toggle"></div>
   <div class="policy-panel" id="policy-panel"></div>
@@ -441,6 +472,8 @@ canvas{display:block;cursor:default}
 // ============================================================
 const TW = 64, TH = 32, GRID = 40;
 const TICK_MS = 1000 / 60;
+const WIN_DAYS_S1 = 15;  // scenario 1: rating >= 3.0 for 15 days (was 30)
+const WIN_DAYS_S2 = 10;  // scenario 2: all metrics for 10 days (was 20)
 
 // ============================================================
 // BUILDING DEFINITIONS
@@ -721,49 +754,35 @@ var FOLLOWUP_EVENTS = {
 };
 
 // ============================================================
-// SKMS INSIGHTS FOR ENDING REPORT
+// SKMS COACHING DATA FOR ENDING REPORT
 // ============================================================
-var SKMS_INSIGHTS = [
-  {condition: function(G){return Object.keys(G.activePolicies).length >= 7;},
-   text: 'SKMS \uC815\uCC45\uC744 \uC801\uADF9 \uB3C4\uC785\uD55C \uACBD\uC601\uC785\uB2C8\uB2E4.',
-   quote: '"\uACBD\uC601\uCCB4\uACC4\uB780 \uACBD\uC601\uD65C\uB3D9\uC758 \uAE30\uBCF8 \uBC29\uD5A5\uACFC \uBC29\uBC95\uB860\uC744 \uCCB4\uACC4\uC801\uC73C\uB85C \uC815\uB9AC\uD55C \uAC83"',
-   quoteSrc: 'SKMS \uC81C1\uC7A5',
-   verdict: 'pass'},
-  {condition: function(G){return G.empHap >= 70;},
-   text: '\uAD6C\uC131\uC6D0 \uD589\uBCF5\uC744 \uC6B0\uC120\uD55C \uC778\uAC04 \uC911\uC2EC \uACBD\uC601\uC785\uB2C8\uB2E4.',
-   quote: '"\uAD6C\uC131\uC6D0 \uD589\uBCF5\uC740 SK \uACBD\uC601\uC758 \uAD81\uADF9\uC801 \uBAA9\uC801\uC774\uB2E4. \uAD6C\uC131\uC6D0\uC774 \uC9C0\uC18D\uC801\uC73C\uB85C \uD589\uBCF5\uC744 \uCD94\uAD6C\uD558\uAE30 \uC704\uD55C \uD130\uC804\uC774\uC790 \uAE30\uBC18"',
-   quoteSrc: 'SKMS 14\uCC28 \uAC1C\uC815\uD310',
-   verdict: 'pass'},
-  {condition: function(G){return G.empHap < 40;},
-   text: '\uAD6C\uC131\uC6D0 \uD589\uBCF5\uC774 \uB0AE\uC544 SKMS \uD575\uC2EC \uAC00\uCE58\uC5D0 \uBD80\uD569\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.',
-   quote: '"\uAD6C\uC131\uC6D0\uC758 \uC790\uBC1C\uC801\u00B7\uC758\uC695\uC801 \uB450\uB1CC\uD65C\uC6A9(VWBE)\uC774 \uC774\uB8E8\uC5B4\uC9C0\uC9C0 \uC54A\uC73C\uBA74 SUPEX \uC218\uC900\uC758 \uC131\uACFC\uB97C \uB2EC\uC131\uD560 \uC218 \uC5C6\uB2E4"',
-   quoteSrc: 'SKMS',
-   verdict: 'fail'},
-  {condition: function(G){return G.pressureCount >= 2;},
-   text: '\uC5B5\uC555\uC801 \uC120\uD0DD\uC774 \uBC18\uBCF5\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uC774\uB294 VWBE\uC640 \uC815\uBC18\uB300\uC785\uB2C8\uB2E4.',
-   quote: '"\uD1B5\uC81C\uC640 \uAC15\uC555\uC774 \uC544\uB2CC \uC790\uBC1C\uC801 \uC758\uC695\uC5D0 \uC758\uD55C \uB450\uB1CC\uD65C\uC6A9\uB9CC\uC774 SUPEX \uCD94\uAD6C\uB97C \uAC00\uB2A5\uD558\uAC8C \uD55C\uB2E4"',
-   quoteSrc: 'SKMS',
-   verdict: 'fail'},
-  {condition: function(G){return G.socVal >= 60;},
-   text: '\uC0AC\uD68C\uC801 \uAC00\uCE58\uB97C \uACBD\uC601\uC5D0 \uD1B5\uD569\uD55C \uADE0\uD615 \uC7A1\uD78C \uC811\uADFC\uC785\uB2C8\uB2E4.',
-   quote: '"\uC774\uD574\uAD00\uACC4\uC790\uC758 \uD589\uBCF5\uC744 \uD568\uAED8 \uCD94\uAD6C\uD558\uBA70, \uC774\uB97C \uC0AC\uD68C\uC801 \uAC00\uCE58\uB85C \uAC1C\uB150\uD654\uD55C\uB2E4"',
-   quoteSrc: 'SKMS 14\uCC28 \uAC1C\uC815\uD310',
-   verdict: 'pass'},
-  {condition: function(G){return G.socVal < 25;},
-   text: '\uC0AC\uD68C\uC801 \uCC45\uC784\uC774 \uD06C\uAC8C \uBD80\uC871\uD569\uB2C8\uB2E4.',
-   quote: '"\uAE30\uC5C5\uC740 \uACE0\uAC1D, \uAD6C\uC131\uC6D0, \uC8FC\uC8FC, \uC0AC\uD68C \uBC0F \uBE44\uC988\uB2C8\uC2A4 \uD30C\uD2B8\uB108\uC758 \uD589\uBCF5\uC744 \uB3D9\uC2DC\uC5D0 \uCD94\uAD6C\uD574\uC57C \uD55C\uB2E4"',
-   quoteSrc: 'SKMS',
-   verdict: 'fail'},
-  {condition: function(G){return G.totalQuits >= 5;},
-   text: '\uB192\uC740 \uC774\uC9C1\uB960\uC740 \uC870\uC9C1 \uC5ED\uB7C9\uC758 \uC2EC\uAC01\uD55C \uC720\uCD9C\uC785\uB2C8\uB2E4.',
-   quote: '"\uC778\uC7AC \uC720\uCD9C\uC740 \uB2E8\uC21C\uD55C \uC778\uB825 \uC190\uC2E4\uC774 \uC544\uB2C8\uB77C \uC870\uC9C1 \uC9C0\uC2DD\uACFC \uBB38\uD654\uC758 \uC190\uC2E4"',
-   quoteSrc: 'SK \uC778\uC7AC\uACBD\uC601 \uC6D0\uCE59',
-   verdict: 'fail'},
-  {condition: function(G){return G.totalAceTransitions >= 3;},
-   text: '\uB0B4\uBD80 \uC778\uC7AC \uC721\uC131\uC5D0 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4. SKMS\uAC00 \uAC15\uC870\uD558\uB294 \uC131\uC7A5\uD615 \uC870\uC9C1\uC785\uB2C8\uB2E4.',
-   quote: '"\uAD6C\uC131\uC6D0\uC758 \uC5ED\uB7C9 \uBC1C\uC804\uC740 \uAC1C\uC778\uC758 \uD589\uBCF5\uACFC \uD68C\uC0AC\uC758 SUPEX \uCD94\uAD6C\uB97C \uB3D9\uC2DC\uC5D0 \uB2EC\uC131\uD558\uB294 \uD575\uC2EC \uACBD\uB85C"',
-   quoteSrc: 'SKMS',
-   verdict: 'pass'}
+var SKMS_COACHING = [
+  // human_centered (5)
+  {principle:'human_centered', quote:'"구성원 행복은 SK 경영의 궁극적 목적이다. 구성원이 지속적으로 행복을 추구하기 위한 터전이자 기반"', source:'SKMS 14차 개정판', context:'구성원행복'},
+  {principle:'human_centered', quote:'"실패한 구성원에게 재도전의 기회를 부여하여 조직의 학습과 성장을 촉진한다"', source:'SKMS 인재경영 원칙', context:'패자부활'},
+  {principle:'human_centered', quote:'"인간은 경영의 수단이 아닌 목적이며, 모든 경영활동의 중심에 사람이 있어야 한다"', source:'SKMS 초판 (1979)', context:'인간존중'},
+  {principle:'human_centered', quote:'"구성원의 자율성을 존중하고 스스로 의사결정할 수 있는 환경을 조성해야 한다"', source:'SKMS 11차 개정판', context:'자율성'},
+  {principle:'human_centered', quote:'"구성원의 물질적·정신적 안녕이 보장될 때 비로소 최고의 역량이 발휘된다"', source:'SKMS 8차 개정판', context:'복지'},
+  // supex (5)
+  {principle:'supex', quote:'"SUPEX란 Super Excellent 수준, 즉 인간 능력으로 도달할 수 있는 최고 수준을 의미한다"', source:'SKMS 10차 개정판', context:'SUPEX추구'},
+  {principle:'supex', quote:'"성과의 탁월성은 단순한 목표 달성이 아니라 인간 능력의 한계에 도전하는 것이다"', source:'SKMS 9차 개정판', context:'성과탁월'},
+  {principle:'supex', quote:'"도전적 목표 설정은 SUPEX 추구의 출발점이며, 패기를 가지고 높은 목표를 세워야 한다"', source:'SKMS 7차 개정판', context:'목표설정'},
+  {principle:'supex', quote:'"SUPEX를 추구하는 과정 자체가 구성원의 역량을 높이는 핵심 동력이다"', source:'SKMS 14차 개정판', context:'도전성과'},
+  {principle:'supex', quote:'"성과에 대한 공정한 보상은 SUPEX 추구를 지속시키는 핵심 메커니즘이다"', source:'SKMS 12차 개정판', context:'성과보상'},
+  // vwbe (5)
+  {principle:'vwbe', quote:'"자발적·의욕적 두뇌활용(VWBE)이 이루어지지 않으면 SUPEX 수준의 성과를 달성할 수 없다"', source:'SKMS 14차 개정판, VWBE 문화', context:'자발적두뇌활용'},
+  {principle:'vwbe', quote:'"구성원의 역량 발전은 개인의 행복과 회사의 SUPEX 추구를 동시에 달성하는 핵심 경로"', source:'SKMS', context:'역량개발'},
+  {principle:'vwbe', quote:'"변화하는 환경에서 구성원의 리스킬링은 조직 생존의 필수 조건이다"', source:'SKMS 13차 개정판', context:'리스킬링'},
+  {principle:'vwbe', quote:'"학습하는 조직만이 지속 가능한 경쟁력을 확보할 수 있다"', source:'SKMS 11차 개정판', context:'학습조직'},
+  {principle:'vwbe', quote:'"통제와 강압이 아닌 자발적 의욕에 의한 두뇌활용만이 SUPEX 추구를 가능하게 한다"', source:'SKMS', context:'자기주도'},
+  // social_value (3)
+  {principle:'social_value', quote:'"이해관계자의 행복을 함께 추구하며, 이를 사회적 가치로 개념화한다"', source:'SKMS 14차 개정판', context:'이해관계자행복'},
+  {principle:'social_value', quote:'"기업은 고객, 구성원, 주주, 사회 및 비즈니스 파트너의 행복을 동시에 추구해야 한다"', source:'SKMS', context:'ESG'},
+  {principle:'social_value', quote:'"기업의 사회적 책임은 선택이 아닌 지속 가능 경영의 기본 요건이다"', source:'SKMS 14차 개정판', context:'사회적책임'},
+  // rational (3)
+  {principle:'rational', quote:'"합리적 의사결정은 경험 과학과 사회 규범, 그리고 예술적 실행력의 조합이다"', source:'SKMS 초판 (1979)', context:'합리적의사결정'},
+  {principle:'rational', quote:'"데이터와 사실에 기반한 경영만이 과학적이고 재현 가능한 성과를 만든다"', source:'SKMS 5차 개정판', context:'데이터기반'},
+  {principle:'rational', quote:'"경영의 투명성은 이해관계자의 신뢰를 확보하는 근본적 조건이다"', source:'SKMS 12차 개정판', context:'투명경영'}
 ];
 
 // ============================================================
@@ -903,7 +922,8 @@ function createInitialState() {
     // SKMS event tracking & follow-ups
     skmsChoices: [],
     pendingFollowups: [],
-    compStrategy: null
+    compStrategy: null,
+    emojiReactions: []
   };
   // Init grid
   state.grid = [];
@@ -1090,6 +1110,50 @@ function showToast(msg, type) {
   el.className = 'toast show ' + (type || 'info');
   clearTimeout(el._tid);
   el._tid = setTimeout(function() { el.className = 'toast'; }, 2500);
+}
+
+// ============================================================
+// DRAMATIC FEEDBACK — screen flash, gauge delta, emoji reactions
+// ============================================================
+function flashScreen(type) {
+  var el = document.getElementById('screen-flash');
+  el.className = type; // 'positive' or 'negative'
+  setTimeout(function() { el.className = ''; }, 300);
+}
+
+function classifyChoiceEffect(preview) {
+  var negTerms = ['\uD1EC\uC0AC', '-$', '-20', '-15', '-10', '-5', '\uAC10\uC18C', '\uBD88\uB9CC', '\uC2DC\uB2C8\uD06C', '\uBB34\uAE30\uB825'];
+  var posTerms = ['+', '\uC131\uC7A5', '\uBB34\uB8CC', '\uD68C\uBCF5', '\uC720\uC9C0', '\uD589\uBCF5'];
+  var negCount = 0, posCount = 0;
+  for (var i = 0; i < negTerms.length; i++) if (preview.indexOf(negTerms[i]) >= 0) negCount++;
+  for (var i = 0; i < posTerms.length; i++) if (preview.indexOf(posTerms[i]) >= 0) posCount++;
+  return posCount >= negCount ? 'positive' : 'negative';
+}
+
+function showGaugeDelta(gaugeId, delta) {
+  if (delta === 0) return;
+  var gauge = document.getElementById(gaugeId);
+  if (!gauge) return;
+  var el = document.createElement('span');
+  el.className = 'gauge-delta ' + (delta > 0 ? 'positive' : 'negative');
+  el.textContent = delta > 0 ? '+' + delta + '\u25B2' : delta + '\u25BC';
+  gauge.parentElement.style.position = 'relative';
+  el.style.right = '-4px';
+  el.style.top = '-14px';
+  gauge.parentElement.appendChild(el);
+  setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 1500);
+}
+
+function showWorkerReactions(emoji, filterFn) {
+  var now = Date.now();
+  var targets = G.workers.filter(function(w) { return !w.quitting && (!filterFn || filterFn(w)); });
+  if (!filterFn && targets.length > 5) {
+    targets.sort(function() { return Math.random() - 0.5; });
+    targets = targets.slice(0, 5);
+  }
+  for (var i = 0; i < targets.length; i++) {
+    G.emojiReactions.push({ workerId: targets[i].id, emoji: emoji, startTime: now });
+  }
 }
 
 // ============================================================
@@ -1598,6 +1662,27 @@ function drawWorker(w) {
   if (w.bubble && w.bubbleTimer > 0) {
     drawBubble(sx, sy - 16 * z * sm, w.bubble);
   }
+
+  // Emoji reaction bubble (dramatic feedback)
+  if (G.emojiReactions) {
+    var now = Date.now();
+    for (var ei = 0; ei < G.emojiReactions.length; ei++) {
+      var er = G.emojiReactions[ei];
+      if (er.workerId === w.id) {
+        var elapsed = now - er.startTime;
+        if (elapsed < 2000) {
+          var ealpha = 1 - elapsed / 2000;
+          var floatY = -18 * z * sm - (elapsed / 2000) * 20 * z;
+          ctx.save();
+          ctx.globalAlpha = ealpha;
+          ctx.font = Math.max(10, 14 * z * sm) + 'px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(er.emoji, sx, sy + floatY);
+          ctx.restore();
+        }
+      }
+    }
+  }
 }
 
 function drawBubble(x, y, text) {
@@ -1684,6 +1769,11 @@ function drawMinimap() {
 // MAIN RENDER
 // ============================================================
 function render() {
+  // Prune expired emoji reactions
+  if (G.emojiReactions && G.emojiReactions.length > 0) {
+    var now = Date.now();
+    G.emojiReactions = G.emojiReactions.filter(function(r) { return now - r.startTime < 2000; });
+  }
   var d = dayLight();
   // Sky gradient
   var skyR = 180 * d + 60 | 0, skyG = 210 * d + 50 | 0, skyB = 240 * d + 15 | 0;
@@ -1743,7 +1833,7 @@ function gameTick() {
 
   // Event timer
   G.eventTimer += 1;
-  if (!G.eventActive && G.eventTimer > (40 + Math.random() * 20) * 60) {
+  if (!G.eventActive && G.eventTimer > (20 + Math.random() * 10) * 60) {
     G.eventTimer = 0;
     triggerRandomEvent();
   }
@@ -1875,7 +1965,7 @@ function dayTick() {
   }
 
   // Ongoing compensation strategy effects (quarterly check)
-  if (G.compStrategy === 'equal' && G.gDay % 30 === 0 && G.gDay > 1) {
+  if (G.compStrategy === 'equal' && G.gDay % 15 === 0 && G.gDay > 1) {
     var aliveForComp = getAliveWorkers();
     for (var ci = 0; ci < aliveForComp.length; ci++) {
       if (aliveForComp[ci].type === 'ace' && Math.random() < 0.1) {
@@ -1885,15 +1975,15 @@ function dayTick() {
     }
   }
 
-  // Auto-refresh hiring candidates every 30 days
-  if (G.gDay % 30 === 0) generateCandidates();
+  // Auto-refresh hiring candidates every 15 days
+  if (G.gDay % 15 === 0) generateCandidates();
 
-  // Quarterly strategy meeting (every 30 days)
-  if (G.gDay > 1 && G.gDay % 30 === 0 && !G.stratShownThisQ) {
+  // Quarterly strategy meeting (every 15 days)
+  if (G.gDay > 1 && G.gDay % 15 === 0 && !G.stratShownThisQ) {
     G.stratShownThisQ = true;
     setTimeout(function() { showStrategyMeeting(); }, 500);
   }
-  if (G.gDay % 30 === 1) G.stratShownThisQ = false;
+  if (G.gDay % 15 === 1) G.stratShownThisQ = false;
 
   // --- Labor tension ---
   if (G.empHap < 20) G.laborTension = Math.min(100, G.laborTension + 5);
@@ -2485,10 +2575,10 @@ function checkWinLose() {
   }
   // Win conditions depend on scenario
   if (G.scenario === 2) {
-    // Scenario 2: all metrics >= thresholds for 20 days
+    // Scenario 2: all metrics >= thresholds for WIN_DAYS_S2 days
     if (G.custSat >= 75 && G.empHap >= 65 && G.socVal >= 60 && G.rating >= 4.0) {
       G.winDays += G.gSpeed / 1440;
-      if (G.winDays >= 20) {
+      if (G.winDays >= WIN_DAYS_S2) {
         G.gameOver = true;
         G.gameWon = true;
         saveRanking();
@@ -2499,10 +2589,10 @@ function checkWinLose() {
       G.winDays = Math.max(0, G.winDays - G.gSpeed / 1440 * 0.5);
     }
   } else {
-    // Scenario 1: rating >= 3.0 for 30 days
+    // Scenario 1: rating >= 3.0 for WIN_DAYS_S1 days
     if (G.rating >= 3.0) {
       G.winDays += G.gSpeed / 1440;
-      if (G.winDays >= 30) {
+      if (G.winDays >= WIN_DAYS_S1) {
         G.gameOver = true;
         G.gameWon = true;
         saveRanking();
@@ -2861,11 +2951,11 @@ function updateHUD() {
   }
   var winEl = document.getElementById('hud-win');
   if (winEl) {
-    if (G.rating >= 3.0) {
-      winEl.textContent = Math.floor(G.winDays) + '/30d';
-    } else {
-      winEl.textContent = '-';
-    }
+    var winTarget = G.scenario === 2 ? WIN_DAYS_S2 : WIN_DAYS_S1;
+    var winMet = (G.scenario === 2)
+      ? (G.custSat >= 75 && G.empHap >= 65 && G.socVal >= 60 && G.rating >= 4.0)
+      : (G.rating >= 3.0);
+    winEl.textContent = winMet ? Math.floor(G.winDays) + '/' + winTarget + 'd' : '-';
   }
   updateHistoryProfile();
 }
@@ -3350,15 +3440,15 @@ function openCompPanel() {
     return;
   }
 
-  var isQuarterDay = (G.gDay % 30 === 0);
+  var isQuarterDay = (G.gDay % 15 === 0);
   var canChange = isQuarterDay || !G.compStrategy;
 
   // Read-only notice when not quarter day and strategy already set
   if (!canChange) {
-    var nextQ = G.gDay + (30 - (G.gDay % 30));
+    var nextQ = G.gDay + (15 - (G.gDay % 15));
     var notice = document.createElement('div');
     notice.className = 'comp-readonly-notice';
-    notice.textContent = '\uC804\uB7B5 \uBCC0\uACBD\uC740 \uBD84\uAE30 \uD68C\uC758(\uB9E4 30\uC77C)\uC5D0\uC11C\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4. \uB2E4\uC74C \uD68C\uC758: Day ' + nextQ;
+    notice.textContent = '\uC804\uB7B5 \uBCC0\uACBD\uC740 \uBD84\uAE30 \uD68C\uC758(\uB9E4 15\uC77C)\uC5D0\uC11C\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4. \uB2E4\uC74C \uD68C\uC758: Day ' + nextQ;
     panel.appendChild(notice);
   }
 
@@ -4181,7 +4271,35 @@ function showEventModal(evt) {
 
       if (!disabled) {
         btn.addEventListener('click', function() {
+          // Snapshot metrics before applying
+          var prevMetrics = {custSat: G.custSat, empHap: G.empHap, socVal: G.socVal, money: G.money};
           choice.apply(G);
+          // Compute deltas
+          var deltas = {
+            custSat: Math.round(G.custSat - prevMetrics.custSat),
+            empHap: Math.round(G.empHap - prevMetrics.empHap),
+            socVal: Math.round(G.socVal - prevMetrics.socVal),
+            money: Math.round(G.money - prevMetrics.money)
+          };
+          // Screen flash
+          var effectType = classifyChoiceEffect(choice.preview || '');
+          flashScreen(effectType);
+          // Gauge delta animations
+          if (deltas.custSat) showGaugeDelta('hud-cust', deltas.custSat);
+          if (deltas.empHap) showGaugeDelta('hud-emp', deltas.empHap);
+          if (deltas.socVal) showGaugeDelta('hud-soc', deltas.socVal);
+          if (deltas.money) showGaugeDelta('hud-money', deltas.money);
+          // Worker emoji reactions
+          showWorkerReactions(effectType === 'positive' ? '\uD83D\uDE0A' : '\uD83D\uDE21');
+          // Summary toast
+          var summaryParts = [];
+          if (deltas.empHap) summaryParts.push('\uD589\uBCF5 ' + (deltas.empHap > 0 ? '+' : '') + deltas.empHap);
+          if (deltas.custSat) summaryParts.push('\uACE0\uAC1D ' + (deltas.custSat > 0 ? '+' : '') + deltas.custSat);
+          if (deltas.socVal) summaryParts.push('\uC0AC\uD68C ' + (deltas.socVal > 0 ? '+' : '') + deltas.socVal);
+          if (deltas.money) summaryParts.push((deltas.money > 0 ? '+$' : '-$') + Math.abs(deltas.money));
+          if (summaryParts.length > 0) {
+            showToast(summaryParts.join(', '), effectType === 'positive' ? 'success' : 'warn');
+          }
           G.choiceLog.push({event: G.currentEvent.id, choice: idx});
           // Record SKMS tag for alignment tracking
           if (choice.skmsTag) {
@@ -4230,7 +4348,16 @@ function autoPickWorst() {
   if (lastValid) {
     lastValid.apply(G);
     G.choiceLog.push({event: G.currentEvent.id, choice: 'auto'});
+    // Queue delayed follow-up for auto-pick too
+    if (lastValid.delayed) {
+      var followup = FOLLOWUP_EVENTS[lastValid.delayed.followupId];
+      if (followup) {
+        G.pendingFollowups.push({triggerDay: G.gDay + lastValid.delayed.days, event: followup});
+      }
+    }
   }
+  flashScreen('negative');
+  showWorkerReactions('\uD83D\uDE30');
   closeEvent();
   showToast('\uC2DC\uAC04 \uCD08\uACFC! \uCD5C\uC545\uC758 \uC120\uD0DD\uC774 \uC801\uC6A9\uB418\uC5C8\uC2B5\uB2C8\uB2E4.', 'warn');
   updateHUD();
@@ -4320,6 +4447,15 @@ function showFollowupModal(followupEvt) {
         if (Math.random() < 0.15) alive[wi].will = clamp(0, 100, alive[wi].will - 5);
       }
     }
+    // Gauge delta animations for followup effects
+    if (eff.empHap) showGaugeDelta('hud-emp', eff.empHap);
+    if (eff.custSat) showGaugeDelta('hud-cust', eff.custSat);
+    if (eff.socVal) showGaugeDelta('hud-soc', eff.socVal);
+    // Screen flash based on net effect
+    var netEffect = (eff.empHap || 0) + (eff.custSat || 0) + (eff.socVal || 0);
+    flashScreen(netEffect >= 0 ? 'positive' : 'negative');
+    // Worker emoji reactions
+    showWorkerReactions(netEffect >= 0 ? '\uD83D\uDE0A' : '\uD83D\uDE21');
     addHistoryEntry(followupEvt.headline, '\uD6C4\uC18D \uBCF4\uB3C4', '\uD83D\uDCF0');
     overlay.classList.remove('show');
     G.gSpeed = savedSpeed || 1;
@@ -4974,6 +5110,23 @@ function showStrategyMeeting() {
 // ============================================================
 // REPORT CARD
 // ============================================================
+function getTop3Choices() {
+  if (!G.choiceLog || G.choiceLog.length === 0) return [];
+  var eventMap = {};
+  for (var ei = 0; ei < EVENTS.length; ei++) { eventMap[EVENTS[ei].id] = EVENTS[ei]; }
+  var scored = [];
+  for (var i = 0; i < G.choiceLog.length; i++) {
+    var log = G.choiceLog[i];
+    var evtData = eventMap[log.event];
+    if (!evtData) continue;
+    var impact = i + 1;
+    if (log.choice !== 'auto') impact += 10;
+    scored.push({log: log, evt: evtData, impact: impact});
+  }
+  scored.sort(function(a, b) { return b.impact - a.impact; });
+  return scored.slice(0, 3);
+}
+
 function showReport() {
   stopBGM();
   if (G.gameWon) sfxWin(); else sfxLose();
@@ -4983,227 +5136,372 @@ function showReport() {
   var card = document.createElement('div');
   card.className = 'report-card';
 
-  // Title
-  var title = document.createElement('div');
-  title.className = 'report-title';
-  title.textContent = G.gameWon ? '\u{1F3C6} \uACBD\uC601 \uC131\uC801\uD45C' : '\u{1F4C9} \uACBD\uC601 \uC131\uC801\uD45C';
-  card.appendChild(title);
-
-  var subtitle = document.createElement('div');
-  subtitle.className = 'report-subtitle';
-  subtitle.textContent = G.gameWon ? '\uCD95\uD558\uD569\uB2C8\uB2E4! \uD68C\uC0AC\uB97C \uC0B4\uB838\uC2B5\uB2C8\uB2E4.' : '\uC548\uD0C0\uAE5D\uC9C0\uB9CC \uD68C\uC0AC\uAC00 \uBB34\uB108\uC84C\uC2B5\uB2C8\uB2E4.';
-  card.appendChild(subtitle);
-
-  // Style and SKMS alignment
   var style = getManagementStyle();
   var alignment = calcSKMSAlignment();
+  var dna = calcDNABreakdown();
 
-  var sec1 = document.createElement('div');
-  sec1.className = 'report-section';
-  var h41 = document.createElement('h4');
-  h41.textContent = '\uACBD\uC601 \uC2A4\uD0C0\uC77C';
-  sec1.appendChild(h41);
-  addReportRow(sec1, '\uC2A4\uD0C0\uC77C', style);
-  addReportRow(sec1, 'SKMS \uC815\uD569\uC131', alignment + '%');
-  addReportRow(sec1, '\uC18C\uC694 \uAE30\uAC04', G.gDay + '\uC77C');
-  addReportRow(sec1, '\uBCC4\uC810', G.rating.toFixed(1) + ' \u2B50');
-  card.appendChild(sec1);
+  // === HEADER CARD ===
+  var header = document.createElement('div');
+  header.className = 'rpt-header';
+  header.style.borderTop = G.gameWon ? '3px solid #4ade80' : '3px solid #f87171';
+  var row1 = document.createElement('div');
+  row1.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:8px';
+  var icon1 = document.createElement('span');
+  icon1.style.fontSize = '28px';
+  icon1.textContent = G.gameWon ? '\u{1F3C6}' : '\u{1F4C9}';
+  row1.appendChild(icon1);
+  var titleEl = document.createElement('span');
+  titleEl.style.cssText = 'font-size:20px;font-weight:800;color:var(--accent)';
+  titleEl.textContent = '\uACBD\uC601 \uC131\uC801\uD45C';
+  row1.appendChild(titleEl);
+  var ratingEl = document.createElement('span');
+  ratingEl.style.cssText = 'font-size:14px;font-weight:700;color:#FBBF24';
+  ratingEl.textContent = G.rating.toFixed(1) + ' \u2B50';
+  row1.appendChild(ratingEl);
+  var dayEl = document.createElement('span');
+  dayEl.style.cssText = 'font-size:12px;color:rgba(255,255,255,0.5)';
+  dayEl.textContent = 'Day ' + G.gDay;
+  row1.appendChild(dayEl);
+  header.appendChild(row1);
 
-  // Stakeholder bars
-  var sec2 = document.createElement('div');
-  sec2.className = 'report-section';
-  var h42 = document.createElement('h4');
-  h42.textContent = '\uC774\uD574\uAD00\uACC4\uC790 \uADE0\uD615';
-  sec2.appendChild(h42);
-  addReportBar(sec2, '\uACE0\uAC1D \uB9CC\uC871', Math.round(G.custSat), 'var(--cust)');
-  addReportBar(sec2, '\uAD6C\uC131\uC6D0 \uD589\uBCF5', Math.round(G.empHap), 'var(--emp)');
-  addReportBar(sec2, '\uC0AC\uD68C\uC801 \uAC00\uCE58', Math.round(G.socVal), 'var(--soc)');
-  card.appendChild(sec2);
+  var row2 = document.createElement('div');
+  row2.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap';
+  var badge = document.createElement('span');
+  badge.style.cssText = 'display:inline-block;padding:4px 14px;border-radius:12px;background:rgba(255,184,48,0.15);color:#FFB830;font-size:13px;font-weight:800';
+  badge.textContent = style;
+  row2.appendChild(badge);
+  var alignEl = document.createElement('span');
+  alignEl.style.cssText = 'font-size:12px;color:rgba(255,255,255,0.6)';
+  alignEl.textContent = 'SKMS \uC815\uD569\uC131 ' + alignment + '%';
+  row2.appendChild(alignEl);
+  header.appendChild(row2);
+  card.appendChild(header);
 
-  // Employee changes
-  var sec3 = document.createElement('div');
-  sec3.className = 'report-section';
-  var h43 = document.createElement('h4');
-  h43.textContent = '\uAD6C\uC131\uC6D0 \uBCC0\uD654';
-  sec3.appendChild(h43);
-  addReportRow(sec3, '\uC5D0\uC774\uC2A4 \uC804\uD658', G.totalAceTransitions + '\uBA85');
-  addReportRow(sec3, '\uC2DC\uB2C8\uD06C \uD68C\uBCF5', G.totalCynicRecoveries + '\uBA85');
-  addReportRow(sec3, '\uD1EC\uC0AC', G.totalQuits + '\uBA85');
-  addReportRow(sec3, '\uB9AC\uB354 \uC721\uC131', G.totalLeaderPromotions + '\uBA85');
-  card.appendChild(sec3);
+  // === STAKEHOLDER GAUGES ===
+  var gaugeTitle = document.createElement('div');
+  gaugeTitle.className = 'rpt-section-title';
+  gaugeTitle.textContent = '\u2696\uFE0F \uC774\uD574\uAD00\uACC4\uC790 \uADE0\uD615';
+  card.appendChild(gaugeTitle);
 
-  // People management analysis
-  var secPpl = document.createElement('div');
-  secPpl.className = 'report-section';
-  var hPpl = document.createElement('h4');
-  hPpl.textContent = '\uC778\uC7AC \uAD00\uB9AC \uBD84\uC11D';
-  secPpl.appendChild(hPpl);
-
-  var mb = G.meetingsBy || {ace:0,leader:0,rookie:0,cynic:0,disengaged:0};
-  var topPerf = (mb.ace || 0) + (mb.leader || 0);
-  var struggling = (mb.cynic || 0) + (mb.disengaged || 0);
-  var newbie = mb.rookie || 0;
-  var totalM = G.totalMeetings || 0;
-
-  // Management style tag
-  var pplStyle = '';
-  var pplDesc = '';
-  if (totalM === 0) {
-    pplStyle = '\uBC29\uC784\uD615';
-    pplDesc = '\uBA74\uB2F4\uC744 \uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4. \uAD6C\uC131\uC6D0\uACFC\uC758 \uC18C\uD1B5\uC774 \uBD80\uC871\uD569\uB2C8\uB2E4.';
-  } else if (topPerf > struggling * 2 && topPerf > newbie) {
-    pplStyle = '\uC131\uACFC \uB4DC\uB77C\uC774\uBE0C\uD615';
-    pplDesc = '\uC5D0\uC774\uC2A4\u00B7\uB9AC\uB354 \uC911\uC2EC \uAD00\uB9AC. \uC798\uD558\uB294 \uC0AC\uB78C\uC744 \uB354 \uB3C5\uB824\uD558\uB294 \uC2A4\uD0C0\uC77C\uC785\uB2C8\uB2E4.';
-  } else if (struggling > topPerf * 2) {
-    pplStyle = '\uD68C\uBCF5 \uC9C0\uC6D0\uD615';
-    pplDesc = '\uBC29\uAD00\uC790\u00B7\uC2DC\uB2C8\uD06C \uC911\uC2EC \uAD00\uB9AC. \uC5B4\uB824\uC6B4 \uC0AC\uB78C\uC744 \uACA9\uB824\uD558\uB294 \uC2A4\uD0C0\uC77C\uC785\uB2C8\uB2E4.';
-  } else if (newbie > topPerf && newbie > struggling) {
-    pplStyle = '\uC721\uC131 \uC9D1\uC911\uD615';
-    pplDesc = '\uC2E0\uC785 \uC9C1\uC6D0 \uC911\uC2EC \uAD00\uB9AC. \uC131\uC7A5\uACFC \uAD50\uC721\uC5D0 \uC9D1\uC911\uD558\uB294 \uC2A4\uD0C0\uC77C\uC785\uB2C8\uB2E4.';
-  } else {
-    pplStyle = '\uADE0\uD615 \uAD00\uB9AC\uD615';
-    pplDesc = '\uBAA8\uB4E0 \uC720\uD615\uC758 \uAD6C\uC131\uC6D0\uC744 \uACE8\uACE0\uB8E8 \uBA74\uB2F4\uD588\uC2B5\uB2C8\uB2E4.';
+  var gaugesEl = document.createElement('div');
+  gaugesEl.className = 'rpt-gauges';
+  var gaugeData = [
+    {icon:'\uD83D\uDC65', label:'\uACE0\uAC1D', val:Math.round(G.custSat), color:'#42A5F5'},
+    {icon:'\uD83D\uDC9A', label:'\uC9C1\uC6D0', val:Math.round(G.empHap), color:'#66BB6A'},
+    {icon:'\uD83C\uDF0D', label:'\uC0AC\uD68C', val:Math.round(G.socVal), color:'#26A69A'}
+  ];
+  for (var gi = 0; gi < gaugeData.length; gi++) {
+    var gd = gaugeData[gi];
+    var col = document.createElement('div');
+    col.className = 'rpt-gauge-col';
+    var gIcon = document.createElement('span');
+    gIcon.className = 'gauge-icon';
+    gIcon.textContent = gd.icon;
+    col.appendChild(gIcon);
+    var gLabel = document.createElement('div');
+    gLabel.className = 'gauge-label';
+    gLabel.textContent = gd.label;
+    col.appendChild(gLabel);
+    var gBar = document.createElement('div');
+    gBar.className = 'gauge-bar';
+    var gFill = document.createElement('div');
+    gFill.className = 'gauge-fill';
+    gFill.style.width = gd.val + '%';
+    gFill.style.background = gd.color;
+    gBar.appendChild(gFill);
+    col.appendChild(gBar);
+    var gVal = document.createElement('div');
+    gVal.className = 'gauge-val';
+    gVal.style.color = gd.color;
+    gVal.textContent = gd.val;
+    col.appendChild(gVal);
+    gaugesEl.appendChild(col);
   }
+  card.appendChild(gaugesEl);
 
-  var pplTagEl = document.createElement('div');
-  pplTagEl.style.cssText = 'text-align:center;margin-bottom:8px';
-  var pplBadge = document.createElement('span');
-  pplBadge.style.cssText = 'display:inline-block;padding:4px 14px;border-radius:12px;font-size:13px;font-weight:800;background:rgba(255,184,48,0.15);color:#FFB830';
-  pplBadge.textContent = pplStyle;
-  pplTagEl.appendChild(pplBadge);
-  secPpl.appendChild(pplTagEl);
+  // === EMPLOYEE STATS 2x2 ===
+  var statTitle = document.createElement('div');
+  statTitle.className = 'rpt-section-title';
+  statTitle.textContent = '\uD83D\uDC65 \uAD6C\uC131\uC6D0 \uBCC0\uD654';
+  card.appendChild(statTitle);
 
-  var pplDescEl = document.createElement('div');
-  pplDescEl.style.cssText = 'font-size:12px;color:rgba(255,255,255,0.6);text-align:center;margin-bottom:10px;line-height:1.5';
-  pplDescEl.textContent = pplDesc;
-  secPpl.appendChild(pplDescEl);
-
-  // Meeting breakdown bars
-  if (totalM > 0) {
-    var meetTypes = [
-      {label:'\uC5D0\uC774\uC2A4\u00B7\uB9AC\uB354', val:topPerf, color:'#FF7043', desc:'\uC798\uD558\uB294 \uC0AC\uB78C \uB3C5\uB824'},
-      {label:'\uC2E0\uC785', val:newbie, color:'#66BB6A', desc:'\uC131\uC7A5 \uC9C0\uC6D0'},
-      {label:'\uBC29\uAD00\uC790\u00B7\uC2DC\uB2C8\uD06C', val:struggling, color:'#78909C', desc:'\uC5B4\uB824\uC6B4 \uC0AC\uB78C \uACA9\uB824'}
-    ];
-    for (var mti = 0; mti < meetTypes.length; mti++) {
-      var mt = meetTypes[mti];
-      var pct = Math.round(mt.val / totalM * 100);
-      addReportBar(secPpl, mt.label + ' (' + mt.val + '\uD68C)', pct, mt.color);
-    }
+  var statsGrid = document.createElement('div');
+  statsGrid.className = 'rpt-stats-grid';
+  var statItems = [
+    {icon:'\uD83D\uDD25', val:G.totalAceTransitions, label:'\uC5D0\uC774\uC2A4 \uC804\uD658', positive:true},
+    {icon:'\uD83D\uDE12\u2192\uD83D\uDD25', val:G.totalCynicRecoveries, label:'\uC2DC\uB2C8\uD06C \uD68C\uBCF5', positive:true},
+    {icon:'\u2B50', val:G.totalLeaderPromotions, label:'\uB9AC\uB354 \uC721\uC131', positive:true},
+    {icon:'\uD83D\uDC4B', val:G.totalQuits, label:'\uD1EC\uC0AC', positive:false}
+  ];
+  for (var sti = 0; sti < statItems.length; sti++) {
+    var sd = statItems[sti];
+    var sc = document.createElement('div');
+    sc.className = 'rpt-stat-card';
+    var sIcon = document.createElement('div');
+    sIcon.style.cssText = 'font-size:18px;margin-bottom:4px';
+    sIcon.textContent = sd.icon;
+    sc.appendChild(sIcon);
+    var sNum = document.createElement('div');
+    var numClass = 'rpt-stat-number';
+    if (sd.val === 0) numClass += ' num-neutral';
+    else if (sd.positive) numClass += ' num-up';
+    else numClass += ' num-down';
+    sNum.className = numClass;
+    sNum.textContent = sd.val;
+    sc.appendChild(sNum);
+    var sSuffix = document.createElement('span');
+    sSuffix.style.cssText = 'font-size:12px;font-weight:500;color:rgba(255,255,255,0.5)';
+    sSuffix.textContent = '\uBA85';
+    sNum.appendChild(sSuffix);
+    var sLabel = document.createElement('div');
+    sLabel.className = 'rpt-stat-label';
+    sLabel.textContent = sd.label;
+    sc.appendChild(sLabel);
+    statsGrid.appendChild(sc);
   }
-  addReportRow(secPpl, '\uCD1D \uBA74\uB2F4', totalM + '\uD68C');
-  card.appendChild(secPpl);
+  card.appendChild(statsGrid);
 
-  // Choices evaluation
-  var sec4 = document.createElement('div');
-  sec4.className = 'report-section';
-  var h44 = document.createElement('h4');
-  h44.textContent = '\uC120\uD0DD vs SKMS';
-  sec4.appendChild(h44);
-  var polCount = Object.keys(G.activePolicies).length;
-  addReportCheck(sec4, polCount >= 5, 'SKMS \uC815\uCC45 \uC801\uADF9 \uB3C4\uC785');
-  addReportCheck(sec4, G.empHap >= 60, '\uAD6C\uC131\uC6D0 \uD589\uBCF5 \uC6B0\uC120');
-  addReportCheck(sec4, G.socVal >= 40, '\uC0AC\uD68C\uC801 \uAC00\uCE58 \uD22C\uC790');
-  addReportCheck(sec4, G.ignoreCount <= 1, '\uBB38\uC81C \uC801\uADF9 \uB300\uC751');
-  addReportCheck(sec4, G.pressureCount === 0, '\uC5B5\uC555\uC801 \uACBD\uC601 \uD68C\uD53C');
-  addReportCheck(sec4, G.totalQuits <= 3, '\uC778\uC7AC \uC720\uCD9C \uCD5C\uC18C\uD654');
-  card.appendChild(sec4);
+  // === TOP 3 CHOICES ===
+  var top3 = getTop3Choices();
+  if (top3.length > 0) {
+    var t3Title = document.createElement('div');
+    t3Title.className = 'rpt-section-title';
+    t3Title.textContent = '\uD83C\uDFAF \uD575\uC2EC \uC120\uD0DD TOP 3';
+    card.appendChild(t3Title);
 
-  // Choice → Consequence log
-  if (G.choiceLog && G.choiceLog.length > 0) {
-    var sec5 = document.createElement('div');
-    sec5.className = 'report-section';
-    var h45 = document.createElement('h4');
-    h45.textContent = '\uB2F9\uC2E0\uC758 \uC120\uD0DD\uC774 \uB9CC\uB4E0 \uACB0\uACFC';
-    sec5.appendChild(h45);
-    var eventMap = {};
-    for (var ei = 0; ei < EVENTS.length; ei++) { eventMap[EVENTS[ei].id] = EVENTS[ei]; }
-    var maxLogs = Math.min(G.choiceLog.length, 8);
-    for (var li = 0; li < maxLogs; li++) {
-      var log = G.choiceLog[li];
-      var evtData = eventMap[log.event];
-      if (!evtData) continue;
-      var logItem = document.createElement('div');
-      logItem.className = 'choice-log-item';
-      var evtName = document.createElement('span');
-      evtName.className = 'choice-log-event';
-      evtName.textContent = evtData.headline;
-      logItem.appendChild(evtName);
-      logItem.appendChild(document.createTextNode(' \u2014 '));
-      var choiceText = document.createElement('span');
-      choiceText.className = 'choice-log-choice';
-      if (log.choice === 'auto') {
-        choiceText.textContent = '\uC2DC\uAC04 \uCD08\uACFC (\uC790\uB3D9 \uC120\uD0DD)';
-      } else if (typeof log.choice === 'number' && evtData.choices[log.choice]) {
-        choiceText.textContent = evtData.choices[log.choice].text;
+    var t3Row = document.createElement('div');
+    t3Row.className = 'rpt-top3-row';
+    for (var ti = 0; ti < top3.length; ti++) {
+      var t3item = top3[ti];
+      var t3Card = document.createElement('div');
+      t3Card.className = 'rpt-top3-card';
+      var t3Head = document.createElement('div');
+      t3Head.className = 't3-headline';
+      var headText = t3item.evt.headline;
+      t3Head.textContent = headText.length > 20 ? headText.substring(0, 20) + '...' : headText;
+      t3Card.appendChild(t3Head);
+      var t3Choice = document.createElement('div');
+      t3Choice.className = 't3-choice';
+      if (t3item.log.choice === 'auto') {
+        t3Choice.textContent = '\uC2DC\uAC04 \uCD08\uACFC';
+        t3Choice.style.color = 'rgba(255,255,255,0.4)';
+      } else if (typeof t3item.log.choice === 'number' && t3item.evt.choices[t3item.log.choice]) {
+        var cText = t3item.evt.choices[t3item.log.choice].text;
+        t3Choice.textContent = cText.length > 30 ? cText.substring(0, 30) + '...' : cText;
       } else {
-        choiceText.textContent = '\uC120\uD0DD ' + log.choice;
+        t3Choice.textContent = '\uC120\uD0DD ' + t3item.log.choice;
       }
-      logItem.appendChild(choiceText);
-      sec5.appendChild(logItem);
+      t3Card.appendChild(t3Choice);
+      if (typeof t3item.log.choice === 'number' && t3item.evt.choices[t3item.log.choice] && t3item.evt.choices[t3item.log.choice].preview) {
+        var t3Eff = document.createElement('div');
+        t3Eff.className = 't3-effect';
+        var prev = t3item.evt.choices[t3item.log.choice].preview;
+        t3Eff.textContent = prev.length > 40 ? prev.substring(0, 40) + '...' : prev;
+        t3Card.appendChild(t3Eff);
+      }
+      t3Row.appendChild(t3Card);
     }
-    if (G.choiceLog.length > maxLogs) {
-      var moreNote = document.createElement('div');
-      moreNote.style.cssText = 'font-size:10px;color:rgba(255,255,255,0.3);padding:4px 0;';
-      moreNote.textContent = '... \uC678 ' + (G.choiceLog.length - maxLogs) + '\uAC74';
-      sec5.appendChild(moreNote);
-    }
-    card.appendChild(sec5);
+    card.appendChild(t3Row);
   }
 
-  // SKMS Citation feedback
-  var sec6 = document.createElement('div');
-  sec6.className = 'report-section';
-  var h46 = document.createElement('h4');
-  h46.textContent = 'SKMS \uACBD\uC601\uCCA0\uD559 \uD53C\uB4DC\uBC31';
-  sec6.appendChild(h46);
-  var insightCount = 0;
-  for (var si = 0; si < SKMS_INSIGHTS.length; si++) {
-    var insight = SKMS_INSIGHTS[si];
-    if (insight.condition(G)) {
-      insightCount++;
-      var verdictRow = document.createElement('div');
-      verdictRow.className = 'skms-verdict';
-      var icon = document.createElement('span');
-      icon.textContent = insight.verdict === 'pass' ? '\u2705' : '\u274C';
-      verdictRow.appendChild(icon);
-      var verdictText = document.createElement('span');
-      verdictText.textContent = insight.text;
-      verdictText.style.color = insight.verdict === 'pass' ? 'var(--green)' : 'var(--red)';
-      verdictRow.appendChild(verdictText);
-      sec6.appendChild(verdictRow);
+  // === SKMS COACHING ===
+  var coachTitle = document.createElement('div');
+  coachTitle.className = 'rpt-section-title';
+  coachTitle.textContent = '\uD83D\uDCD6 SKMS \uACBD\uC601 \uCF54\uCE6D';
+  card.appendChild(coachTitle);
 
-      var quoteBlock = document.createElement('div');
-      quoteBlock.className = 'skms-quote';
-      var quoteText = document.createElement('span');
-      quoteText.textContent = insight.quote;
-      quoteBlock.appendChild(quoteText);
-      var quoteSrc = document.createElement('span');
-      quoteSrc.className = 'src';
-      quoteSrc.textContent = '\u2014 ' + insight.quoteSrc;
-      quoteBlock.appendChild(quoteSrc);
-      sec6.appendChild(quoteBlock);
+  // DNA Analysis bars
+  var principleLabels = {human_centered:'\uC778\uAC04\uC911\uC2EC', supex:'\uC131\uACFC\uCD94\uAD6C', vwbe:'\uC790\uAE30\uC8FC\uB3C4', social_value:'\uC0AC\uD68C\uAC00\uCE58', rational:'\uD569\uB9AC\uACBD\uC601'};
+  var dnaColors = {human_centered:'#4ade80', supex:'#f59e0b', vwbe:'#60a5fa', social_value:'#26A69A', rational:'#a78bfa'};
+  var principleKeys = ['human_centered','supex','vwbe','social_value','rational'];
+  var sorted = principleKeys.slice().sort(function(a, b) { return dna[b] - dna[a]; });
+  var dnaStyleName = principleLabels[sorted[0]];
+  if (dna[sorted[1]] > 0) dnaStyleName += ' + ' + principleLabels[sorted[1]];
+
+  var dnaTitle = document.createElement('div');
+  dnaTitle.style.cssText = 'font-size:12px;font-weight:700;margin-bottom:8px;color:rgba(255,255,255,0.8)';
+  dnaTitle.textContent = '\uD83C\uDFAF \uB2F9\uC2E0\uC758 \uACBD\uC601 DNA: ' + dnaStyleName;
+  card.appendChild(dnaTitle);
+
+  for (var di = 0; di < principleKeys.length; di++) {
+    var pk = principleKeys[di];
+    var dnaBar = document.createElement('div');
+    dnaBar.className = 'rpt-dna-bar';
+    var dnaLabel = document.createElement('span');
+    dnaLabel.className = 'dna-label';
+    dnaLabel.textContent = principleLabels[pk];
+    dnaBar.appendChild(dnaLabel);
+    var dnaTrack = document.createElement('div');
+    dnaTrack.className = 'dna-track';
+    var dnaFillEl = document.createElement('div');
+    dnaFillEl.className = 'dna-fill';
+    dnaFillEl.style.width = dna[pk] + '%';
+    dnaFillEl.style.background = dnaColors[pk];
+    dnaTrack.appendChild(dnaFillEl);
+    dnaBar.appendChild(dnaTrack);
+    var dnaValEl = document.createElement('span');
+    dnaValEl.className = 'dna-val';
+    dnaValEl.style.color = dnaColors[pk];
+    dnaValEl.textContent = dna[pk] + '%';
+    dnaBar.appendChild(dnaValEl);
+    card.appendChild(dnaBar);
+  }
+
+  // Helper: find coaching quote by principle
+  function findCoachingQuote(principle) {
+    var matches = [];
+    for (var ci = 0; ci < SKMS_COACHING.length; ci++) {
+      if (SKMS_COACHING[ci].principle === principle) matches.push(SKMS_COACHING[ci]);
+    }
+    return matches.length > 0 ? matches[Math.floor(Math.random() * matches.length)] : null;
+  }
+
+  var evtMap = {};
+  for (var evi = 0; evi < EVENTS.length; evi++) { evtMap[EVENTS[evi].id] = EVENTS[evi]; }
+
+  // Good choice card
+  var goodCard = document.createElement('div');
+  goodCard.className = 'rpt-coaching-card coaching-good';
+  var goodTitleEl = document.createElement('div');
+  goodTitleEl.className = 'coaching-title';
+  goodTitleEl.textContent = '\u2705 \uC798\uD55C \uC810';
+  goodCard.appendChild(goodTitleEl);
+  var goodBody = document.createElement('div');
+  goodBody.className = 'coaching-body';
+
+  var bestTag = null;
+  if (G.skmsChoices && G.skmsChoices.length > 0) {
+    var bestChoice = G.skmsChoices[G.skmsChoices.length - 1];
+    bestTag = bestChoice.tag;
+    var bestEvt = evtMap[bestChoice.eventId];
+    if (bestEvt && typeof bestChoice.choiceIdx === 'number' && bestEvt.choices[bestChoice.choiceIdx]) {
+      goodBody.textContent = bestEvt.headline + ' \u2014 "' + bestEvt.choices[bestChoice.choiceIdx].text + '"';
+    } else {
+      goodBody.textContent = 'SKMS \uC6D0\uCE59\uC5D0 \uBD80\uD569\uD558\uB294 \uC120\uD0DD\uC744 \uD588\uC2B5\uB2C8\uB2E4.';
+    }
+  } else if (G.empHap >= 60) {
+    goodBody.textContent = '\uAD6C\uC131\uC6D0 \uD589\uBCF5\uC744 \uB192\uC740 \uC218\uC900\uC73C\uB85C \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4.';
+    bestTag = 'human_centered';
+  } else {
+    goodBody.textContent = '\uC5B4\uB824\uC6B4 \uD658\uACBD\uC5D0\uC11C\uB3C4 \uB3C4\uC804\uC744 \uBA48\uCD94\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.';
+    bestTag = 'supex';
+  }
+  goodCard.appendChild(goodBody);
+
+  var goodQuote = findCoachingQuote(bestTag || 'human_centered');
+  if (goodQuote) {
+    var gq = document.createElement('div');
+    gq.className = 'rpt-quote';
+    gq.textContent = goodQuote.quote;
+    var gs = document.createElement('span');
+    gs.className = 'rpt-source';
+    gs.textContent = '\u2014 ' + goodQuote.source;
+    gq.appendChild(gs);
+    goodCard.appendChild(gq);
+  }
+  card.appendChild(goodCard);
+
+  // Bad choice card
+  var badCard = document.createElement('div');
+  badCard.className = 'rpt-coaching-card coaching-bad';
+  var badTitleEl = document.createElement('div');
+  badTitleEl.className = 'coaching-title';
+  badTitleEl.textContent = '\u26A0\uFE0F \uC544\uC26C\uC6B4 \uC810';
+  badCard.appendChild(badTitleEl);
+  var badBody = document.createElement('div');
+  badBody.className = 'coaching-body';
+
+  var hasBadChoice = false;
+  var badTag = null;
+  if (G.choiceLog) {
+    for (var bi = G.choiceLog.length - 1; bi >= 0; bi--) {
+      if (G.choiceLog[bi].choice === 'auto') {
+        var badEvt = evtMap[G.choiceLog[bi].event];
+        if (badEvt) {
+          badBody.textContent = badEvt.headline + ' \u2014 \uC2DC\uAC04 \uCD08\uACFC\uB85C \uC790\uB3D9 \uC120\uD0DD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.';
+          hasBadChoice = true;
+          badTag = 'vwbe';
+          break;
+        }
+      }
     }
   }
-  if (insightCount === 0) {
-    var noInsight = document.createElement('div');
-    noInsight.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.4);padding:4px 0;';
-    noInsight.textContent = '\uD574\uB2F9\uD558\uB294 SKMS \uD53C\uB4DC\uBC31\uC774 \uC5C6\uC2B5\uB2C8\uB2E4.';
-    sec6.appendChild(noInsight);
+  if (!hasBadChoice && G.pressureCount >= 2) {
+    badBody.textContent = '\uC5B5\uC555\uC801 \uC120\uD0DD\uC774 ' + G.pressureCount + '\uD68C \uBC18\uBCF5\uB418\uC5C8\uC2B5\uB2C8\uB2E4. VWBE \uBB38\uD654\uC640 \uC0C1\uCDA9\uD569\uB2C8\uB2E4.';
+    hasBadChoice = true;
+    badTag = 'vwbe';
+  } else if (!hasBadChoice && G.ignoreCount >= 2) {
+    badBody.textContent = '\uBB38\uC81C\uB97C ' + G.ignoreCount + '\uD68C \uBB34\uC2DC\uD588\uC2B5\uB2C8\uB2E4. \uC801\uADF9\uC801\uC778 \uB300\uC751\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.';
+    hasBadChoice = true;
+    badTag = 'rational';
   }
-  card.appendChild(sec6);
+  if (!hasBadChoice) {
+    badBody.textContent = '\uC544\uC26C\uC6B4 \uC810\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uD6CC\uB96D\uD55C \uACBD\uC601\uC774\uC5C8\uC2B5\uB2C8\uB2E4!';
+    badBody.style.color = 'rgba(255,255,255,0.4)';
+  }
+  badCard.appendChild(badBody);
+  if (hasBadChoice) {
+    var suggest = document.createElement('div');
+    suggest.style.cssText = 'margin-top:6px;font-size:11px;color:#f59e0b';
+    suggest.textContent = '\uD83D\uDCA1 \uD301: \uC774\uBCA4\uD2B8\uC5D0 \uC801\uADF9\uC801\uC73C\uB85C \uB300\uC751\uD558\uACE0, SKMS \uC815\uCC45\uC744 \uD65C\uC131\uD654\uD558\uBA74 \uB354 \uB9CE\uC740 \uC120\uD0DD\uC9C0\uAC00 \uC5F4\uB9BD\uB2C8\uB2E4.';
+    badCard.appendChild(suggest);
+    var badQuote = findCoachingQuote(badTag || 'vwbe');
+    if (badQuote) {
+      var bq = document.createElement('div');
+      bq.className = 'rpt-quote';
+      bq.textContent = badQuote.quote;
+      var bqs = document.createElement('span');
+      bqs.className = 'rpt-source';
+      bqs.textContent = '\u2014 ' + badQuote.source;
+      bq.appendChild(bqs);
+      badCard.appendChild(bq);
+    }
+  }
+  card.appendChild(badCard);
 
-  // SKMS Quote
-  var quote = document.createElement('div');
-  quote.className = 'report-quote';
-  quote.textContent = '"\uACBD\uC601\uC758 \uAD81\uADF9\uC801 \uBAA9\uC801\uC740 \uC774\uD574\uAD00\uACC4\uC790\uC758 \uD589\uBCF5 \uADF9\uB300\uD654\uC774\uB2E4"\n\u2014 SKMS 14\uCC28 \uAC1C\uC815\uD310';
-  card.appendChild(quote);
+  // Next try card
+  var nextCard = document.createElement('div');
+  nextCard.className = 'rpt-coaching-card coaching-next';
+  var nextTitleEl = document.createElement('div');
+  nextTitleEl.className = 'coaching-title';
+  nextTitleEl.textContent = '\uD83D\uDE80 \uB2E4\uC74C\uC5D0 \uC2DC\uB3C4\uD574\uBCF4\uC138\uC694';
+  nextCard.appendChild(nextTitleEl);
+  var nextBody = document.createElement('div');
+  nextBody.className = 'coaching-body';
 
-  // Share buttons row
+  var weakest = 'empHap';
+  var weakVal = G.empHap;
+  if (G.custSat < weakVal) { weakest = 'custSat'; weakVal = G.custSat; }
+  if (G.socVal < weakVal) { weakest = 'socVal'; weakVal = G.socVal; }
+
+  var allHigh = G.custSat >= 70 && G.empHap >= 70 && G.socVal >= 70;
+  if (allHigh) {
+    nextBody.textContent = '\uBAA8\uB4E0 \uC9C0\uD45C\uAC00 \uC6B0\uC218\uD569\uB2C8\uB2E4! \uB2E4\uC74C\uC5D0\uB294 \uB354 \uBE60\uB978 \uC18D\uB3C4\uB85C \uB3C4\uC804\uD574\uBCF4\uC138\uC694.';
+  } else if (weakest === 'custSat') {
+    nextBody.textContent = '\uACE0\uAC1D \uB9CC\uC871\uB3C4\uAC00 \uB0AE\uC2B5\uB2C8\uB2E4. R&D \uBD80\uC11C \uAC15\uD654 + \uACE0\uAC1D\uC911\uC2EC \uC815\uCC45\uC744 \uCD94\uCC9C\uD569\uB2C8\uB2E4.';
+  } else if (weakest === 'empHap') {
+    nextBody.textContent = '\uAD6C\uC131\uC6D0 \uD589\uBCF5\uC774 \uB0AE\uC2B5\uB2C8\uB2E4. HR \uBD80\uC11C + VWBE \uC815\uCC45 + Wellness \uC2DC\uC124\uC744 \uCD94\uCC9C\uD569\uB2C8\uB2E4.';
+  } else {
+    nextBody.textContent = '\uC0AC\uD68C\uC801 \uAC00\uCE58\uAC00 \uB0AE\uC2B5\uB2C8\uB2E4. Social Impact \uBD80\uC11C + \uC0AC\uD68C\uC801 \uAC00\uCE58 \uACBD\uC601 \uC815\uCC45\uC744 \uCD94\uCC9C\uD569\uB2C8\uB2E4.';
+  }
+  nextCard.appendChild(nextBody);
+
+  var weakPrinciple = null;
+  for (var wi = 0; wi < principleKeys.length; wi++) {
+    if (dna[principleKeys[wi]] < 20) { weakPrinciple = principleKeys[wi]; break; }
+  }
+  if (weakPrinciple && !allHigh) {
+    var weakHint = document.createElement('div');
+    weakHint.style.cssText = 'margin-top:6px;font-size:11px;color:#60a5fa';
+    weakHint.textContent = '\uD83D\uDCA1 "' + principleLabels[weakPrinciple] + '" \uC601\uC5ED\uC758 \uC120\uD0DD\uC744 \uB354 \uD0D0\uC0C9\uD574\uBCF4\uC138\uC694.';
+    nextCard.appendChild(weakHint);
+  }
+  card.appendChild(nextCard);
+
+  // === SHARE BUTTONS ===
   var shareRow = document.createElement('div');
   shareRow.style.cssText = 'display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px;';
 
-  // Save as image button
   var saveBtn = document.createElement('button');
   saveBtn.className = 'report-btn';
   saveBtn.style.cssText = 'background:var(--blue);flex:1;min-width:120px;';
@@ -5211,7 +5509,6 @@ function showReport() {
   saveBtn.addEventListener('click', function() { captureReport(card); });
   shareRow.appendChild(saveBtn);
 
-  // Share Twitter/X
   var twitBtn = document.createElement('button');
   twitBtn.className = 'report-btn';
   twitBtn.style.cssText = 'background:#1DA1F2;flex:1;min-width:100px;';
@@ -5219,7 +5516,6 @@ function showReport() {
   twitBtn.addEventListener('click', function() { shareTwitter(style, alignment); });
   shareRow.appendChild(twitBtn);
 
-  // Share LinkedIn
   var liBtn = document.createElement('button');
   liBtn.className = 'report-btn';
   liBtn.style.cssText = 'background:#0A66C2;flex:1;min-width:100px;';
@@ -5227,7 +5523,6 @@ function showReport() {
   liBtn.addEventListener('click', function() { shareLinkedIn(style, alignment); });
   shareRow.appendChild(liBtn);
 
-  // Copy text
   var copyBtn = document.createElement('button');
   copyBtn.className = 'report-btn';
   copyBtn.style.cssText = 'background:rgba(255,255,255,0.15);flex:1;min-width:100px;';
@@ -5237,7 +5532,6 @@ function showReport() {
 
   card.appendChild(shareRow);
 
-  // Try again button
   var btn = document.createElement('button');
   btn.className = 'report-btn';
   btn.style.cssText = 'margin-top:8px;background:var(--accent);color:#1a1a2e;width:100%;';
@@ -5254,17 +5548,32 @@ function showReport() {
 // ============================================================
 function getReportText(style, alignment) {
   var won = G.gameWon ? '\uD83C\uDFC6 \uC2B9\uB9AC!' : '\uD83D\uDCC9 \uD328\uBC30';
+  var dna = calcDNABreakdown();
+  var pLabels = {human_centered:'\uC778\uAC04\uC911\uC2EC', supex:'\uC131\uACFC\uCD94\uAD6C', vwbe:'\uC790\uAE30\uC8FC\uB3C4', social_value:'\uC0AC\uD68C\uAC00\uCE58', rational:'\uD569\uB9AC\uACBD\uC601'};
+  var pKeys = ['human_centered','supex','vwbe','social_value','rational'];
+  var topP = pKeys.slice().sort(function(a,b){return dna[b]-dna[a];})[0];
   var text = won + ' SKMS Company Builder\n\n'
     + '\uACBD\uC601 \uC2A4\uD0C0\uC77C: ' + style + '\n'
     + 'SKMS \uC815\uD569\uC131: ' + alignment + '%\n'
     + '\uBCC4\uC810: ' + G.rating.toFixed(1) + '\u2B50 | '
-    + G.gDay + '\uC77C \uC18C\uC694\n\n'
+    + G.gDay + '\uC77C \uC18C\uC694\n'
+    + '\uACBD\uC601 DNA: ' + pLabels[topP] + '\n\n'
     + '\uD83D\uDC65 \uACE0\uAC1D ' + Math.round(G.custSat)
     + ' | \uD83D\uDC9A \uAD6C\uC131\uC6D0 ' + Math.round(G.empHap)
     + ' | \uD83C\uDF0D \uC0AC\uD68C ' + Math.round(G.socVal) + '\n'
-    + '\uD83D\uDD25 \uC5D0\uC774\uC2A4 ' + G.totalAceTransitions + '\uBA85 \uC804\uD658'
-    + ' | \uD83D\uDC4B \uD1EC\uC0AC ' + G.totalQuits + '\uBA85\n\n'
-    + '#SKMSCompanyBuilder #SKMS\uACBD\uC601\uCCB4\uACC4';
+    + '\uD83D\uDD25 \uC5D0\uC774\uC2A4 ' + G.totalAceTransitions + '\uBA85'
+    + ' | \uD83D\uDC4B \uD1EC\uC0AC ' + G.totalQuits + '\uBA85';
+  // Add TOP 3 headlines
+  var top3 = getTop3Choices();
+  if (top3.length > 0) {
+    text += '\n\uD83C\uDFAF TOP: ';
+    for (var i = 0; i < top3.length; i++) {
+      if (i > 0) text += ', ';
+      var h = top3[i].evt.headline;
+      text += h.length > 15 ? h.substring(0, 15) + '..' : h;
+    }
+  }
+  text += '\n\n#SKMSCompanyBuilder #SKMS\uACBD\uC601\uCCB4\uACC4';
   return text;
 }
 
@@ -5301,151 +5610,122 @@ function copyReportText(style, alignment) {
 }
 
 function captureReport(cardEl) {
-  // Use canvas to render the report card as an image
-  var rect = cardEl.getBoundingClientRect();
   var c = document.createElement('canvas');
-  var scale = 2; // Retina
-  var cw = Math.max(480, rect.width);
-  var ch = Math.max(600, cardEl.scrollHeight || rect.height);
+  var scale = 2;
+  var cw = 700;
+  var ch = 680;
   c.width = cw * scale;
   c.height = ch * scale;
   var cx = c.getContext('2d');
   cx.scale(scale, scale);
 
-  // Draw background
+  // Background
   cx.fillStyle = '#1a1a2e';
   cx.roundRect(0, 0, cw, ch, 16);
   cx.fill();
 
-  // Draw text content
-  cx.fillStyle = '#e8e8f0';
-  cx.font = 'bold 22px system-ui';
-  cx.textAlign = 'center';
   var won = G.gameWon;
-  cx.fillText(won ? '\uD83C\uDFC6 \uACBD\uC601 \uC131\uC801\uD45C' : '\uD83D\uDCC9 \uACBD\uC601 \uC131\uC801\uD45C', cw/2, 36);
+  var y = 36;
 
-  cx.font = '14px system-ui';
-  cx.fillStyle = won ? '#4ADE80' : '#F87171';
-  cx.fillText(won ? '\uCD95\uD558\uD569\uB2C8\uB2E4! \uD68C\uC0AC\uB97C \uC0B4\uB838\uC2B5\uB2C8\uB2E4.' : '\uC548\uD0C0\uAE5D\uC9C0\uB9CC \uD68C\uC0AC\uAC00 \uBB34\uB108\uC84C\uC2B5\uB2C8\uB2E4.', cw/2, 56);
-
-  var y = 84;
-  cx.font = 'bold 13px system-ui';
-  cx.fillStyle = '#FFB830';
-  cx.textAlign = 'left';
-  cx.fillText('\uACBD\uC601 \uC2A4\uD0C0\uC77C', 20, y);
+  // Header
   cx.fillStyle = '#e8e8f0';
-  cx.textAlign = 'right';
-  cx.fillText(getManagementStyle(), cw - 20, y);
+  cx.font = 'bold 20px system-ui';
+  cx.textAlign = 'center';
+  cx.fillText((won ? '\u{1F3C6}' : '\u{1F4C9}') + ' \uACBD\uC601 \uC131\uC801\uD45C  ' + G.rating.toFixed(1) + ' \u2B50  Day ' + G.gDay, cw/2, y);
 
-  y += 22;
-  cx.textAlign = 'left'; cx.fillStyle = '#FFB830';
-  cx.fillText('SKMS \uC815\uD569\uC131', 20, y);
-  cx.fillStyle = '#e8e8f0'; cx.textAlign = 'right';
-  cx.fillText(calcSKMSAlignment() + '%', cw - 20, y);
+  y += 24;
+  cx.font = 'bold 14px system-ui';
+  cx.fillStyle = '#FFB830';
+  cx.fillText(getManagementStyle() + '  |  SKMS \uC815\uD569\uC131 ' + calcSKMSAlignment() + '%', cw/2, y);
 
-  y += 22;
-  cx.textAlign = 'left'; cx.fillStyle = '#FFB830';
-  cx.fillText('\uBCC4\uC810', 20, y);
-  cx.fillStyle = '#FBBF24'; cx.textAlign = 'right';
-  cx.fillText(G.rating.toFixed(1) + ' \u2B50', cw - 20, y);
-
-  // Stakeholder bars
+  // Stakeholder gauges (3 columns)
   y += 30;
-  cx.textAlign = 'left'; cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830';
-  cx.fillText('\uC774\uD574\uAD00\uACC4\uC790 \uADE0\uD615', 20, y);
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830'; cx.textAlign = 'left';
+  cx.fillText('\u2696\uFE0F \uC774\uD574\uAD00\uACC4\uC790 \uADE0\uD615', 20, y);
   y += 18;
-  var metrics = [
-    {label:'\uACE0\uAC1D \uB9CC\uC871', val:Math.round(G.custSat), color:'#42A5F5'},
-    {label:'\uAD6C\uC131\uC6D0 \uD589\uBCF5', val:Math.round(G.empHap), color:'#66BB6A'},
-    {label:'\uC0AC\uD68C\uC801 \uAC00\uCE58', val:Math.round(G.socVal), color:'#26A69A'}
+  var gaugeMetrics = [
+    {label:'\uD83D\uDC65 \uACE0\uAC1D', val:Math.round(G.custSat), color:'#42A5F5'},
+    {label:'\uD83D\uDC9A \uC9C1\uC6D0', val:Math.round(G.empHap), color:'#66BB6A'},
+    {label:'\uD83C\uDF0D \uC0AC\uD68C', val:Math.round(G.socVal), color:'#26A69A'}
   ];
-  for (var mi = 0; mi < metrics.length; mi++) {
-    var m = metrics[mi];
-    cx.font = '12px system-ui'; cx.fillStyle = '#aaa'; cx.textAlign = 'left';
-    cx.fillText(m.label, 20, y);
-    // Bar bg
+  var colW = (cw - 60) / 3;
+  for (var gmi = 0; gmi < gaugeMetrics.length; gmi++) {
+    var gm = gaugeMetrics[gmi];
+    var gx = 20 + gmi * (colW + 10);
+    cx.font = '11px system-ui'; cx.fillStyle = '#aaa'; cx.textAlign = 'center';
+    cx.fillText(gm.label, gx + colW/2, y);
     cx.fillStyle = 'rgba(255,255,255,0.08)';
-    cx.fillRect(110, y - 10, cw - 170, 12);
-    // Bar fill
-    cx.fillStyle = m.color;
-    cx.fillRect(110, y - 10, (cw - 170) * m.val / 100, 12);
-    // Value
-    cx.fillStyle = '#e8e8f0'; cx.textAlign = 'right'; cx.font = 'bold 12px system-ui';
-    cx.fillText(m.val, cw - 20, y);
-    y += 20;
+    cx.fillRect(gx, y + 4, colW, 10);
+    cx.fillStyle = gm.color;
+    cx.fillRect(gx, y + 4, colW * gm.val / 100, 10);
+    cx.font = 'bold 16px system-ui'; cx.fillStyle = gm.color;
+    cx.fillText(gm.val, gx + colW/2, y + 32);
   }
+  y += 48;
 
   // Employee stats
-  y += 10;
-  cx.textAlign = 'left'; cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830';
-  cx.fillText('\uAD6C\uC131\uC6D0 \uBCC0\uD654', 20, y);
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830'; cx.textAlign = 'left';
+  cx.fillText('\uD83D\uDC65 \uAD6C\uC131\uC6D0 \uBCC0\uD654', 20, y);
   y += 18;
   cx.font = '12px system-ui'; cx.fillStyle = '#e8e8f0';
-  cx.fillText('\uD83D\uDD25 \uC5D0\uC774\uC2A4 \uC804\uD658 ' + G.totalAceTransitions + '\uBA85  |  \uD83D\uDC4B \uD1EC\uC0AC ' + G.totalQuits + '\uBA85  |  \u2B50 \uB9AC\uB354 ' + G.totalLeaderPromotions + '\uBA85', 20, y);
+  cx.fillText('\uD83D\uDD25 \uC5D0\uC774\uC2A4 ' + G.totalAceTransitions + '\uBA85  |  \uD83D\uDE12\u2192\uD83D\uDD25 \uD68C\uBCF5 ' + G.totalCynicRecoveries + '\uBA85  |  \u2B50 \uB9AC\uB354 ' + G.totalLeaderPromotions + '\uBA85  |  \uD83D\uDC4B \uD1EC\uC0AC ' + G.totalQuits + '\uBA85', 20, y);
+
+  // DNA bars
+  y += 30;
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830'; cx.textAlign = 'left';
+  cx.fillText('\uD83C\uDFAF \uACBD\uC601 DNA', 20, y);
+  y += 18;
+  var dnaCapture = calcDNABreakdown();
+  var dnaCaptureKeys = ['human_centered','supex','vwbe','social_value','rational'];
+  var dnaCaptureLabels = {human_centered:'\uC778\uAC04\uC911\uC2EC', supex:'\uC131\uACFC\uCD94\uAD6C', vwbe:'\uC790\uAE30\uC8FC\uB3C4', social_value:'\uC0AC\uD68C\uAC00\uCE58', rational:'\uD569\uB9AC\uACBD\uC601'};
+  var dnaCaptureColors = {human_centered:'#4ade80', supex:'#f59e0b', vwbe:'#60a5fa', social_value:'#26A69A', rational:'#a78bfa'};
+  for (var dci = 0; dci < dnaCaptureKeys.length; dci++) {
+    var dk = dnaCaptureKeys[dci];
+    cx.font = '11px system-ui'; cx.fillStyle = '#aaa'; cx.textAlign = 'left';
+    cx.fillText(dnaCaptureLabels[dk], 20, y);
+    cx.fillStyle = 'rgba(255,255,255,0.08)';
+    cx.fillRect(90, y - 8, cw - 160, 10);
+    cx.fillStyle = dnaCaptureColors[dk];
+    cx.fillRect(90, y - 8, (cw - 160) * dnaCapture[dk] / 100, 10);
+    cx.fillStyle = dnaCaptureColors[dk]; cx.textAlign = 'right'; cx.font = 'bold 11px system-ui';
+    cx.fillText(dnaCapture[dk] + '%', cw - 20, y);
+    y += 18;
+  }
+
+  // TOP 3
+  var top3Cap = getTop3Choices();
+  if (top3Cap.length > 0) {
+    y += 10;
+    cx.font = 'bold 12px system-ui'; cx.fillStyle = '#FFB830'; cx.textAlign = 'left';
+    cx.fillText('\uD83C\uDFAF \uD575\uC2EC \uC120\uD0DD TOP 3', 20, y);
+    y += 16;
+    cx.font = '11px system-ui'; cx.fillStyle = '#e8e8f0';
+    for (var t3i = 0; t3i < top3Cap.length; t3i++) {
+      var t3c = top3Cap[t3i];
+      var hl = t3c.evt.headline;
+      if (hl.length > 30) hl = hl.substring(0, 30) + '...';
+      cx.fillText((t3i + 1) + '. ' + hl, 20, y);
+      y += 15;
+    }
+  }
 
   // SKMS Quote
-  y += 30;
+  y += 16;
   cx.font = 'italic 11px system-ui'; cx.fillStyle = 'rgba(255,255,255,0.5)'; cx.textAlign = 'center';
   cx.fillText('"\uACBD\uC601\uC758 \uAD81\uADF9\uC801 \uBAA9\uC801\uC740 \uC774\uD574\uAD00\uACC4\uC790\uC758 \uD589\uBCF5 \uADF9\uB300\uD654\uC774\uB2E4"', cw/2, y);
-  y += 16;
+  y += 14;
   cx.fillText('\u2014 SKMS 14\uCC28 \uAC1C\uC815\uD310', cw/2, y);
 
   // Watermark
-  y += 24;
+  y += 22;
   cx.font = '10px system-ui'; cx.fillStyle = 'rgba(255,255,255,0.25)';
   cx.fillText('skmsai.netlify.app/parktycoon.html', cw/2, y);
 
-  // Download
   var link = document.createElement('a');
   link.download = 'SKMS-CompanyBuilder-Report.png';
   link.href = c.toDataURL('image/png');
   link.click();
   showToast('\uC774\uBBF8\uC9C0\uAC00 \uC800\uC7A5\uB418\uC5C8\uC2B5\uB2C8\uB2E4!', 'success');
-}
-
-function addReportRow(parent, label, value) {
-  var row = document.createElement('div');
-  row.className = 'report-row';
-  var l = document.createElement('span');
-  l.textContent = label;
-  row.appendChild(l);
-  var v = document.createElement('span');
-  v.textContent = value;
-  v.style.fontWeight = '700';
-  row.appendChild(v);
-  parent.appendChild(row);
-}
-
-function addReportBar(parent, label, value, color) {
-  var row = document.createElement('div');
-  row.className = 'report-row';
-  var l = document.createElement('span');
-  l.textContent = label;
-  l.style.minWidth = '80px';
-  row.appendChild(l);
-  var bar = document.createElement('div');
-  bar.className = 'report-bar';
-  var fill = document.createElement('div');
-  fill.className = 'report-bar-fill';
-  fill.style.width = value + '%';
-  fill.style.background = color;
-  bar.appendChild(fill);
-  row.appendChild(bar);
-  var v = document.createElement('span');
-  v.textContent = value;
-  v.style.fontWeight = '700';
-  v.style.minWidth = '30px';
-  v.style.textAlign = 'right';
-  row.appendChild(v);
-  parent.appendChild(row);
-}
-
-function addReportCheck(parent, passed, text) {
-  var el = document.createElement('div');
-  el.className = 'report-check';
-  el.textContent = (passed ? '\u2705 ' : '\u274C ') + text;
-  el.style.color = passed ? 'var(--green)' : 'rgba(255,255,255,0.4)';
-  parent.appendChild(el);
 }
 
 function getManagementStyle() {
@@ -5497,6 +5777,11 @@ function calcSKMSBreakdown() {
   principleScore -= G.ignoreCount * 5;
   result.overall = clamp(0, 100, Math.round(principleScore));
   return result;
+}
+
+function calcDNABreakdown() {
+  var bd = calcSKMSBreakdown();
+  return {human_centered: bd.human_centered, supex: bd.supex, vwbe: bd.vwbe, social_value: bd.social_value, rational: bd.rational};
 }
 
 function calcSKMSAlignment() {
@@ -6924,6 +7209,7 @@ function loadGame(save) {
   G.skmsChoices = save.skmsChoices || [];
   G.pendingFollowups = save.pendingFollowups || [];
   G.compStrategy = save.compStrategy || null;
+  G.emojiReactions = [];
   // Rebuild grid
   for (var y = 0; y < GRID; y++) for (var x = 0; x < GRID; x++) G.grid[y][x] = null;
   var cx = Math.floor(GRID / 2), cy = Math.floor(GRID / 2);
@@ -7004,7 +7290,11 @@ mobileCSS.textContent = '@media(max-width:768px){'
   + '.tutorial{bottom:68px;max-width:280px;font-size:10px}'
   + '.onboard-card{width:96vw;padding:18px 14px}'
   + '.onboard-flow{flex-direction:column}.onboard-flow-arrow{justify-content:center;transform:rotate(90deg)}'
-  + '.report-card{width:95vw;padding:24px 16px}'
+  + '.report-card{width:95vw;padding:20px 14px}'
+  + '.rpt-stats-grid{grid-template-columns:1fr}'
+  + '.rpt-gauges{flex-direction:column}'
+  + '.rpt-top3-row{flex-wrap:nowrap;-webkit-overflow-scrolling:touch}'
+  + '.rpt-top3-card{min-width:180px}'
   + '.dept-sections{flex-direction:column}'
   + '.dept-card{width:95vw;padding:16px}'
   + '.history-panel{display:none}'
