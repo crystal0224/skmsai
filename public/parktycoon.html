@@ -213,9 +213,9 @@ canvas{display:block;cursor:default}
 /* Onboarding overlay */
 .onboard-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;animation:fadeIn .5s cubic-bezier(0.16,1,0.3,1) forwards}
 .onboard-hero{text-align:center;margin-bottom:14px;animation:slideUp .5s cubic-bezier(0.16,1,0.3,1) forwards}
-.onboard-hero-title{font-size:44px;font-weight:900;letter-spacing:-1.5px;color:#fff;line-height:1.1;margin-bottom:6px;text-shadow:0 2px 12px rgba(0,0,0,0.3)}
-.onboard-hero-title .accent{color:#60A5FA}
-.onboard-hero-sub{font-size:15px;color:rgba(255,255,255,0.7);letter-spacing:0.2px;text-shadow:0 1px 4px rgba(0,0,0,0.2)}
+.onboard-hero-title{font-size:44px;font-weight:900;letter-spacing:-1.5px;color:#fff;line-height:1.1;margin-bottom:6px;-webkit-text-stroke:1px rgba(255,255,255,0.8);text-shadow:0 2px 20px rgba(0,0,0,0.4)}
+.onboard-hero-title .accent{color:#fff;-webkit-text-stroke:1.5px rgba(255,255,255,0.9)}
+.onboard-hero-sub{font-size:15px;color:rgba(255,255,255,0.65);letter-spacing:0.2px}
 @keyframes fadeIn{to{opacity:1}}
 @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(255,184,48,0.1)}50%{box-shadow:0 0 40px rgba(255,184,48,0.2)}}
