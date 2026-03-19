@@ -6297,15 +6297,6 @@ function gameLoop(ts) {
 // INITIALIZATION
 // ============================================================
 function showOnboarding() {
-  try { _showOnboardingInner(); } catch(e) {
-    var ov = document.getElementById('onboard-overlay');
-    var err = document.createElement('pre');
-    err.style.cssText = 'color:red;background:#fff;padding:20px;margin:20px;font-size:12px;max-width:90vw;overflow:auto;z-index:999';
-    err.textContent = 'Onboarding Error: ' + e.message + '\n' + e.stack;
-    ov.appendChild(err);
-  }
-}
-function _showOnboardingInner() {
   G.gSpeed = 0; // Pause until player starts
   var overlay = document.getElementById('onboard-overlay');
   while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
@@ -6659,11 +6650,26 @@ function _showOnboardingInner() {
     }
   }
 
+  // Scenario card canvases (populated later in Slide 2 build)
+  var scCanvases = [];
+  function drawScenarioCanvases() {
+    for (var si = 0; si < scCanvases.length; si++) {
+      var sc = scCanvases[si];
+      var ctx = sc.ctx, w = sc.canvas.width, h = sc.canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      var spacing = w / (sc.chars.length + 1);
+      for (var ci = 0; ci < sc.chars.length; ci++) {
+        var cx = spacing * (ci + 1);
+        drawIsoChar(ctx, cx, sc.charY, sc.chars[ci], speakingIdx === sc.speakOffset + ci, sc.isDark);
+      }
+    }
+  }
+
   function drawPreview() {
     drawBeforeCanvas();
     drawSuccessCanvas();
     drawFailCanvas();
-    if (typeof drawScenarioCanvases === 'function') drawScenarioCanvases();
+    drawScenarioCanvases();
     previewFrame++;
     speakTimer++;
     if (speakTimer > speakDuration) {
@@ -6862,22 +6868,6 @@ function _showOnboardingInner() {
 
   var scRow = document.createElement('div');
   scRow.style.cssText = 'display:flex;gap:16px;margin-bottom:16px';
-
-  // Helper: build game card
-  // Scenario card canvas draw functions
-  var scCanvases = [];
-  function drawScenarioCanvases() {
-    for (var si = 0; si < scCanvases.length; si++) {
-      var sc = scCanvases[si];
-      var ctx = sc.ctx, w = sc.canvas.width, h = sc.canvas.height;
-      ctx.clearRect(0, 0, w, h);
-      var spacing = w / (sc.chars.length + 1);
-      for (var ci = 0; ci < sc.chars.length; ci++) {
-        var cx = spacing * (ci + 1);
-        drawIsoChar(ctx, cx, sc.charY, sc.chars[ci], speakingIdx === sc.speakOffset + ci, sc.isDark);
-      }
-    }
-  }
 
   function buildScenarioCard(config) {
     var card = document.createElement('div');
