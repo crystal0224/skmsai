@@ -196,7 +196,9 @@ canvas{display:block;cursor:default}
 @keyframes fadeIn{to{opacity:1}}
 @keyframes slideUp{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes glowPulse{0%,100%{box-shadow:0 0 20px rgba(255,184,48,0.1)}50%{box-shadow:0 0 40px rgba(255,184,48,0.2)}}
-.onboard-card{background:#FFFFFF;border:none;border-radius:24px;width:960px;max-width:96vw;max-height:92vh;overflow-y:auto;padding:44px 48px;color:#1F2937;box-shadow:0 25px 80px rgba(0,0,0,0.12),0 0 0 1px rgba(0,0,0,0.04);animation:slideUp .6s cubic-bezier(0.16,1,0.3,1) forwards}
+.onboard-card{background:rgba(255,255,255,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:none;border-radius:24px;width:1060px;max-width:97vw;max-height:92vh;overflow-y:auto;padding:36px 44px;color:#1F2937;box-shadow:0 25px 80px rgba(0,0,0,0.1),0 0 0 1px rgba(0,0,0,0.03);animation:slideUp .6s cubic-bezier(0.16,1,0.3,1) forwards}
+.onboard-preview{width:100%;height:140px;border-radius:14px;background:linear-gradient(135deg,#E8F5E9 0%,#FFF8E1 50%,#E3F2FD 100%);margin-bottom:20px;overflow:hidden;position:relative}
+.onboard-preview canvas{width:100%;height:100%;display:block}
 .onboard-card::-webkit-scrollbar{width:3px}
 .onboard-card::-webkit-scrollbar-thumb{background:rgba(255,184,48,0.2);border-radius:2px}
 .onboard-flow{display:flex;gap:6px;align-items:center;overflow-x:auto;padding:12px 0;margin-bottom:20px}
@@ -4294,6 +4296,7 @@ function showOnboarding() {
       startBGM();
       G = createInitialState();
       if (loadGame()) {
+        if(previewRAF)cancelAnimationFrame(previewRAF);
         overlay.removeChild(card);
         overlay.remove();
         buildTopBar();
@@ -4321,26 +4324,164 @@ function showOnboarding() {
     card.appendChild(continueRow);
   }
 
-  // Scenario briefing — dynamic based on selection
-  var scenarioBrief = document.createElement('div');
-  scenarioBrief.className = 'onboard-scenario';
+  // Animated preview banner — isometric characters with speech bubbles
+  var previewWrap = document.createElement('div');
+  previewWrap.className = 'onboard-preview';
+  var previewCanvas = document.createElement('canvas');
+  previewCanvas.width = 1060;
+  previewCanvas.height = 140;
+  previewWrap.appendChild(previewCanvas);
+  card.appendChild(previewWrap);
 
-  function updateBriefing() {
-    while (scenarioBrief.firstChild) scenarioBrief.removeChild(scenarioBrief.firstChild);
-    var warn = document.createElement('span');
-    warn.className = 'warn';
-    if (selectedScenario === 1) {
-      warn.textContent = '\u26A0 \uC2DC\uB098\uB9AC\uC624: \uC704\uAE30\uC758 \uD68C\uC0AC';
-      scenarioBrief.appendChild(warn);
-      scenarioBrief.appendChild(document.createTextNode('\uB2F9\uC2E0\uC740 \uBB34\uB108\uC838\uAC00\uB294 \uD68C\uC0AC\uC758 \uC0C8 CEO\uB85C \uBD80\uC784\uD588\uC2B5\uB2C8\uB2E4. \uAD6C\uC131\uC6D0 12\uBA85 \uC911 \uC5D0\uC774\uC2A4\uB294 0\uBA85, \uC790\uAE08\uC740 $25,000. \uC870\uC9C1\uACFC \uC2DC\uC124\uC744 \uAC16\uCD94\uACE0 \uC778\uC7AC\uB97C \uCC44\uC6A9\uD558\uC5EC \uBCC4\uC810 3.0\uC744 30\uC77C \uC720\uC9C0\uD558\uBA74 \uC2B9\uB9AC\uD569\uB2C8\uB2E4.'));
-    } else {
-      warn.textContent = '\u{1F916} \uC2DC\uB098\uB9AC\uC624: \uC548\uC815\uB41C \uD68C\uC0AC\uC5D0 AI \uD601\uC2E0\uC744 \uB3C4\uC785\uD558\uB77C';
-      scenarioBrief.appendChild(warn);
-      scenarioBrief.appendChild(document.createTextNode('\uB2F9\uC2E0\uC758 \uD68C\uC0AC\uB294 \uC548\uC815\uC801\uC774\uC9C0\uB9CC \uC131\uC7A5\uC774 \uC815\uCCB4\uB418\uC5C8\uC2B5\uB2C8\uB2E4. AI\uB97C \uB3C4\uC785\uD558\uBA74\uC11C \uAD6C\uC131\uC6D0\uC758 \uBD88\uC548\uC744 \uAD00\uB9AC\uD558\uACE0, \uB9AC\uC2A4\uD0AC\uB9C1\uC73C\uB85C \uD601\uC2E0\uACFC \uC0AC\uB78C \uC911\uC2EC\uC758 \uADE0\uD615\uC744 \uCC3E\uC73C\uC138\uC694. \uBAA8\uB4E0 \uC774\uD574\uAD00\uACC4\uC790 \uC9C0\uD45C\uB97C \uB192\uC740 \uC218\uC900\uC73C\uB85C \uB04C\uC5B4\uC62C\uB9AC\uBA74 \uC2B9\uB9AC\uD569\uB2C8\uB2E4.'));
+  // Animate the preview
+  var pCtx = previewCanvas.getContext('2d');
+  var previewChars = [
+    {x:80, type:'disengaged',emoji:'\uD83D\uDE34',bubble:'\uB9E4\uC77C \uB611\uAC19\uC740 \uD558\uB8E8...',col:'#BDBDBD',targetType:'rookie'},
+    {x:250,type:'cynic',     emoji:'\uD83E\uDD14',bubble:'\uB610 \uBCC0\uD558\uB294 \uAC70\uB77C\uACE0?',col:'#78909C',targetType:'ace'},
+    {x:420,type:'rookie',    emoji:'\uD83C\uDF31',bubble:'\uBC30\uC6B0\uACE0 \uC2F6\uC5B4\uC694!',col:'#66BB6A',targetType:'ace'},
+    {x:590,type:'ace',       emoji:'\uD83D\uDD25',bubble:'\uC624\uB298\uB3C4 \uC5F4\uC815\uC801\uC73C\uB85C!',col:'#FF7043',targetType:'leader'},
+    {x:760,type:'leader',    emoji:'\u2B50',bubble:'\uD568\uAED8 \uC131\uC7A5\uD569\uC2DC\uB2E4',col:'#FFD54F',targetType:'leader'},
+    {x:930,type:'ace',       emoji:'\uD83D\uDD25',bubble:'SUPEX \uCD94\uAD6C!',col:'#FF7043',targetType:'leader'}
+  ];
+  var previewFrame = 0;
+  var previewPhase = 0; // 0=before, 1=transitioning, 2=after
+  var previewTimer = 0;
+  var bubbleAlpha = 1;
+
+  function drawPreview() {
+    var w = previewCanvas.width, h = previewCanvas.height;
+    pCtx.clearRect(0, 0, w, h);
+
+    // Subtle grass tiles at bottom
+    pCtx.fillStyle = '#C8E6C9';
+    for (var tx = 0; tx < w; tx += 40) {
+      pCtx.beginPath();
+      pCtx.moveTo(tx + 20, h - 15);
+      pCtx.lineTo(tx + 40, h - 5);
+      pCtx.lineTo(tx + 20, h + 5);
+      pCtx.lineTo(tx, h - 5);
+      pCtx.closePath();
+      pCtx.fill();
     }
+
+    // Phase label
+    pCtx.font = 'bold 11px system-ui';
+    pCtx.textAlign = 'center';
+    if (previewPhase === 0) {
+      pCtx.fillStyle = '#EF4444';
+      pCtx.fillText('\u26A0 BEFORE \u2014 \uC704\uAE30\uC758 \uD68C\uC0AC', w / 2, 16);
+    } else if (previewPhase === 1) {
+      pCtx.fillStyle = '#0052A2';
+      pCtx.fillText('\u2728 SKMS \uACBD\uC601\uCCB4\uACC4 \uC801\uC6A9 \uC911...', w / 2, 16);
+    } else {
+      pCtx.fillStyle = '#16A34A';
+      pCtx.fillText('\u2705 AFTER \u2014 \uC131\uC7A5\uD558\uB294 \uD68C\uC0AC', w / 2, 16);
+    }
+
+    for (var i = 0; i < previewChars.length; i++) {
+      var ch = previewChars[i];
+      var cx = ch.x, cy = 85;
+      var bobble = Math.sin(previewFrame * 0.05 + i * 1.2) * 3;
+
+      // Shadow
+      pCtx.fillStyle = 'rgba(0,0,0,0.06)';
+      pCtx.beginPath();
+      pCtx.ellipse(cx, cy + 20, 14, 5, 0, 0, Math.PI * 2);
+      pCtx.fill();
+
+      // Determine current visual based on phase
+      var curCol = ch.col;
+      var curEmoji = ch.emoji;
+      var curBubble = ch.bubble;
+      if (previewPhase === 2) {
+        var tc = {disengaged:'#66BB6A',cynic:'#FF7043',rookie:'#FF7043',ace:'#FFD54F',leader:'#FFD54F'};
+        var te = {disengaged:'\uD83C\uDF31',cynic:'\uD83D\uDD25',rookie:'\uD83D\uDD25',ace:'\u2B50',leader:'\u2B50'};
+        var tb = {disengaged:'\uB2E4\uC2DC \uD574\uBCFC\uAC8C\uC694!',cynic:'\uD574\uBCFC \uB9CC\uD558\uB124\uC694!',rookie:'\uC5D0\uC774\uC2A4 \uB410\uB2E4!',ace:'\uB9AC\uB354 \uB410\uB2E4!',leader:'\uD568\uAED8 \uB2EC\uC131!'};
+        curCol = tc[ch.type];
+        curEmoji = te[ch.type];
+        curBubble = tb[ch.type];
+      }
+      if (previewPhase === 1) {
+        // Sparkle effect during transition
+        pCtx.fillStyle = 'rgba(255,184,48,' + (0.3 + Math.sin(previewFrame * 0.1 + i) * 0.2) + ')';
+        pCtx.beginPath();
+        pCtx.arc(cx, cy + bobble - 5, 18, 0, Math.PI * 2);
+        pCtx.fill();
+      }
+
+      // Body
+      pCtx.fillStyle = curCol;
+      pCtx.beginPath();
+      pCtx.arc(cx, cy + bobble, 12, 0, Math.PI * 2);
+      pCtx.fill();
+      pCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+      pCtx.lineWidth = 1.5;
+      pCtx.stroke();
+
+      // Head
+      pCtx.fillStyle = '#FDDCB5';
+      pCtx.beginPath();
+      pCtx.arc(cx, cy + bobble - 16, 8, 0, Math.PI * 2);
+      pCtx.fill();
+
+      // Type emoji
+      pCtx.font = '14px serif';
+      pCtx.textAlign = 'center';
+      pCtx.fillText(curEmoji, cx, cy + bobble - 28);
+
+      // Speech bubble
+      if (bubbleAlpha > 0.1) {
+        pCtx.globalAlpha = bubbleAlpha;
+        var bw = pCtx.measureText(curBubble).width + 16;
+        var bx = cx - bw / 2, by = cy + bobble - 58;
+        pCtx.fillStyle = '#fff';
+        pCtx.strokeStyle = '#E2E8F0';
+        pCtx.lineWidth = 1;
+        // Rounded rect
+        var br = 8;
+        pCtx.beginPath();
+        pCtx.moveTo(bx + br, by);
+        pCtx.lineTo(bx + bw - br, by);
+        pCtx.quadraticCurveTo(bx + bw, by, bx + bw, by + br);
+        pCtx.lineTo(bx + bw, by + 20 - br);
+        pCtx.quadraticCurveTo(bx + bw, by + 20, bx + bw - br, by + 20);
+        pCtx.lineTo(cx + 4, by + 20);
+        pCtx.lineTo(cx, by + 26);
+        pCtx.lineTo(cx - 4, by + 20);
+        pCtx.lineTo(bx + br, by + 20);
+        pCtx.quadraticCurveTo(bx, by + 20, bx, by + 20 - br);
+        pCtx.lineTo(bx, by + br);
+        pCtx.quadraticCurveTo(bx, by, bx + br, by);
+        pCtx.closePath();
+        pCtx.fill();
+        pCtx.stroke();
+        // Text
+        pCtx.fillStyle = '#374151';
+        pCtx.font = '11px system-ui';
+        pCtx.fillText(curBubble, cx, by + 14);
+        pCtx.globalAlpha = 1;
+      }
+    }
+
+    // Arrow between phases
+    if (previewPhase === 1) {
+      pCtx.fillStyle = '#0052A2';
+      pCtx.font = 'bold 20px system-ui';
+      pCtx.textAlign = 'center';
+      var arrowX = previewCanvas.width / 2;
+      pCtx.fillText('\u27A1', arrowX, h / 2 + 25);
+    }
+
+    previewFrame++;
+    previewTimer++;
+    // Phase cycling: before(3s) → transition(2s) → after(3s) → loop
+    if (previewTimer > 180 && previewPhase === 0) { previewPhase = 1; previewTimer = 0; bubbleAlpha = 0.5; }
+    if (previewTimer > 120 && previewPhase === 1) { previewPhase = 2; previewTimer = 0; bubbleAlpha = 1; }
+    if (previewTimer > 180 && previewPhase === 2) { previewPhase = 0; previewTimer = 0; bubbleAlpha = 1; }
   }
-  updateBriefing();
-  card.appendChild(scenarioBrief);
+  var previewRAF;
+  function animatePreview() { drawPreview(); previewRAF = requestAnimationFrame(animatePreview); }
+  animatePreview();
 
   // Scenario selection
   var scenarios = document.createElement('div');
@@ -4480,7 +4621,7 @@ function showOnboarding() {
       G = createInitialState();
       loadGame(sv);
       buildTopBar(); buildBuildPanel(); buildPolicyToggle(); renderPolicyPanel(); centerCamera(); updateHUD();
-      overlay.removeChild(card); overlay.remove();
+      if(previewRAF)cancelAnimationFrame(previewRAF);overlay.removeChild(card); overlay.remove();
       G.gSpeed = 1;
       var sb = document.getElementById('btn-speed'); if (sb) sb.textContent = '1x';
       showToast('Day ' + G.gDay + '\uBD80\uD130 \uC774\uC5B4\uC11C \uD50C\uB808\uC774\uD569\uB2C8\uB2E4.', 'success');
@@ -4498,7 +4639,7 @@ function showOnboarding() {
     G = createInitialState();
     if (selectedScenario === 2) { setupAIScenario(); } else { setupCrisisScenario(); }
     buildTopBar(); buildBuildPanel(); buildPolicyToggle(); renderPolicyPanel(); centerCamera(); updateHUD();
-    overlay.removeChild(card); overlay.remove();
+    if(previewRAF)cancelAnimationFrame(previewRAF);overlay.removeChild(card); overlay.remove();
     G.gSpeed = 1;
     var sb = document.getElementById('btn-speed'); if (sb) sb.textContent = '1x';
     showTutorial();
