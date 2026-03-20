@@ -235,16 +235,16 @@ canvas{display:block;cursor:default}
 .slide1-layout{display:flex;align-items:center;justify-content:center;gap:32px;width:100%;padding:0}
 .slide1-before,.slide1-after{flex:1;display:flex;flex-direction:column;max-width:320px}
 .slide1-center{flex:0 0 180px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.slide1-col-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:4px}
-.slide1-col-sub{font-size:10px;text-align:center;margin-bottom:8px;color:#9CA3AF;font-weight:500}
-.slide1-flow-arrow{font-size:20px;color:#D1D5DB;flex-shrink:0}
-.skms-panel{width:100%;background:linear-gradient(160deg,#F8FAFC 0%,#EEF2FF 100%);border:2px solid #C7D2FE;border-radius:18px;padding:36px 20px 30px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
-.skms-panel::before{content:'';position:absolute;top:-40%;left:-40%;width:180%;height:180%;background:radial-gradient(circle at 50% 50%,rgba(0,82,162,0.06) 0%,transparent 60%);pointer-events:none}
-.after-area{display:flex;flex-direction:column;gap:8px;flex:1}
-.success-path{flex:1;background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:12px;padding:10px;text-align:center;position:relative}
-.success-path .path-tag{position:absolute;top:6px;left:8px;font-size:9px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(22,163,74,0.12);color:#16a34a;border:1px solid rgba(22,163,74,0.2);letter-spacing:0.5px}
-.failure-path{flex:1;background:linear-gradient(135deg,#FEF2F2,#FEE2E2);border-radius:12px;padding:10px;text-align:center;position:relative}
-.failure-path .path-tag{position:absolute;top:6px;left:8px;font-size:9px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.15);letter-spacing:0.5px}
+.slide1-col-title{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:4px}
+.slide1-col-sub{font-size:10px;text-align:center;margin-bottom:10px;color:#94A3B8;font-weight:500}
+.slide1-flow-arrow{font-size:22px;color:#94A3B8;flex-shrink:0;opacity:0.7}
+.skms-panel{width:100%;background:linear-gradient(155deg,#0B1D3A 0%,#0F2D56 55%,#0A245A 100%);border:1px solid rgba(96,165,250,0.2);border-radius:20px;padding:36px 20px 30px;text-align:center;box-shadow:0 12px 40px rgba(0,30,80,0.35),inset 0 1px 0 rgba(255,255,255,0.06);position:relative;overflow:hidden}
+.skms-panel::before{content:'';position:absolute;top:-40%;left:-40%;width:180%;height:180%;background:radial-gradient(circle at 50% 40%,rgba(96,165,250,0.12) 0%,transparent 60%);pointer-events:none}
+.after-area{display:flex;flex-direction:column;gap:10px;flex:1}
+.success-path{flex:1;background:linear-gradient(150deg,#F0FDF8 0%,#E6F9F1 100%);border:1px solid rgba(22,163,74,0.14);border-radius:14px;padding:10px;text-align:center;position:relative}
+.success-path .path-tag{position:absolute;top:8px;left:10px;font-size:9px;font-weight:800;padding:3px 10px;border-radius:10px;background:rgba(22,163,74,0.1);color:#15803d;border:1px solid rgba(22,163,74,0.18);letter-spacing:0.8px}
+.failure-path{flex:1;background:linear-gradient(150deg,#FFF5F5 0%,#FFEAEA 100%);border:1px solid rgba(220,38,38,0.1);border-radius:14px;padding:10px;text-align:center;position:relative}
+.failure-path .path-tag{position:absolute;top:8px;left:10px;font-size:9px;font-weight:800;padding:3px 10px;border-radius:10px;background:rgba(220,38,38,0.08);color:#b91c1c;border:1px solid rgba(220,38,38,0.12);letter-spacing:0.8px}
 .sc-card-new{flex:1;padding:0;border-radius:16px;border:2px solid #E2E8F0;cursor:pointer;transition:all .25s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;overflow:hidden;min-height:280px;position:relative}
 .sc-card-new:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 12px 32px rgba(0,0,0,0.1)}
 .sc-card-new.active{border-color:#0052A2;box-shadow:0 8px 28px rgba(0,82,162,0.15)}
@@ -1715,8 +1715,9 @@ function drawWorker(w) {
   var sm = tc.size; // size multiplier
   var z = G.zm;     // zoom shorthand
   var alpha = w.fadeOut;
-  if (w.onboardDays > 0) alpha *= 0.7;
-  if (w.type === 'disengaged') alpha *= 0.6;
+  if (w.onboardDays > 0) alpha *= 0.85;
+  if (w.type === 'disengaged') alpha *= 0.8;
+  sm *= 1.3; // boost all character sizes
 
   var skinR = (245 * d + 10) | 0, skinG2 = (215 * d + 20) | 0, skinB = (185 * d + 20) | 0;
   var skin = 'rgb(' + skinR + ',' + skinG2 + ',' + skinB + ')';
@@ -2387,7 +2388,7 @@ function updateWorkers() {
     }
 
     // Anti-crowding: nudge away from nearby workers
-    var sepDist = 0.35;
+    var sepDist = 0.6;
     for (var si = 0; si < G.workers.length; si++) {
       var other = G.workers[si];
       if (other === w || other.quitting) continue;
@@ -2508,9 +2509,9 @@ function pickNewTarget(w) {
     return;
   }
 
-  // Unassigned workers stay near HQ
-  var nearHqX = hx + Math.floor(Math.random() * 3) - 1;
-  var nearHqY = hy + Math.floor(Math.random() * 3) - 1;
+  // Unassigned workers wander around HQ area
+  var nearHqX = hx + Math.floor(Math.random() * 7) - 3;
+  var nearHqY = hy + Math.floor(Math.random() * 7) - 3;
   var path = bfsPath(w.x, w.y, nearHqX, nearHqY);
   if (path.length > 0) {
     w.path = path;
@@ -5188,6 +5189,10 @@ function showFollowupModal(followupEvt) {
     }
     if (eff.custSat) G.custSat = clamp(0, 100, G.custSat + eff.custSat);
     if (eff.socVal) G.socVal = clamp(0, 100, G.socVal + eff.socVal);
+    if (eff.money) G.money += eff.money;
+    if (eff.courage) G.courage = clamp(0, 100, G.courage + eff.courage);
+    if (eff.trust) G.trust = clamp(0, 100, G.trust + eff.trust);
+    if (eff.coordination) G.coordination = clamp(0, 100, G.coordination + eff.coordination);
     // Special conversions
     if (eff.convertDisengaged) convertRandom(G, 'rookie', 'disengaged', eff.convertDisengaged);
     if (eff.convertAce) convertRandom(G, 'rookie', 'ace', eff.convertAce);
@@ -5207,7 +5212,9 @@ function showFollowupModal(followupEvt) {
     flashScreen(netEffect >= 0 ? 'positive' : 'negative');
     // Worker emoji reactions
     showWorkerReactions(netEffect >= 0 ? '\uD83D\uDE0A' : '\uD83D\uDE21');
-    addHistoryEntry(followupEvt.headline, '\uD6C4\uC18D \uBCF4\uB3C4', '\uD83D\uDCF0');
+    addHistoryEntry(followupEvt.headline, '후속 보도', '📰');
+    G.eventActive = false;
+    G.currentEvent = null;
     overlay.classList.remove('show');
     G.gSpeed = savedSpeed || 1;
     updateHUD();
@@ -7006,6 +7013,7 @@ function gameLoop(ts) {
 // ============================================================
 function showOnboarding() {
   G.gSpeed = 0; // Pause until player starts
+  var dpr = window.devicePixelRatio || 1;
   var overlay = document.getElementById('onboard-overlay');
   while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
 
@@ -7254,7 +7262,7 @@ function showOnboarding() {
 
   function drawBeforeCanvas() {
     if (!beforeCtx) return;
-    var w = beforeCtx.canvas.width, h = beforeCtx.canvas.height;
+    var w = beforeCtx.canvas.width / dpr, h = beforeCtx.canvas.height / dpr;
     beforeCtx.clearRect(0, 0, w, h);
 
     // Draw 'before' zone particles (red, rising, wrapping)
@@ -7287,7 +7295,7 @@ function showOnboarding() {
 
   function drawSuccessCanvas() {
     if (!successCtx) return;
-    var w = successCtx.canvas.width, h = successCtx.canvas.height;
+    var w = successCtx.canvas.width / dpr, h = successCtx.canvas.height / dpr;
     successCtx.clearRect(0, 0, w, h);
 
     // Draw 'success' zone particles (green/gold alternating)
@@ -7330,7 +7338,7 @@ function showOnboarding() {
 
   function drawFailCanvas() {
     if (!failCtx) return;
-    var w = failCtx.canvas.width, h = failCtx.canvas.height;
+    var w = failCtx.canvas.width / dpr, h = failCtx.canvas.height / dpr;
     failCtx.clearRect(0, 0, w, h);
 
     // Draw 'fail' zone particles (falling down, dark red, smaller)
@@ -7474,15 +7482,15 @@ function showOnboarding() {
   beforeWrap.className = 'slide1-before';
   var beforeTitle = document.createElement('div');
   beforeTitle.className = 'slide1-col-title';
-  beforeTitle.style.color = '#DC2626';
+  beforeTitle.style.color = '#E04040';
   beforeTitle.textContent = 'BEFORE';
   var beforeSub = document.createElement('div');
   beforeSub.className = 'slide1-col-sub';
   beforeSub.textContent = '\uBB34\uAE30\uB825\uD55C \uC870\uC9C1';
   var beforeCanvas = document.createElement('canvas');
-  beforeCanvas.width = 240;
-  beforeCanvas.height = 230;
-  beforeCanvas.style.cssText = 'border-radius:12px;background:rgba(254,226,226,0.18);width:100%';
+  beforeCanvas.width = 240 * dpr;
+  beforeCanvas.height = 230 * dpr;
+  beforeCanvas.style.cssText = 'border-radius:14px;background:rgba(241,245,249,0.45);width:100%;border:1px solid rgba(203,213,225,0.4)';
   beforeWrap.appendChild(beforeTitle);
   beforeWrap.appendChild(beforeSub);
   beforeWrap.appendChild(beforeCanvas);
@@ -7502,19 +7510,19 @@ function showOnboarding() {
   skmsPanel.className = 'skms-panel';
 
   var skmsTurn = document.createElement('div');
-  skmsTurn.style.cssText = 'color:#94A3B8;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px';
+  skmsTurn.style.cssText = 'color:rgba(148,163,184,0.75);font-size:10px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;margin-bottom:10px';
   skmsTurn.textContent = 'YOUR TURN';
 
   var skmsTitle = document.createElement('div');
-  skmsTitle.style.cssText = 'color:#0052A2;font-size:36px;font-weight:900;margin-bottom:14px;letter-spacing:-1.5px;line-height:1';
+  skmsTitle.style.cssText = 'color:#FFFFFF;font-size:36px;font-weight:900;margin-bottom:14px;letter-spacing:-1.5px;line-height:1;text-shadow:0 0 30px rgba(96,165,250,0.5)';
   skmsTitle.textContent = 'SKMS';
 
   var skmsCopy = document.createElement('div');
-  skmsCopy.style.cssText = 'font-size:15px;color:#374151;font-weight:700;line-height:1.8';
+  skmsCopy.style.cssText = 'font-size:15px;color:rgba(203,213,225,0.85);font-weight:600;line-height:1.8';
   var copyLine1 = document.createTextNode('당신의 경영이');
   var copyBr = document.createElement('br');
   var copyBold = document.createElement('span');
-  copyBold.style.cssText = 'color:#0052A2;font-size:17px;font-weight:900';
+  copyBold.style.cssText = 'color:#FFFFFF;font-size:17px;font-weight:900;letter-spacing:-0.3px';
   copyBold.textContent = '운명을 바꿉니다';
   skmsCopy.appendChild(copyLine1);
   skmsCopy.appendChild(copyBr);
@@ -7537,7 +7545,7 @@ function showOnboarding() {
   afterCol.className = 'slide1-after';
   var afterTitle = document.createElement('div');
   afterTitle.className = 'slide1-col-title';
-  afterTitle.style.color = '#1F2937';
+  afterTitle.style.color = '#374151';
   afterTitle.textContent = 'AFTER';
   var afterSub = document.createElement('div');
   afterSub.className = 'slide1-col-sub';
@@ -7553,10 +7561,14 @@ function showOnboarding() {
   goodTag.className = 'path-tag';
   goodTag.textContent = 'GOOD';
   successDiv.appendChild(goodTag);
+  var prodUpBadge = document.createElement('span');
+  prodUpBadge.style.cssText = 'position:absolute;top:8px;right:10px;font-size:10px;font-weight:800;color:#15803d;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);border-radius:10px;padding:3px 8px;letter-spacing:0.2px;display:inline-flex;align-items:center;gap:3px';
+  prodUpBadge.innerHTML = '📈 생산성 UP';
+  successDiv.appendChild(prodUpBadge);
   var successCanvas = document.createElement('canvas');
-  successCanvas.width = 240;
-  successCanvas.height = 110;
-  successCanvas.style.cssText = 'width:100%;border-radius:8px';
+  successCanvas.width = 240 * dpr;
+  successCanvas.height = 110 * dpr;
+  successCanvas.style.cssText = 'width:100%;border-radius:10px;margin-top:4px';
   successDiv.appendChild(successCanvas);
   afterArea.appendChild(successDiv);
 
@@ -7566,10 +7578,14 @@ function showOnboarding() {
   badTag.className = 'path-tag';
   badTag.textContent = 'BAD';
   failDiv.appendChild(badTag);
+  var prodDownBadge = document.createElement('span');
+  prodDownBadge.style.cssText = 'position:absolute;top:8px;right:10px;font-size:10px;font-weight:800;color:#b91c1c;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.18);border-radius:10px;padding:3px 8px;letter-spacing:0.2px;display:inline-flex;align-items:center;gap:3px';
+  prodDownBadge.innerHTML = '📉 생산성 DOWN';
+  failDiv.appendChild(prodDownBadge);
   var failCanvas = document.createElement('canvas');
-  failCanvas.width = 240;
-  failCanvas.height = 110;
-  failCanvas.style.cssText = 'width:100%;border-radius:8px';
+  failCanvas.width = 240 * dpr;
+  failCanvas.height = 110 * dpr;
+  failCanvas.style.cssText = 'width:100%;border-radius:10px;margin-top:4px';
   failDiv.appendChild(failCanvas);
   afterArea.appendChild(failDiv);
   afterCol.appendChild(afterArea);
@@ -7578,10 +7594,13 @@ function showOnboarding() {
 
   s1.appendChild(layout);
 
-  // Get canvas contexts
+  // Get canvas contexts — scale by DPR for sharp retina rendering
   beforeCtx = beforeCanvas.getContext('2d');
+  beforeCtx.scale(dpr, dpr);
   successCtx = successCanvas.getContext('2d');
+  successCtx.scale(dpr, dpr);
   failCtx = failCanvas.getContext('2d');
+  failCtx.scale(dpr, dpr);
 
   slides.push(s1);
 
