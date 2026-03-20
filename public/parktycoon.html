@@ -4942,6 +4942,32 @@ function showEventModal(evt) {
   timer.textContent = '15s';
   card.appendChild(timer);
 
+  // First event guide banner
+  var isFirstEvent = !G.choiceLog || G.choiceLog.length === 0;
+  if (isFirstEvent) {
+    var guide = document.createElement('div');
+    guide.style.cssText = 'background:rgba(0,82,162,0.12);border:1px solid rgba(0,82,162,0.25);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:11px;line-height:1.6;color:#1F2937';
+    var guideTitle = document.createElement('div');
+    guideTitle.style.cssText = 'font-weight:800;color:#0052A2;margin-bottom:4px;font-size:12px';
+    guideTitle.textContent = '첫 번째 경영 이벤트!';
+    guide.appendChild(guideTitle);
+    guide.appendChild(document.createTextNode('뉴스 이벤트가 발생했습니다. 아래 3개 선택지 중 하나를 골라주세요.'));
+    guide.appendChild(document.createElement('br'));
+    var g1 = document.createElement('span');
+    g1.style.cssText = 'color:#16a34a;font-weight:700';
+    g1.textContent = '초록 태그';
+    guide.appendChild(g1);
+    guide.appendChild(document.createTextNode(' = SKMS 원칙 부합, '));
+    var g2 = document.createElement('span');
+    g2.style.cssText = 'color:#dc2626;font-weight:700';
+    g2.textContent = '빨간 태그';
+    guide.appendChild(g2);
+    guide.appendChild(document.createTextNode(' = 위험한 선택'));
+    guide.appendChild(document.createElement('br'));
+    guide.appendChild(document.createTextNode('15초 안에 선택하지 않으면 최악의 옵션이 자동 적용됩니다!'));
+    card.appendChild(guide);
+  }
+
   // Tag
   var tag = document.createElement('div');
   tag.className = 'event-tag';
