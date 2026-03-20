@@ -178,12 +178,13 @@ canvas{display:block;cursor:default}
 .report-card{background:#fff;border:1px solid #E2E8F0;border-radius:16px;max-width:700px;width:95vw;padding:28px 24px;color:#1F2937;margin:auto 0;flex-shrink:0;box-shadow:0 20px 60px rgba(0,0,0,0.12)}
 .report-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#0052A2;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s;font-family:inherit}
 .report-btn:hover{opacity:0.85}
-.rpt-header{width:100%;text-align:center;padding:28px 20px 22px;margin-bottom:16px;border-radius:16px;background:linear-gradient(145deg,#0A1628,#0F2847);border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden}
+.rpt-header{width:100%;text-align:center;padding:20px 20px 18px;margin-bottom:16px;border-radius:16px;background:linear-gradient(145deg,#0A1628,#0F2847);border:1px solid rgba(255,255,255,0.06);position:relative;overflow:hidden}
 .rpt-header::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 60%,rgba(255,184,48,0.08) 0%,transparent 50%);pointer-events:none}
-.rpt-header .rpt-icon{font-size:48px;display:block;margin-bottom:8px;filter:drop-shadow(0 4px 12px rgba(255,184,48,0.3))}
-.rpt-header .rpt-main-title{font-size:28px;font-weight:900;letter-spacing:-1px;color:#fff;margin-bottom:2px}
-.rpt-header .rpt-rating-big{font-size:36px;font-weight:900;color:#FBBF24;margin:4px 0}
-.rpt-header .rpt-subtitle{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:8px}
+.rpt-header .rpt-main-title{font-size:15px;font-weight:700;letter-spacing:0.5px;color:rgba(255,255,255,0.55);text-transform:uppercase;margin-bottom:10px}
+.rpt-header .rpt-style-label{display:inline-block;font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:12px}
+.rpt-header .rpt-stats-row{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.rpt-header .rpt-stat-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.8)}
+.rpt-header .rpt-stat-chip .chip-val{color:#FBBF24}
 .rpt-section-title{font-size:13px;font-weight:700;color:#374151;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .rpt-gauges{display:flex;gap:12px;justify-content:space-between;margin-bottom:16px}
 .rpt-gauge-col{flex:1;text-align:center}
@@ -5902,37 +5903,38 @@ function showReport() {
   var header = document.createElement('div');
   header.className = 'rpt-header';
 
-  var icon1 = document.createElement('span');
-  icon1.className = 'rpt-icon';
-  icon1.textContent = G.gameWon ? '\u{1F3C6}' : '\u{1F4C9}';
-  header.appendChild(icon1);
-
   var mainTitle = document.createElement('div');
   mainTitle.className = 'rpt-main-title';
-  mainTitle.textContent = G.gameWon ? 'SUPEX Company 달성!' : '경영 성적표';
+  mainTitle.textContent = '경영 성적표';
   header.appendChild(mainTitle);
 
-  var ratingBig = document.createElement('div');
-  ratingBig.className = 'rpt-rating-big';
-  ratingBig.textContent = G.rating.toFixed(1) + ' ⭐';
-  header.appendChild(ratingBig);
+  var styleLabel = document.createElement('div');
+  styleLabel.className = 'rpt-style-label';
+  styleLabel.textContent = style;
+  header.appendChild(styleLabel);
 
-  var subtitle = document.createElement('div');
-  subtitle.className = 'rpt-subtitle';
-  subtitle.textContent = 'Day ' + G.gDay + ' · ' + style + ' · SKMS 정합성 ' + alignment + '%';
-  header.appendChild(subtitle);
+  var statsRow = document.createElement('div');
+  statsRow.className = 'rpt-stats-row';
 
-  var badgeRow = document.createElement('div');
-  badgeRow.style.cssText = 'display:flex;gap:8px;justify-content:center;flex-wrap:wrap';
-  var resultBadge = document.createElement('span');
-  resultBadge.style.cssText = 'display:inline-block;padding:5px 16px;border-radius:20px;font-size:12px;font-weight:800;' + (G.gameWon ? 'background:rgba(74,222,128,0.2);color:#4ade80;border:1px solid rgba(74,222,128,0.3)' : 'background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.3)');
-  resultBadge.textContent = G.gameWon ? '🎉 승리' : '📉 게임 오버';
-  badgeRow.appendChild(resultBadge);
-  var styleBadge = document.createElement('span');
-  styleBadge.style.cssText = 'display:inline-block;padding:5px 16px;border-radius:20px;background:rgba(255,184,48,0.15);color:#FFB830;font-size:12px;font-weight:800;border:1px solid rgba(255,184,48,0.2)';
-  styleBadge.textContent = style;
-  badgeRow.appendChild(styleBadge);
-  header.appendChild(badgeRow);
+  var chip1 = document.createElement('span');
+  chip1.className = 'rpt-stat-chip';
+  chip1.innerHTML = 'SKMS 정합성 <span class="chip-val">' + alignment + '%</span>';
+  statsRow.appendChild(chip1);
+
+  var chip2 = document.createElement('span');
+  chip2.className = 'rpt-stat-chip';
+  chip2.innerHTML = '총점 <span class="chip-val">' + G.rating.toFixed(1) + '/5.0점</span>';
+  statsRow.appendChild(chip2);
+
+  if (G.gameWon) {
+    var chip3 = document.createElement('span');
+    chip3.className = 'rpt-stat-chip';
+    chip3.style.cssText += ';background:rgba(74,222,128,0.1);border-color:rgba(74,222,128,0.25);color:#4ade80';
+    chip3.textContent = '🎉 SUPEX 달성';
+    statsRow.appendChild(chip3);
+  }
+
+  header.appendChild(statsRow);
 
   card.appendChild(header);
 
@@ -6352,7 +6354,7 @@ function captureReport(cardEl) {
   var c = document.createElement('canvas');
   var scale = 2;
   var cw = 700;
-  var ch = 680;
+  var ch = 960;
   c.width = cw * scale;
   c.height = ch * scale;
   var cx = c.getContext('2d');
@@ -6451,12 +6453,68 @@ function captureReport(cardEl) {
     }
   }
 
-  // SKMS Quote
-  y += 16;
-  cx.font = 'italic 11px system-ui'; cx.fillStyle = '#9CA3AF'; cx.textAlign = 'center';
-  cx.fillText('"\uACBD\uC601\uC758 \uAD81\uADF9\uC801 \uBAA9\uC801\uC740 \uC774\uD574\uAD00\uACC4\uC790\uC758 \uD589\uBCF5 \uADF9\uB300\uD654\uC774\uB2E4"', cw/2, y);
+  // === 잘한 점 ===
   y += 14;
-  cx.fillText('\u2014 SKMS 14\uCC28 \uAC1C\uC815\uD310', cw/2, y);
+  cx.fillStyle = '#F0FDF4';
+  cx.fillRect(16, y - 4, cw - 32, 60);
+  cx.strokeStyle = '#BBF7D0'; cx.lineWidth = 1;
+  cx.strokeRect(16, y - 4, cw - 32, 60);
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#16a34a'; cx.textAlign = 'left';
+  cx.fillText('\u2705 잘한 점', 28, y + 12);
+  cx.font = '11px system-ui'; cx.fillStyle = '#374151';
+  var goodText = '';
+  if (G.skmsChoices && G.skmsChoices.length > 0) {
+    var bc = G.skmsChoices[G.skmsChoices.length - 1];
+    var be = null;
+    for (var ei2 = 0; ei2 < EVENTS.length; ei2++) { if (EVENTS[ei2].id === bc.eventId) { be = EVENTS[ei2]; break; } }
+    if (be && typeof bc.choiceIdx === 'number' && be.choices[bc.choiceIdx]) {
+      goodText = be.headline + ' \u2014 "' + be.choices[bc.choiceIdx].text + '"';
+    } else { goodText = 'SKMS 원칙에 부합하는 선택을 했습니다.'; }
+  } else if (G.empHap >= 60) { goodText = '구성원 행복을 높은 수준으로 유지했습니다.'; }
+  else { goodText = '어려운 환경에서도 도전을 멈추지 않았습니다.'; }
+  if (goodText.length > 70) goodText = goodText.substring(0, 70) + '...';
+  cx.fillText(goodText, 28, y + 32);
+
+  // === 아쉬운 점 ===
+  y += 70;
+  cx.fillStyle = '#FEF2F2';
+  cx.fillRect(16, y - 4, cw - 32, 60);
+  cx.strokeStyle = '#FECACA'; cx.lineWidth = 1;
+  cx.strokeRect(16, y - 4, cw - 32, 60);
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#dc2626'; cx.textAlign = 'left';
+  cx.fillText('\u26A0\uFE0F 아쉬운 점', 28, y + 12);
+  cx.font = '11px system-ui'; cx.fillStyle = '#374151';
+  var badText = '';
+  if (G.pressureCount >= 2) { badText = '억압적 선택이 ' + G.pressureCount + '회 반복되었습니다.'; }
+  else if (G.ignoreCount >= 2) { badText = '문제를 ' + G.ignoreCount + '회 무시했습니다.'; }
+  else { badText = '아쉬운 점이 없습니다. 훌륭한 경영이었습니다!'; }
+  cx.fillText(badText, 28, y + 32);
+
+  // === 다음에 시도해보세요 ===
+  y += 70;
+  cx.fillStyle = '#EFF6FF';
+  cx.fillRect(16, y - 4, cw - 32, 60);
+  cx.strokeStyle = '#BFDBFE'; cx.lineWidth = 1;
+  cx.strokeRect(16, y - 4, cw - 32, 60);
+  cx.font = 'bold 12px system-ui'; cx.fillStyle = '#2563eb'; cx.textAlign = 'left';
+  cx.fillText('\uD83D\uDE80 다음에 시도해보세요', 28, y + 12);
+  cx.font = '11px system-ui'; cx.fillStyle = '#374151';
+  var nextText = '';
+  var weakCap = 'empHap'; var weakCapVal = G.empHap;
+  if (G.custSat < weakCapVal) { weakCap = 'custSat'; weakCapVal = G.custSat; }
+  if (G.socVal < weakCapVal) { weakCap = 'socVal'; weakCapVal = G.socVal; }
+  if (G.custSat >= 70 && G.empHap >= 70 && G.socVal >= 70) { nextText = '모든 지표가 우수합니다! 더 빠른 속도로 도전해보세요.'; }
+  else if (weakCap === 'custSat') { nextText = '고객만족도가 낮습니다. R&D 부서 강화 + SUPEX 정책을 추천합니다.'; }
+  else if (weakCap === 'empHap') { nextText = '구성원 행복이 낮습니다. HR + VWBE 정책 + Wellness 시설을 추천합니다.'; }
+  else { nextText = '사회적 가치가 낮습니다. Social Impact 부서 + 사회적 가치 경영 정책을 추천합니다.'; }
+  cx.fillText(nextText, 28, y + 32);
+
+  // SKMS Quote
+  y += 76;
+  cx.font = 'italic 11px system-ui'; cx.fillStyle = '#9CA3AF'; cx.textAlign = 'center';
+  cx.fillText('"경영의 궁극적 목적은 이해관계자의 행복 극대화이다"', cw/2, y);
+  y += 14;
+  cx.fillText('\u2014 SKMS 14차 개정판', cw/2, y);
 
   // Watermark
   y += 22;
