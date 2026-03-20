@@ -6576,7 +6576,7 @@ function showTutorial() {
   if (G.tutStep < steps.length) {
     var actionBtn = document.createElement('div');
     actionBtn.className = 'dismiss';
-    actionBtn.textContent = '완료! 다음 →';
+    actionBtn.textContent = '확인!';
     actionBtn.addEventListener('click', function() {
       G.tutStep++;
       if (G.tutStep >= steps.length) {
@@ -7312,7 +7312,7 @@ function showOnboarding() {
     var spacing = w / (successChars.length + 1);
     for (var j = 0; j < successChars.length; j++) {
       var cx = spacing * (j + 1);
-      drawIsoChar(successCtx, cx, 55, successChars[j], speakingIdx === j + 3, false);
+      drawIsoChar(successCtx, cx, 75, successChars[j], speakingIdx === j + 3, false);
     }
 
     // Twinkle stars near leader position
@@ -7323,8 +7323,8 @@ function showOnboarding() {
       successCtx.fillStyle = '#FFD54F';
       successCtx.font = '10px system-ui';
       successCtx.textAlign = 'center';
-      successCtx.fillText('\u2728', leaderX - 12, 30);
-      successCtx.fillText('\u2B50', leaderX + 14, 38);
+      successCtx.fillText('\u2728', leaderX - 12, 50);
+      successCtx.fillText('\u2B50', leaderX + 14, 58);
       successCtx.globalAlpha = 1;
     }
   }
@@ -7355,7 +7355,7 @@ function showOnboarding() {
     var spacing = w / (failChars.length + 1);
     for (var j = 0; j < failChars.length; j++) {
       var cx = spacing * (j + 1);
-      drawIsoChar(failCtx, cx, 55, failChars[j], speakingIdx === j + 6, true);
+      drawIsoChar(failCtx, cx, 75, failChars[j], speakingIdx === j + 6, true);
     }
   }
 
@@ -7503,7 +7503,7 @@ function showOnboarding() {
   skmsPanel.className = 'skms-panel';
 
   var skmsTurn = document.createElement('div');
-  skmsTurn.style.cssText = 'color:rgba(255,184,48,0.6);font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px';
+  skmsTurn.style.cssText = 'color:rgba(255,255,255,0.35);font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px';
   skmsTurn.textContent = 'YOUR TURN';
 
   var skmsTitle = document.createElement('div');
