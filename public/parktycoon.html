@@ -23,18 +23,17 @@ canvas{display:block;cursor:default}
 #ui>*{pointer-events:auto}
 
 /* Top bar */
-.topbar{display:flex;align-items:center;gap:4px;padding:4px 8px;background:var(--hud-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--hud-border);flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
-.topbar::-webkit-scrollbar{display:none}
-.topbar .logo{font-weight:800;font-size:13px;color:var(--accent);letter-spacing:-0.5px;white-space:nowrap;flex-shrink:0}
-.topbar .logo small{font-size:8px;color:rgba(255,255,255,0.4);font-weight:500;margin-left:2px}
-.topbar .stat{display:flex;align-items:center;gap:2px;font-size:10px;font-weight:600;padding:2px 5px;border-radius:6px;background:rgba(255,255,255,0.06);white-space:nowrap;flex-shrink:0}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--hud-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--hud-border);flex-wrap:wrap}
+.topbar .logo{font-weight:800;font-size:16px;color:var(--accent);letter-spacing:-0.5px;white-space:nowrap}
+.topbar .logo small{font-size:10px;color:rgba(255,255,255,0.4);font-weight:500;margin-left:4px}
+.topbar .stat{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 10px;border-radius:8px;background:rgba(255,255,255,0.06)}
 .topbar .stat .val{font-variant-numeric:tabular-nums}
 .topbar .stat.money .val{color:var(--green)}
 .topbar .stat.rating .val{color:#FBBF24}
 .topbar .stat .val.cust{color:var(--cust)}
 .topbar .stat .val.emp{color:var(--emp)}
 .topbar .stat .val.soc{color:var(--soc)}
-.topbar .time-display{margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.topbar .time-display{margin-left:auto;display:flex;align-items:center;gap:8px}
 .topbar .day{font-size:11px;color:rgba(255,255,255,0.5)}
 .topbar .clock{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 .speed-btn{background:rgba(255,255,255,0.08);border:1px solid var(--hud-border);color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;cursor:pointer;font-weight:600;transition:all .15s}
@@ -44,8 +43,8 @@ canvas{display:block;cursor:default}
 .back-btn:hover{color:#fff;border-color:rgba(255,255,255,0.3)}
 
 /* Build panel */
-.build-panel{position:fixed;bottom:0;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px 6px;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-top-left-radius:14px;border-top-right-radius:14px;border-bottom:none;z-index:20;max-width:96vw;overflow-y:auto}
-.build-btn{width:52px;height:56px;border:2px solid transparent;border-radius:10px;background:rgba(255,255,255,0.05);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all 0.15s ease-out;position:relative;color:#e8e8f0;font-family:inherit;margin-top:3px}
+.build-panel{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 14px 12px;background:var(--hud-bg);backdrop-filter:blur(12px);border:1px solid var(--hud-border);border-radius:16px;z-index:20;max-width:96vw;max-height:45vh;overflow-y:auto}
+.build-btn{width:60px;height:72px;border:2px solid transparent;border-radius:10px;background:rgba(255,255,255,0.05);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.15s ease-out;position:relative;color:#e8e8f0;font-family:inherit;margin-top:6px}
 .build-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);transform:translateY(-2px)}
 .build-btn.active{border-color:var(--accent);background:rgba(255,184,48,0.15)}
 .build-btn .icon{font-size:22px}
@@ -53,7 +52,7 @@ canvas{display:block;cursor:default}
 .build-btn .cost{position:absolute;top:-4px;right:-3px;font-size:9px;font-weight:700;background:var(--green);color:#111;padding:1px 5px;border-radius:5px}
 
 /* Minimap */
-.minimap{position:fixed;bottom:70px;right:8px;width:120px;height:90px;background:rgba(18,18,30,0.9);border:1px solid var(--hud-border);border-radius:8px;overflow:hidden}
+.minimap{position:fixed;bottom:20px;right:16px;width:140px;height:105px;background:rgba(18,18,30,0.9);border:1px solid var(--hud-border);border-radius:8px;overflow:hidden}
 .minimap canvas{width:100%;height:100%}
 
 /* Toast */
@@ -336,13 +335,10 @@ canvas{display:block;cursor:default}
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-  .topbar{padding:3px 6px;gap:3px}
-  .topbar .logo{font-size:11px}
-  .topbar .stat{padding:1px 4px;font-size:9px;gap:2px}
-  .build-panel{padding:5px 6px 4px}
-  .build-btn{width:46px;height:48px}
-  .history-panel{width:150px;font-size:9px}
-  .minimap{width:90px;height:68px;bottom:60px}
+  .topbar{padding:6px 10px;gap:6px;font-size:10px}
+  .topbar .logo{font-size:13px}
+  .topbar .stat{padding:2px 6px;font-size:10px}
+  .build-panel{bottom:10px;padding:6px 8px;border-radius:12px}
   .build-btn{width:48px;height:50px;min-width:44px;min-height:44px}
   .build-btn .icon{font-size:18px}
   .build-btn .label{font-size:7px}
@@ -412,7 +408,7 @@ canvas{display:block;cursor:default}
 .mgmt-stat .v{font-weight:700}
 .salary-btn{padding:3px 8px;border:1px solid rgba(255,255,255,0.1);border-radius:4px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-size:9px;cursor:pointer;font-family:inherit;transition:all .12s}
 .salary-btn:hover{background:rgba(255,255,255,0.1);color:#fff}
-.history-panel{position:fixed;left:0;top:34px;width:180px;max-width:40vw;height:calc(100vh - 90px);background:rgba(26,26,46,0.94);backdrop-filter:blur(14px);border-right:1px solid rgba(255,255,255,0.08);z-index:90;display:flex;flex-direction:column;transition:transform .3s ease;overflow:hidden;font-size:10px;transform:translateX(0)}
+.history-panel{position:fixed;left:0;top:44px;width:240px;height:calc(100vh - 104px);background:rgba(26,26,46,0.94);backdrop-filter:blur(14px);border-right:1px solid rgba(255,255,255,0.08);z-index:90;display:flex;flex-direction:column;transition:transform .3s ease;overflow:hidden;font-size:12px;transform:translateX(0)}
 .history-panel.hidden{transform:translateX(-100%)}
 .history-header{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06)}
 .history-header-title{font-size:11px;font-weight:700;color:rgba(255,255,255,0.5);letter-spacing:0.5px}
@@ -2871,7 +2867,7 @@ function buildHistoryPanel() {
   if (existing) existing.remove();
 
   var panel = document.createElement('div');
-  panel.className = 'history-panel hidden';
+  panel.className = 'history-panel';
   panel.id = 'history-panel';
 
   // Header with close button
