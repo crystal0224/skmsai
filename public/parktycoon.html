@@ -239,8 +239,8 @@ canvas{display:block;cursor:default}
 .slide1-col-title{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:4px}
 .slide1-col-sub{font-size:10px;text-align:center;margin-bottom:8px;color:#9CA3AF;font-weight:500}
 .slide1-flow-arrow{font-size:20px;color:#D1D5DB;flex-shrink:0}
-.skms-panel{width:100%;background:linear-gradient(160deg,#0A1628 0%,#122044 50%,#0F2847 100%);border:none;border-radius:18px;padding:28px 16px 24px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,0.2),0 0 0 1px rgba(255,255,255,0.06);position:relative;overflow:hidden}
-.skms-panel::before{content:'';position:absolute;top:-40%;left:-40%;width:180%;height:180%;background:radial-gradient(circle at 50% 50%,rgba(255,184,48,0.1) 0%,transparent 60%);pointer-events:none}
+.skms-panel{width:100%;background:linear-gradient(160deg,#F8FAFC 0%,#EEF2FF 100%);border:2px solid #C7D2FE;border-radius:18px;padding:28px 16px 24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.skms-panel::before{content:'';position:absolute;top:-40%;left:-40%;width:180%;height:180%;background:radial-gradient(circle at 50% 50%,rgba(0,82,162,0.06) 0%,transparent 60%);pointer-events:none}
 .after-area{display:flex;flex-direction:column;gap:8px;flex:1}
 .success-path{flex:1;background:linear-gradient(135deg,#F0FDF4,#ECFDF5);border-radius:12px;padding:10px;text-align:center;position:relative}
 .success-path .path-tag{position:absolute;top:6px;left:8px;font-size:9px;font-weight:800;padding:2px 8px;border-radius:8px;background:rgba(22,163,74,0.12);color:#16a34a;border:1px solid rgba(22,163,74,0.2);letter-spacing:0.5px}
@@ -7506,19 +7506,19 @@ function showOnboarding() {
   skmsPanel.className = 'skms-panel';
 
   var skmsTurn = document.createElement('div');
-  skmsTurn.style.cssText = 'color:rgba(255,255,255,0.35);font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px';
+  skmsTurn.style.cssText = 'color:#94A3B8;font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px';
   skmsTurn.textContent = 'YOUR TURN';
 
   var skmsTitle = document.createElement('div');
-  skmsTitle.style.cssText = 'color:#FFB830;font-size:36px;font-weight:900;margin-bottom:14px;letter-spacing:-1.5px;line-height:1;text-shadow:0 2px 12px rgba(255,184,48,0.25)';
+  skmsTitle.style.cssText = 'color:#0052A2;font-size:36px;font-weight:900;margin-bottom:14px;letter-spacing:-1.5px;line-height:1';
   skmsTitle.textContent = 'SKMS';
 
   var skmsCopy = document.createElement('div');
-  skmsCopy.style.cssText = 'font-size:15px;color:rgba(255,255,255,0.85);font-weight:700;line-height:1.8';
+  skmsCopy.style.cssText = 'font-size:15px;color:#374151;font-weight:700;line-height:1.8';
   var copyLine1 = document.createTextNode('당신의 경영이');
   var copyBr = document.createElement('br');
   var copyBold = document.createElement('span');
-  copyBold.style.cssText = 'color:#FFB830;font-size:17px;font-weight:900';
+  copyBold.style.cssText = 'color:#0052A2;font-size:17px;font-weight:900';
   copyBold.textContent = '운명을 바꿉니다';
   skmsCopy.appendChild(copyLine1);
   skmsCopy.appendChild(copyBr);
