@@ -2045,11 +2045,13 @@ function gameTick() {
     dayTick();
   }
 
-  // Event timer
-  G.eventTimer += 1;
-  if (!G.eventActive && G.eventTimer > (20 + Math.random() * 10) * 60) {
-    G.eventTimer = 0;
-    triggerRandomEvent();
+  // Event timer — block until tutorial complete
+  if (G.tutDone) {
+    G.eventTimer += 1;
+    if (!G.eventActive && G.eventTimer > (20 + Math.random() * 10) * 60) {
+      G.eventTimer = 0;
+      triggerRandomEvent();
+    }
   }
 
   // Event countdown
@@ -2279,8 +2281,8 @@ function dayTick() {
     }
   }
 
-  // Process pending modals (one at a time)
-  if (!G.eventActive && G.pendingModals.length > 0) {
+  // Process pending modals (one at a time, block during tutorial)
+  if (G.tutDone && !G.eventActive && G.pendingModals.length > 0) {
     var pending = G.pendingModals.shift();
     if (pending.type === 'raise') {
       var raiseWorker = G.workers.find(function(ww) { return ww.id === pending.workerId && !ww.quitting; });
