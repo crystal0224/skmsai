@@ -965,31 +965,52 @@ var FOLLOWUP_EVENTS = {
 // ============================================================
 var SKMS_COACHING = [
   // human_centered (5)
-  {principle:'human_centered', quote:'"구성원 행복은 SK 경영의 궁극적 목적이다. 구성원이 지속적으로 행복을 추구하기 위한 터전이자 기반"', source:'SKMS 14차 개정판', context:'구성원행복'},
-  {principle:'human_centered', quote:'"실패한 구성원에게 재도전의 기회를 부여하여 조직의 학습과 성장을 촉진한다"', source:'SKMS 인재경영 원칙', context:'패자부활'},
-  {principle:'human_centered', quote:'"인간은 경영의 수단이 아닌 목적이며, 모든 경영활동의 중심에 사람이 있어야 한다"', source:'SKMS 초판 (1979)', context:'인간존중'},
-  {principle:'human_centered', quote:'"구성원의 자율성을 존중하고 스스로 의사결정할 수 있는 환경을 조성해야 한다"', source:'SKMS 11차 개정판', context:'자율성'},
-  {principle:'human_centered', quote:'"구성원의 물질적·정신적 안녕이 보장될 때 비로소 최고의 역량이 발휘된다"', source:'SKMS 8차 개정판', context:'복지'},
+  {principle:'human_centered', quote:'"구성원 행복은 SK 경영의 궁극적 목적이다"', source:'SKMS 14차 개정판',
+   explain:'회사의 존재 이유는 돈을 버는 것이 아니라 함께 일하는 사람들이 행복해지는 것입니다. 직원이 행복하면 자연스럽게 최고의 성과도 따라옵니다.'},
+  {principle:'human_centered', quote:'"실패한 구성원에게 재도전의 기회를 부여한다"', source:'SKMS 인재경영 원칙',
+   explain:'실패는 끝이 아니라 배움입니다. 실패를 벌하면 아무도 도전하지 않고, 실패를 인정하면 더 큰 혁신이 탄생합니다.'},
+  {principle:'human_centered', quote:'"인간은 경영의 수단이 아닌 목적이다"', source:'SKMS 초판 (1979)',
+   explain:'사람을 비용으로 보면 구조조정이 답이지만, 사람을 목적으로 보면 성장과 투자가 답입니다. 이 차이가 회사의 미래를 결정합니다.'},
+  {principle:'human_centered', quote:'"구성원의 자율성을 존중하고 스스로 의사결정할 수 있는 환경을 조성한다"', source:'SKMS 11차 개정판',
+   explain:'위에서 시키는 대로만 하면 일은 되지만 혁신은 없습니다. 스스로 판단하고 행동할 수 있을 때 진짜 몰입이 시작됩니다.'},
+  {principle:'human_centered', quote:'"구성원의 물질적·정신적 안녕이 보장될 때 최고의 역량이 발휘된다"', source:'SKMS 8차 개정판',
+   explain:'불안한 사람은 방어적으로 일합니다. 안정감을 느끼는 사람만이 도전적으로 일할 수 있습니다. 복지는 비용이 아니라 투자입니다.'},
   // supex (5)
-  {principle:'supex', quote:'"SUPEX란 Super Excellent 수준, 즉 인간 능력으로 도달할 수 있는 최고 수준을 의미한다"', source:'SKMS 10차 개정판', context:'SUPEX추구'},
-  {principle:'supex', quote:'"성과의 탁월성은 단순한 목표 달성이 아니라 인간 능력의 한계에 도전하는 것이다"', source:'SKMS 9차 개정판', context:'성과탁월'},
-  {principle:'supex', quote:'"도전적 목표 설정은 SUPEX 추구의 출발점이며, 패기를 가지고 높은 목표를 세워야 한다"', source:'SKMS 7차 개정판', context:'목표설정'},
-  {principle:'supex', quote:'"SUPEX를 추구하는 과정 자체가 구성원의 역량을 높이는 핵심 동력이다"', source:'SKMS 14차 개정판', context:'도전성과'},
-  {principle:'supex', quote:'"성과에 대한 공정한 보상은 SUPEX 추구를 지속시키는 핵심 메커니즘이다"', source:'SKMS 12차 개정판', context:'성과보상'},
+  {principle:'supex', quote:'"SUPEX란 인간 능력으로 도달할 수 있는 최고 수준을 의미한다"', source:'SKMS 10차 개정판',
+   explain:'완벽은 불가능하지만, 인간이 할 수 있는 최선은 있습니다. SUPEX는 그 최선을 끊임없이 추구하는 자세입니다. 현재에 안주하지 않는 것이 핵심입니다.'},
+  {principle:'supex', quote:'"성과의 탁월성은 인간 능력의 한계에 도전하는 것이다"', source:'SKMS 9차 개정판',
+   explain:'쉬운 목표만 세우면 실패도 없지만 성장도 없습니다. 약간 불가능해 보이는 목표에 도전할 때 조직의 역량이 비약적으로 성장합니다.'},
+  {principle:'supex', quote:'"패기를 가지고 높은 목표를 세워야 한다"', source:'SKMS 7차 개정판',
+   explain:'패기란 무모함이 아닙니다. 어려운 상황에서도 포기하지 않고, 더 높은 수준을 향해 나아가려는 의지와 용기입니다.'},
+  {principle:'supex', quote:'"SUPEX를 추구하는 과정 자체가 구성원 역량을 높이는 핵심 동력이다"', source:'SKMS 14차 개정판',
+   explain:'높은 목표를 향해 노력하는 과정에서 사람들은 자연스럽게 성장합니다. 결과도 중요하지만, 그 과정에서 쌓이는 역량이 진짜 자산입니다.'},
+  {principle:'supex', quote:'"성과에 대한 공정한 보상은 SUPEX 추구를 지속시키는 핵심이다"', source:'SKMS 12차 개정판',
+   explain:'노력과 성과가 정당하게 인정받지 못하면 아무도 더 나아가려 하지 않습니다. 공정한 보상이 지속적인 도전의 연료입니다.'},
   // vwbe (5)
-  {principle:'vwbe', quote:'"자발적·의욕적 두뇌활용(VWBE)이 이루어지지 않으면 SUPEX 수준의 성과를 달성할 수 없다"', source:'SKMS 14차 개정판, VWBE 문화', context:'자발적두뇌활용'},
-  {principle:'vwbe', quote:'"구성원의 역량 발전은 개인의 행복과 회사의 SUPEX 추구를 동시에 달성하는 핵심 경로"', source:'SKMS', context:'역량개발'},
-  {principle:'vwbe', quote:'"변화하는 환경에서 구성원의 리스킬링은 조직 생존의 필수 조건이다"', source:'SKMS 13차 개정판', context:'리스킬링'},
-  {principle:'vwbe', quote:'"학습하는 조직만이 지속 가능한 경쟁력을 확보할 수 있다"', source:'SKMS 11차 개정판', context:'학습조직'},
-  {principle:'vwbe', quote:'"통제와 강압이 아닌 자발적 의욕에 의한 두뇌활용만이 SUPEX 추구를 가능하게 한다"', source:'SKMS', context:'자기주도'},
+  {principle:'vwbe', quote:'"자발적·의욕적 두뇌활용(VWBE)이 없으면 SUPEX 수준의 성과는 불가능하다"', source:'SKMS 14차 개정판',
+   explain:'시켜서 하는 일과 하고 싶어서 하는 일의 결과는 하늘과 땅 차이입니다. VWBE는 구성원이 스스로 의욕을 갖고 머리를 쓰는 상태를 말합니다.'},
+  {principle:'vwbe', quote:'"구성원의 역량 발전은 개인 행복과 회사 성과를 동시에 달성하는 핵심 경로"', source:'SKMS',
+   explain:'직원이 성장하면 회사도 강해지고, 직원 본인도 행복해집니다. 성장 기회를 제공하는 것은 회사와 개인 모두를 위한 최선의 선택입니다.'},
+  {principle:'vwbe', quote:'"변화하는 환경에서 구성원의 리스킬링은 조직 생존의 필수 조건이다"', source:'SKMS 13차 개정판',
+   explain:'AI 시대에 기존 역량만으로는 살아남을 수 없습니다. 새로운 기술을 배울 기회를 주는 것이 해고보다 현명한 선택입니다.'},
+  {principle:'vwbe', quote:'"학습하는 조직만이 지속 가능한 경쟁력을 확보할 수 있다"', source:'SKMS 11차 개정판',
+   explain:'한 번 성공한 방식에 안주하면 뒤처집니다. 끊임없이 배우고 적용하는 조직 문화가 장기 경쟁력의 원천입니다.'},
+  {principle:'vwbe', quote:'"통제와 강압이 아닌 자발적 의욕에 의한 두뇌활용만이 SUPEX를 가능하게 한다"', source:'SKMS',
+   explain:'강제로 시키면 최소한만 합니다. 스스로 하고 싶을 때 창의적인 해법이 나옵니다. 리더의 역할은 통제가 아니라 의욕을 끌어내는 것입니다.'},
   // social_value (3)
-  {principle:'social_value', quote:'"이해관계자의 행복을 함께 추구하며, 이를 사회적 가치로 개념화한다"', source:'SKMS 14차 개정판', context:'이해관계자행복'},
-  {principle:'social_value', quote:'"기업은 고객, 구성원, 주주, 사회 및 비즈니스 파트너의 행복을 동시에 추구해야 한다"', source:'SKMS', context:'ESG'},
-  {principle:'social_value', quote:'"기업의 사회적 책임은 선택이 아닌 지속 가능 경영의 기본 요건이다"', source:'SKMS 14차 개정판', context:'사회적책임'},
+  {principle:'social_value', quote:'"이해관계자의 행복을 함께 추구하며 이를 사회적 가치로 개념화한다"', source:'SKMS 14차 개정판',
+   explain:'우리 회사만 잘되는 것으로는 부족합니다. 고객, 파트너, 지역사회가 함께 행복해질 때 비로소 지속 가능한 성공이 가능합니다.'},
+  {principle:'social_value', quote:'"고객, 구성원, 주주, 사회, 파트너의 행복을 동시에 추구해야 한다"', source:'SKMS',
+   explain:'한쪽만 챙기면 다른 쪽이 무너집니다. 주주만 보면 직원이 떠나고, 직원만 보면 고객이 떠납니다. 균형이 핵심입니다.'},
+  {principle:'social_value', quote:'"기업의 사회적 책임은 선택이 아닌 지속 가능 경영의 기본 요건이다"', source:'SKMS 14차 개정판',
+   explain:'사회공헌은 여유 있을 때 하는 것이 아닙니다. 사회와 함께 성장해야 기업도 오래 살아남을 수 있습니다. ESG는 생존 전략입니다.'},
   // rational (3)
-  {principle:'rational', quote:'"합리적 의사결정은 경험 과학과 사회 규범, 그리고 예술적 실행력의 조합이다"', source:'SKMS 초판 (1979)', context:'합리적의사결정'},
-  {principle:'rational', quote:'"데이터와 사실에 기반한 경영만이 과학적이고 재현 가능한 성과를 만든다"', source:'SKMS 5차 개정판', context:'데이터기반'},
-  {principle:'rational', quote:'"경영의 투명성은 이해관계자의 신뢰를 확보하는 근본적 조건이다"', source:'SKMS 12차 개정판', context:'투명경영'}
+  {principle:'rational', quote:'"합리적 의사결정은 경험 과학, 사회 규범, 예술적 실행력의 조합이다"', source:'SKMS 초판 (1979)',
+   explain:'좋은 결정은 데이터(과학)만으로도, 원칙(규범)만으로도, 직관(예술)만으로도 안 됩니다. 세 가지를 균형있게 조합하는 것이 진짜 경영 역량입니다.'},
+  {principle:'rational', quote:'"데이터와 사실에 기반한 경영만이 재현 가능한 성과를 만든다"', source:'SKMS 5차 개정판',
+   explain:'감으로 한 번 성공할 수는 있지만, 반복 성공은 데이터 없이는 불가능합니다. 측정하지 않으면 개선할 수도 없습니다.'},
+  {principle:'rational', quote:'"경영의 투명성은 이해관계자의 신뢰를 확보하는 근본적 조건이다"', source:'SKMS 12차 개정판',
+   explain:'숨기면 단기적으로는 편하지만 발각되면 신뢰가 무너집니다. 처음부터 투명하게 공개하는 것이 장기적으로 가장 안전한 전략입니다.'}
 ];
 
 // ============================================================
@@ -6159,23 +6180,33 @@ function showReport() {
   goodBody.className = 'coaching-body';
 
   var bestTag = null;
+  var tagNames = {human_centered:'인간중심 경영', supex:'SUPEX 추구', vwbe:'VWBE 문화', social_value:'사회적 가치', rational:'합리적 경영'};
   if (G.skmsChoices && G.skmsChoices.length > 0) {
     var bestChoice = G.skmsChoices[G.skmsChoices.length - 1];
     bestTag = bestChoice.tag;
     var bestEvt = evtMap[bestChoice.eventId];
     if (bestEvt && typeof bestChoice.choiceIdx === 'number' && bestEvt.choices[bestChoice.choiceIdx]) {
-      goodBody.textContent = bestEvt.headline + ' \u2014 "' + bestEvt.choices[bestChoice.choiceIdx].text + '"';
+      var choiceText = bestEvt.choices[bestChoice.choiceIdx].text;
+      var tagName = tagNames[bestTag] || 'SKMS';
+      goodBody.textContent = '"' + bestEvt.headline + '"에서 "' + choiceText + '"을 선택했습니다.';
+      var goodWhy = document.createElement('div');
+      goodWhy.style.cssText = 'margin-top:6px;font-size:11px;color:rgba(255,255,255,0.7);line-height:1.5';
+      goodWhy.textContent = '이 선택은 SKMS의 [' + tagName + '] 원칙에 부합합니다. 단기 비용이 들더라도 구성원과 조직의 장기 성장을 위한 올바른 판단이었습니다.';
+      goodCard.appendChild(goodBody);
+      goodCard.appendChild(goodWhy);
     } else {
-      goodBody.textContent = 'SKMS \uC6D0\uCE59\uC5D0 \uBD80\uD569\uD558\uB294 \uC120\uD0DD\uC744 \uD588\uC2B5\uB2C8\uB2E4.';
+      goodBody.textContent = 'SKMS 원칙에 부합하는 선택을 했습니다.';
+      goodCard.appendChild(goodBody);
     }
   } else if (G.empHap >= 60) {
-    goodBody.textContent = '\uAD6C\uC131\uC6D0 \uD589\uBCF5\uC744 \uB192\uC740 \uC218\uC900\uC73C\uB85C \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4.';
+    goodBody.textContent = '구성원 행복을 높은 수준으로 유지했습니다.';
     bestTag = 'human_centered';
+    goodCard.appendChild(goodBody);
   } else {
-    goodBody.textContent = '\uC5B4\uB824\uC6B4 \uD658\uACBD\uC5D0\uC11C\uB3C4 \uB3C4\uC804\uC744 \uBA48\uCD94\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.';
+    goodBody.textContent = '어려운 환경에서도 도전을 멈추지 않았습니다.';
     bestTag = 'supex';
+    goodCard.appendChild(goodBody);
   }
-  goodCard.appendChild(goodBody);
 
   var goodQuote = findCoachingQuote(bestTag || 'human_centered');
   if (goodQuote) {
@@ -6184,9 +6215,15 @@ function showReport() {
     gq.textContent = goodQuote.quote;
     var gs = document.createElement('span');
     gs.className = 'rpt-source';
-    gs.textContent = '\u2014 ' + goodQuote.source;
+    gs.textContent = ' — ' + goodQuote.source;
     gq.appendChild(gs);
     goodCard.appendChild(gq);
+    if (goodQuote.explain) {
+      var gExplain = document.createElement('div');
+      gExplain.style.cssText = 'margin-top:6px;font-size:11px;color:rgba(255,255,255,0.55);line-height:1.5;font-style:italic';
+      gExplain.textContent = goodQuote.explain;
+      goodCard.appendChild(gExplain);
+    }
   }
   card.appendChild(goodCard);
 
@@ -6202,12 +6239,14 @@ function showReport() {
 
   var hasBadChoice = false;
   var badTag = null;
+  var badWhy = '';
   if (G.choiceLog) {
     for (var bi = G.choiceLog.length - 1; bi >= 0; bi--) {
       if (G.choiceLog[bi].choice === 'auto') {
         var badEvt = evtMap[G.choiceLog[bi].event];
         if (badEvt) {
-          badBody.textContent = badEvt.headline + ' \u2014 \uC2DC\uAC04 \uCD08\uACFC\uB85C \uC790\uB3D9 \uC120\uD0DD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.';
+          badBody.textContent = '"' + badEvt.headline + '" 이벤트에서 시간 초과로 자동 선택되었습니다.';
+          badWhy = '경영자가 결정을 미루면 최악의 상황이 벌어집니다. SKMS에서는 구성원의 자발적 의사결정(VWBE)을 강조합니다. 빠르게 판단하고 행동하는 것이 리더의 역할입니다.';
           hasBadChoice = true;
           badTag = 'vwbe';
           break;
@@ -6216,24 +6255,28 @@ function showReport() {
     }
   }
   if (!hasBadChoice && G.pressureCount >= 2) {
-    badBody.textContent = '\uC5B5\uC555\uC801 \uC120\uD0DD\uC774 ' + G.pressureCount + '\uD68C \uBC18\uBCF5\uB418\uC5C8\uC2B5\uB2C8\uB2E4. VWBE \uBB38\uD654\uC640 \uC0C1\uCDA9\uD569\uB2C8\uB2E4.';
+    badBody.textContent = '억압적 선택이 ' + G.pressureCount + '회 반복되었습니다.';
+    badWhy = 'SKMS는 통제와 강압이 아닌 자발적 의욕을 통해 성과를 추구합니다. 강제로 시키면 당장은 움직이지만, 구성원의 의욕과 신뢰가 무너져 장기적으로 조직이 약해집니다.';
     hasBadChoice = true;
     badTag = 'vwbe';
   } else if (!hasBadChoice && G.ignoreCount >= 2) {
-    badBody.textContent = '\uBB38\uC81C\uB97C ' + G.ignoreCount + '\uD68C \uBB34\uC2DC\uD588\uC2B5\uB2C8\uB2E4. \uC801\uADF9\uC801\uC778 \uB300\uC751\uC774 \uD544\uC694\uD569\uB2C8\uB2E4.';
+    badBody.textContent = '문제를 ' + G.ignoreCount + '회 무시했습니다.';
+    badWhy = 'SKMS에서 합리적 경영이란 문제를 직면하고 데이터에 기반해 판단하는 것입니다. 문제를 외면하면 작은 위기가 큰 재앙으로 번집니다.';
     hasBadChoice = true;
     badTag = 'rational';
   }
   if (!hasBadChoice) {
-    badBody.textContent = '\uC544\uC26C\uC6B4 \uC810\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uD6CC\uB96D\uD55C \uACBD\uC601\uC774\uC5C8\uC2B5\uB2C8\uB2E4!';
+    badBody.textContent = '아쉬운 점이 없습니다. 훌륭한 경영이었습니다!';
     badBody.style.color = 'rgba(255,255,255,0.4)';
   }
   badCard.appendChild(badBody);
+  if (hasBadChoice && badWhy) {
+    var badWhyEl = document.createElement('div');
+    badWhyEl.style.cssText = 'margin-top:6px;font-size:11px;color:rgba(255,255,255,0.7);line-height:1.5';
+    badWhyEl.textContent = badWhy;
+    badCard.appendChild(badWhyEl);
+  }
   if (hasBadChoice) {
-    var suggest = document.createElement('div');
-    suggest.style.cssText = 'margin-top:6px;font-size:11px;color:#f59e0b';
-    suggest.textContent = '\uD83D\uDCA1 \uD301: \uC774\uBCA4\uD2B8\uC5D0 \uC801\uADF9\uC801\uC73C\uB85C \uB300\uC751\uD558\uACE0, SKMS \uC815\uCC45\uC744 \uD65C\uC131\uD654\uD558\uBA74 \uB354 \uB9CE\uC740 \uC120\uD0DD\uC9C0\uAC00 \uC5F4\uB9BD\uB2C8\uB2E4.';
-    badCard.appendChild(suggest);
     var badQuote = findCoachingQuote(badTag || 'vwbe');
     if (badQuote) {
       var bq = document.createElement('div');
@@ -6241,9 +6284,15 @@ function showReport() {
       bq.textContent = badQuote.quote;
       var bqs = document.createElement('span');
       bqs.className = 'rpt-source';
-      bqs.textContent = '\u2014 ' + badQuote.source;
+      bqs.textContent = ' — ' + badQuote.source;
       bq.appendChild(bqs);
       badCard.appendChild(bq);
+      if (badQuote.explain) {
+        var bExplain = document.createElement('div');
+        bExplain.style.cssText = 'margin-top:6px;font-size:11px;color:rgba(255,255,255,0.55);line-height:1.5;font-style:italic';
+        bExplain.textContent = badQuote.explain;
+        badCard.appendChild(bExplain);
+      }
     }
   }
   card.appendChild(badCard);
